@@ -10,41 +10,66 @@
 
 <h1>Suivi citoyen des émissions GES - BVA</h1>
 
-<canvas id="chart" width="900" height="450"></canvas>
+<canvas id="chart" width="1100" height="500"></canvas>
 
 <script>
 fetch('GES_BVA_daily_emissions.csv')
   .then(response => response.text())
   .then(data => {
 
-    const rows = data.split('\n').slice(1);
+    const rows = data.split('\n').filter(r => r.trim() !== '');
+    const headers = rows[0].split(',');
+
     const labels = [];
-    const values = [];
+    const datasets = [];
 
-    rows.forEach(row => {
-        if(row.trim() !== ""){
-            const cols = row.split(',');
+    // Colonnes L à Q = index 11 à 16
+    const startCol = 11;
+    const endCol = 16;
 
-            if(cols.length > 1){
-                labels.push(cols[0].trim());
-                values.push(parseFloat(cols[1].replace(',', '.')));
-            }
+    // Créer datasets uniquement pour L → Q
+    for (let i = startCol; i <= endCol; i++) {
+        datasets.push({
+            label: headers[i].trim(),
+            data: [],
+            borderWidth: 2,
+            fill: false
+        });
+    }
+
+    // Lire les lignes
+    for (let i = 1; i < rows.length; i++) {
+        const cols = rows[i].split(',');
+
+        labels.push(cols[0].trim()); // colonne A = dates
+
+        let datasetIndex = 0;
+
+        for (let j = startCol; j <= endCol; j++) {
+            datasets[datasetIndex].data.push(
+                parseFloat(cols[j].replace(',', '.'))
+            );
+            datasetIndex++;
         }
-    });
+    }
 
     new Chart(document.getElementById('chart'), {
         type: 'line',
         data: {
             labels: labels,
-            datasets: [{
-                label: 'Émissions (tCO2e)',
-                data: values,
-                borderWidth: 2,
-                fill: false
-            }]
+            datasets: datasets
         },
         options: {
             responsive: true,
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
+            plugins: {
+                legend: {
+                    display: true
+                }
+            },
             scales: {
                 y: {
                     beginAtZero: true
@@ -52,6 +77,7 @@ fetch('GES_BVA_daily_emissions.csv')
             }
         }
     });
+
 });
 </script>
 
