@@ -25,28 +25,29 @@ fetch('GES_BVA_daily_emissions.csv')
     const startCol = 11; // L
     const endCol = 16;   // Q
 
-    let headerRowIndex = -1;
+    let baseIndex = -1;
 
-    // Chercher automatiquement la ligne d'en-tête
+    // Trouver la ligne i (celle avec une cellule remplie en L)
     for(let i = 0; i < rows.length; i++){
         const cols = rows[i].split(separator);
         if(cols.length > endCol && cols[startCol].trim() !== ""){
-            headerRowIndex = i;
+            baseIndex = i;
             break;
         }
     }
 
-    if(headerRowIndex === -1){
-        alert("Impossible de trouver la ligne des en-têtes.");
+    if(baseIndex === -1 || baseIndex + 1 >= rows.length){
+        alert("Structure du CSV non trouvée.");
         return;
     }
 
-    const headers = rows[headerRowIndex].split(separator);
+    // i+1 = entêtes
+    const headers = rows[baseIndex + 1].split(separator);
 
     const labels = [];
     const datasets = [];
 
-    // Créer datasets
+    // Créer les datasets à partir des entêtes (L à Q)
     for (let i = startCol; i <= endCol; i++) {
         datasets.push({
             label: headers[i].trim(),
@@ -56,8 +57,8 @@ fetch('GES_BVA_daily_emissions.csv')
         });
     }
 
-    // Lire les données en dessous de l'en-tête
-    for (let i = headerRowIndex + 1; i < rows.length; i++) {
+    // i+2 = début des données
+    for (let i = baseIndex + 2; i < rows.length; i++) {
 
         const cols = rows[i].split(separator);
 
