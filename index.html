@@ -22,12 +22,12 @@ fetch('GES_BVA_daily_emissions.csv')
 
     const separator = rows[0].includes(';') ? ';' : ',';
 
-    const startCol = 11; // L
-    const endCol = 16;   // Q
+    const startCol = 11; // colonne L
+    const endCol = 16;   // colonne Q
 
     let baseIndex = -1;
 
-    // Trouver la ligne i (celle avec une cellule remplie en L)
+    // Trouver la ligne i (celle avec cellule remplie en L)
     for(let i = 0; i < rows.length; i++){
         const cols = rows[i].split(separator);
         if(cols.length > endCol && cols[startCol].trim() !== ""){
@@ -36,18 +36,18 @@ fetch('GES_BVA_daily_emissions.csv')
         }
     }
 
-    if(baseIndex === -1 || baseIndex + 1 >= rows.length){
+    if(baseIndex === -1 || baseIndex + 2 >= rows.length){
         alert("Structure du CSV non trouvée.");
         return;
     }
 
-    // i+1 = entêtes
+    // i+1 = en-têtes
     const headers = rows[baseIndex + 1].split(separator);
 
     const labels = [];
     const datasets = [];
 
-    // Créer les datasets à partir des entêtes (L à Q)
+    // Créer les datasets à partir des en-têtes L → Q
     for (let i = startCol; i <= endCol; i++) {
         datasets.push({
             label: headers[i].trim(),
@@ -70,7 +70,10 @@ fetch('GES_BVA_daily_emissions.csv')
 
             for (let j = startCol; j <= endCol; j++) {
 
-                let value = cols[j].replace(',', '.').trim();
+                let value = cols[j]
+                    .replace(/\s/g, '')   // supprime espaces milliers
+                    .replace(',', '.')    // remplace virgule par point
+                    .trim();
 
                 if(value === "" || isNaN(value)){
                     datasets[datasetIndex].data.push(null);
@@ -102,25 +105,10 @@ fetch('GES_BVA_daily_emissions.csv')
                 }
             },
             scales: {
-    x: {
-        title: {
-            display: true,
-            text: 'Date'
-        }
-    },
-    y: {
-        title: {
-            display: true,
-            text: 'Émissions (tCO2e)'
-        },
-        suggestedMin: 0,
-        ticks: {
-            callback: function(value) {
-                return value.toLocaleString('fr-FR');
-            }
-        }
-    }
-}
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Date'
                     }
                 },
                 y: {
@@ -128,6 +116,11 @@ fetch('GES_BVA_daily_emissions.csv')
                     title: {
                         display: true,
                         text: 'Émissions (tCO2e)'
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return value.toLocaleString('fr-FR');
+                        }
                     }
                 }
             }
