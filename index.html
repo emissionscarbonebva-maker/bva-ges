@@ -102,10 +102,25 @@ fetch('GES_BVA_daily_emissions.csv')
                 }
             },
             scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Date'
+    x: {
+        title: {
+            display: true,
+            text: 'Date'
+        }
+    },
+    y: {
+        title: {
+            display: true,
+            text: 'Émissions (tCO2e)'
+        },
+        suggestedMin: 0,
+        ticks: {
+            callback: function(value) {
+                return value.toLocaleString('fr-FR');
+            }
+        }
+    }
+}
                     }
                 },
                 y: {
