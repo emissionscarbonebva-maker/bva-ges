@@ -18,16 +18,25 @@ fetch('GES_BVA_daily_emissions.csv')
   .then(data => {
 
     const rows = data.split('\n').filter(r => r.trim() !== '');
-    const headers = rows[0].split(';');
+
+    // Détection automatique du séparateur
+    const separator = rows[0].includes(';') ? ';' : ',';
+
+    const headers = rows[0].split(separator);
 
     const labels = [];
     const datasets = [];
 
-    // Colonnes L à Q = index 11 à 16
-    const startCol = 11;
-    const endCol = 16;
+    const startCol = 11; // colonne L
+    const endCol = 16;   // colonne Q
 
-    // Créer datasets uniquement pour L → Q
+    // Vérifier que les colonnes existent
+    if(headers.length <= endCol){
+        alert("Le fichier CSV ne contient pas assez de colonnes.");
+        return;
+    }
+
+    // Créer les séries
     for (let i = startCol; i <= endCol; i++) {
         datasets.push({
             label: headers[i].trim(),
@@ -39,17 +48,26 @@ fetch('GES_BVA_daily_emissions.csv')
 
     // Lire les lignes
     for (let i = 1; i < rows.length; i++) {
-        const cols = rows[i].split(';');
+        const cols = rows[i].split(separator);
 
-        labels.push(cols[0].trim()); // colonne A = dates
+        if(cols.length > endCol){
 
-        let datasetIndex = 0;
+            labels.push(cols[0].trim());
 
-        for (let j = startCol; j <= endCol; j++) {
-            datasets[datasetIndex].data.push(
-                parseFloat(cols[j].replace(',', '.'))
-            );
-            datasetIndex++;
+            let datasetIndex = 0;
+
+            for (let j = startCol; j <= endCol; j++) {
+
+                let value = cols[j].replace(',', '.').trim();
+
+                if(value === "" || isNaN(value)){
+                    datasets[datasetIndex].data.push(null);
+                } else {
+                    datasets[datasetIndex].data.push(parseFloat(value));
+                }
+
+                datasetIndex++;
+            }
         }
     }
 
