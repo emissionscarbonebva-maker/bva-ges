@@ -1,33 +1,137 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>Suivi GES BVA</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta charset="UTF-8">
+<title>Suivi GES BVA</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+
+<style>
+body {
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    background-color: #f4f6f8;
+    color: #222;
+}
+
+header {
+    background-color: #1f3c88;
+    color: white;
+    padding: 25px;
+}
+
+.container {
+    width: 92%;
+    max-width: 1200px;
+    margin: 40px auto;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    margin-bottom: 30px;
+}
+
+.metrics {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.metric-box {
+    flex: 1;
+    min-width: 220px;
+    background: #eef2f7;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.metric-value {
+    font-size: 1.8em;
+    font-weight: bold;
+    margin-top: 8px;
+}
+
+footer {
+    text-align: center;
+    padding: 30px;
+    font-size: 0.9em;
+    color: #666;
+}
+</style>
 </head>
 
-<body style="font-family: Arial; margin: 40px;">
+<body>
 
-<h1>Suivi citoyen des émissions GES - BVA</h1>
+<header>
+    <h1>Suivi indépendant des émissions de GES – BVA</h1>
+    <p>Analyse basée sur les données publiques de trafic aérien – Mise à jour automatique</p>
+</header>
 
-<canvas id="chart" width="1100" height="500"></canvas>
+<div class="container">
+
+<div class="card">
+    <h2>Indicateurs clés</h2>
+    <div class="metrics">
+        <div class="metric-box">
+            Total période analysée
+            <div id="total" class="metric-value">...</div>
+        </div>
+        <div class="metric-box">
+            Moyenne journalière
+            <div id="average" class="metric-value">...</div>
+        </div>
+        <div class="metric-box">
+            Jour le plus émetteur
+            <div id="maxDay" class="metric-value">...</div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Émissions journalières estimées (tCO₂e)</h2>
+    <canvas id="chart" height="100"></canvas>
+</div>
+
+<div class="card">
+    <h2>Méthodologie</h2>
+    <p>
+    Les émissions sont estimées à partir des données quotidiennes de trafic
+    et d’un facteur d’émission moyen par type d’appareil.
+    </p>
+    <p>
+    Les colonnes L à Q du fichier source sont utilisées.
+    Les valeurs sont exprimées en tonnes équivalent CO₂.
+    </p>
+    <p>
+    Les données brutes sont disponibles au téléchargement.
+    </p>
+</div>
+
+</div>
+
+<footer>
+    Projet citoyen indépendant – Données publiques – Transparence méthodologique
+</footer>
 
 <script>
+
 fetch('GES_BVA_daily_emissions.csv')
-  .then(response => response.text())
-  .then(data => {
+.then(response => response.text())
+.then(data => {
 
     const rawRows = data.split('\n');
     const rows = rawRows.filter(r => r.trim() !== '');
-
     const separator = rows[0].includes(';') ? ';' : ',';
 
-    const startCol = 11; // colonne L
-    const endCol = 16;   // colonne Q
+    const startCol = 11;
+    const endCol = 16;
 
     let baseIndex = -1;
 
-    // Trouver la ligne i (celle avec cellule remplie en L)
     for(let i = 0; i < rows.length; i++){
         const cols = rows[i].split(separator);
         if(cols.length > endCol && cols[startCol].trim() !== ""){
@@ -36,18 +140,11 @@ fetch('GES_BVA_daily_emissions.csv')
         }
     }
 
-    if(baseIndex === -1 || baseIndex + 2 >= rows.length){
-        alert("Structure du CSV non trouvée.");
-        return;
-    }
-
-    // i+1 = en-têtes
     const headers = rows[baseIndex + 1].split(separator);
 
     const labels = [];
     const datasets = [];
 
-    // Créer les datasets à partir des en-têtes L → Q
     for (let i = startCol; i <= endCol; i++) {
         datasets.push({
             label: headers[i].trim(),
@@ -57,70 +154,84 @@ fetch('GES_BVA_daily_emissions.csv')
         });
     }
 
-    // i+2 = début des données
+    let totalAll = 0;
+    let maxValue = 0;
+    let maxDate = "";
+
     for (let i = baseIndex + 2; i < rows.length; i++) {
 
         const cols = rows[i].split(separator);
-
         if(cols.length > endCol){
 
-            labels.push(cols[0].trim());
+            const date = cols[0].trim();
+            labels.push(date);
 
+            let dayTotal = 0;
             let datasetIndex = 0;
 
             for (let j = startCol; j <= endCol; j++) {
 
                 let value = cols[j]
-                    .replace(/\s/g, '')   // supprime espaces milliers
-                    .replace(',', '.')    // remplace virgule par point
+                    .replace(/\s/g, '')
+                    .replace(',', '.')
                     .trim();
 
-                if(value === "" || isNaN(value)){
+                let numeric = parseFloat(value);
+
+                if(isNaN(numeric)){
                     datasets[datasetIndex].data.push(null);
                 } else {
-                    datasets[datasetIndex].data.push(parseFloat(value));
+                    datasets[datasetIndex].data.push(numeric);
+                    dayTotal += numeric;
                 }
 
                 datasetIndex++;
             }
+
+            totalAll += dayTotal;
+
+            if(dayTotal > maxValue){
+                maxValue = dayTotal;
+                maxDate = date;
+            }
         }
     }
 
+    const average = totalAll / labels.length;
+
+    document.getElementById("total").innerText =
+        totalAll.toLocaleString('fr-FR') + " tCO₂e";
+
+    document.getElementById("average").innerText =
+        average.toLocaleString('fr-FR', {maximumFractionDigits:0}) + " tCO₂e";
+
+    document.getElementById("maxDay").innerText =
+        maxDate + " (" + maxValue.toLocaleString('fr-FR') + " tCO₂e)";
+
     new Chart(document.getElementById('chart'), {
         type: 'line',
-        data: {
-            labels: labels,
-            datasets: datasets
-        },
+        data: { labels: labels, datasets: datasets },
         options: {
             responsive: true,
-            interaction: {
-                mode: 'index',
-                intersect: false
-            },
+            interaction: { mode: 'index', intersect: false },
             plugins: {
-                legend: {
-                    display: true,
-                    position: 'top'
+                legend: { position: 'top' },
+                zoom: {
+                    pan: { enabled: true, mode: 'x' },
+                    zoom: {
+                        wheel: { enabled: true },
+                        pinch: { enabled: true },
+                        mode: 'x'
+                    }
                 }
             },
             scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Date'
-                    }
-                },
+                x: { title: { display: true, text: 'Date' }},
                 y: {
                     beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Émissions (tCO2e)'
-                    },
+                    title: { display: true, text: 'Émissions (tCO₂e)' },
                     ticks: {
-                        callback: function(value) {
-                            return value.toLocaleString('fr-FR');
-                        }
+                        callback: value => value.toLocaleString('fr-FR')
                     }
                 }
             }
