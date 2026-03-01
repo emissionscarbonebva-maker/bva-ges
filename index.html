@@ -19,10 +19,11 @@ fetch('GES_BVA_daily_emissions.csv')
 
     const rows = data.split('\n').filter(r => r.trim() !== '');
 
-    // Détection automatique du séparateur
+    // Détection du séparateur
     const separator = rows[0].includes(';') ? ';' : ',';
 
-    const headers = rows[0].split(separator);
+    const headerRowIndex = 5; // Ligne 6 (index 5)
+    const headers = rows[headerRowIndex].split(separator);
 
     const labels = [];
     const datasets = [];
@@ -30,13 +31,7 @@ fetch('GES_BVA_daily_emissions.csv')
     const startCol = 11; // colonne L
     const endCol = 16;   // colonne Q
 
-    // Vérifier que les colonnes existent
-    if(headers.length <= endCol){
-        alert("Le fichier CSV ne contient pas assez de colonnes.");
-        return;
-    }
-
-    // Créer les séries
+    // Créer les séries à partir des en-têtes ligne 6
     for (let i = startCol; i <= endCol; i++) {
         datasets.push({
             label: headers[i].trim(),
@@ -46,8 +41,9 @@ fetch('GES_BVA_daily_emissions.csv')
         });
     }
 
-    // Lire les lignes
-    for (let i = 1; i < rows.length; i++) {
+    // Lire les données à partir de la ligne suivante
+    for (let i = headerRowIndex + 1; i < rows.length; i++) {
+
         const cols = rows[i].split(separator);
 
         if(cols.length > endCol){
@@ -85,12 +81,23 @@ fetch('GES_BVA_daily_emissions.csv')
             },
             plugins: {
                 legend: {
-                    display: true
+                    display: true,
+                    position: 'top'
                 }
             },
             scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                },
                 y: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Émissions (tCO2e)'
+                    }
                 }
             }
         }
