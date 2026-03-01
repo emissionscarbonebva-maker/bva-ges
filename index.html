@@ -18,7 +18,7 @@ fetch('GES_BVA_daily_emissions.csv')
   .then(data => {
 
     const rows = data.split('\n').filter(r => r.trim() !== '');
-    const headers = rows[0].split(',');
+    const headers = rows[0].split(';');
 
     const labels = [];
     const datasets = [];
@@ -39,7 +39,7 @@ fetch('GES_BVA_daily_emissions.csv')
 
     // Lire les lignes
     for (let i = 1; i < rows.length; i++) {
-        const cols = rows[i].split(',');
+        const cols = rows[i].split(';');
 
         labels.push(cols[0].trim()); // colonne A = dates
 
