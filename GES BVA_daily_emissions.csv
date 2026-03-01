@@ -2,9 +2,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;Rotations;;;;;;;;;"GES demi-croisière - Données spécifiques
-(t éq CO2)";;;;;;;Accès voyageurs transport collectifs (t éq CO2);;;;Accès voyageurs transport individuels (t éq CO2);;;;Accès employés (t éq CO2);;Location based
-Date;;Demi-croisière;Ryanair;Wizzair;HiSky;SkyUp;Volotea;;Total BVA;;Demi-croisière;Ryanair;Wizzair;HiSky;SkyUp;Volotea;;Accès voyageurs transports collectifs;Navette BVA;Navette autres;;Accès voyageurs transports individuels;Véhicule thermique;Véhicule électrique;;Accès employés;;Location based
+;;Rotations;;;;;;;;;"GES demi-croisiÃ¨re - DonnÃ©es spÃ©cifiques
+(t Ã©q CO2)";;;;;;;AccÃ¨s voyageurs transport collectifs (t Ã©q CO2);;;;AccÃ¨s voyageurs transport individuels (t Ã©q CO2);;;;AccÃ¨s employÃ©s (t Ã©q CO2);;Location based
+Date;;Demi-croisiÃ¨re;Ryanair;Wizzair;HiSky;SkyUp;Volotea;;Total BVA;;Demi-croisiÃ¨re;Ryanair;Wizzair;HiSky;SkyUp;Volotea;;AccÃ¨s voyageurs transports collectifs;Navette BVA;Navette autres;;AccÃ¨s voyageurs transports individuels;VÃ©hicule thermique;VÃ©hicule Ã©lectrique;;AccÃ¨s employÃ©s;;Location based
 01/03/2026;;107;85;18;4;0;0;;1 588,8;;1 036,7;768,6;201,0;67,1;0,0;0,0;;18,6;6,6;12,0;;530;397,5;132,5;;1,8;;1,8
 28/02/2026;;95;85;10;0;0;0;;1 497,7;;998,0;875,0;122,9;0,0;0,0;0,0;;16,4;5,8;10,6;;480;360,0;120,0;;1,8;;1,6
 27/02/2026;;106;98;8;0;0;0;;1 497,8;;946,2;860,6;85,5;0,0;0,0;0,0;;18,1;6,4;11,7;;530;397,5;132,5;;1,8;;1,8
