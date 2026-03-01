@@ -17,21 +17,36 @@ fetch('GES_BVA_daily_emissions.csv')
   .then(response => response.text())
   .then(data => {
 
-    const rows = data.split('\n').filter(r => r.trim() !== '');
+    const rawRows = data.split('\n');
+    const rows = rawRows.filter(r => r.trim() !== '');
 
-    // Détection du séparateur
     const separator = rows[0].includes(';') ? ';' : ',';
 
-    const headerRowIndex = 5; // Ligne 6 (index 5)
+    const startCol = 11; // L
+    const endCol = 16;   // Q
+
+    let headerRowIndex = -1;
+
+    // Chercher automatiquement la ligne d'en-tête
+    for(let i = 0; i < rows.length; i++){
+        const cols = rows[i].split(separator);
+        if(cols.length > endCol && cols[startCol].trim() !== ""){
+            headerRowIndex = i;
+            break;
+        }
+    }
+
+    if(headerRowIndex === -1){
+        alert("Impossible de trouver la ligne des en-têtes.");
+        return;
+    }
+
     const headers = rows[headerRowIndex].split(separator);
 
     const labels = [];
     const datasets = [];
 
-    const startCol = 11; // colonne L
-    const endCol = 16;   // colonne Q
-
-    // Créer les séries à partir des en-têtes ligne 6
+    // Créer datasets
     for (let i = startCol; i <= endCol; i++) {
         datasets.push({
             label: headers[i].trim(),
@@ -41,7 +56,7 @@ fetch('GES_BVA_daily_emissions.csv')
         });
     }
 
-    // Lire les données à partir de la ligne suivante
+    // Lire les données en dessous de l'en-tête
     for (let i = headerRowIndex + 1; i < rows.length; i++) {
 
         const cols = rows[i].split(separator);
