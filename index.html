@@ -1,18 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Suivi GES BVA</title>
+
+<!-- Chart.js version stable -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1"></script>
+
+<style>
+body {
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    background-color: #f4f6f8;
+    color: #222;
+}
+
+header {
+    background-color: #1f3c88;
+    color: white;
+    padding: 25px;
+}
+
+.container {
+    width: 92%;
+    max-width: 1200px;
+    margin: 40px auto;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    margin-bottom: 30px;
+}
+
+.metrics {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.metric-box {
+    flex: 1;
+    min-width: 220px;
+    background: #eef2f7;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.metric-value {
+    font-size: 1.8em;
+    font-weight: bold;
+    margin-top: 8px;
+}
+
+footer {
+    text-align: center;
+    padding: 30px;
+    font-size: 0.9em;
+    color: #666;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>Aéroport Paris-Beauvais (BVA) - Suivi indépendant des émissions de Gaz à Effet de Serre</h1>
+    <p>Analyse basée sur les données publiques – Mise à jour automatique</p>
+</header>
+
+<div class="container">
+
+<div class="card">
+    <h2>Indicateurs clés</h2>
+    <div class="metrics">
+        <div class="metric-box">
+            Total période analysée
+            <div id="total" class="metric-value">Chargement...</div>
+        </div>
+        <div class="metric-box">
+            Moyenne journalière
+            <div id="average" class="metric-value">Chargement...</div>
+        </div>
+        <div class="metric-box">
+            Jour le plus émetteur
+            <div id="maxDay" class="metric-value">Chargement...</div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Émissions journalières par scope (tCO₂e)</h2>
+    <canvas id="chart" height="100"></canvas>
+</div>
+
+<div class="card">
+    <h2>Méthodologie</h2>
+    <p>
+    Les émissions sont calculées par scope :
+    vols, accès individuel passagers, accès collectif,
+    déplacements employés, scope 1 & 2.
+    </p>
+    <p>
+    Données issues des exports automatisés Excel.
+    </p>
+</div>
+
+</div>
+
+<footer>
+    Projet citoyen indépendant – Transparence des données
+</footer>
+
 <script>
 
 document.addEventListener("DOMContentLoaded", function() {
 
 fetch('./data/EXPORT_daily_scopes.csv')
-.then(response => response.text())
+.then(response => {
+    if (!response.ok) {
+        throw new Error("Fichier CSV introuvable");
+    }
+    return response.text();
+})
 .then(data => {
 
     const rows = data.split('\n').filter(r => r.trim() !== '');
     const separator = rows[0].includes(';') ? ';' : ',';
-
     const headers = rows[0].split(separator);
 
     const labels = [];
     const datasets = [];
+
     const scopeNames = headers.slice(1, 6);
 
     scopeNames.forEach(name => {
@@ -63,17 +185,13 @@ fetch('./data/EXPORT_daily_scopes.csv')
 
     const average = totalAll / labels.length;
 
-    const totalEl = document.getElementById("total");
-    const avgEl = document.getElementById("average");
-    const maxEl = document.getElementById("maxDay");
-
-    if(totalEl) totalEl.innerText =
+    document.getElementById("total").innerText =
         totalAll.toLocaleString('fr-FR', {maximumFractionDigits:0}) + " tCO₂e";
 
-    if(avgEl) avgEl.innerText =
+    document.getElementById("average").innerText =
         average.toLocaleString('fr-FR', {maximumFractionDigits:0}) + " tCO₂e";
 
-    if(maxEl) maxEl.innerText =
+    document.getElementById("maxDay").innerText =
         maxDate + " (" + maxValue.toLocaleString('fr-FR', {maximumFractionDigits:0}) + " tCO₂e)";
 
     new Chart(document.getElementById('chart'), {
@@ -106,8 +224,15 @@ fetch('./data/EXPORT_daily_scopes.csv')
         }
     });
 
+})
+.catch(error => {
+    console.error(error);
+    document.getElementById("total").innerText = "Erreur chargement données";
 });
 
 });
 
 </script>
+
+</body>
+</html>
