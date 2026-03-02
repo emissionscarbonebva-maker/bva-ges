@@ -1,6 +1,8 @@
 <script>
 
-fetch('data/EXPORT_daily_scopes.csv')
+document.addEventListener("DOMContentLoaded", function() {
+
+fetch('./data/EXPORT_daily_scopes.csv')
 .then(response => response.text())
 .then(data => {
 
@@ -11,8 +13,7 @@ fetch('data/EXPORT_daily_scopes.csv')
 
     const labels = [];
     const datasets = [];
-    const scopeNames = headers.slice(1, 6); 
-    // on prend les 5 scopes (colonnes 2 à 6)
+    const scopeNames = headers.slice(1, 6);
 
     scopeNames.forEach(name => {
         datasets.push({
@@ -31,7 +32,6 @@ fetch('data/EXPORT_daily_scopes.csv')
 
         const cols = rows[i].split(separator);
         const date = cols[0].trim();
-
         labels.push(date);
 
         let dayTotal = 0;
@@ -63,13 +63,17 @@ fetch('data/EXPORT_daily_scopes.csv')
 
     const average = totalAll / labels.length;
 
-    document.getElementById("total").innerText =
+    const totalEl = document.getElementById("total");
+    const avgEl = document.getElementById("average");
+    const maxEl = document.getElementById("maxDay");
+
+    if(totalEl) totalEl.innerText =
         totalAll.toLocaleString('fr-FR', {maximumFractionDigits:0}) + " tCO₂e";
 
-    document.getElementById("average").innerText =
+    if(avgEl) avgEl.innerText =
         average.toLocaleString('fr-FR', {maximumFractionDigits:0}) + " tCO₂e";
 
-    document.getElementById("maxDay").innerText =
+    if(maxEl) maxEl.innerText =
         maxDate + " (" + maxValue.toLocaleString('fr-FR', {maximumFractionDigits:0}) + " tCO₂e)";
 
     new Chart(document.getElementById('chart'), {
@@ -101,6 +105,8 @@ fetch('data/EXPORT_daily_scopes.csv')
             }
         }
     });
+
+});
 
 });
 
