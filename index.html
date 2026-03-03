@@ -393,33 +393,65 @@ let colors = [
 let colorIndex = 0;
 
 // ===== Création datasets sauf date & total =====
-headers.forEach(h=>{
 
+// On calcule le poids final de chaque série (dernière valeur)
+let seriesMeta = [];
+
+headers.forEach(h=>{
 if(h === dateKey || h === totalKey) return;
 
-datasets.push({
+let lastValue = parseFloat(
+data[data.length - 1][h]
+) || 0;
+
+seriesMeta.push({
 label: h,
+lastValue: lastValue
+});
+});
+
+// Tri du plus petit au plus grand
+seriesMeta.sort((a,b)=> a.lastValue - b.lastValue);
+
+let colors = [
+"#9467bd",
+"#d62728",
+"#2ca02c",
+"#ff7f0e",
+"#1f77b4"
+];
+
+seriesMeta.forEach((serie,index)=>{
+
+datasets.push({
+label: serie.label,
 data: [],
 borderWidth: 1.5,
 fill: true,
-backgroundColor: colors[colorIndex] + "55",
-borderColor: colors[colorIndex],
+backgroundColor: colors[index] + "55",
+borderColor: colors[index],
 stack: "stack1"
 });
 
-colorIndex++;
-
 });
 
-// ===== Dataset cumul total (ligne noire) =====
-datasets.push({
-label: totalKey,
-data: [],
-borderWidth: 3,
-fill: false,
-borderColor: "#000000",
-tension: 0.2
+// Calcul du total (somme des séries empilées uniquement)
+let total = 0;
+
+context.chart.data.datasets.forEach(ds=>{
+if(ds.label !== "cumul_total"){
+total += ds.data[context.dataIndex] || 0;
+}
 });
+
+let percent = total > 0
+? ((valueRounded / total) * 100).toFixed(1)
+: 0;
+
+return context.dataset.label + " : "
++ valueRounded.toLocaleString('fr-FR')
++ " t éq CO2"
++ ", soit " + percent + "%";
 
 // ===== Remplissage données =====
 data.forEach(row=>{
@@ -461,6 +493,7 @@ callbacks:{
 label: function(context){
 
 let value = context.parsed.y || 0;
+let valueRounded = Math.round(value);
 
 // total du jour (somme des stacks)
 let total = 0;
