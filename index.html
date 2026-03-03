@@ -271,38 +271,66 @@ datasets[i-1].data.push(parseFloat(row[headers[i]].replace(',','.')));
 createChart("chartCumul",labels,datasets);
 });
 
-/* ===== 3 AIRLINES ===== */
+/* ===== 3 AIRLINES (nouvelle structure CSV) ===== */
 
-parseCSV('./data/EXPORT_daily_vols.csv',(data,headers)=>{
-let labels=[];
+parseCSV('./data/EXPORT_daily_airlines.csv',(data)=>{
+
+// Récupération dates uniques triées
+let labels=[...new Set(data.map(r=>r.date))].sort();
+
+// Récupération compagnies uniques
+let compagnies=[...new Set(data.map(r=>r.compagnie))];
+
 let datasets=[];
-for(let i=1;i<headers.length;i++){
-datasets.push({label:headers[i],data:[],borderWidth:2,fill:false});
-}
-data.forEach(row=>{
-labels.push(row[headers[0]]);
-for(let i=1;i<headers.length;i++){
-datasets[i-1].data.push(parseFloat(row[headers[i]].replace(',','.')));
-}
+
+compagnies.forEach(comp=>{
+let serie=[];
+
+labels.forEach(d=>{
+let row=data.find(r=>r.date===d && r.compagnie===comp);
+serie.push(row ? parseFloat(row.emissions) : 0);
 });
+
+datasets.push({
+label:comp,
+data:serie,
+borderWidth:2,
+fill:false
+});
+});
+
 createChart("chartAirlines",labels,datasets);
+
 });
 
-/* ===== 4 ROTATIONS ===== */
 
-parseCSV('./data/EXPORT_daily_vols.csv',(data,headers)=>{
-let labels=[];
+/* ===== 4 ROTATIONS (nouvelle structure CSV) ===== */
+
+parseCSV('./data/EXPORT_daily_airlines.csv',(data)=>{
+
+let labels=[...new Set(data.map(r=>r.date))].sort();
+let compagnies=[...new Set(data.map(r=>r.compagnie))];
+
 let datasets=[];
-for(let i=1;i<=5;i++){
-datasets.push({label:headers[i],data:[],borderWidth:2,fill:false});
-}
-data.forEach(row=>{
-labels.push(row[headers[0]]);
-for(let i=1;i<=5;i++){
-datasets[i-1].data.push(parseFloat(row[headers[i]].replace(',','.')));
-}
+
+compagnies.forEach(comp=>{
+let serie=[];
+
+labels.forEach(d=>{
+let row=data.find(r=>r.date===d && r.compagnie===comp);
+serie.push(row ? parseFloat(row.rotations) : 0);
 });
+
+datasets.push({
+label:comp,
+data:serie,
+borderWidth:2,
+fill:false
+});
+});
+
 createChart("chartRotations",labels,datasets);
+
 });
 
 /* ===== TABLES ===== */
