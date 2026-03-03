@@ -249,39 +249,6 @@ let colors = [
 "#9467bd"
 ];
 
-for(let i=1;i<=5;i++){
-datasets.push({
-label:headers[i],
-data:[],
-borderWidth:2,
-fill:false,
-borderColor:colors[i-1]
-});
-}
-
-let total=0;
-let max=0;
-let maxDate="";
-
-/* ===== 1 DAILY SCOPES ===== */
-
-parseCSV('./data/EXPORT_daily_scopes.csv',(data,headers)=>{
-
-// Tri des dates (ancien → récent)
-data.sort((a,b)=> new Date(a[headers[0]]) - new Date(b[headers[0]]));
-
-let labels=[];
-let datasets=[];
-let totalSeries=[];
-
-let colors = [
-"#1f77b4",
-"#ff7f0e",
-"#2ca02c",
-"#d62728",
-"#9467bd"
-];
-
 // Création des datasets pour les 5 scopes
 for(let i=1;i<=5;i++){
 datasets.push({
@@ -298,7 +265,6 @@ let max=0;
 let maxDate="";
 
 // ===== BOUCLE PRINCIPALE =====
-
 data.forEach(row=>{
 
 let date=row[headers[0]];
@@ -327,8 +293,7 @@ maxDate=date;
 
 });
 
-// ===== MISE À JOUR INDICATEURS =====
-
+// ===== INDICATEURS =====
 document.getElementById("total").innerText =
 Math.round(total).toLocaleString('fr-FR') + " tonnes éq CO2";
 
@@ -338,32 +303,21 @@ labels.length > 0
 : "0 tonnes éq CO2";
 
 if(maxDate){
-
-let parts = maxDate.includes('/') ? maxDate.split('/') : null;
-let dateObj;
-
-if(parts && parts.length===3){
-dateObj = new Date(parts[2], parts[1]-1, parts[0]);
-}else{
-dateObj = new Date(maxDate);
-}
-
+let dateObj = new Date(maxDate);
 let formattedDate = isNaN(dateObj)
 ? maxDate
 : dateObj.toLocaleDateString('fr-FR');
 
-let formattedMax = Math.round(max).toLocaleString('fr-FR');
-
 document.getElementById("maxDay").innerText =
-formattedDate + " avec " + formattedMax + " tonnes éq CO2";
-
+formattedDate + " avec " +
+Math.round(max).toLocaleString('fr-FR') +
+" tonnes éq CO2";
 }else{
 document.getElementById("maxDay").innerText =
 "Aucune donnée disponible";
 }
 
 // ===== AJOUT SERIE TOTAL =====
-
 datasets.push({
 label:"Total scopes",
 data:totalSeries,
@@ -373,53 +327,6 @@ borderColor:"#000000"
 });
 
 // ===== CREATION GRAPHIQUE =====
-
-new Chart(document.getElementById("chartDaily"),{
-type:'line',
-data:{
-labels:labels,
-datasets:datasets
-},
-options:{
-responsive:true,
-interaction:{mode:'index',intersect:false},
-plugins:{
-legend:{position:'top'},
-zoom:{
-pan:{enabled:true,mode:'x'},
-zoom:{wheel:{enabled:true},pinch:{enabled:true},mode:'x'}
-}
-},
-scales:{
-x:{
-title:{
-display:true,
-text:"Date"
-}
-},
-y:{
-beginAtZero:true,
-title:{
-display:true,
-text:"Emissions de gaz à effet de serre (en t éq CO2)"
-}
-}
-}
-}
-});
-
-});
-
-// Ajout série Total scopes
-datasets.push({
-label:"Total scopes",
-data:totalSeries,
-borderWidth:3,
-fill:false,
-borderColor:"#000000"
-});
-
-// Création graphique spécifique
 new Chart(document.getElementById("chartDaily"),{
 type:'line',
 data:{
