@@ -68,7 +68,7 @@ footer {
 
 <header>
     <h1>Aéroport Paris-Beauvais (BVA) - Suivi indépendant des émissions de Gaz à Effet de Serre</h1>
-    <p>Analyse basée sur les données publiques de trafic aérien – Mise à jour automatique</p>
+    <p>Données publiques – Mise à jour automatique</p>
 </header>
 
 <div class="container">
@@ -92,19 +92,19 @@ footer {
 </div>
 
 <div class="card">
-    <h2>Émissions journalières estimées par scope (tCO₂e)</h2>
+    <h2>Émissions journalières estimées (tCO₂e)</h2>
     <canvas id="chart" height="100"></canvas>
 </div>
 
 </div>
 
 <footer>
-Projet citoyen indépendant – Données publiques – Transparence méthodologique
+Projet indépendant – Données publiques – Transparence méthodologique
 </footer>
 
 <script>
 
-fetch('Exports CSV/EXPORT_daily_scopes.csv')
+fetch('Export CSV/EXPORT_daily_scopes.csv')
 .then(response => response.text())
 .then(data => {
 
@@ -116,22 +116,24 @@ fetch('Exports CSV/EXPORT_daily_scopes.csv')
     const labels = [];
     const datasets = [];
 
-    const colors = {
-        "scope_vols": "#1f77b4",       // Bleu
-        "scope_acces_ind": "#ff7f0e",  // Orange
-        "scope_acces_coll": "#2ca02c", // Vert
-        "scope_employes": "#9467bd",   // Violet
-        "scope_1_2": "#d62728"         // Rouge
+    const scopeColors = {
+        "scope_vols": "#1f77b4",
+        "scope_acces_ind": "#ff7f0e",
+        "scope_acces_coll": "#2ca02c",
+        "scope_employes": "#9467bd",
+        "scope_1_2": "#d62728"
     };
 
     for (let i = 1; i < headers.length; i++) {
         const key = headers[i].trim();
         datasets.push({
-            label: key.replace("_", " "),
+            label: key.replaceAll("_", " "),
             data: [],
             borderWidth: 2,
-            fill: false,
-            borderColor: colors[key] || "#444"
+            borderColor: scopeColors[key] || "#444",
+            backgroundColor: scopeColors[key] || "#444",
+            tension: 0.25,
+            fill: false
         });
     }
 
@@ -149,11 +151,7 @@ fetch('Exports CSV/EXPORT_daily_scopes.csv')
 
         for (let j = 1; j < cols.length; j++) {
 
-            let value = cols[j]
-                .replace(/\s/g, '')
-                .replace(',', '.')
-                .trim();
-
+            let value = cols[j].replace(',', '.');
             let numeric = parseFloat(value);
 
             if (!isNaN(numeric)) {
@@ -193,7 +191,8 @@ fetch('Exports CSV/EXPORT_daily_scopes.csv')
                 legend: {
                     position: 'top',
                     labels: {
-                        font: { size: 13 }
+                        boxWidth: 12,
+                        padding: 15
                     }
                 },
                 zoom: {
@@ -207,25 +206,15 @@ fetch('Exports CSV/EXPORT_daily_scopes.csv')
             },
             scales: {
                 x: {
-                    title: {
-                        display: true,
-                        text: 'Date'
-                    },
-                    grid: {
-                        color: 'rgba(0,0,0,0.05)'
-                    }
+                    title: { display: true, text: 'Date' },
+                    grid: { color: 'rgba(0,0,0,0.05)' }
                 },
                 y: {
                     beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Émissions (tCO₂e)'
-                    },
+                    title: { display: true, text: 'Émissions (tCO₂e)' },
+                    grid: { color: 'rgba(0,0,0,0.05)' },
                     ticks: {
                         callback: value => value.toLocaleString('fr-FR')
-                    },
-                    grid: {
-                        color: 'rgba(0,0,0,0.05)'
                     }
                 }
             }
