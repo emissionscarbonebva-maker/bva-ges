@@ -247,9 +247,23 @@ total+=dayTotal;
 if(dayTotal>max){max=dayTotal;maxDate=row[headers[0]];}
 });
 
-document.getElementById("total").innerText=total.toLocaleString('fr-FR')+" tCO₂e";
-document.getElementById("average").innerText=(total/labels.length).toLocaleString('fr-FR',{maximumFractionDigits:0})+" tCO₂e";
-document.getElementById("maxDay").innerText=maxDate+" ("+max.toLocaleString('fr-FR')+" tCO₂e)";
+// Format total sans décimale
+document.getElementById("total").innerText =
+Math.round(total).toLocaleString('fr-FR') + " tonnes éq CO2";
+
+// Moyenne journalière sans décimale
+document.getElementById("average").innerText =
+Math.round(total/labels.length).toLocaleString('fr-FR') + " tonnes éq CO2";
+
+// Format date JJ/MM/AAAA
+let dateObj = new Date(maxDate);
+let formattedDate = dateObj.toLocaleDateString('fr-FR');
+
+// Format max sans décimale
+let formattedMax = Math.round(max).toLocaleString('fr-FR');
+
+document.getElementById("maxDay").innerText =
+formattedDate + " (" + formattedMax + " tonnes éq CO2)";
 
 createChart("chartDaily",labels,datasets);
 });
