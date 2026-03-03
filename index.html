@@ -209,7 +209,7 @@ callback(result, headers);
 });
 }
 
-function createChart(canvasId, labels, datasets, axisTitles={}){
+function createChart(canvasId, labels, datasets){
 new Chart(document.getElementById(canvasId),{
 type:'line',
 data:{labels:labels,datasets:datasets},
@@ -224,19 +224,7 @@ zoom:{wheel:{enabled:true},pinch:{enabled:true},mode:'x'}
 }
 },
 scales:{
-x:{
-title:{
-display:true,
-text: axisTitles.xTitle || ""
-}
-},
-y:{
-beginAtZero:true,
-title:{
-display:true,
-text: axisTitles.yTitle || ""
-}
-}
+y:{beginAtZero:true}
 }
 }
 });
@@ -267,19 +255,19 @@ createChart("chartDaily",labels,datasets);
 
 parseCSV('./data/EXPORT_daily_scopes.csv',(data,headers)=>{
 
-// 🔹 Tri des dates du plus ancien au plus récent
+// 🔹 Tri des dates (ancien → récent)
 data.sort((a,b)=> new Date(a[headers[0]]) - new Date(b[headers[0]]));
 
 let labels=[];
 let datasets=[];
+let totalSeries=[];
 
-// 🎨 Couleurs proposées
 let colors = [
-"#1f77b4",  // Scope 1
-"#ff7f0e",  // Scope 2
-"#2ca02c",  // Scope 3
-"#d62728",  // Scope 4
-"#9467bd"   // Scope 5
+"#1f77b4",
+"#ff7f0e",
+"#2ca02c",
+"#d62728",
+"#9467bd"
 ];
 
 for(let i=1;i<=5;i++){
@@ -288,13 +276,11 @@ label:headers[i],
 data:[],
 borderWidth:2,
 fill:false,
-borderColor:colors[i-1],
-backgroundColor:colors[i-1]
+borderColor:colors[i-1]
 });
 }
 
 let total=0,max=0,maxDate="";
-let totalSeries=[];
 
 data.forEach(row=>{
 let date=row[headers[0]];
@@ -324,13 +310,39 @@ label:"Total scopes",
 data:totalSeries,
 borderWidth:3,
 fill:false,
-borderColor:"#000000",
-backgroundColor:"#000000"
+borderColor:"#000000"
 });
 
-createChart("chartDaily",labels,datasets,{
-xTitle:"Date",
-yTitle:"Emissions de gaz à effet de serre (en t éq CO2)"
+// 🎯 Création graphique avec titres d’axes spécifiques
+new Chart(document.getElementById("chartDaily"),{
+type:'line',
+data:{labels:labels,datasets:datasets},
+options:{
+responsive:true,
+interaction:{mode:'index',intersect:false},
+plugins:{
+legend:{position:'top'},
+zoom:{
+pan:{enabled:true,mode:'x'},
+zoom:{wheel:{enabled:true},pinch:{enabled:true},mode:'x'}
+}
+},
+scales:{
+x:{
+title:{
+display:true,
+text:"Date"
+}
+},
+y:{
+beginAtZero:true,
+title:{
+display:true,
+text:"Emissions de gaz à effet de serre (en t éq CO2)"
+}
+}
+}
+}
 });
 
 });
