@@ -5,18 +5,6 @@
 
 <title>Émissions carbone Aéroport Paris-Beauvais (BVA) – Analyse indépendante</title>
 
-<!-- ===== SEO ===== -->
-<meta name="description" content="Analyse indépendante des émissions carbone de l’aéroport Paris-Beauvais (BVA). Données publiques, émissions journalières, cumul annuel et analyse par compagnie aérienne.">
-<meta name="keywords" content="BVA carbone, émissions Beauvais, empreinte carbone aéroport Beauvais, gaz effet de serre BVA, pollution Beauvais, émissions aviation France">
-<meta name="author" content="Analyse indépendante BVA">
-<meta name="robots" content="index, follow">
-
-<!-- ===== Open Graph ===== -->
-<meta property="og:title" content="Émissions carbone Aéroport Paris-Beauvais (BVA)">
-<meta property="og:description" content="Suivi indépendant des émissions de gaz à effet de serre de l’aéroport Paris-Beauvais.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://emissionscarbonebva-maker.github.io/bva-ges/">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
@@ -36,60 +24,8 @@ table { width:100%; border-collapse:collapse; margin-top:15px;}
 th, td { padding:8px; border-bottom:1px solid #ddd; text-align:left; font-size:0.9em;}
 th { background:#f0f2f5;}
 footer { text-align:center; padding:30px; font-size:0.9em; color:#666;}
-
-.share-links {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.share-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 500;
-  color: white;
-  width: fit-content;
-  transition: 0.2s;
-}
-
-.share-btn i {
-  font-size: 18px;
-}
-
-.linkedin {
-  background-color: #0077b5;
-}
-
-.facebook {
-  background-color: #1877f2;
-}
-
-.share-btn:hover {
-  opacity: 0.85;
-}
-
 </style>
 
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "name": "Émissions carbone Aéroport Paris-Beauvais (BVA)",
-  "url": "https://emissionscarbonebva-maker.github.io/bva-ges/",
-  "description": "Analyse indépendante des émissions de gaz à effet de serre de l’aéroport Paris-Beauvais (BVA). Données publiques et visualisation journalière.",
-  "inLanguage": "fr",
-  "author": {
-    "@type": "Organization",
-    "name": "Analyse indépendante BVA"
-  }
-}
-</script>
-  
 </head>
 
 <body>
@@ -101,44 +37,6 @@ footer { text-align:center; padding:30px; font-size:0.9em; color:#666;}
 
 <div class="container">
 
-<!-- ===== TEXTE INDEXABLE GOOGLE ===== -->
-<div class="card">
-<h2>Analyse des émissions carbone de l’aéroport Paris-Beauvais en 2026</h2>
-
-<p>
-Ce site présente une analyse indépendante des émissions de gaz à effet de serre
-de l’aéroport de Paris-Beauvais (BVA). Les données sont issues d’exports publics
-et retraitées afin de présenter une vision journalière et cumulée des émissions carbone.
-</p>
-
-<p>
-Les émissions incluent :
-<br>• Les vols commerciaux
-<br>• Les déplacements des passagers
-<br>• Les déplacements des employés
-<br>• Les émissions directes de l’aéroport (scope 1 et 2)
-</p>
-</div>
-
-<div class="card">
-<h2>Indicateurs clés</h2>
-<div class="metrics">
-<div class="metric-box">Total période<div id="total" class="metric-value">...</div></div>
-<div class="metric-box">Moyenne journalière<div id="average" class="metric-value">...</div></div>
-<div class="metric-box">Jour le plus émetteur<div id="maxDay" class="metric-value">...</div></div>
-</div>
-</div>
-
-<div class="card">
-<h2>Émissions journalières par scope</h2>
-<canvas id="chartDaily"></canvas>
-</div>
-
-<div class="card">
-<h2>Cumul annuel par scope</h2>
-<canvas id="chartCumul"></canvas>
-</div>
-
 <div class="card">
 <h2>Émissions journalières par compagnie</h2>
 <canvas id="chartAirlines"></canvas>
@@ -149,40 +47,8 @@ Les émissions incluent :
 <canvas id="chartRotations"></canvas>
 </div>
 
-<div class="card">
-<h2>Vols départ depuis le 1er janvier</h2>
-<div id="tableDepartures"></div>
 </div>
 
-<div class="card">
-<h2>Vols arrivée depuis le 1er janvier</h2>
-<div id="tableArrivals"></div>
-</div>
-
-</div>
-
-<div class="card">
-  <h2>Ressources & Partage</h2>
-  
-  <p><strong>Partagez ce site :</strong></p>
-
-<div class="share-links">
-  <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://emissionscarbonebva-maker.github.io/bva-ges/" target="_blank" class="share-btn linkedin">
-    <i class="fab fa-linkedin"></i> Partager sur LinkedIn
-  </a>
-
-  <a href="https://www.facebook.com/sharer/sharer.php?u=https://emissionscarbonebva-maker.github.io/bva-ges/" target="_blank" class="share-btn facebook">
-    <i class="fab fa-facebook"></i> Partager sur Facebook
-  </a>
-</div>
-
-  <p>
-    Liens utiles :
-    <br>• <a href="https://adera-association.com/" target="_blank">ADERA – Association pour l’environnement</a>
-    <br>• <a href="https://concertation.aeroportparisbeauvais.com/fr" target="_blank">Concertation Aéroport Paris-Beauvais</a>
-  </p>
-</div>
-  
 <footer>
 Projet citoyen indépendant – Transparence des données
 </footer>
@@ -196,16 +62,15 @@ fetch(url)
 .then(r=>r.text())
 .then(data=>{
 const rows=data.split('\n').filter(r=>r.trim()!='');
-const sep=rows[0].includes(';')?';':',';
-const headers=rows[0].split(sep);
+const headers=rows[0].split(',');
 const result=[];
 for(let i=1;i<rows.length;i++){
-let cols=rows[i].split(sep);
+let cols=rows[i].split(',');
 let obj={};
 headers.forEach((h,index)=>obj[h.trim()]=cols[index]?.trim());
 result.push(obj);
 }
-callback(result, headers);
+callback(result);
 });
 }
 
@@ -224,104 +89,57 @@ scales:{y:{beginAtZero:true}}
 });
 }
 
-/* ===== 1 DAILY SCOPES ===== */
+/* ===== AIRLINES & ROTATIONS ===== */
 
-parseCSV('./data/EXPORT_daily_scopes.csv',(data,headers)=>{
-let labels=[];
-let datasets=[];
-for(let i=1;i<=5;i++){
-datasets.push({label:headers[i],data:[],borderWidth:2,fill:false});
+parseCSV('./data/EXPORT_daily_vols.csv',(data)=>{
+
+// Regrouper les données par date
+let dates = [...new Set(data.map(d => d.date))].sort();
+let compagnies = [...new Set(data.map(d => d.compagnie))];
+
+// Initialiser structures
+let emissionsDatasets = [];
+let rotationsDatasets = [];
+
+compagnies.forEach(compagnie => {
+
+let emissionsData = [];
+let rotationsData = [];
+
+dates.forEach(date => {
+
+let row = data.find(d => d.date === date && d.compagnie === compagnie);
+
+if(row){
+emissionsData.push(parseFloat(row.emissions));
+rotationsData.push(parseFloat(row.rotations));
+} else {
+emissionsData.push(0);
+rotationsData.push(0);
 }
 
-let total=0,max=0,maxDate="";
-
-data.forEach(row=>{
-labels.push(row[headers[0]]);
-let dayTotal=0;
-for(let i=1;i<=5;i++){
-let v=parseFloat(row[headers[i]].replace(',','.'));
-datasets[i-1].data.push(v);
-dayTotal+=v;
-}
-total+=dayTotal;
-if(dayTotal>max){max=dayTotal;maxDate=row[headers[0]];}
 });
 
-document.getElementById("total").innerText=total.toLocaleString('fr-FR')+" tCO₂e";
-document.getElementById("average").innerText=(total/labels.length).toLocaleString('fr-FR',{maximumFractionDigits:0})+" tCO₂e";
-document.getElementById("maxDay").innerText=maxDate+" ("+max.toLocaleString('fr-FR')+" tCO₂e)";
-
-createChart("chartDaily",labels,datasets);
+emissionsDatasets.push({
+label: compagnie,
+data: emissionsData,
+borderWidth: 2,
+fill: false
 });
 
-/* ===== 2 CUMUL ===== */
-
-parseCSV('./data/EXPORT_cumul_scopes.csv',(data,headers)=>{
-let labels=[];
-let datasets=[];
-for(let i=1;i<=5;i++){
-datasets.push({label:headers[i],data:[],borderWidth:2,fill:false});
-}
-data.forEach(row=>{
-labels.push(row[headers[0]]);
-for(let i=1;i<=5;i++){
-datasets[i-1].data.push(parseFloat(row[headers[i]].replace(',','.')));
-}
-});
-createChart("chartCumul",labels,datasets);
+rotationsDatasets.push({
+label: compagnie,
+data: rotationsData,
+borderWidth: 2,
+fill: false
 });
 
-/* ===== 3 AIRLINES ===== */
-
-parseCSV('./data/EXPORT_daily_vols.csv',(data,headers)=>{
-let labels=[];
-let datasets=[];
-for(let i=1;i<headers.length;i++){
-datasets.push({label:headers[i],data:[],borderWidth:2,fill:false});
-}
-data.forEach(row=>{
-labels.push(row[headers[0]]);
-for(let i=1;i<headers.length;i++){
-datasets[i-1].data.push(parseFloat(row[headers[i]].replace(',','.')));
-}
-});
-createChart("chartAirlines",labels,datasets);
 });
 
-/* ===== 4 ROTATIONS ===== */
+createChart("chartAirlines", dates, emissionsDatasets);
+createChart("chartRotations", dates, rotationsDatasets);
 
-parseCSV('./data/EXPORT_daily_vols.csv',(data,headers)=>{
-let labels=[];
-let datasets=[];
-for(let i=1;i<=5;i++){
-datasets.push({label:headers[i],data:[],borderWidth:2,fill:false});
-}
-data.forEach(row=>{
-labels.push(row[headers[0]]);
-for(let i=1;i<=5;i++){
-datasets[i-1].data.push(parseFloat(row[headers[i]].replace(',','.')));
-}
 });
-createChart("chartRotations",labels,datasets);
-});
-
-/* ===== TABLES ===== */
-
-function createTable(containerId,data){
-let html="<table><tr>";
-Object.keys(data[0]).forEach(h=>html+="<th>"+h+"</th>");
-html+="</tr>";
-data.slice(0,200).forEach(row=>{
-html+="<tr>";
-Object.values(row).forEach(v=>html+="<td>"+v+"</td>");
-html+="</tr>";
-});
-html+="</table>";
-document.getElementById(containerId).innerHTML=html;
-}
-
-parseCSV('./data/EXPORT_departures_YTD.csv',(data)=>createTable("tableDepartures",data));
-parseCSV('./data/EXPORT_arrivals_YTD.csv',(data)=>createTable("tableArrivals",data));
 
 });
 
