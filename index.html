@@ -364,19 +364,19 @@ text:"Emissions de gaz à effet de serre (en t éq CO2)"
 });
 
   
-/* ===== 2 CUMUL ===== */
+/* ===== 2 CUMUL – VERSION PRODUCTION ===== */
 
 parseCSV('./data/EXPORT_cumul_scopes.csv',(data,headers)=>{
 
 if(!data || data.length === 0) return;
 
-// Nettoyage éventuel du BOM sur le premier header
-headers[0] = headers[0].replace(/\uFEFF/g, '');
+// ===== Nettoyage complet headers =====
+headers = headers.map(h => h.replace(/\uFEFF/g,'').trim());
 
 const dateKey = headers[0];
-const totalKey = "cumul_total";
+const totalKey = headers.find(h => h === "cumul_total");
 
-// Tri chronologique (ancien → récent)
+// Tri chronologique
 data.sort((a,b)=> new Date(a[dateKey]) - new Date(b[dateKey]));
 
 let labels=[];
@@ -390,9 +390,9 @@ let colors = [
 "#9467bd"
 ];
 
-// ===== Création datasets pour toutes les colonnes sauf date et total =====
 let colorIndex = 0;
 
+// ===== Création datasets sauf date & total =====
 headers.forEach(h=>{
 
 if(h === dateKey || h === totalKey) return;
@@ -400,22 +400,25 @@ if(h === dateKey || h === totalKey) return;
 datasets.push({
 label: h,
 data: [],
-borderWidth: 2,
-fill: false,
-borderColor: colors[colorIndex] || "#999"
+borderWidth: 1.5,
+fill: true,
+backgroundColor: colors[colorIndex] + "55",
+borderColor: colors[colorIndex],
+stack: "stack1"
 });
 
 colorIndex++;
 
 });
 
-// ===== Dataset cumul total =====
+// ===== Dataset cumul total (ligne noire) =====
 datasets.push({
 label: totalKey,
 data: [],
 borderWidth: 3,
 fill: false,
-borderColor: "#000000"
+borderColor: "#000000",
+tension: 0.2
 });
 
 // ===== Remplissage données =====
@@ -423,17 +426,21 @@ data.forEach(row=>{
 
 labels.push(row[dateKey]);
 
-// autres colonnes
-datasets.forEach(ds=>{
-if(ds.label !== totalKey){
-ds.data.push(parseFloat(row[ds.label]) || 0);
-}
-});
+let runningTotal = 0;
 
-// total
-datasets[datasets.length-1].data.push(
-parseFloat(row[totalKey]) || 0
-);
+datasets.forEach(ds=>{
+
+let raw = row[ds.label];
+let val = raw ? parseFloat(String(raw).trim()) : 0;
+if(isNaN(val)) val = 0;
+
+ds.data.push(val);
+
+if(ds.label !== totalKey){
+runningTotal += val;
+}
+
+});
 
 });
 
@@ -449,6 +456,31 @@ responsive:true,
 interaction:{mode:'index',intersect:false},
 plugins:{
 legend:{position:'top'},
+tooltip:{
+callbacks:{
+label: function(context){
+
+let value = context.parsed.y || 0;
+
+// total du jour (somme des stacks)
+let total = 0;
+context.chart.data.datasets.forEach(ds=>{
+if(ds.label !== totalKey){
+total += ds.data[context.dataIndex] || 0;
+}
+});
+
+let percent = total > 0
+? ((value / total) * 100).toFixed(1)
+: 0;
+
+return context.dataset.label + " : "
++ value.toLocaleString('fr-FR')
++ " t éq CO2"
++ ", soit " + percent + "%";
+}
+}
+},
 zoom:{
 pan:{enabled:true,mode:'x'},
 zoom:{wheel:{enabled:true},pinch:{enabled:true},mode:'x'}
@@ -456,12 +488,14 @@ zoom:{wheel:{enabled:true},pinch:{enabled:true},mode:'x'}
 },
 scales:{
 x:{
+stacked:true,
 title:{
 display:true,
 text:"Date"
 }
 },
 y:{
+stacked:true,
 beginAtZero:true,
 title:{
 display:true,
