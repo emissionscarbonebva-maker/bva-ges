@@ -367,18 +367,95 @@ text:"Emissions de gaz à effet de serre (en t éq CO2)"
 /* ===== 2 CUMUL ===== */
 
 parseCSV('./data/EXPORT_cumul_scopes.csv',(data,headers)=>{
+
+// Tri chronologique (ancien → récent)
+data.sort((a,b)=> new Date(a[headers[0]]) - new Date(b[headers[0]]));
+
 let labels=[];
 let datasets=[];
+
+// Couleurs identiques au graph Daily
+let colors = [
+"#1f77b4",
+"#ff7f0e",
+"#2ca02c",
+"#d62728",
+"#9467bd"
+];
+
+// ===== SCOPES 1 à 5 =====
 for(let i=1;i<=5;i++){
-datasets.push({label:headers[i],data:[],borderWidth:2,fill:false});
+datasets.push({
+label:headers[i],
+data:[],
+borderWidth:2,
+fill:false,
+borderColor:colors[i-1]
+});
 }
+
+// ===== CUMUL TOTAL (dernière colonne CSV) =====
+datasets.push({
+label:headers[headers.length-1],
+data:[],
+borderWidth:3,
+fill:false,
+borderColor:"#000000"
+});
+
+// ===== BOUCLE PRINCIPALE =====
 data.forEach(row=>{
+
 labels.push(row[headers[0]]);
+
+// scopes 1 à 5
 for(let i=1;i<=5;i++){
-datasets[i-1].data.push(parseFloat(row[headers[i]].replace(',','.')));
+let v = parseFloat(row[headers[i]].replace(',','.'));
+datasets[i-1].data.push(isNaN(v)?0:v);
+}
+
+// cumul total
+let totalRaw = row[headers[headers.length-1]];
+let totalVal = parseFloat(totalRaw.replace(',','.'));
+datasets[datasets.length-1].data.push(isNaN(totalVal)?0:totalVal);
+
+});
+
+// ===== CREATION GRAPHIQUE =====
+new Chart(document.getElementById("chartCumul"),{
+type:'line',
+data:{
+labels:labels,
+datasets:datasets
+},
+options:{
+responsive:true,
+interaction:{mode:'index',intersect:false},
+plugins:{
+legend:{position:'top'},
+zoom:{
+pan:{enabled:true,mode:'x'},
+zoom:{wheel:{enabled:true},pinch:{enabled:true},mode:'x'}
+}
+},
+scales:{
+x:{
+title:{
+display:true,
+text:"Date"
+}
+},
+y:{
+beginAtZero:true,
+title:{
+display:true,
+text:"Emissions de gaz à effet de serre (en t éq CO2)"
+}
+}
+}
 }
 });
-createChart("chartCumul",labels,datasets);
+
 });
 
 /* ===== 3 AIRLINES (nouvelle structure CSV) ===== */
