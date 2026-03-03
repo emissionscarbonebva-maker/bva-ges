@@ -370,7 +370,7 @@ parseCSV('./data/EXPORT_cumul_scopes.csv',(data,headers)=>{
 
 if(!data || data.length === 0) return;
 
-// ===== Nettoyage complet headers =====
+// Nettoyage des headers
 headers = headers.map(h => h.replace(/\uFEFF/g,'').trim());
 
 const dateKey = headers[0];
@@ -382,19 +382,8 @@ data.sort((a,b)=> new Date(a[dateKey]) - new Date(b[dateKey]));
 let labels=[];
 let datasets=[];
 
-let colors = [
-"#1f77b4",
-"#ff7f0e",
-"#2ca02c",
-"#d62728",
-"#9467bd"
-];
+// --- Construction des séries (hors date et cumul_total) ---
 
-let colorIndex = 0;
-
-// ===== Création datasets sauf date & total =====
-
-// On calcule le poids final de chaque série (dernière valeur)
 let seriesMeta = [];
 
 headers.forEach(h=>{
@@ -410,9 +399,10 @@ lastValue: lastValue
 });
 });
 
-// Tri du plus petit au plus grand
+// Tri du plus petit au plus grand (meilleure lisibilité empilement)
 seriesMeta.sort((a,b)=> a.lastValue - b.lastValue);
 
+// Palette couleurs (ordre cohérent)
 let colors = [
 "#9467bd",
 "#d62728",
@@ -421,6 +411,7 @@ let colors = [
 "#1f77b4"
 ];
 
+// Création datasets
 seriesMeta.forEach((serie,index)=>{
 
 datasets.push({
@@ -428,55 +419,34 @@ label: serie.label,
 data: [],
 borderWidth: 1.5,
 fill: true,
-backgroundColor: colors[index] + "55",
-borderColor: colors[index],
+backgroundColor: colors[index % colors.length] + "55",
+borderColor: colors[index % colors.length],
 stack: "stack1"
 });
 
 });
 
-// Calcul du total (somme des séries empilées uniquement)
-let total = 0;
+// --- Remplissage données ---
 
-context.chart.data.datasets.forEach(ds=>{
-if(ds.label !== "cumul_total"){
-total += ds.data[context.dataIndex] || 0;
-}
-});
-
-let percent = total > 0
-? ((valueRounded / total) * 100).toFixed(1)
-: 0;
-
-return context.dataset.label + " : "
-+ valueRounded.toLocaleString('fr-FR')
-+ " t éq CO2"
-+ ", soit " + percent + "%";
-
-// ===== Remplissage données =====
 data.forEach(row=>{
 
 labels.push(row[dateKey]);
 
-let runningTotal = 0;
-
 datasets.forEach(ds=>{
 
 let raw = row[ds.label];
-let val = raw ? parseFloat(String(raw).trim()) : 0;
+let val = raw ? parseFloat(String(raw).replace(',','.').trim()) : 0;
+
 if(isNaN(val)) val = 0;
 
 ds.data.push(val);
 
-if(ds.label !== totalKey){
-runningTotal += val;
-}
-
 });
 
 });
 
-// ===== Création graphique =====
+// --- Création graphique ---
+
 new Chart(document.getElementById("chartCumul"),{
 type:'line',
 data:{
@@ -495,12 +465,11 @@ label: function(context){
 let value = context.parsed.y || 0;
 let valueRounded = Math.round(value);
 
-// total du jour (somme des stacks)
+// calcul total empilé du jour
 let total = 0;
+
 context.chart.data.datasets.forEach(ds=>{
-if(ds.label !== totalKey){
 total += ds.data[context.dataIndex] || 0;
-}
 });
 
 let percent = total > 0
@@ -508,9 +477,9 @@ let percent = total > 0
 : 0;
 
 return context.dataset.label + " : "
-+ value.toLocaleString('fr-FR')
++ valueRounded.toLocaleString('fr-FR')
 + " t éq CO2"
-+ ", soit " + percent + "%";
++ " (" + percent + "%)";
 }
 }
 },
