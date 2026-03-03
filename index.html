@@ -209,43 +209,38 @@ callback(result, headers);
 });
 }
 
-function createChart(canvasId, labels, datasets){
+function createChart(canvasId, labels, datasets, axisTitles={}){
 new Chart(document.getElementById(canvasId),{
 type:'line',
 data:{labels:labels,datasets:datasets},
 options:{
 responsive:true,
 interaction:{mode:'index',intersect:false},
-plugins:{legend:{position:'top'},
-zoom:{pan:{enabled:true,mode:'x'},
-zoom:{wheel:{enabled:true},pinch:{enabled:true},mode:'x'}}},
-scales:{y:{beginAtZero:true}}
+plugins:{
+legend:{position:'top'},
+zoom:{
+pan:{enabled:true,mode:'x'},
+zoom:{wheel:{enabled:true},pinch:{enabled:true},mode:'x'}
+}
+},
+scales:{
+x:{
+title:{
+display:true,
+text: axisTitles.xTitle || ""
+}
+},
+y:{
+beginAtZero:true,
+title:{
+display:true,
+text: axisTitles.yTitle || ""
+}
+}
+}
 }
 });
 }
-
-/* ===== 1 DAILY SCOPES ===== */
-
-parseCSV('./data/EXPORT_daily_scopes.csv',(data,headers)=>{
-let labels=[];
-let datasets=[];
-for(let i=1;i<=5;i++){
-datasets.push({label:headers[i],data:[],borderWidth:2,fill:false});
-}
-
-let total=0,max=0,maxDate="";
-
-data.forEach(row=>{
-labels.push(row[headers[0]]);
-let dayTotal=0;
-for(let i=1;i<=5;i++){
-let v=parseFloat(row[headers[i]].replace(',','.'));
-datasets[i-1].data.push(v);
-dayTotal+=v;
-}
-total+=dayTotal;
-if(dayTotal>max){max=dayTotal;maxDate=row[headers[0]];}
-});
 
 // Format total sans décimale
 document.getElementById("total").innerText =
@@ -268,6 +263,79 @@ formattedDate + " avec " + formattedMax + " tonnes éq CO2";
 createChart("chartDaily",labels,datasets);
 });
 
+/* ===== 1 DAILY SCOPES ===== */
+
+parseCSV('./data/EXPORT_daily_scopes.csv',(data,headers)=>{
+
+// 🔹 Tri des dates du plus ancien au plus récent
+data.sort((a,b)=> new Date(a[headers[0]]) - new Date(b[headers[0]]));
+
+let labels=[];
+let datasets=[];
+
+// 🎨 Couleurs proposées
+let colors = [
+"#1f77b4",  // Scope 1
+"#ff7f0e",  // Scope 2
+"#2ca02c",  // Scope 3
+"#d62728",  // Scope 4
+"#9467bd"   // Scope 5
+];
+
+for(let i=1;i<=5;i++){
+datasets.push({
+label:headers[i],
+data:[],
+borderWidth:2,
+fill:false,
+borderColor:colors[i-1],
+backgroundColor:colors[i-1]
+});
+}
+
+let total=0,max=0,maxDate="";
+let totalSeries=[];
+
+data.forEach(row=>{
+let date=row[headers[0]];
+labels.push(date);
+
+let dayTotal=0;
+
+for(let i=1;i<=5;i++){
+let v=parseFloat(row[headers[i]].replace(',','.'));
+datasets[i-1].data.push(v);
+dayTotal+=v;
+}
+
+totalSeries.push(dayTotal);
+
+total+=dayTotal;
+
+if(dayTotal>max){
+max=dayTotal;
+maxDate=date;
+}
+});
+
+// ➕ Ajout série Total scopes
+datasets.push({
+label:"Total scopes",
+data:totalSeries,
+borderWidth:3,
+fill:false,
+borderColor:"#000000",
+backgroundColor:"#000000"
+});
+
+createChart("chartDaily",labels,datasets,{
+xTitle:"Date",
+yTitle:"Emissions de gaz à effet de serre (en t éq CO2)"
+});
+
+});
+
+  
 /* ===== 2 CUMUL ===== */
 
 parseCSV('./data/EXPORT_cumul_scopes.csv',(data,headers)=>{
