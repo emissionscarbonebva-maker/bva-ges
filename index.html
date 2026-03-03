@@ -230,27 +230,6 @@ y:{beginAtZero:true}
 });
 }
 
-// Format total sans décimale
-document.getElementById("total").innerText =
-Math.round(total).toLocaleString('fr-FR') + " tonnes éq CO2";
-
-// Moyenne journalière sans décimale
-document.getElementById("average").innerText =
-Math.round(total/labels.length).toLocaleString('fr-FR') + " tonnes éq CO2";
-
-// Format date JJ/MM/AAAA
-let dateObj = new Date(maxDate);
-let formattedDate = dateObj.toLocaleDateString('fr-FR');
-
-// Format max sans décimale
-let formattedMax = Math.round(max).toLocaleString('fr-FR');
-
-document.getElementById("maxDay").innerText =
-formattedDate + " avec " + formattedMax + " tonnes éq CO2";
-
-createChart("chartDaily",labels,datasets);
-});
-
 /* ===== 1 DAILY SCOPES ===== */
 
 parseCSV('./data/EXPORT_daily_scopes.csv',(data,headers)=>{
@@ -284,6 +263,22 @@ let total=0;
 let max=0;
 let maxDate="";
 
+// ===== Mise à jour indicateurs =====
+
+document.getElementById("total").innerText =
+Math.round(total).toLocaleString('fr-FR') + " tonnes éq CO2";
+
+document.getElementById("average").innerText =
+Math.round(total/labels.length).toLocaleString('fr-FR') + " tonnes éq CO2";
+
+let dateObj = new Date(maxDate);
+let formattedDate = dateObj.toLocaleDateString('fr-FR');
+
+let formattedMax = Math.round(max).toLocaleString('fr-FR');
+
+document.getElementById("maxDay").innerText =
+formattedDate + " avec " + formattedMax + " tonnes éq CO2";
+  
 data.forEach(row=>{
 let date=row[headers[0]];
 labels.push(date);
@@ -449,7 +444,7 @@ document.getElementById(containerId).innerHTML=html;
 parseCSV('./data/EXPORT_departures_YTD.csv',(data)=>createTable("tableDepartures",data));
 parseCSV('./data/EXPORT_arrivals_YTD.csv',(data)=>createTable("tableArrivals",data));
 
-//});
+});
 
 </script>
 
