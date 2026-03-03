@@ -4,214 +4,233 @@
 <meta charset="UTF-8">
 <title>Suivi GES BVA</title>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
 
 <style>
-body { font-family: 'Segoe UI', sans-serif; margin:0; background:#f4f6f8; color:#222;}
-header { background:#1f3c88; color:white; padding:25px;}
-.container { width:92%; max-width:1300px; margin:40px auto;}
-.card { background:white; padding:25px; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.08); margin-bottom:30px;}
-.metrics { display:flex; gap:20px; flex-wrap:wrap;}
-.metric-box { flex:1; min-width:220px; background:#eef2f7; padding:20px; border-radius:10px;}
-.metric-value { font-size:1.8em; font-weight:bold; margin-top:8px;}
-canvas { margin-top:20px;}
-table { width:100%; border-collapse:collapse; margin-top:15px;}
-th, td { padding:8px; border-bottom:1px solid #ddd; text-align:left; font-size:0.9em;}
-th { background:#f0f2f5;}
-footer { text-align:center; padding:30px; font-size:0.9em; color:#666;}
+body {
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    background-color: #f4f6f8;
+    color: #222;
+}
+
+header {
+    background-color: #1f3c88;
+    color: white;
+    padding: 25px;
+}
+
+.container {
+    width: 92%;
+    max-width: 1200px;
+    margin: 40px auto;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    margin-bottom: 30px;
+}
+
+.metrics {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.metric-box {
+    flex: 1;
+    min-width: 220px;
+    background: #eef2f7;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.metric-value {
+    font-size: 1.8em;
+    font-weight: bold;
+    margin-top: 8px;
+}
+
+footer {
+    text-align: center;
+    padding: 30px;
+    font-size: 0.9em;
+    color: #666;
+}
 </style>
 </head>
 
 <body>
 
 <header>
-<h1>Aéroport Paris-Beauvais (BVA) - Suivi indépendant des émissions de GES</h1>
-<p>Données issues des exports automatisés – Mise à jour GitHub</p>
+    <h1>Aéroport Paris-Beauvais (BVA) - Suivi indépendant des émissions de Gaz à Effet de Serre</h1>
+    <p>Analyse basée sur les données publiques de trafic aérien – Mise à jour automatique</p>
 </header>
 
 <div class="container">
 
 <div class="card">
-<h2>Indicateurs clés</h2>
-<div class="metrics">
-<div class="metric-box">Total période<div id="total" class="metric-value">...</div></div>
-<div class="metric-box">Moyenne journalière<div id="average" class="metric-value">...</div></div>
-<div class="metric-box">Jour le plus émetteur<div id="maxDay" class="metric-value">...</div></div>
-</div>
-</div>
-
-<div class="card">
-<h2>Émissions journalières par scope</h2>
-<canvas id="chartDaily"></canvas>
-</div>
-
-<div class="card">
-<h2>Cumul annuel par scope</h2>
-<canvas id="chartCumul"></canvas>
-</div>
-
-<div class="card">
-<h2>Émissions journalières par compagnie</h2>
-<canvas id="chartAirlines"></canvas>
+    <h2>Indicateurs clés</h2>
+    <div class="metrics">
+        <div class="metric-box">
+            Total période analysée
+            <div id="total" class="metric-value">...</div>
+        </div>
+        <div class="metric-box">
+            Moyenne journalière
+            <div id="average" class="metric-value">...</div>
+        </div>
+        <div class="metric-box">
+            Jour le plus émetteur
+            <div id="maxDay" class="metric-value">...</div>
+        </div>
+    </div>
 </div>
 
 <div class="card">
-<h2>Rotations journalières par compagnie</h2>
-<canvas id="chartRotations"></canvas>
-</div>
-
-<div class="card">
-<h2>Vols départ depuis le 1er janvier</h2>
-<div id="tableDepartures"></div>
-</div>
-
-<div class="card">
-<h2>Vols arrivée depuis le 1er janvier</h2>
-<div id="tableArrivals"></div>
+    <h2>Émissions journalières estimées par scope (tCO₂e)</h2>
+    <canvas id="chart" height="100"></canvas>
 </div>
 
 </div>
 
 <footer>
-Projet citoyen indépendant – Transparence des données
+Projet citoyen indépendant – Données publiques – Transparence méthodologique
 </footer>
 
 <script>
 
-document.addEventListener("DOMContentLoaded", function(){
+fetch('Exports CSV/EXPORT_daily_scopes.csv')
+.then(response => response.text())
+.then(data => {
 
-function parseCSV(url, callback){
-fetch(url)
-.then(r=>r.text())
-.then(data=>{
-const rows=data.split('\n').filter(r=>r.trim()!='');
-const sep=rows[0].includes(';')?';':',';
-const headers=rows[0].split(sep);
-const result=[];
-for(let i=1;i<rows.length;i++){
-let cols=rows[i].split(sep);
-let obj={};
-headers.forEach((h,index)=>obj[h.trim()]=cols[index]?.trim());
-result.push(obj);
-}
-callback(result, headers);
-});
-}
+    const rows = data.split('\n').filter(r => r.trim() !== '');
+    const separator = rows[0].includes(';') ? ';' : ',';
 
-function createChart(canvasId, labels, datasets){
-new Chart(document.getElementById(canvasId),{
-type:'line',
-data:{labels:labels,datasets:datasets},
-options:{
-responsive:true,
-interaction:{mode:'index',intersect:false},
-plugins:{legend:{position:'top'},
-zoom:{pan:{enabled:true,mode:'x'},
-zoom:{wheel:{enabled:true},pinch:{enabled:true},mode:'x'}}},
-scales:{y:{beginAtZero:true}}
-}
-});
-}
+    const headers = rows[0].split(separator);
 
-/* ===== 1 DAILY SCOPES ===== */
+    const labels = [];
+    const datasets = [];
 
-parseCSV('./data/EXPORT_daily_scopes.csv',(data,headers)=>{
-let labels=[];
-let datasets=[];
-for(let i=1;i<=5;i++){
-datasets.push({label:headers[i],data:[],borderWidth:2,fill:false});
-}
+    const colors = {
+        "scope_vols": "#1f77b4",       // Bleu
+        "scope_acces_ind": "#ff7f0e",  // Orange
+        "scope_acces_coll": "#2ca02c", // Vert
+        "scope_employes": "#9467bd",   // Violet
+        "scope_1_2": "#d62728"         // Rouge
+    };
 
-let total=0,max=0,maxDate="";
+    for (let i = 1; i < headers.length; i++) {
+        const key = headers[i].trim();
+        datasets.push({
+            label: key.replace("_", " "),
+            data: [],
+            borderWidth: 2,
+            fill: false,
+            borderColor: colors[key] || "#444"
+        });
+    }
 
-data.forEach(row=>{
-labels.push(row[headers[0]]);
-let dayTotal=0;
-for(let i=1;i<=5;i++){
-let v=parseFloat(row[headers[i]].replace(',','.'));
-datasets[i-1].data.push(v);
-dayTotal+=v;
-}
-total+=dayTotal;
-if(dayTotal>max){max=dayTotal;maxDate=row[headers[0]];}
-});
+    let totalAll = 0;
+    let maxValue = 0;
+    let maxDate = "";
 
-document.getElementById("total").innerText=total.toLocaleString('fr-FR')+" tCO₂e";
-document.getElementById("average").innerText=(total/labels.length).toLocaleString('fr-FR',{maximumFractionDigits:0})+" tCO₂e";
-document.getElementById("maxDay").innerText=maxDate+" ("+max.toLocaleString('fr-FR')+" tCO₂e)";
+    for (let i = 1; i < rows.length; i++) {
 
-createChart("chartDaily",labels,datasets);
-});
+        const cols = rows[i].split(separator);
+        const date = cols[0].trim();
+        labels.push(date);
 
-/* ===== 2 CUMUL ===== */
+        let dayTotal = 0;
 
-parseCSV('./data/EXPORT_cumul_scopes.csv',(data,headers)=>{
-let labels=[];
-let datasets=[];
-for(let i=1;i<=5;i++){
-datasets.push({label:headers[i],data:[],borderWidth:2,fill:false});
-}
-data.forEach(row=>{
-labels.push(row[headers[0]]);
-for(let i=1;i<=5;i++){
-datasets[i-1].data.push(parseFloat(row[headers[i]].replace(',','.')));
-}
-});
-createChart("chartCumul",labels,datasets);
-});
+        for (let j = 1; j < cols.length; j++) {
 
-/* ===== 3 AIRLINES ===== */
+            let value = cols[j]
+                .replace(/\s/g, '')
+                .replace(',', '.')
+                .trim();
 
-parseCSV('./data/EXPORT_daily_vols.csv',(data,headers)=>{
-let labels=[];
-let datasets=[];
-for(let i=1;i<headers.length;i++){
-datasets.push({label:headers[i],data:[],borderWidth:2,fill:false});
-}
-data.forEach(row=>{
-labels.push(row[headers[0]]);
-for(let i=1;i<headers.length;i++){
-datasets[i-1].data.push(parseFloat(row[headers[i]].replace(',','.')));
-}
-});
-createChart("chartAirlines",labels,datasets);
-});
+            let numeric = parseFloat(value);
 
-/* ===== 4 ROTATIONS ===== */
+            if (!isNaN(numeric)) {
+                datasets[j-1].data.push(numeric);
+                dayTotal += numeric;
+            } else {
+                datasets[j-1].data.push(null);
+            }
+        }
 
-parseCSV('./data/EXPORT_daily_vols.csv',(data,headers)=>{
-let labels=[];
-let datasets=[];
-for(let i=1;i<=5;i++){
-datasets.push({label:headers[i],data:[],borderWidth:2,fill:false});
-}
-data.forEach(row=>{
-labels.push(row[headers[0]]);
-for(let i=1;i<=5;i++){
-datasets[i-1].data.push(parseFloat(row[headers[i]].replace(',','.')));
-}
-});
-createChart("chartRotations",labels,datasets);
-});
+        totalAll += dayTotal;
 
-/* ===== TABLES ===== */
+        if (dayTotal > maxValue) {
+            maxValue = dayTotal;
+            maxDate = date;
+        }
+    }
 
-function createTable(containerId,data){
-let html="<table><tr>";
-Object.keys(data[0]).forEach(h=>html+="<th>"+h+"</th>");
-html+="</tr>";
-data.slice(0,200).forEach(row=>{
-html+="<tr>";
-Object.values(row).forEach(v=>html+="<td>"+v+"</td>");
-html+="</tr>";
-});
-html+="</table>";
-document.getElementById(containerId).innerHTML=html;
-}
+    const average = totalAll / labels.length;
 
-parseCSV('./data/EXPORT_departures_YTD.csv',(data)=>createTable("tableDepartures",data));
-parseCSV('./data/EXPORT_arrivals_YTD.csv',(data)=>createTable("tableArrivals",data));
+    document.getElementById("total").innerText =
+        totalAll.toLocaleString('fr-FR') + " tCO₂e";
+
+    document.getElementById("average").innerText =
+        average.toLocaleString('fr-FR', {maximumFractionDigits:0}) + " tCO₂e";
+
+    document.getElementById("maxDay").innerText =
+        maxDate + " (" + maxValue.toLocaleString('fr-FR') + " tCO₂e)";
+
+    new Chart(document.getElementById('chart'), {
+        type: 'line',
+        data: { labels: labels, datasets: datasets },
+        options: {
+            responsive: true,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        font: { size: 13 }
+                    }
+                },
+                zoom: {
+                    pan: { enabled: true, mode: 'x' },
+                    zoom: {
+                        wheel: { enabled: true },
+                        pinch: { enabled: true },
+                        mode: 'x'
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    },
+                    grid: {
+                        color: 'rgba(0,0,0,0.05)'
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Émissions (tCO₂e)'
+                    },
+                    ticks: {
+                        callback: value => value.toLocaleString('fr-FR')
+                    },
+                    grid: {
+                        color: 'rgba(0,0,0,0.05)'
+                    }
+                }
+            }
+        }
+    });
 
 });
 
