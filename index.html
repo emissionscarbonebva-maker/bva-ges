@@ -249,13 +249,13 @@ document.getElementById("maxDay").innerText =
 formattedDate + " avec " + formattedMax + " tonnes éq CO2";
 
 createChart("chartDaily",labels,datasets);
-});
+//});
 
 /* ===== 1 DAILY SCOPES ===== */
 
 parseCSV('./data/EXPORT_daily_scopes.csv',(data,headers)=>{
 
-// 🔹 Tri des dates (ancien → récent)
+// Tri des dates (ancien → récent)
 data.sort((a,b)=> new Date(a[headers[0]]) - new Date(b[headers[0]]));
 
 let labels=[];
@@ -280,7 +280,9 @@ borderColor:colors[i-1]
 });
 }
 
-let total=0,max=0,maxDate="";
+let total=0;
+let max=0;
+let maxDate="";
 
 data.forEach(row=>{
 let date=row[headers[0]];
@@ -295,7 +297,6 @@ dayTotal+=v;
 }
 
 totalSeries.push(dayTotal);
-
 total+=dayTotal;
 
 if(dayTotal>max){
@@ -304,7 +305,7 @@ maxDate=date;
 }
 });
 
-// ➕ Ajout série Total scopes
+// Ajout série Total scopes
 datasets.push({
 label:"Total scopes",
 data:totalSeries,
@@ -313,10 +314,13 @@ fill:false,
 borderColor:"#000000"
 });
 
-// 🎯 Création graphique avec titres d’axes spécifiques
+// Création graphique spécifique
 new Chart(document.getElementById("chartDaily"),{
 type:'line',
-data:{labels:labels,datasets:datasets},
+data:{
+labels:labels,
+datasets:datasets
+},
 options:{
 responsive:true,
 interaction:{mode:'index',intersect:false},
