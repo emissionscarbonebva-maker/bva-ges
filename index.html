@@ -263,30 +263,56 @@ let total=0;
 let max=0;
 let maxDate="";
 
-// ===== Mise à jour indicateurs =====
+/* ===== 1 DAILY SCOPES ===== */
 
-document.getElementById("total").innerText =
-Math.round(total).toLocaleString('fr-FR') + " tonnes éq CO2";
+parseCSV('./data/EXPORT_daily_scopes.csv',(data,headers)=>{
 
-document.getElementById("average").innerText =
-Math.round(total/labels.length).toLocaleString('fr-FR') + " tonnes éq CO2";
+// Tri des dates (ancien → récent)
+data.sort((a,b)=> new Date(a[headers[0]]) - new Date(b[headers[0]]));
 
-let dateObj = new Date(maxDate);
-let formattedDate = dateObj.toLocaleDateString('fr-FR');
+let labels=[];
+let datasets=[];
+let totalSeries=[];
 
-let formattedMax = Math.round(max).toLocaleString('fr-FR');
+let colors = [
+"#1f77b4",
+"#ff7f0e",
+"#2ca02c",
+"#d62728",
+"#9467bd"
+];
 
-document.getElementById("maxDay").innerText =
-formattedDate + " avec " + formattedMax + " tonnes éq CO2";
-  
+// Création des datasets pour les 5 scopes
+for(let i=1;i<=5;i++){
+datasets.push({
+label:headers[i],
+data:[],
+borderWidth:2,
+fill:false,
+borderColor:colors[i-1]
+});
+}
+
+let total=0;
+let max=0;
+let maxDate="";
+
+// ===== BOUCLE PRINCIPALE =====
+
 data.forEach(row=>{
+
 let date=row[headers[0]];
 labels.push(date);
 
 let dayTotal=0;
 
 for(let i=1;i<=5;i++){
-let v=parseFloat(row[headers[i]].replace(',','.'));
+
+let raw=row[headers[i]];
+let v = raw ? parseFloat(raw.replace(',','.')) : 0;
+
+if(isNaN(v)) v=0;
+
 datasets[i-1].data.push(v);
 dayTotal+=v;
 }
@@ -298,6 +324,90 @@ if(dayTotal>max){
 max=dayTotal;
 maxDate=date;
 }
+
+});
+
+// ===== MISE À JOUR INDICATEURS =====
+
+document.getElementById("total").innerText =
+Math.round(total).toLocaleString('fr-FR') + " tonnes éq CO2";
+
+document.getElementById("average").innerText =
+labels.length > 0
+? Math.round(total/labels.length).toLocaleString('fr-FR') + " tonnes éq CO2"
+: "0 tonnes éq CO2";
+
+if(maxDate){
+
+let parts = maxDate.includes('/') ? maxDate.split('/') : null;
+let dateObj;
+
+if(parts && parts.length===3){
+dateObj = new Date(parts[2], parts[1]-1, parts[0]);
+}else{
+dateObj = new Date(maxDate);
+}
+
+let formattedDate = isNaN(dateObj)
+? maxDate
+: dateObj.toLocaleDateString('fr-FR');
+
+let formattedMax = Math.round(max).toLocaleString('fr-FR');
+
+document.getElementById("maxDay").innerText =
+formattedDate + " avec " + formattedMax + " tonnes éq CO2";
+
+}else{
+document.getElementById("maxDay").innerText =
+"Aucune donnée disponible";
+}
+
+// ===== AJOUT SERIE TOTAL =====
+
+datasets.push({
+label:"Total scopes",
+data:totalSeries,
+borderWidth:3,
+fill:false,
+borderColor:"#000000"
+});
+
+// ===== CREATION GRAPHIQUE =====
+
+new Chart(document.getElementById("chartDaily"),{
+type:'line',
+data:{
+labels:labels,
+datasets:datasets
+},
+options:{
+responsive:true,
+interaction:{mode:'index',intersect:false},
+plugins:{
+legend:{position:'top'},
+zoom:{
+pan:{enabled:true,mode:'x'},
+zoom:{wheel:{enabled:true},pinch:{enabled:true},mode:'x'}
+}
+},
+scales:{
+x:{
+title:{
+display:true,
+text:"Date"
+}
+},
+y:{
+beginAtZero:true,
+title:{
+display:true,
+text:"Emissions de gaz à effet de serre (en t éq CO2)"
+}
+}
+}
+}
+});
+
 });
 
 // Ajout série Total scopes
