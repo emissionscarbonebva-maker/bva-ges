@@ -368,13 +368,26 @@ text:"Emissions de gaz à effet de serre (en t éq CO2)"
 
 parseCSV('./data/EXPORT_cumul_scopes.csv',(data,headers)=>{
 
-// Tri chronologique (ancien → récent)
-data.sort((a,b)=> new Date(a[headers[0]]) - new Date(b[headers[0]]));
+if(!data || data.length === 0){
+console.log("Pas de données cumul");
+return;
+}
+
+// ===== Fonction parsing date FR =====
+function parseDateFR(dateStr){
+if(dateStr.includes('/')){
+let parts = dateStr.split('/');
+return new Date(parts[2], parts[1]-1, parts[0]);
+}
+return new Date(dateStr);
+}
+
+// ===== Tri chronologique sécurisé =====
+data.sort((a,b)=> parseDateFR(a[headers[0]]) - parseDateFR(b[headers[0]]));
 
 let labels=[];
 let datasets=[];
 
-// Couleurs identiques au graph Daily
 let colors = [
 "#1f77b4",
 "#ff7f0e",
@@ -394,7 +407,7 @@ borderColor:colors[i-1]
 });
 }
 
-// ===== CUMUL TOTAL (dernière colonne CSV) =====
+// ===== CUMUL TOTAL (dernière colonne) =====
 datasets.push({
 label:headers[headers.length-1],
 data:[],
@@ -403,25 +416,29 @@ fill:false,
 borderColor:"#000000"
 });
 
-// ===== BOUCLE PRINCIPALE =====
+// ===== Remplissage données =====
 data.forEach(row=>{
 
 labels.push(row[headers[0]]);
 
-// scopes 1 à 5
+// scopes
 for(let i=1;i<=5;i++){
-let v = parseFloat(row[headers[i]].replace(',','.'));
+let raw = row[headers[i]];
+let v = raw ? parseFloat(raw.replace(',','.')) : 0;
 datasets[i-1].data.push(isNaN(v)?0:v);
 }
 
 // cumul total
-let totalRaw = row[headers[headers.length-1]];
-let totalVal = parseFloat(totalRaw.replace(',','.'));
+let rawTotal = row[headers[headers.length-1]];
+let totalVal = rawTotal ? parseFloat(rawTotal.replace(',','.')) : 0;
 datasets[datasets.length-1].data.push(isNaN(totalVal)?0:totalVal);
 
 });
 
-// ===== CREATION GRAPHIQUE =====
+console.log("Cumul labels:", labels.length);
+console.log("Cumul dataset[0]:", datasets[0].data.length);
+
+// ===== Création graphique =====
 new Chart(document.getElementById("chartCumul"),{
 type:'line',
 data:{
