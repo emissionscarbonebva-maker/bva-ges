@@ -263,7 +263,7 @@ let formattedDate = dateObj.toLocaleDateString('fr-FR');
 let formattedMax = Math.round(max).toLocaleString('fr-FR');
 
 document.getElementById("maxDay").innerText =
-formattedDate + " (" + formattedMax + " tonnes éq CO2)";
+formattedDate + " avec " + formattedMax + " tonnes éq CO2";
 
 createChart("chartDaily",labels,datasets);
 });
