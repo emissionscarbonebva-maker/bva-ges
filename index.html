@@ -21,6 +21,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
 body { font-family: 'Segoe UI', sans-serif; margin:0; background:#f4f6f8; color:#222;}
@@ -35,6 +36,43 @@ table { width:100%; border-collapse:collapse; margin-top:15px;}
 th, td { padding:8px; border-bottom:1px solid #ddd; text-align:left; font-size:0.9em;}
 th { background:#f0f2f5;}
 footer { text-align:center; padding:30px; font-size:0.9em; color:#666;}
+
+.share-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  color: white;
+  width: fit-content;
+  transition: 0.2s;
+}
+
+.share-btn i {
+  font-size: 18px;
+}
+
+.linkedin {
+  background-color: #0077b5;
+}
+
+.facebook {
+  background-color: #1877f2;
+}
+
+.share-btn:hover {
+  opacity: 0.85;
+}
+
 </style>
 
 <script type="application/ld+json">
@@ -126,11 +164,17 @@ Les émissions incluent :
 <div class="card">
   <h2>Ressources & Partage</h2>
   
-  <p>
-    Partagez ce site : 
-    <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://emissionscarbonebva-maker.github.io/bva-ges/" target="_blank">Partager sur LinkedIn</a> |
-    <a href="https://www.facebook.com/sharer/sharer.php?u=https://emissionscarbonebva-maker.github.io/bva-ges/" target="_blank">Partager sur Facebook</a>
-  </p>
+  <p><strong>Partagez ce site :</strong></p>
+
+<div class="share-links">
+  <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://emissionscarbonebva-maker.github.io/bva-ges/" target="_blank" class="share-btn linkedin">
+    <i class="fab fa-linkedin"></i> Partager sur LinkedIn
+  </a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=https://emissionscarbonebva-maker.github.io/bva-ges/" target="_blank" class="share-btn facebook">
+    <i class="fab fa-facebook"></i> Partager sur Facebook
+  </a>
+</div>
 
   <p>
     Liens utiles :
