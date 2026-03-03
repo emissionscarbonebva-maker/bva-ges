@@ -543,7 +543,7 @@ text:"Emissions de gaz à effet de serre (en t éq CO2)"
 
 });
 
-/* ===== 3 AIRLINES (nouvelle structure CSV) ===== */
+/* ===== 3 AIRLINES (VERSION PERSONNALISÉE) ===== */
 
 parseCSV('./data/EXPORT_daily_airlines.csv',(data)=>{
 
@@ -555,23 +555,85 @@ let compagnies=[...new Set(data.map(r=>r.compagnie))];
 
 let datasets=[];
 
+// 🎨 Couleurs personnalisées
+let colors = {
+"Ryanair": "rgb(223,186,47)",
+"Wizz Air": "rgb(225,14,73)",
+"HiSky": "rgb(19,62,103)",
+"SkyUp": "rgb(255,58,32)",
+"Volotea": "rgb(0,0,0)"
+};
+
 compagnies.forEach(comp=>{
+
 let serie=[];
 
 labels.forEach(d=>{
 let row=data.find(r=>r.date===d && r.compagnie===comp);
-serie.push(row ? parseFloat(row.emissions) : 0);
+let value = row ? parseFloat(row.emissions) : 0;
+if(isNaN(value)) value = 0;
+serie.push(value);
 });
 
 datasets.push({
-label:comp,
-data:serie,
-borderWidth:2,
-fill:false
-});
+label: comp,
+data: serie,
+borderWidth: 2,
+fill: false,
+borderColor: colors[comp] || "rgb(120,120,120)" // couleur par défaut si nouvelle compagnie
 });
 
-createChart("chartAirlines",labels,datasets);
+});
+
+// ===== Création graphique personnalisée =====
+
+new Chart(document.getElementById("chartAirlines"),{
+type:'line',
+data:{
+labels:labels,
+datasets:datasets
+},
+options:{
+responsive:true,
+interaction:{mode:'index',intersect:false},
+plugins:{
+legend:{position:'top'},
+tooltip:{
+callbacks:{
+label: function(context){
+
+let value = context.parsed.y || 0;
+let valueRounded = Math.round(value);
+
+return context.dataset.label + " : "
++ valueRounded.toLocaleString('fr-FR')
++ " t éq CO2";
+
+}
+}
+},
+zoom:{
+pan:{enabled:true,mode:'x'},
+zoom:{wheel:{enabled:true},pinch:{enabled:true},mode:'x'}
+}
+},
+scales:{
+x:{
+title:{
+display:true,
+text:"Date"
+}
+},
+y:{
+beginAtZero:true,
+title:{
+display:true,
+text:"Emissions de gaz à effet de serre (en t éq CO2)"
+}
+}
+}
+}
+});
 
 });
 
