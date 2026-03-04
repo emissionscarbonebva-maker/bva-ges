@@ -826,7 +826,7 @@ text:"Nombre de rotations"
 
 });
 
-/* ===== TABLE DATA PRO V2 - FIXED ===== */
+/* ===== TABLE DATA PRO V3 - STABLE & CLEAN ===== */
 
 function createTable(containerId, data){
 
@@ -843,6 +843,25 @@ function createTable(containerId, data){
     var sortDirection = 1;
     var activeFilters = {};
 
+    /* ===== FORMAT FUNCTIONS ===== */
+
+    function formatDistance(value){
+        var n = parseFloat(String(value).replace(',','.'));
+        if(isNaN(n)) return value;
+        return Math.round(n).toLocaleString('fr-FR');
+    }
+
+    function formatEmission(value){
+        var n = parseFloat(String(value).replace(',','.'));
+        if(isNaN(n)) return value;
+        return n.toLocaleString('fr-FR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
+
+    /* ===== RENDER ===== */
+
     function renderTable(){
 
         var html = "";
@@ -856,25 +875,28 @@ function createTable(containerId, data){
         html += '</div></div>';
 
         html += '<div class="table-wrapper">';
-        html += '<table class="data-table"><thead><tr>';
+        html += '<table class="data-table"><thead>';
 
-        // ===== HEADERS =====
+        /* ===== HEADERS ===== */
+        html += '<tr>';
         headers.forEach(function(h,i){
+
             var arrow = "";
             if(sortColumn === h){
                 arrow = sortDirection === 1 ? " ↑" : " ↓";
             }
 
-            html += '<th data-sort="'+h+'" class="'+(i===0?'sticky-col':'')+'">'+h+arrow+'</th>';
+            html += '<th data-sort="'+h+'" class="center '+(i===0?'sticky-col':'')+'">'+h+arrow+'</th>';
         });
+        html += '</tr>';
 
-        html += '</tr><tr>';
+        /* ===== FILTER ROW ===== */
+        html += '<tr>';
 
-        // ===== FILTERS =====
         headers.forEach(function(h,i){
 
             var values = data.map(function(r){ return r[h]; })
-                             .filter(function(v){ return v!==""; });
+                             .filter(function(v){ return v!=="" && v!==null; });
 
             var unique = values.filter(function(v,idx,self){
                 return self.indexOf(v) === idx;
@@ -882,9 +904,11 @@ function createTable(containerId, data){
 
             var currentValue = activeFilters[h] || "";
 
+            html += '<th class="'+(i===0?'sticky-col':'')+'">';
+            html += '<div style="position:relative;">';
+
             if(unique.length > 0 && unique.length <= 15){
 
-                html += '<th class="'+(i===0?'sticky-col':'')+'">';
                 html += '<select data-filter="'+h+'">';
                 html += '<option value="">Tous</option>';
 
@@ -893,25 +917,21 @@ function createTable(containerId, data){
                     html += '<option value="'+v+'" '+selected+'>'+v+'</option>';
                 });
 
-                html += '</select></th>';
+                html += '</select>';
 
             } else {
 
-                html += '<th class="'+(i===0?'sticky-col':'')+'">';
-                html += '<div style="position:relative;">';
                 html += '<input type="text" data-filter="'+h+'" value="'+currentValue+'" placeholder="Filtrer...">';
 
-                if(currentValue){
-                    html += '<span class="clear-filter" data-clear="'+h+'">✕</span>';
-                }
-
-                html += '</div></th>';
+                html += '<span class="clear-filter" data-clear="'+h+'" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); cursor:pointer;">✕</span>';
             }
+
+            html += '</div></th>';
         });
 
         html += '</tr></thead><tbody>';
 
-        // ===== ROWS =====
+        /* ===== ROWS ===== */
         filteredData.forEach(function(row){
 
             html += "<tr>";
@@ -920,22 +940,17 @@ function createTable(containerId, data){
 
                 var value = row[h] || "";
                 var cls = "";
-
                 var lower = h.toLowerCase();
 
                 if(lower.indexOf("date") !== -1) cls="center";
 
                 if(lower.indexOf("distance") !== -1){
-                    if(typeof formatDistance === "function"){
-                        value = formatDistance(value);
-                    }
+                    value = formatDistance(value);
                     cls="center";
                 }
 
                 if(lower.indexOf("emission") !== -1){
-                    if(typeof formatEmission === "function"){
-                        value = formatEmission(value);
-                    }
+                    value = formatEmission(value);
                     cls="center";
                 }
 
@@ -951,8 +966,11 @@ function createTable(containerId, data){
         attachEvents();
     }
 
+    /* ===== EVENTS ===== */
+
     function attachEvents(){
 
+        /* SORT */
         container.querySelectorAll("th[data-sort]").forEach(function(th){
 
             th.addEventListener("click", function(){
@@ -967,28 +985,59 @@ function createTable(containerId, data){
                 }
 
                 filteredData.sort(function(a,b){
-                    if(a[col] < b[col]) return -1 * sortDirection;
-                    if(a[col] > b[col]) return 1 * sortDirection;
-                    return 0;
+
+                    var valA = a[col];
+                    var valB = b[col];
+
+                    var numA = parseFloat(String(valA).replace(',','.'));
+                    var numB = parseFloat(String(valB).replace(',','.'));
+
+                    if(!isNaN(numA) && !isNaN(numB)){
+                        return (numA - numB) * sortDirection;
+                    }
+
+                    return valA.toString().localeCompare(valB.toString()) * sortDirection;
                 });
 
                 renderTable();
             });
         });
 
+        /* FILTERS */
         container.querySelectorAll("[data-filter]").forEach(function(input){
-            input.addEventListener("input", applyFilters);
-            input.addEventListener("change", applyFilters);
-        });
 
-        container.querySelectorAll(".clear-filter").forEach(function(btn){
-            btn.addEventListener("click", function(){
-                var col = btn.getAttribute("data-clear");
-                delete activeFilters[col];
+            input.addEventListener("input", function(){
+                updateFilters();
+                applyFilters();
+            });
+
+            input.addEventListener("change", function(){
+                updateFilters();
                 applyFilters();
             });
         });
 
+        /* CLEAR */
+        container.querySelectorAll(".clear-filter").forEach(function(btn){
+
+            btn.addEventListener("click", function(e){
+
+                e.stopPropagation();
+
+                var col = btn.getAttribute("data-clear");
+                var input = container.querySelector('[data-filter="'+col+'"]');
+
+                if(input){
+                    input.value = "";
+                }
+
+                delete activeFilters[col];
+                updateFilters();
+                applyFilters();
+            });
+        });
+
+        /* RESET */
         document.getElementById(containerId+"-reset")
             .addEventListener("click", function(){
                 activeFilters = {};
@@ -997,17 +1046,18 @@ function createTable(containerId, data){
                 renderTable();
             });
 
+        /* EXPORT */
         document.getElementById(containerId+"-export")
             .addEventListener("click", exportExcel);
 
+        /* DARK MODE */
         document.getElementById(containerId+"-dark")
             .addEventListener("click", function(){
                 container.classList.toggle("dark-mode");
             });
     }
 
-    function applyFilters(){
-
+    function updateFilters(){
         container.querySelectorAll("[data-filter]").forEach(function(input){
             var col = input.getAttribute("data-filter");
             var val = input.value.trim();
@@ -1018,6 +1068,9 @@ function createTable(containerId, data){
                 delete activeFilters[col];
             }
         });
+    }
+
+    function applyFilters(){
 
         filteredData = data.filter(function(row){
 
