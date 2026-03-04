@@ -710,7 +710,7 @@ text:"Emissions de gaz à effet de serre (en t éq CO2)"
 
   /* ===== 4 ROTATIONS JOURNALIERES ===== */
 
-parseCSV('./data/EXPORT_daily_rotations.csv',(data)=>{
+parseCSV('./data/EXPORT_daily_airlines.csv',(data)=>{
 
 let labels=[...new Set(data.map(r=>r.date))].sort();
 let compagnies=[...new Set(data.map(r=>r.compagnie))];
