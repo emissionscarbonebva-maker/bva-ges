@@ -708,14 +708,26 @@ text:"Emissions de gaz à effet de serre (en t éq CO2)"
 
 });
 
-  /* ===== 4 ROTATIONS JOURNALIERES ===== */
+/* ===== 4 ROTATIONS JOURNALIERES (VERSION PERSONNALISÉE) ===== */
 
 parseCSV('./data/EXPORT_daily_airlines.csv',(data)=>{
 
+// Récupération dates uniques triées
 let labels=[...new Set(data.map(r=>r.date))].sort();
+
+// Récupération compagnies uniques
 let compagnies=[...new Set(data.map(r=>r.compagnie))];
 
 let datasets=[];
+
+// 🎨 Couleurs personnalisées (identiques bloc 3)
+let colors = {
+"Ryanair": "rgb(223,186,47)",
+"Wizz Air": "rgb(225,14,73)",
+"HiSky": "rgb(19,62,103)",
+"SkyUp": "rgb(255,58,32)",
+"Volotea": "rgb(0,0,0)"
+};
 
 compagnies.forEach(comp=>{
 
@@ -732,10 +744,13 @@ datasets.push({
 label: comp,
 data: serie,
 borderWidth: 2,
-fill: false
+fill: false,
+borderColor: colors[comp] || "rgb(120,120,120)" // couleur par défaut
 });
 
 });
+
+// ===== Création graphique personnalisée =====
 
 new Chart(document.getElementById("chartRotations"),{
 type:'line',
@@ -748,16 +763,38 @@ responsive:true,
 interaction:{mode:'index',intersect:false},
 plugins:{
 legend:{position:'top'},
+tooltip:{
+callbacks:{
+label: function(context){
+
+let value = context.parsed.y || 0;
+let valueRounded = Math.round(value);
+
+return context.dataset.label + " : "
++ valueRounded.toLocaleString('fr-FR')
++ " rotations";
+
+}
+}
+},
 zoom:{
 pan:{enabled:true,mode:'x'},
 zoom:{wheel:{enabled:true},pinch:{enabled:true},mode:'x'}
 }
 },
 scales:{
-x:{title:{display:true,text:"Date"}},
+x:{
+title:{
+display:true,
+text:"Date"
+}
+},
 y:{
 beginAtZero:true,
-title:{display:true,text:"Nombre de rotations"}
+title:{
+display:true,
+text:"Nombre de rotations"
+}
 }
 }
 }
