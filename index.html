@@ -1162,6 +1162,18 @@ style.innerHTML = `
 document.head.appendChild(style);
 
 });
+
+/* ===== TABLE DEPARTURES ===== */
+
+parseCSV('./data/EXPORT_departures.csv', function(data){
+    createTable("tableDepartures", data);
+});
+
+/* ===== TABLE ARRIVALS ===== */
+
+parseCSV('./data/EXPORT_arrivals.csv', function(data){
+    createTable("tableArrivals", data);
+});
   
 </script>
 
