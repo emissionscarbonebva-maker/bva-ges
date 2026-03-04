@@ -1014,7 +1014,10 @@ function createTable(containerId, data){
                 }
 
                 // Sinon texte
-                return row[col].toString()
+        return (row[col] || "")
+                    .toString()
+                    .toLowerCase()
+                    .includes(filterValue.toLowerCase());
                     .toLowerCase()
                     .includes(filterValue.toLowerCase());
             });
