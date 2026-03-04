@@ -1009,12 +1009,12 @@ function createTable(containerId, data){
                 td.innerHTML="<strong>TOTAL</strong>";
             }
             else if(h.toLowerCase().includes("emission")){
-                td.className="center";
-                td.innerText=total.toLocaleString('fr-FR',{
-                    minimumFractionDigits:2,
-                    maximumFractionDigits:2
-                });
-            }
+    td.className="center";
+    td.innerHTML="<strong>"+total.toLocaleString('fr-FR',{
+        minimumFractionDigits:2,
+        maximumFractionDigits:2
+    })+"</strong>";
+}
 
             totalRow.appendChild(td);
         });
@@ -1121,6 +1121,26 @@ function createTable(containerId, data){
         });
     });
 
+/* ================= CLEAR FILTER ================= */
+
+container.querySelectorAll(".clear-filter").forEach(function(btn){
+
+    btn.addEventListener("click", function(e){
+
+        e.stopPropagation();
+
+        var col = btn.getAttribute("data-clear");
+        var input = container.querySelector('[data-filter="'+col+'"]');
+
+        input.value = "";
+        delete activeFilters[col];
+
+        clearTimeout(debounceTimer);
+
+        applyFilters();
+    });
+});
+  
     /* ================= RESET ================= */
 
     document.getElementById(containerId+"-reset")
