@@ -826,7 +826,7 @@ text:"Nombre de rotations"
 
 });
 
-/* ===== TABLE DATA PRO V4 - STABLE + EXCEL FILTER + TOTAL ===== */
+/* ===== TABLE DATA PRO V5 - CLEAN UX ===== */
 
 function createTable(containerId, data){
 
@@ -839,10 +839,9 @@ function createTable(containerId, data){
     var container = document.getElementById(containerId);
     var headers = Object.keys(data[0]);
     var activeFilters = {};
-    var sortColumn = null;
     var sortDirection = 1;
 
-    /* ===== FORMAT ===== */
+    /* ================= FORMAT ================= */
 
     function formatDistance(value){
         var n = parseFloat(String(value).replace(',','.'));
@@ -861,19 +860,15 @@ function createTable(containerId, data){
 
     function formatValue(header,value){
         var lower = header.toLowerCase();
-
-        if(lower.includes("distance"))
-            return formatDistance(value);
-
-        if(lower.includes("emission"))
-            return formatEmission(value);
-
+        if(lower.includes("distance")) return formatDistance(value);
+        if(lower.includes("emission")) return formatEmission(value);
         return value;
     }
 
-    /* ===== BUILD TABLE (1 seule fois) ===== */
+    /* ================= BUILD TABLE ================= */
 
     var html = "";
+
     html += '<div style="margin-bottom:10px; display:flex; justify-content:space-between;">';
     html += '<div><strong id="'+containerId+'-count"></strong> vols affichés</div>';
     html += '<div>';
@@ -882,13 +877,40 @@ function createTable(containerId, data){
     html += '</div></div>';
 
     html += '<div class="table-wrapper">';
-    html += '<table class="data-table"><thead><tr>';
+    html += '<table class="data-table"><thead>';
+
+    /* ===== HEADER ROW ===== */
+
+    html += '<tr>';
 
     headers.forEach(function(h,i){
-        html += '<th data-sort="'+h+'" class="center '+(i===0?'sticky-col':'')+'">'+h+' ⏷</th>';
+        html += '<th class="center '+(i===0?'sticky-col':'')+'">';
+        html += '<div style="display:flex; justify-content:space-between; align-items:center;">';
+        html += '<span>'+h+'</span>';
+        html += '<span class="col-menu" data-col="'+h+'" style="cursor:pointer;">⋮</span>';
+        html += '</div>';
+        html += '</th>';
+    });
+
+    html += '</tr>';
+
+    /* ===== FILTER ROW ===== */
+
+    html += '<tr>';
+
+    headers.forEach(function(h,i){
+
+        html += '<th class="'+(i===0?'sticky-col':'')+'">';
+        html += '<div style="position:relative;">';
+        html += '<input type="text" data-filter="'+h+'" placeholder="Filtrer..." style="width:100%;">';
+        html += '<span class="clear-filter" data-clear="'+h+'" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); cursor:pointer;">✕</span>';
+        html += '</div>';
+        html += '</th>';
     });
 
     html += '</tr></thead><tbody>';
+
+    /* ===== DATA ROWS ===== */
 
     data.forEach(function(row){
 
@@ -929,9 +951,42 @@ function createTable(containerId, data){
 
     container.innerHTML = html;
 
-    /* ===== EVENTS ===== */
-
     var tbodyRows = container.querySelectorAll("tbody tr:not(.total-row)");
+
+    /* ================= FILTER ================= */
+
+    function applyFilters(){
+
+        tbodyRows.forEach(function(row){
+
+            var visible = true;
+
+            headers.forEach(function(h,i){
+
+                if(!activeFilters[h]) return;
+
+                var cellText = row.children[i].innerText.toLowerCase();
+                var filter = activeFilters[h].toLowerCase();
+
+                if(!cellText.includes(filter)){
+                    visible = false;
+                }
+            });
+
+            row.style.display = visible ? "" : "none";
+        });
+
+        updateCount();
+        updateTotal();
+    }
+
+    function updateCount(){
+        var count = Array.from(tbodyRows)
+                        .filter(r=>r.style.display!=="none").length;
+
+        document.getElementById(containerId+"-count")
+                .innerText = count;
+    }
 
     function updateTotal(){
 
@@ -956,138 +1011,92 @@ function createTable(containerId, data){
             }
         });
 
-        var totalCell = container.querySelector(".total-emission");
-        totalCell.innerText = total.toLocaleString('fr-FR',{
-            minimumFractionDigits:2,
-            maximumFractionDigits:2
-        });
+        container.querySelector(".total-emission")
+            .innerText = total.toLocaleString('fr-FR',{
+                minimumFractionDigits:2,
+                maximumFractionDigits:2
+            });
     }
 
-    function applyFilters(){
+    /* ================= EVENTS ================= */
 
-        tbodyRows.forEach(function(row){
+    /* TEXT FILTERS */
 
-            var visible = true;
+    container.querySelectorAll("[data-filter]").forEach(function(input){
 
-            headers.forEach(function(h,i){
-
-                if(!activeFilters[h]) return;
-
-                var cellText = row.children[i].innerText.toLowerCase();
-                var filter = activeFilters[h].toLowerCase();
-
-                if(!cellText.includes(filter)){
-                    visible = false;
-                }
-            });
-
-            row.style.display = visible ? "" : "none";
-        });
-
-        var count = Array.from(tbodyRows)
-                        .filter(r=>r.style.display!=="none").length;
-
-        document.getElementById(containerId+"-count")
-                .innerText = count;
-
-        updateTotal();
-    }
-
-    /* ===== SORT ===== */
-
-    container.querySelectorAll("th[data-sort]").forEach(function(th){
-
-        th.addEventListener("click", function(){
-
-            var col = th.getAttribute("data-sort");
-            var index = headers.indexOf(col);
-
-            sortDirection *= -1;
-
-            var rowsArray = Array.from(tbodyRows);
-
-            rowsArray.sort(function(a,b){
-
-                var A = a.children[index].innerText;
-                var B = b.children[index].innerText;
-
-                var numA = parseFloat(A.replace(/\s/g,'').replace(',','.'));
-                var numB = parseFloat(B.replace(/\s/g,'').replace(',','.'));
-
-                if(!isNaN(numA) && !isNaN(numB))
-                    return (numA - numB) * sortDirection;
-
-                return A.localeCompare(B) * sortDirection;
-            });
-
-            rowsArray.forEach(r=>container.querySelector("tbody")
-                .insertBefore(r, container.querySelector(".total-row")));
-
-            updateTotal();
+        input.addEventListener("input", function(){
+            var col = input.getAttribute("data-filter");
+            activeFilters[col] = input.value.trim();
+            if(!activeFilters[col]) delete activeFilters[col];
+            applyFilters();
         });
     });
 
-    /* ===== EXCEL FILTER POPUP ===== */
+    /* CLEAR FILTER */
 
-    container.querySelectorAll("th[data-sort]").forEach(function(th){
+    container.querySelectorAll(".clear-filter").forEach(function(btn){
 
-        th.addEventListener("contextmenu", function(e){
+        btn.addEventListener("click", function(e){
 
-            e.preventDefault();
+            e.stopPropagation();
 
-            var col = th.getAttribute("data-sort");
+            var col = btn.getAttribute("data-clear");
+            var input = container.querySelector('[data-filter="'+col+'"]');
+
+            input.value = "";
+            delete activeFilters[col];
+            applyFilters();
+        });
+    });
+
+    /* COLUMN MENU */
+
+    container.querySelectorAll(".col-menu").forEach(function(btn){
+
+        btn.addEventListener("click", function(e){
+
+            e.stopPropagation();
+
+            var col = btn.getAttribute("data-col");
             var index = headers.indexOf(col);
 
-            var values = new Set();
-
-            tbodyRows.forEach(function(row){
-                values.add(row.children[index].innerText);
-            });
-
             var menu = document.createElement("div");
-            menu.className="excel-filter";
+            menu.className="column-menu";
             menu.style.position="absolute";
             menu.style.background="#fff";
             menu.style.border="1px solid #ccc";
-            menu.style.padding="10px";
-            menu.style.zIndex="9999";
-            menu.style.maxHeight="250px";
-            menu.style.overflowY="auto";
             menu.style.boxShadow="0 4px 8px rgba(0,0,0,0.2)";
+            menu.style.padding="8px";
+            menu.style.zIndex="9999";
             menu.style.left=e.pageX+"px";
             menu.style.top=e.pageY+"px";
 
-            values.forEach(function(v){
-
-                var label=document.createElement("label");
-                label.style.display="block";
-
-                var checkbox=document.createElement("input");
-                checkbox.type="checkbox";
-                checkbox.value=v;
-                checkbox.checked=true;
-
-                checkbox.addEventListener("change",function(){
-
-                    var selected = Array.from(menu.querySelectorAll("input:checked"))
-                                        .map(i=>i.value);
-
-                    activeFilters[col]=selected;
-
-                    tbodyRows.forEach(function(row){
-
-                        var cell=row.children[index].innerText;
-
-                        row.style.display =
-                            selected.includes(cell) ? "" : "none";
-                    });
-
-                    updateTotal();
+            function addItem(label,action){
+                var item=document.createElement("div");
+                item.innerText=label;
+                item.style.padding="6px 12px";
+                item.style.cursor="pointer";
+                item.addEventListener("click",function(){
+                    action();
+                    menu.remove();
                 });
+                menu.appendChild(item);
+            }
 
-                label.appendChild(checkbox);
-                label.append(" "+v);
-                menu.appendChild(label);
+            addItem("Tri ascendant", function(){
+                sortDirection=1;
+                sortColumn(index);
+            });
+
+            addItem("Tri descendant", function(){
+                sortDirection=-1;
+                sortColumn(index);
+            });
+
+            addItem("Effacer le filtre", function(){
+                delete activeFilters[col];
+                container.querySelector('[data-filter="'+col+'"]').value="";
+                applyFilters();
             });
 
             document.body.appendChild(menu);
@@ -1098,19 +1107,46 @@ function createTable(containerId, data){
         });
     });
 
-    /* ===== RESET ===== */
+    function sortColumn(index){
+
+        var rowsArray = Array.from(tbodyRows);
+
+        rowsArray.sort(function(a,b){
+
+            var A = a.children[index].innerText;
+            var B = b.children[index].innerText;
+
+            var numA = parseFloat(A.replace(/\s/g,'').replace(',','.'));
+            var numB = parseFloat(B.replace(/\s/g,'').replace(',','.'));
+
+            if(!isNaN(numA) && !isNaN(numB))
+                return (numA - numB) * sortDirection;
+
+            return A.localeCompare(B) * sortDirection;
+        });
+
+        rowsArray.forEach(r=>container.querySelector("tbody")
+            .insertBefore(r, container.querySelector(".total-row")));
+
+        updateTotal();
+    }
+
+    /* RESET */
 
     document.getElementById(containerId+"-reset")
         .addEventListener("click",function(){
 
             activeFilters={};
 
+            container.querySelectorAll("[data-filter]").forEach(i=>i.value="");
+
             tbodyRows.forEach(r=>r.style.display="");
 
-            applyFilters();
+            updateCount();
+            updateTotal();
         });
 
-    /* ===== EXPORT ===== */
+    /* EXPORT */
 
     document.getElementById(containerId+"-export")
         .addEventListener("click",function(){
