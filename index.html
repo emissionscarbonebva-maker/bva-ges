@@ -1073,7 +1073,10 @@ function createTable(containerId, data){
 
     container.querySelectorAll("[data-filter]").forEach(function(input){
 
-        input.addEventListener("input", function(){
+       // empêche perte de focus pendant recalcul
+    input.addEventListener("keydown", function(e){
+        e.stopPropagation();
+    });
 
             clearTimeout(debounceTimer);
 
@@ -1116,10 +1119,14 @@ function createTable(containerId, data){
             var dateIndex = headers.findIndex(h=>h.toLowerCase().includes("date"));
 
             if(dateIndex!==-1){
-                data.sort((a,b)=> new Date(b[headers[dateIndex]]) - new Date(a[headers[dateIndex]]));
+                data.sort(function(a,b){
+    var da = new Date(a[headers[dateIndex]]);
+    var db = new Date(b[headers[dateIndex]]);
+    return db - da;
+});
             }
 
-            filteredData=[...data];
+            filteredData = data.slice();
             currentPage=1;
             renderTable();
         });
