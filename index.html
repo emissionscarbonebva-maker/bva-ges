@@ -816,7 +816,7 @@ text:"Nombre de rotations"
 
 });
 
-/* ===== TABLE DATA PRO V2 ===== */
+/* ===== TABLE DATA PRO V2 - FIXED ===== */
 
 function createTable(containerId, data){
 
@@ -825,102 +825,111 @@ function createTable(containerId, data){
             "<p>Aucune donnée disponible</p>";
         return;
     }
-    let container = document.getElementById(containerId);
-    let headers = Object.keys(data[0]);
-    let filteredData = [...data];
-    let sortColumn = null;
-    let sortDirection = 1;
 
-    // Stockage des filtres actifs
-    let activeFilters = {};
+    var container = document.getElementById(containerId);
+    var headers = Object.keys(data[0]);
+    var filteredData = data.slice();
+    var sortColumn = null;
+    var sortDirection = 1;
+    var activeFilters = {};
 
     function renderTable(){
 
-        let html = `
-        <div style="margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
-            <div>
-                <strong>${filteredData.length}</strong> vols affichés
-            </div>
-            <div>
-                <button id="${containerId}-reset">Réinitialiser le tableau</button>
-                <button id="${containerId}-export">Exporter Excel</button>
-                <button id="${containerId}-dark">Mode sombre</button>
-            </div>
-        </div>
+        var html = "";
 
-        <div class="table-wrapper">
-        <table class="data-table">
-        <thead>
-        <tr>
-        `;
+        html += '<div style="margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">';
+        html += '<div><strong>'+filteredData.length+'</strong> vols affichés</div>';
+        html += '<div>';
+        html += '<button id="'+containerId+'-reset">Réinitialiser</button> ';
+        html += '<button id="'+containerId+'-export">Exporter</button> ';
+        html += '<button id="'+containerId+'-dark">Mode sombre</button>';
+        html += '</div></div>';
 
-        // ===== LIGNE TRI =====
-        headers.forEach((h,i)=>{
-            let arrow = "";
+        html += '<div class="table-wrapper">';
+        html += '<table class="data-table"><thead><tr>';
+
+        // ===== HEADERS =====
+        headers.forEach(function(h,i){
+            var arrow = "";
             if(sortColumn === h){
                 arrow = sortDirection === 1 ? " ↑" : " ↓";
             }
 
-            html += `<th data-sort="${h}" 
-                        class="${i===0 ? 'sticky-col':''}">
-                        ${h}${arrow}
-                     </th>`;
+            html += '<th data-sort="'+h+'" class="'+(i===0?'sticky-col':'')+'">'+h+arrow+'</th>';
         });
 
-        html += "</tr><tr>";
+        html += '</tr><tr>';
 
-        // ===== LIGNE FILTRES =====
-        headers.forEach((h,i)=>{
+        // ===== FILTERS =====
+        headers.forEach(function(h,i){
 
-            let values = [...new Set(data.map(r=>r[h]))].filter(v=>v!=="");
-            let currentValue = activeFilters[h] || "";
+            var values = data.map(function(r){ return r[h]; })
+                             .filter(function(v){ return v!==""; });
 
-            if(values.length > 0 && values.length <= 15){
+            var unique = values.filter(function(v,idx,self){
+                return self.indexOf(v) === idx;
+            });
 
-                html += `<th class="${i===0 ? 'sticky-col':''}">
-                    <select data-filter="${h}">
-                        <option value="">Tous</option>
-                        ${values.sort().map(v=>
-                            `<option value="${v}" ${v===currentValue?'selected':''}>${v}</option>`
-                        ).join("")}
-                    </select>
-                </th>`;
+            var currentValue = activeFilters[h] || "";
+
+            if(unique.length > 0 && unique.length <= 15){
+
+                html += '<th class="'+(i===0?'sticky-col':'')+'">';
+                html += '<select data-filter="'+h+'">';
+                html += '<option value="">Tous</option>';
+
+                unique.sort().forEach(function(v){
+                    var selected = v===currentValue ? 'selected' : '';
+                    html += '<option value="'+v+'" '+selected+'>'+v+'</option>';
+                });
+
+                html += '</select></th>';
 
             } else {
 
-                html += `<th class="${i===0 ? 'sticky-col':''}">
-                    <div style="position:relative;">
-                        <input type="text" 
-                               data-filter="${h}" 
-                               value="${currentValue}"
-                               placeholder="Filtrer...">
-                        ${currentValue ? `<span class="clear-filter" data-clear="${h}">✕</span>` : ""}
-                    </div>
-                </th>`;
+                html += '<th class="'+(i===0?'sticky-col':'')+'">';
+                html += '<div style="position:relative;">';
+                html += '<input type="text" data-filter="'+h+'" value="'+currentValue+'" placeholder="Filtrer...">';
+
+                if(currentValue){
+                    html += '<span class="clear-filter" data-clear="'+h+'">✕</span>';
+                }
+
+                html += '</div></th>';
             }
         });
 
-        html += "</tr></thead><tbody>";
+        html += '</tr></thead><tbody>';
 
-        // ===== DONNEES =====
-        filteredData.forEach(row=>{
+        // ===== ROWS =====
+        filteredData.forEach(function(row){
+
             html += "<tr>";
 
-            headers.forEach((h,i)=>{
-                let value = row[h];
-                let cls="";
+            headers.forEach(function(h,i){
 
-                if(h.toLowerCase().includes("date")) cls="center";
-                if(h.toLowerCase().includes("distance")){
-                    value = formatDistance(value);
+                var value = row[h] || "";
+                var cls = "";
+
+                var lower = h.toLowerCase();
+
+                if(lower.indexOf("date") !== -1) cls="center";
+
+                if(lower.indexOf("distance") !== -1){
+                    if(typeof formatDistance === "function"){
+                        value = formatDistance(value);
+                    }
                     cls="center";
                 }
-                if(h.toLowerCase().includes("emission")){
-                    value = formatEmission(value);
+
+                if(lower.indexOf("emission") !== -1){
+                    if(typeof formatEmission === "function"){
+                        value = formatEmission(value);
+                    }
                     cls="center";
                 }
 
-                html += `<td class="${cls} ${i===0 ? 'sticky-col':''}">${value}</td>`;
+                html += '<td class="'+cls+' '+(i===0?'sticky-col':'')+'">'+value+'</td>';
             });
 
             html += "</tr>";
@@ -934,10 +943,11 @@ function createTable(containerId, data){
 
     function attachEvents(){
 
-        // TRI
-        container.querySelectorAll("th[data-sort]").forEach(th=>{
-            th.addEventListener("click", ()=>{
-                let col = th.dataset.sort;
+        container.querySelectorAll("th[data-sort]").forEach(function(th){
+
+            th.addEventListener("click", function(){
+
+                var col = th.getAttribute("data-sort");
 
                 if(sortColumn === col){
                     sortDirection *= -1;
@@ -946,7 +956,7 @@ function createTable(containerId, data){
                     sortDirection = 1;
                 }
 
-                filteredData.sort((a,b)=>{
+                filteredData.sort(function(a,b){
                     if(a[col] < b[col]) return -1 * sortDirection;
                     if(a[col] > b[col]) return 1 * sortDirection;
                     return 0;
@@ -956,47 +966,42 @@ function createTable(containerId, data){
             });
         });
 
-        // FILTRES
-        container.querySelectorAll("[data-filter]").forEach(input=>{
+        container.querySelectorAll("[data-filter]").forEach(function(input){
             input.addEventListener("input", applyFilters);
             input.addEventListener("change", applyFilters);
         });
 
-        // CLEAR FILTER
-        container.querySelectorAll(".clear-filter").forEach(btn=>{
-            btn.addEventListener("click", ()=>{
-                let col = btn.dataset.clear;
+        container.querySelectorAll(".clear-filter").forEach(function(btn){
+            btn.addEventListener("click", function(){
+                var col = btn.getAttribute("data-clear");
                 delete activeFilters[col];
                 applyFilters();
             });
         });
 
-        // RESET TABLE
         document.getElementById(containerId+"-reset")
-            .addEventListener("click", ()=>{
+            .addEventListener("click", function(){
                 activeFilters = {};
-                filteredData = [...data];
+                filteredData = data.slice();
                 sortColumn = null;
                 renderTable();
             });
 
-        // EXPORT
         document.getElementById(containerId+"-export")
             .addEventListener("click", exportExcel);
 
-        // DARK MODE
         document.getElementById(containerId+"-dark")
-            .addEventListener("click", ()=>{
+            .addEventListener("click", function(){
                 container.classList.toggle("dark-mode");
             });
     }
 
     function applyFilters(){
 
-        // Sauvegarde filtres actifs
-        container.querySelectorAll("[data-filter]").forEach(input=>{
-            let col = input.dataset.filter;
-            let val = input.value.trim();
+        container.querySelectorAll("[data-filter]").forEach(function(input){
+            var col = input.getAttribute("data-filter");
+            var val = input.value.trim();
+
             if(val){
                 activeFilters[col] = val;
             } else {
@@ -1004,22 +1009,15 @@ function createTable(containerId, data){
             }
         });
 
-        filteredData = data.filter(row=>{
-            return Object.keys(activeFilters).every(col=>{
-                let filterValue = activeFilters[col];
+        filteredData = data.filter(function(row){
 
-                // Si select → égalité stricte
-                if([...new Set(data.map(r=>r[col]))].length <= 15){
-                    return row[col] === filterValue;
-                }
+            return Object.keys(activeFilters).every(function(col){
 
-                // Sinon texte
-        return (row[col] || "")
-                    .toString()
-                    .toLowerCase()
-                    .includes(filterValue.toLowerCase());
-                    .toLowerCase()
-                    .includes(filterValue.toLowerCase());
+                var filterValue = activeFilters[col];
+                var cell = row[col] || "";
+
+                return cell.toString().toLowerCase()
+                    .indexOf(filterValue.toLowerCase()) !== -1;
             });
         });
 
@@ -1027,14 +1025,17 @@ function createTable(containerId, data){
     }
 
     function exportExcel(){
-        let csv = "\uFEFF";
+
+        var csv = "\uFEFF";
         csv += headers.join(";") + "\n";
-        filteredData.forEach(row=>{
-            csv += headers.map(h=>row[h]).join(";") + "\n";
+
+        filteredData.forEach(function(row){
+            csv += headers.map(function(h){ return row[h]; }).join(";") + "\n";
         });
-        let blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
-        let url = URL.createObjectURL(blob);
-        let a = document.createElement("a");
+
+        var blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
         a.href = url;
         a.download = containerId + ".csv";
         a.click();
@@ -1044,20 +1045,19 @@ function createTable(containerId, data){
     renderTable();
 }
 
+
 /* ===== TABLES ===== */
 
-parseCSV('./data/EXPORT_departures_YTD.csv',(data)=>{
+parseCSV('./data/EXPORT_departures_YTD.csv', function(data){
     if(data && data.length > 0){
-        createTable("tableDepartures",data);
+        createTable("tableDepartures", data);
     }
 });
 
-parseCSV('./data/EXPORT_arrivals_YTD.csv',(data)=>{
+parseCSV('./data/EXPORT_arrivals_YTD.csv', function(data){
     if(data && data.length > 0){
-        createTable("tableArrivals",data);
+        createTable("tableArrivals", data);
     }
-});
-  
 });
 
 </script>
