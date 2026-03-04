@@ -657,97 +657,7 @@ text:"Emissions de gaz à effet de serre (en t éq CO2)"
 });
 
 
-/* ===== 4 ROTATIONS (VERSION PERSONNALISÉE) ===== */
-
-parseCSV('./data/EXPORT_daily_airlines.csv',(data)=>{
-
-let labels=[...new Set(data.map(r=>r.date))].sort();
-let compagnies=[...new Set(data.map(r=>r.compagnie))];
-
-let datasets=[];
-
-// 🎨 Couleurs personnalisées (identiques bloc 3)
-let colors = {
-"Ryanair": "rgb(223,186,47)",
-"Wizz Air": "rgb(225,14,73)",
-"HiSky": "rgb(19,62,103)",
-"SkyUp": "rgb(255,58,32)",
-"Volotea": "rgb(0,0,0)"
-};
-
-compagnies.forEach(comp=>{
-
-let serie=[];
-
-labels.forEach(d=>{
-let row=data.find(r=>r.date===d && r.compagnie===comp);
-let value = row ? parseFloat(row.rotations) : 0;
-if(isNaN(value)) value = 0;
-serie.push(value);
-});
-
-datasets.push({
-label: comp,
-data: serie,
-borderWidth: 2,
-fill: false,
-borderColor: colors[comp] || "rgb(120,120,120)"
-});
-
-});
-
-// ===== Création graphique =====
-
-new Chart(document.getElementById("chartRotations"),{
-type:'line',
-data:{
-labels:labels,
-datasets:datasets
-},
-options:{
-responsive:true,
-interaction:{mode:'index',intersect:false},
-plugins:{
-legend:{position:'top'},
-tooltip:{
-callbacks:{
-label: function(context){
-
-let value = context.parsed.y || 0;
-let valueRounded = Math.round(value);
-
-return context.dataset.label + " : "
-+ valueRounded.toLocaleString('fr-FR');
-
-}
-}
-},
-zoom:{
-pan:{enabled:true,mode:'x'},
-zoom:{wheel:{enabled:true},pinch:{enabled:true},mode:'x'}
-}
-},
-scales:{
-x:{
-title:{
-display:true,
-text:"Date"
-}
-},
-y:{
-beginAtZero:true,
-title:{
-display:true,
-text:"Nombre de rotations"
-}
-}
-}
-}
-});
-
-});
-
-/* ===== TABLES AVEC FILTRES + PAGINATION ===== */
+/* ===== TABLE DATA PRO ===== */
 
 function formatNumber(value){
     if(!isNaN(value) && value !== ""){
@@ -759,37 +669,62 @@ function formatNumber(value){
 function createTable(containerId, data){
 
     let container = document.getElementById(containerId);
-    let currentPage = 1;
-    const rowsPerPage = 20;
-
     let headers = Object.keys(data[0]);
     let filteredData = [...data];
+    let sortColumn = null;
+    let sortDirection = 1;
 
     function renderTable(){
 
-        let start = (currentPage - 1) * rowsPerPage;
-        let end = start + rowsPerPage;
-        let pageData = filteredData.slice(start, end);
+        let html = `
+        <div style="margin-bottom:10px;">
+            <strong>${filteredData.length}</strong> vols affichés
+            <button id="${containerId}-export" style="float:right;">Exporter CSV</button>
+        </div>
+        <div style="max-height:600px; overflow-y:auto; border:1px solid #ccc;">
+        <table>
+        <thead>
+        <tr>
+        `;
 
-        let html = "<table>";
-
-        /* HEADER */
-        html += "<thead><tr>";
         headers.forEach(h=>{
-            html += `<th>${h}<br><input type="text" data-col="${h}" placeholder="Filtrer..." style="width:90%"></th>`;
+            html += `<th data-sort="${h}" style="cursor:pointer;">
+                        ${h}
+                     </th>`;
         });
-        html += "</tr></thead>";
 
-        /* BODY */
-        html += "<tbody>";
+        html += "</tr><tr>";
 
-        pageData.forEach(row=>{
+        // Filtres
+        headers.forEach(h=>{
+
+            let values = [...new Set(data.map(r=>r[h]))].filter(v=>v!=="");
+
+            // Dropdown si peu de valeurs uniques
+            if(values.length > 0 && values.length <= 15){
+                html += `<th>
+                    <select data-filter="${h}">
+                        <option value="">Tous</option>
+                        ${values.sort().map(v=>`<option value="${v}">${v}</option>`).join("")}
+                    </select>
+                </th>`;
+            } else {
+                html += `<th>
+                    <input type="text" data-filter="${h}" placeholder="Filtrer..." style="width:90%">
+                </th>`;
+            }
+
+        });
+
+        html += "</tr></thead><tbody>";
+
+        filteredData.forEach(row=>{
             html += "<tr>";
             headers.forEach(h=>{
                 let value = row[h];
 
-                // Format distance et emissions
-                if(h.toLowerCase().includes("distance") || h.toLowerCase().includes("emission")){
+                if(h.toLowerCase().includes("distance") || 
+                   h.toLowerCase().includes("emission")){
                     value = formatNumber(value);
                 }
 
@@ -798,42 +733,46 @@ function createTable(containerId, data){
             html += "</tr>";
         });
 
-        html += "</tbody></table>";
-
-        /* PAGINATION */
-        let totalPages = Math.ceil(filteredData.length / rowsPerPage);
-
-        html += `<div style="margin-top:10px;">
-            Page ${currentPage} / ${totalPages}
-            <button ${currentPage===1?'disabled':''} id="${containerId}-prev">◀</button>
-            <button ${currentPage===totalPages?'disabled':''} id="${containerId}-next">▶</button>
-        </div>`;
+        html += "</tbody></table></div>";
 
         container.innerHTML = html;
 
-        /* EVENTS */
+        attachEvents();
+    }
 
-        // Filtres
-        container.querySelectorAll("input").forEach(input=>{
-            input.addEventListener("input", ()=>{
-                applyFilters();
+    function attachEvents(){
+
+        // TRI
+        container.querySelectorAll("th[data-sort]").forEach(th=>{
+            th.addEventListener("click", ()=>{
+                let col = th.dataset.sort;
+
+                if(sortColumn === col){
+                    sortDirection *= -1;
+                } else {
+                    sortColumn = col;
+                    sortDirection = 1;
+                }
+
+                filteredData.sort((a,b)=>{
+                    if(a[col] < b[col]) return -1 * sortDirection;
+                    if(a[col] > b[col]) return 1 * sortDirection;
+                    return 0;
+                });
+
+                renderTable();
             });
         });
 
-        // Pagination
-        document.getElementById(containerId+"-prev").onclick = ()=>{
-            if(currentPage>1){
-                currentPage--;
-                renderTable();
-            }
-        };
+        // FILTRES
+        container.querySelectorAll("[data-filter]").forEach(input=>{
+            input.addEventListener("input", applyFilters);
+            input.addEventListener("change", applyFilters);
+        });
 
-        document.getElementById(containerId+"-next").onclick = ()=>{
-            if(currentPage<totalPages){
-                currentPage++;
-                renderTable();
-            }
-        };
+        // EXPORT CSV
+        document.getElementById(containerId+"-export")
+            .addEventListener("click", exportCSV);
     }
 
     function applyFilters(){
@@ -841,8 +780,8 @@ function createTable(containerId, data){
         filteredData = data.filter(row=>{
             let match = true;
 
-            container.querySelectorAll("input").forEach(input=>{
-                let col = input.dataset.col;
+            container.querySelectorAll("[data-filter]").forEach(input=>{
+                let col = input.dataset.filter;
                 let val = input.value.toLowerCase();
 
                 if(val && !row[col].toString().toLowerCase().includes(val)){
@@ -853,8 +792,24 @@ function createTable(containerId, data){
             return match;
         });
 
-        currentPage = 1;
         renderTable();
+    }
+
+    function exportCSV(){
+
+        let csv = headers.join(",") + "\n";
+
+        filteredData.forEach(row=>{
+            csv += headers.map(h=>`"${row[h]}"`).join(",") + "\n";
+        });
+
+        let blob = new Blob([csv], {type:"text/csv"});
+        let url = URL.createObjectURL(blob);
+        let a = document.createElement("a");
+        a.href = url;
+        a.download = containerId + "_filtered.csv";
+        a.click();
+        URL.revokeObjectURL(url);
     }
 
     renderTable();
@@ -862,8 +817,11 @@ function createTable(containerId, data){
 
 /* ===== LOAD TABLES ===== */
 
-parseCSV('./data/EXPORT_departures_YTD.csv',(data)=>createTable("tableDepartures",data));
-parseCSV('./data/EXPORT_arrivals_YTD.csv',(data)=>createTable("tableArrivals",data));
+parseCSV('./data/EXPORT_departures_YTD.csv',
+    (data)=>createTable("tableDepartures",data));
+
+parseCSV('./data/EXPORT_arrivals_YTD.csv',
+    (data)=>createTable("tableArrivals",data));
 
 });
 
