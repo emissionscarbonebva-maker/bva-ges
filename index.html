@@ -124,6 +124,20 @@ footer { text-align:center; padding:30px; font-size:0.9em; color:#666;}
 .dark-mode .sticky-col{
     background:#2c2c2c;
 }
+
+.clear-filter{
+    position:absolute;
+    right:6px;
+    top:50%;
+    transform:translateY(-50%);
+    cursor:pointer;
+    font-size:12px;
+    color:#888;
+}
+
+.clear-filter:hover{
+    color:red;
+}
   
 </style>
 
@@ -802,22 +816,7 @@ text:"Nombre de rotations"
 
 });
 
-/* ===== TABLE DATA PRO ULTRA ===== */
-
-function formatDistance(value){
-    if(!isNaN(value) && value !== ""){
-        return Math.round(parseFloat(value)).toLocaleString("fr-FR");
-    }
-    return value;
-}
-
-function formatEmission(value){
-    if(!isNaN(value) && value !== ""){
-        return parseFloat(value)
-            .toLocaleString("fr-FR", {minimumFractionDigits:2, maximumFractionDigits:2});
-    }
-    return value;
-}
+/* ===== TABLE DATA PRO V2 ===== */
 
 function createTable(containerId, data){
 
@@ -827,6 +826,9 @@ function createTable(containerId, data){
     let sortColumn = null;
     let sortDirection = 1;
 
+    // Stockage des filtres actifs
+    let activeFilters = {};
+
     function renderTable(){
 
         let html = `
@@ -835,6 +837,7 @@ function createTable(containerId, data){
                 <strong>${filteredData.length}</strong> vols affichés
             </div>
             <div>
+                <button id="${containerId}-reset">Réinitialiser le tableau</button>
                 <button id="${containerId}-export">Exporter Excel</button>
                 <button id="${containerId}-dark">Mode sombre</button>
             </div>
@@ -846,6 +849,7 @@ function createTable(containerId, data){
         <tr>
         `;
 
+        // ===== LIGNE TRI =====
         headers.forEach((h,i)=>{
             let arrow = "";
             if(sortColumn === h){
@@ -853,37 +857,53 @@ function createTable(containerId, data){
             }
 
             html += `<th data-sort="${h}" 
-                        class="sortable ${i===0 ? 'sticky-col':''}">
+                        class="${i===0 ? 'sticky-col':''}">
                         ${h}${arrow}
                      </th>`;
         });
 
         html += "</tr><tr>";
 
+        // ===== LIGNE FILTRES =====
         headers.forEach((h,i)=>{
+
             let values = [...new Set(data.map(r=>r[h]))].filter(v=>v!=="");
+            let currentValue = activeFilters[h] || "";
 
             if(values.length > 0 && values.length <= 15){
+
                 html += `<th class="${i===0 ? 'sticky-col':''}">
                     <select data-filter="${h}">
                         <option value="">Tous</option>
-                        ${values.sort().map(v=>`<option value="${v}">${v}</option>`).join("")}
+                        ${values.sort().map(v=>
+                            `<option value="${v}" ${v===currentValue?'selected':''}>${v}</option>`
+                        ).join("")}
                     </select>
                 </th>`;
+
             } else {
+
                 html += `<th class="${i===0 ? 'sticky-col':''}">
-                    <input type="text" data-filter="${h}" placeholder="Filtrer...">
+                    <div style="position:relative;">
+                        <input type="text" 
+                               data-filter="${h}" 
+                               value="${currentValue}"
+                               placeholder="Filtrer...">
+                        ${currentValue ? `<span class="clear-filter" data-clear="${h}">✕</span>` : ""}
+                    </div>
                 </th>`;
             }
         });
 
         html += "</tr></thead><tbody>";
 
+        // ===== DONNEES =====
         filteredData.forEach(row=>{
             html += "<tr>";
+
             headers.forEach((h,i)=>{
                 let value = row[h];
-                let cls = "";
+                let cls="";
 
                 if(h.toLowerCase().includes("date")) cls="center";
                 if(h.toLowerCase().includes("distance")){
@@ -897,13 +917,13 @@ function createTable(containerId, data){
 
                 html += `<td class="${cls} ${i===0 ? 'sticky-col':''}">${value}</td>`;
             });
+
             html += "</tr>";
         });
 
         html += "</tbody></table></div>";
 
         container.innerHTML = html;
-
         attachEvents();
     }
 
@@ -937,11 +957,29 @@ function createTable(containerId, data){
             input.addEventListener("change", applyFilters);
         });
 
+        // CLEAR FILTER
+        container.querySelectorAll(".clear-filter").forEach(btn=>{
+            btn.addEventListener("click", ()=>{
+                let col = btn.dataset.clear;
+                delete activeFilters[col];
+                applyFilters();
+            });
+        });
+
+        // RESET TABLE
+        document.getElementById(containerId+"-reset")
+            .addEventListener("click", ()=>{
+                activeFilters = {};
+                filteredData = [...data];
+                sortColumn = null;
+                renderTable();
+            });
+
         // EXPORT
         document.getElementById(containerId+"-export")
             .addEventListener("click", exportExcel);
 
-        // MODE SOMBRE
+        // DARK MODE
         document.getElementById(containerId+"-dark")
             .addEventListener("click", ()=>{
                 container.classList.toggle("dark-mode");
@@ -950,39 +988,42 @@ function createTable(containerId, data){
 
     function applyFilters(){
 
+        // Sauvegarde filtres actifs
+        container.querySelectorAll("[data-filter]").forEach(input=>{
+            let col = input.dataset.filter;
+            let val = input.value.trim();
+            if(val){
+                activeFilters[col] = val;
+            } else {
+                delete activeFilters[col];
+            }
+        });
+
         filteredData = data.filter(row=>{
-            let match = true;
+            return Object.keys(activeFilters).every(col=>{
+                let filterValue = activeFilters[col];
 
-            container.querySelectorAll("[data-filter]").forEach(input=>{
-                let col = input.dataset.filter;
-                let val = input.value.toLowerCase();
-
-                if(val){
-                    input.style.background="#ffeaa7";
-                } else {
-                    input.style.background="";
+                // Si select → égalité stricte
+                if([...new Set(data.map(r=>r[col]))].length <= 15){
+                    return row[col] === filterValue;
                 }
 
-                if(val && !row[col].toString().toLowerCase().includes(val)){
-                    match = false;
-                }
+                // Sinon texte
+                return row[col].toString()
+                    .toLowerCase()
+                    .includes(filterValue.toLowerCase());
             });
-
-            return match;
         });
 
         renderTable();
     }
 
     function exportExcel(){
-
-        let csv = "\uFEFF"; // BOM UTF-8
+        let csv = "\uFEFF";
         csv += headers.join(";") + "\n";
-
         filteredData.forEach(row=>{
             csv += headers.map(h=>row[h]).join(";") + "\n";
         });
-
         let blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
         let url = URL.createObjectURL(blob);
         let a = document.createElement("a");
