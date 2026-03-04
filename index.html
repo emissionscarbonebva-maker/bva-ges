@@ -820,6 +820,11 @@ text:"Nombre de rotations"
 
 function createTable(containerId, data){
 
+    if(!data || data.length === 0){
+        document.getElementById(containerId).innerHTML =
+            "<p>Aucune donnée disponible</p>";
+        return;
+    }
     let container = document.getElementById(containerId);
     let headers = Object.keys(data[0]);
     let filteredData = [...data];
