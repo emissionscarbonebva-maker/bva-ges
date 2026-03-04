@@ -1163,13 +1163,13 @@ document.head.appendChild(style);
 
 /* ===== TABLE DEPARTURES ===== */
 
-parseCSV('./data/EXPORT_departures.csv', function(data){
+parseCSV('./data/EXPORT_departures_YTD.csv', function(data){
     createTable("tableDepartures", data);
 });
 
 /* ===== TABLE ARRIVALS ===== */
 
-parseCSV('./data/EXPORT_arrivals.csv', function(data){
+parseCSV('./data/EXPORT_arrivals_YTD.csv', function(data){
     createTable("tableArrivals", data);
 });
 
