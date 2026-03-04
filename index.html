@@ -747,20 +747,120 @@ text:"Nombre de rotations"
 
 });
 
-/* ===== TABLES ===== */
+/* ===== TABLES AVEC FILTRES + PAGINATION ===== */
 
-function createTable(containerId,data){
-let html="<table><tr>";
-Object.keys(data[0]).forEach(h=>html+="<th>"+h+"</th>");
-html+="</tr>";
-data.slice(0,200).forEach(row=>{
-html+="<tr>";
-Object.values(row).forEach(v=>html+="<td>"+v+"</td>");
-html+="</tr>";
-});
-html+="</table>";
-document.getElementById(containerId).innerHTML=html;
+function formatNumber(value){
+    if(!isNaN(value) && value !== ""){
+        return Math.round(parseFloat(value)).toLocaleString("fr-FR");
+    }
+    return value;
 }
+
+function createTable(containerId, data){
+
+    let container = document.getElementById(containerId);
+    let currentPage = 1;
+    const rowsPerPage = 20;
+
+    let headers = Object.keys(data[0]);
+    let filteredData = [...data];
+
+    function renderTable(){
+
+        let start = (currentPage - 1) * rowsPerPage;
+        let end = start + rowsPerPage;
+        let pageData = filteredData.slice(start, end);
+
+        let html = "<table>";
+
+        /* HEADER */
+        html += "<thead><tr>";
+        headers.forEach(h=>{
+            html += `<th>${h}<br><input type="text" data-col="${h}" placeholder="Filtrer..." style="width:90%"></th>`;
+        });
+        html += "</tr></thead>";
+
+        /* BODY */
+        html += "<tbody>";
+
+        pageData.forEach(row=>{
+            html += "<tr>";
+            headers.forEach(h=>{
+                let value = row[h];
+
+                // Format distance et emissions
+                if(h.toLowerCase().includes("distance") || h.toLowerCase().includes("emission")){
+                    value = formatNumber(value);
+                }
+
+                html += `<td>${value}</td>`;
+            });
+            html += "</tr>";
+        });
+
+        html += "</tbody></table>";
+
+        /* PAGINATION */
+        let totalPages = Math.ceil(filteredData.length / rowsPerPage);
+
+        html += `<div style="margin-top:10px;">
+            Page ${currentPage} / ${totalPages}
+            <button ${currentPage===1?'disabled':''} id="${containerId}-prev">◀</button>
+            <button ${currentPage===totalPages?'disabled':''} id="${containerId}-next">▶</button>
+        </div>`;
+
+        container.innerHTML = html;
+
+        /* EVENTS */
+
+        // Filtres
+        container.querySelectorAll("input").forEach(input=>{
+            input.addEventListener("input", ()=>{
+                applyFilters();
+            });
+        });
+
+        // Pagination
+        document.getElementById(containerId+"-prev").onclick = ()=>{
+            if(currentPage>1){
+                currentPage--;
+                renderTable();
+            }
+        };
+
+        document.getElementById(containerId+"-next").onclick = ()=>{
+            if(currentPage<totalPages){
+                currentPage++;
+                renderTable();
+            }
+        };
+    }
+
+    function applyFilters(){
+
+        filteredData = data.filter(row=>{
+            let match = true;
+
+            container.querySelectorAll("input").forEach(input=>{
+                let col = input.dataset.col;
+                let val = input.value.toLowerCase();
+
+                if(val && !row[col].toString().toLowerCase().includes(val)){
+                    match = false;
+                }
+            });
+
+            return match;
+        });
+
+        currentPage = 1;
+        renderTable();
+    }
+
+    renderTable();
+}
+
+/* ===== LOAD TABLES ===== */
 
 parseCSV('./data/EXPORT_departures_YTD.csv',(data)=>createTable("tableDepartures",data));
 parseCSV('./data/EXPORT_arrivals_YTD.csv',(data)=>createTable("tableArrivals",data));
