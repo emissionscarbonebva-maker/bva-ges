@@ -310,21 +310,31 @@ Hébergement : GitHub Pages (GitHub Inc.)
 document.addEventListener("DOMContentLoaded", function(){
 
 function parseCSV(url, callback){
-fetch(url)
-.then(r=>r.text())
-.then(data=>{
-const rows=data.split('\n').filter(r=>r.trim()!='');
-const sep=rows[0].includes(';')?';':',';
-const headers=rows[0].split(sep);
-const result=[];
-for(let i=1;i<rows.length;i++){
-let cols=rows[i].split(sep);
-let obj={};
-headers.forEach((h,index)=>obj[h.trim()]=cols[index]?.trim());
-result.push(obj);
-}
-callback(result, headers);
-});
+    fetch(url)
+    .then(function(r){ return r.text(); })
+    .then(function(data){
+
+        var rows = data.split('\n').filter(function(r){ 
+            return r.trim() !== ''; 
+        });
+
+        var sep = rows[0].indexOf(';') !== -1 ? ';' : ',';
+        var headers = rows[0].split(sep);
+        var result = [];
+
+        for(var i=1; i<rows.length; i++){
+            var cols = rows[i].split(sep);
+            var obj = {};
+
+            headers.forEach(function(h,index){
+                obj[h.trim()] = cols[index] ? cols[index].trim() : "";
+            });
+
+            result.push(obj);
+        }
+
+        callback(result, headers);
+    });
 }
 
 function createChart(canvasId, labels, datasets){
