@@ -1071,26 +1071,32 @@ function createTable(containerId, data){
 
     /* ================= DEBOUNCE INPUT ================= */
 
-    container.querySelectorAll("[data-filter]").forEach(function(input){
+container.querySelectorAll("[data-filter]").forEach(function(input){
 
-       // empêche perte de focus pendant recalcul
+    // empêche perte de focus pendant recalcul
     input.addEventListener("keydown", function(e){
         e.stopPropagation();
     });
 
-            clearTimeout(debounceTimer);
+    input.addEventListener("input", function(){
 
-            debounceTimer = setTimeout(function(){
+        clearTimeout(debounceTimer);
 
-                var col = input.getAttribute("data-filter");
-                activeFilters[col] = input.value.trim();
-                if(!activeFilters[col]) delete activeFilters[col];
+        debounceTimer = setTimeout(function(){
 
-                applyFilters();
+            var col = input.getAttribute("data-filter");
+            activeFilters[col] = input.value.trim();
+            if(!activeFilters[col]) {
+                delete activeFilters[col];
+            }
 
-            },300);
-        });
+            applyFilters();
+
+        }, 300);
+
     });
+
+});
 
     /* CLEAR FILTER */
 
