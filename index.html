@@ -708,6 +708,62 @@ text:"Emissions de gaz à effet de serre (en t éq CO2)"
 
 });
 
+  /* ===== 4 ROTATIONS JOURNALIERES ===== */
+
+parseCSV('./data/EXPORT_daily_rotations.csv',(data)=>{
+
+let labels=[...new Set(data.map(r=>r.date))].sort();
+let compagnies=[...new Set(data.map(r=>r.compagnie))];
+
+let datasets=[];
+
+compagnies.forEach(comp=>{
+
+let serie=[];
+
+labels.forEach(d=>{
+let row=data.find(r=>r.date===d && r.compagnie===comp);
+let value = row ? parseFloat(row.rotations) : 0;
+if(isNaN(value)) value = 0;
+serie.push(value);
+});
+
+datasets.push({
+label: comp,
+data: serie,
+borderWidth: 2,
+fill: false
+});
+
+});
+
+new Chart(document.getElementById("chartRotations"),{
+type:'line',
+data:{
+labels:labels,
+datasets:datasets
+},
+options:{
+responsive:true,
+interaction:{mode:'index',intersect:false},
+plugins:{
+legend:{position:'top'},
+zoom:{
+pan:{enabled:true,mode:'x'},
+zoom:{wheel:{enabled:true},pinch:{enabled:true},mode:'x'}
+}
+},
+scales:{
+x:{title:{display:true,text:"Date"}},
+y:{
+beginAtZero:true,
+title:{display:true,text:"Nombre de rotations"}
+}
+}
+}
+});
+
+});
 
 /* ===== TABLE DATA PRO ULTRA ===== */
 
@@ -902,6 +958,20 @@ function createTable(containerId, data){
     renderTable();
 }
 
+/* ===== TABLES ===== */
+
+parseCSV('./data/EXPORT_departures_YTD.csv',(data)=>{
+    if(data && data.length > 0){
+        createTable("tableDepartures",data);
+    }
+});
+
+parseCSV('./data/EXPORT_arrivals_YTD.csv',(data)=>{
+    if(data && data.length > 0){
+        createTable("tableArrivals",data);
+    }
+});
+  
 });
 
 </script>
