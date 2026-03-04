@@ -73,6 +73,58 @@ footer { text-align:center; padding:30px; font-size:0.9em; color:#666;}
   opacity: 0.85;
 }
 
+/* ===== TABLE PRO STYLE ===== */
+
+.table-wrapper{
+    max-height:600px;
+    overflow:auto;
+    border:1px solid #ccc;
+}
+
+.data-table{
+    border-collapse:collapse;
+    width:100%;
+}
+
+.data-table th{
+    position:sticky;
+    top:0;
+    background:#f4f6f8;
+    text-align:center;
+    cursor:pointer;
+    z-index:2;
+}
+
+.data-table th,
+.data-table td{
+    border:1px solid #ddd;
+    padding:6px;
+}
+
+.center{
+    text-align:center;
+}
+
+.sticky-col{
+    position:sticky;
+    left:0;
+    background:white;
+    z-index:1;
+}
+
+.dark-mode .data-table{
+    background:#1e1e1e;
+    color:white;
+}
+
+.dark-mode .data-table th{
+    background:#2c2c2c;
+}
+
+.dark-mode .sticky-col{
+    background:#2c2c2c;
+}
+  
 </style>
 
 <script type="application/ld+json">
@@ -657,11 +709,19 @@ text:"Emissions de gaz à effet de serre (en t éq CO2)"
 });
 
 
-/* ===== TABLE DATA PRO ===== */
+/* ===== TABLE DATA PRO ULTRA ===== */
 
-function formatNumber(value){
+function formatDistance(value){
     if(!isNaN(value) && value !== ""){
         return Math.round(parseFloat(value)).toLocaleString("fr-FR");
+    }
+    return value;
+}
+
+function formatEmission(value){
+    if(!isNaN(value) && value !== ""){
+        return parseFloat(value)
+            .toLocaleString("fr-FR", {minimumFractionDigits:2, maximumFractionDigits:2});
     }
     return value;
 }
@@ -677,58 +737,72 @@ function createTable(containerId, data){
     function renderTable(){
 
         let html = `
-        <div style="margin-bottom:10px;">
-            <strong>${filteredData.length}</strong> vols affichés
-            <button id="${containerId}-export" style="float:right;">Exporter CSV</button>
+        <div style="margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <strong>${filteredData.length}</strong> vols affichés
+            </div>
+            <div>
+                <button id="${containerId}-export">Exporter Excel</button>
+                <button id="${containerId}-dark">Mode sombre</button>
+            </div>
         </div>
-        <div style="max-height:600px; overflow-y:auto; border:1px solid #ccc;">
-        <table>
+
+        <div class="table-wrapper">
+        <table class="data-table">
         <thead>
         <tr>
         `;
 
-        headers.forEach(h=>{
-            html += `<th data-sort="${h}" style="cursor:pointer;">
-                        ${h}
+        headers.forEach((h,i)=>{
+            let arrow = "";
+            if(sortColumn === h){
+                arrow = sortDirection === 1 ? " ↑" : " ↓";
+            }
+
+            html += `<th data-sort="${h}" 
+                        class="sortable ${i===0 ? 'sticky-col':''}">
+                        ${h}${arrow}
                      </th>`;
         });
 
         html += "</tr><tr>";
 
-        // Filtres
-        headers.forEach(h=>{
-
+        headers.forEach((h,i)=>{
             let values = [...new Set(data.map(r=>r[h]))].filter(v=>v!=="");
 
-            // Dropdown si peu de valeurs uniques
             if(values.length > 0 && values.length <= 15){
-                html += `<th>
+                html += `<th class="${i===0 ? 'sticky-col':''}">
                     <select data-filter="${h}">
                         <option value="">Tous</option>
                         ${values.sort().map(v=>`<option value="${v}">${v}</option>`).join("")}
                     </select>
                 </th>`;
             } else {
-                html += `<th>
-                    <input type="text" data-filter="${h}" placeholder="Filtrer..." style="width:90%">
+                html += `<th class="${i===0 ? 'sticky-col':''}">
+                    <input type="text" data-filter="${h}" placeholder="Filtrer...">
                 </th>`;
             }
-
         });
 
         html += "</tr></thead><tbody>";
 
         filteredData.forEach(row=>{
             html += "<tr>";
-            headers.forEach(h=>{
+            headers.forEach((h,i)=>{
                 let value = row[h];
+                let cls = "";
 
-                if(h.toLowerCase().includes("distance") || 
-                   h.toLowerCase().includes("emission")){
-                    value = formatNumber(value);
+                if(h.toLowerCase().includes("date")) cls="center";
+                if(h.toLowerCase().includes("distance")){
+                    value = formatDistance(value);
+                    cls="center";
+                }
+                if(h.toLowerCase().includes("emission")){
+                    value = formatEmission(value);
+                    cls="center";
                 }
 
-                html += `<td>${value}</td>`;
+                html += `<td class="${cls} ${i===0 ? 'sticky-col':''}">${value}</td>`;
             });
             html += "</tr>";
         });
@@ -770,9 +844,15 @@ function createTable(containerId, data){
             input.addEventListener("change", applyFilters);
         });
 
-        // EXPORT CSV
+        // EXPORT
         document.getElementById(containerId+"-export")
-            .addEventListener("click", exportCSV);
+            .addEventListener("click", exportExcel);
+
+        // MODE SOMBRE
+        document.getElementById(containerId+"-dark")
+            .addEventListener("click", ()=>{
+                container.classList.toggle("dark-mode");
+            });
     }
 
     function applyFilters(){
@@ -783,6 +863,12 @@ function createTable(containerId, data){
             container.querySelectorAll("[data-filter]").forEach(input=>{
                 let col = input.dataset.filter;
                 let val = input.value.toLowerCase();
+
+                if(val){
+                    input.style.background="#ffeaa7";
+                } else {
+                    input.style.background="";
+                }
 
                 if(val && !row[col].toString().toLowerCase().includes(val)){
                     match = false;
@@ -795,33 +881,26 @@ function createTable(containerId, data){
         renderTable();
     }
 
-    function exportCSV(){
+    function exportExcel(){
 
-        let csv = headers.join(",") + "\n";
+        let csv = "\uFEFF"; // BOM UTF-8
+        csv += headers.join(";") + "\n";
 
         filteredData.forEach(row=>{
-            csv += headers.map(h=>`"${row[h]}"`).join(",") + "\n";
+            csv += headers.map(h=>row[h]).join(";") + "\n";
         });
 
-        let blob = new Blob([csv], {type:"text/csv"});
+        let blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
         let url = URL.createObjectURL(blob);
         let a = document.createElement("a");
         a.href = url;
-        a.download = containerId + "_filtered.csv";
+        a.download = containerId + ".csv";
         a.click();
         URL.revokeObjectURL(url);
     }
 
     renderTable();
 }
-
-/* ===== LOAD TABLES ===== */
-
-parseCSV('./data/EXPORT_departures_YTD.csv',
-    (data)=>createTable("tableDepartures",data));
-
-parseCSV('./data/EXPORT_arrivals_YTD.csv',
-    (data)=>createTable("tableArrivals",data));
 
 });
 
