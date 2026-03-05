@@ -909,7 +909,7 @@ function createTable(containerId, data){
 
     /* ================= FORMAT ================= */
 
-    function formatDistance(value){
+function formatDistance(value){
     var n = parseFloat(String(value).replace(',','.'));
     if(isNaN(n)) return value;
     return Math.round(n).toLocaleString('fr-FR');
@@ -925,20 +925,24 @@ function formatEmission(value){
 }
 
 function formatDateFR(value){
+
     if(!value) return "";
 
     var d = new Date(value);
     if(isNaN(d)) return value;
 
-    return d.toLocaleDateString('fr-FR',{
+    var str = d.toLocaleDateString('fr-FR',{
         weekday:'long',
         day:'2-digit',
         month:'2-digit',
         year:'numeric'
     });
+
+    return str.charAt(0).toUpperCase()+str.slice(1);
 }
 
 function formatValue(header,value){
+
     var lower = header.toLowerCase();
 
     if(lower.includes("date")) return formatDateFR(value);
@@ -990,7 +994,7 @@ function formatValue(header,value){
 
     html += '</tr></thead><tbody>';
 
-    /* TOTAL ROW (EN HAUT) */
+    /* TOTAL ROW */
 
     html += '<tr class="total-row"></tr>';
 
@@ -1009,196 +1013,245 @@ function formatValue(header,value){
 
     /* ================= RENDER ================= */
 
-    function renderTable(){
+function renderTable(){
 
-        // Supprime tout sauf total
-        tbody.querySelectorAll("tr:not(.total-row)").forEach(tr=>tr.remove());
+    tbody.querySelectorAll("tr:not(.total-row)").forEach(tr=>tr.remove());
 
-        var start = (currentPage-1)*rowsPerPage;
-        var end = start + rowsPerPage;
-        var pageData = filteredData.slice(start,end);
+    var start = (currentPage-1)*rowsPerPage;
+    var end = start + rowsPerPage;
+    var pageData = filteredData.slice(start,end);
 
-        pageData.forEach(function(row){
+    pageData.forEach(function(row){
 
-            var tr = document.createElement("tr");
+        var tr = document.createElement("tr");
 
-            headers.forEach(function(h){
-
-                var td = document.createElement("td");
-
-                if(h.toLowerCase().includes("date") ||
-                   h.toLowerCase().includes("distance") ||
-                   h.toLowerCase().includes("emission"))
-                    td.className="center";
-
-                td.innerText = formatValue(h,row[h]||"");
-                tr.appendChild(td);
-            });
-
-            tbody.appendChild(tr);
-        });
-
-        updateTotal();
-        updateCount();
-        updatePagination();
-        updateBadges();
-    }
-
-    /* ================= FILTER ================= */
-
-    function applyFilters(){
-
-        filteredData = data.filter(function(row){
-
-            return headers.every(function(h){
-
-                if(!activeFilters[h]) return true;
-
-                var value = String(row[h]||"").toLowerCase();
-                return value.includes(activeFilters[h].toLowerCase());
-            });
-        });
-
-        currentPage = 1;
-        renderTable();
-    }
-
-    /* ================= TOTAL ================= */
-
-    function updateTotal(){
-
-        var total = 0;
-
-        filteredData.forEach(function(row){
-            headers.forEach(function(h){
-                if(h.toLowerCase().includes("emission")){
-                    var n = parseFloat(String(row[h]).replace(',','.'));
-                    if(!isNaN(n)) total += n;
-                }
-            });
-        });
-
-        totalRow.innerHTML = "";
-
-        headers.forEach(function(h,i){
+        headers.forEach(function(h){
 
             var td = document.createElement("td");
 
-            if(i===0){
-                td.innerHTML="<strong>TOTAL</strong>";
-            }
-            else if(h.toLowerCase().includes("emission")){
-    td.className="center";
-    td.innerHTML="<strong>"+total.toLocaleString('fr-FR',{
-        minimumFractionDigits:2,
-        maximumFractionDigits:2
-    })+"</strong>";
+            if(h.toLowerCase().includes("date") ||
+               h.toLowerCase().includes("distance") ||
+               h.toLowerCase().includes("emission"))
+                td.className="center";
+
+            td.innerText = formatValue(h,row[h]||"");
+            tr.appendChild(td);
+        });
+
+        tbody.appendChild(tr);
+    });
+
+    updateTotal();
+    updateCount();
+    updatePagination();
+    updateBadges();
 }
 
-            totalRow.appendChild(td);
+    /* ================= FILTER ================= */
+
+function applyFilters(){
+
+    filteredData = data.filter(function(row){
+
+        return headers.every(function(h){
+
+            if(!activeFilters[h]) return true;
+
+            var value = String(row[h]||"").toLowerCase();
+            return value.includes(activeFilters[h].toLowerCase());
         });
-    }
+    });
+
+    currentPage = 1;
+    renderTable();
+}
+
+    /* ================= TOTAL ================= */
+
+function updateTotal(){
+
+    var sourceData;
+
+    if(Object.keys(activeFilters).length===0)
+        sourceData = data;
+    else
+        sourceData = filteredData;
+
+    var total = 0;
+
+    sourceData.forEach(function(row){
+
+        headers.forEach(function(h){
+
+            if(h.toLowerCase().includes("emission")){
+
+                var n = parseFloat(String(row[h]).replace(',','.'));
+
+                if(!isNaN(n)) total += n;
+            }
+        });
+    });
+
+    totalRow.innerHTML="";
+
+    headers.forEach(function(h,i){
+
+        var td=document.createElement("td");
+
+        if(i===0){
+            td.innerHTML="<strong>TOTAL</strong>";
+        }
+        else if(h.toLowerCase().includes("emission")){
+
+            td.className="center";
+
+            td.innerHTML="<strong>"+total.toLocaleString('fr-FR',{
+                minimumFractionDigits:2,
+                maximumFractionDigits:2
+            })+"</strong>";
+        }
+
+        totalRow.appendChild(td);
+    });
+}
+
+    /* ================= PAGINATION ================= */
+
+function updatePagination(){
+
+    var totalPages = Math.ceil(filteredData.length / rowsPerPage);
+
+    container.querySelector("#"+containerId+"-page")
+        .innerText = "Page "+currentPage+" / "+totalPages;
+
+    document.getElementById(containerId+"-prev").onclick=function(){
+
+        if(currentPage>1){
+            currentPage--;
+            renderTable();
+        }
+    };
+
+    document.getElementById(containerId+"-next").onclick=function(){
+
+        if(currentPage<totalPages){
+            currentPage++;
+            renderTable();
+        }
+    };
+}
+
+    /* ================= COUNT ================= */
+
+function updateCount(){
+
+    container.querySelector("#"+containerId+"-count")
+        .innerText = filteredData.length.toLocaleString('fr-FR');
+}
 
     /* ================= MENU POPUP ================= */
 
-    container.querySelectorAll(".col-menu").forEach(function(btn){
+container.querySelectorAll(".col-menu").forEach(function(btn){
 
-        btn.addEventListener("click", function(e){
+    btn.addEventListener("click", function(e){
 
-            e.stopPropagation();
+        e.stopPropagation();
 
-            var col = btn.getAttribute("data-col");
-            var index = headers.indexOf(col);
+        var col = btn.getAttribute("data-col");
+        var index = headers.indexOf(col);
 
-            var old = document.querySelector(".column-menu");
-            if(old) old.remove();
+        var old = document.querySelector(".column-menu");
+        if(old) old.remove();
 
-            var menu = document.createElement("div");
-            menu.className="column-menu";
-            menu.style.position="fixed";
-            menu.style.background="#fff";
-            menu.style.border="1px solid #ccc";
-            menu.style.borderRadius="8px";
-            menu.style.boxShadow="0 8px 20px rgba(0,0,0,0.15)";
-            menu.style.padding="6px 0";
-            menu.style.zIndex="99999";
+        var menu = document.createElement("div");
+        menu.className="column-menu";
+        menu.style.position="fixed";
+        menu.style.background="#fff";
+        menu.style.border="1px solid #ccc";
+        menu.style.borderRadius="8px";
+        menu.style.boxShadow="0 8px 20px rgba(0,0,0,0.15)";
+        menu.style.padding="6px 0";
+        menu.style.zIndex="99999";
 
-            var rect = btn.getBoundingClientRect();
-            menu.style.left = rect.left+"px";
-            menu.style.top  = rect.bottom+"px";
+        var rect = btn.getBoundingClientRect();
+        menu.style.left = rect.left+"px";
+        menu.style.top  = rect.bottom+"px";
 
-            function addItem(label,action){
-                var item=document.createElement("div");
-                item.innerText=label;
-                item.style.padding="8px 14px";
-                item.style.cursor="pointer";
-                item.addEventListener("click",function(){
-                    action();
-                    menu.remove();
-                });
-                menu.appendChild(item);
-            }
-
-            addItem("Tri ascendant",function(){
-                sortDirection=1;
-                sortColumn(index);
-            });
-
-            addItem("Tri descendant",function(){
-                sortDirection=-1;
-                sortColumn(index);
-            });
-
-            addItem("Effacer le filtre",function(){
-                delete activeFilters[col];
-                container.querySelector('[data-filter="'+col+'"]').value="";
-                applyFilters();
-            });
-
-            document.body.appendChild(menu);
-
-            document.addEventListener("click",function(){
+        function addItem(label,action){
+            var item=document.createElement("div");
+            item.innerText=label;
+            item.style.padding="8px 14px";
+            item.style.cursor="pointer";
+            item.addEventListener("click",function(){
+                action();
                 menu.remove();
-            },{once:true});
+            });
+            menu.appendChild(item);
+        }
+
+        addItem("Tri ascendant",function(){
+            sortDirection=1;
+            sortColumn(index);
         });
+
+        addItem("Tri descendant",function(){
+            sortDirection=-1;
+            sortColumn(index);
+        });
+
+        addItem("Effacer le filtre",function(){
+            delete activeFilters[col];
+            container.querySelector('[data-filter="'+col+'"]').value="";
+            applyFilters();
+        });
+
+        document.body.appendChild(menu);
+
+        document.addEventListener("click",function(){
+            menu.remove();
+        },{once:true});
+    });
+});
+
+function sortColumn(index){
+
+    filteredData.sort(function(a,b){
+
+        var A=a[headers[index]];
+        var B=b[headers[index]];
+
+        var numA=parseFloat(String(A).replace(',','.'));
+        var numB=parseFloat(String(B).replace(',','.'));
+
+        if(!isNaN(numA)&&!isNaN(numB))
+            return (numA-numB)*sortDirection;
+
+        return String(A).localeCompare(String(B))*sortDirection;
     });
 
-    function sortColumn(index){
-        filteredData.sort(function(a,b){
-            var A=a[headers[index]];
-            var B=b[headers[index]];
-
-            var numA=parseFloat(String(A).replace(',','.'));
-            var numB=parseFloat(String(B).replace(',','.'));
-
-            if(!isNaN(numA)&&!isNaN(numB))
-                return (numA-numB)*sortDirection;
-
-            return String(A).localeCompare(String(B))*sortDirection;
-        });
-
-        renderTable();
-    }
+    renderTable();
+}
 
     /* ================= DEBOUNCE INPUT ================= */
 
-    container.querySelectorAll("[data-filter]").forEach(function(input){
+container.querySelectorAll("[data-filter]").forEach(function(input){
 
-        input.addEventListener("input", function(){
+    input.addEventListener("input", function(){
 
-            clearTimeout(debounceTimer);
+        clearTimeout(debounceTimer);
 
-            debounceTimer=setTimeout(function(){
+        debounceTimer=setTimeout(function(){
 
-                var col=input.getAttribute("data-filter");
-                activeFilters[col]=input.value.trim();
-                if(!activeFilters[col]) delete activeFilters[col];
+            var col=input.getAttribute("data-filter");
+            activeFilters[col]=input.value.trim();
 
-                applyFilters();
+            if(!activeFilters[col]) delete activeFilters[col];
 
-            },300);
-        });
+            applyFilters();
+
+        },300);
     });
+});
 
 /* ================= CLEAR FILTER ================= */
 
@@ -1211,7 +1264,7 @@ container.querySelectorAll(".clear-filter").forEach(function(btn){
         var col = btn.getAttribute("data-clear");
         var input = container.querySelector('[data-filter="'+col+'"]');
 
-        input.value = "";
+        input.value="";
         delete activeFilters[col];
 
         clearTimeout(debounceTimer);
@@ -1219,49 +1272,55 @@ container.querySelectorAll(".clear-filter").forEach(function(btn){
         applyFilters();
     });
 });
-  
+
     /* ================= RESET ================= */
 
-    document.getElementById(containerId+"-reset")
-        .addEventListener("click",function(){
+document.getElementById(containerId+"-reset")
+.addEventListener("click",function(){
 
-            activeFilters={};
-            container.querySelectorAll("[data-filter]").forEach(i=>i.value="");
+    activeFilters={};
 
-            var dateIndex=headers.findIndex(h=>h.toLowerCase().includes("date"));
+    container.querySelectorAll("[data-filter]").forEach(i=>i.value="");
 
-            if(dateIndex!==-1){
-                data.sort(function(a,b){
-                    return new Date(b[headers[dateIndex]]) - new Date(a[headers[dateIndex]]);
-                });
-            }
+    var dateIndex=headers.findIndex(h=>h.toLowerCase().includes("date"));
 
-            filteredData=[...data];
-            currentPage=1;
-            renderTable();
+    if(dateIndex!==-1){
+
+        data.sort(function(a,b){
+
+            return new Date(b[headers[dateIndex]]) -
+                   new Date(a[headers[dateIndex]]);
         });
+    }
+
+    filteredData=[...data];
+    currentPage=1;
+
+    renderTable();
+});
 
     /* ================= INIT ================= */
 
-    renderTable();
+renderTable();
 }
+
 /* ===== BADGE CSS ===== */
 
 var style = document.createElement("style");
 style.innerHTML = `
 .filtered {
-    background:#e6f2ff !important;
-    position:relative;
+background:#e6f2ff !important;
+position:relative;
 }
 .filtered::after{
-    content:"";
-    width:8px;
-    height:8px;
-    background:#007bff;
-    border-radius:50%;
-    position:absolute;
-    top:6px;
-    right:6px;
+content:"";
+width:8px;
+height:8px;
+background:#007bff;
+border-radius:50%;
+position:absolute;
+top:6px;
+right:6px;
 }
 `;
 document.head.appendChild(style);
