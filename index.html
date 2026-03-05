@@ -418,8 +418,15 @@ Rotations journalières par compagnie ⓘ
 </div>
 
 <div class="card">
-<h2>Émissions cumulées par destination ⓘ</h2>
-<canvas id="chartRoutes"></canvas>
+<h2>Émissions par destination ⓘ</h2>
+
+<canvas id="chartDestination"></canvas>
+
+<p style="font-size:0.85em;color:#666;margin-top:10px;">
+Les principales destinations représentant au moins 85 % des émissions sont affichées.
+Les autres sont regroupées dans « Autres destinations ».
+</p>
+
 </div>
   
 <div class="card">
@@ -1232,18 +1239,7 @@ new Chart(
     }
 );
 
-<div class="card">
-<h2>Émissions par destination</h2>
-
-<canvas id="chartDestination"></canvas>
-
-<p style="font-size:0.85em;color:#666;margin-top:10px;">
-Les principales destinations représentant au moins 85 % des émissions sont affichées. 
-Les autres sont regroupées dans la catégorie « Autres destinations ».
-</p>
-
-</div>
-  
+ 
 /* ===== TABLE DATA PRO V7 - STABLE ===== */
 
 function createTable(containerId, data){
