@@ -1132,68 +1132,146 @@ text:"Tonnes équivalent CO₂"
 
 });
 
-/* ===== CAMEMBERT SCOPES ===== */
+/* ===== DONUT SCOPES DETAIL ===== */
 
 parseCSV('./data/EXPORT_cumul_scopes.csv',(data)=>{
 
 if(!data || data.length===0) return;
 
-var row = data[data.length-1];
+/* ===== PREMIERE LIGNE DU CSV ===== */
 
-var scope12 = parseFloat(row.scope_1_2 || 0);
-var total = parseFloat(row.cumul_total || 0);
+var row = data[0];
 
-if(isNaN(scope12)) scope12=0;
-if(isNaN(total)) total=0;
+/* ===== EXTRACTION DES VALEURS ===== */
 
-var scope3 = total - scope12;
+var cumul_vols       = parseFloat(row.cumul_vols || 0);
+var cumul_acces_ind  = parseFloat(row.cumul_acces_ind || 0);
+var cumul_acces_coll = parseFloat(row.cumul_acces_coll || 0);
+var cumul_employes   = parseFloat(row.cumul_employes || 0);
+var cumul_scope_1_2  = parseFloat(row.cumul_scope_1_2 || 0);
+
+if(isNaN(cumul_vols)) cumul_vols=0;
+if(isNaN(cumul_acces_ind)) cumul_acces_ind=0;
+if(isNaN(cumul_acces_coll)) cumul_acces_coll=0;
+if(isNaN(cumul_employes)) cumul_employes=0;
+if(isNaN(cumul_scope_1_2)) cumul_scope_1_2=0;
+
+/* ===== TOTAL ===== */
+
+var total =
+cumul_vols +
+cumul_acces_ind +
+cumul_acces_coll +
+cumul_employes +
+cumul_scope_1_2;
+
+/* ===== PALETTE COULEURS ===== */
+
+let colors = [
+"#9467bd",
+"#d62728",
+"#2ca02c",
+"#ff7f0e",
+"#1f77b4"
+];
+
+/* ===== PLUGIN TEXTE CENTRAL ===== */
+
+const centerText = {
+id:'centerText',
+afterDraw(chart){
+
+const {ctx} = chart;
+const centerX = chart.getDatasetMeta(0).data[0].x;
+const centerY = chart.getDatasetMeta(0).data[0].y;
+
+ctx.save();
+
+ctx.textAlign="center";
+ctx.textBaseline="middle";
+
+/* titre */
+
+ctx.font="600 14px sans-serif";
+ctx.fillStyle="#666";
+ctx.fillText("Émissions totales",centerX,centerY-12);
+
+/* valeur */
+
+ctx.font="700 20px sans-serif";
+ctx.fillStyle="#000";
+
+ctx.fillText(
+Math.round(total).toLocaleString('fr-FR')+" t",
+centerX,
+centerY+12
+);
+
+ctx.restore();
+}
+};
+
+/* ===== CHART ===== */
 
 new Chart(
 document.getElementById("chartScopes"),
 {
-type:"pie",
+type:"doughnut",
 
 data:{
 labels:[
-"Scope 1 & 2",
-"Scope 3"
+"Aéronefs (scope 3)",
+"Accès individuels passagers (scope 3)",
+"Accès collectifs passagers (scope 3)",
+"Accès employés (scope 3)",
+"Émissions directes de l'aéroport (scope 1 & 2)"
 ],
 
 datasets:[{
 data:[
-scope12,
-scope3
-]
+cumul_vols,
+cumul_acces_ind,
+cumul_acces_coll,
+cumul_employes,
+cumul_scope_1_2
+],
+backgroundColor:colors,
+borderWidth:1
 }]
 },
 
 options:{
 responsive:true,
+cutout:"65%",
+
 plugins:{
 legend:{
 position:"bottom"
 },
+
 tooltip:{
 callbacks:{
 label:function(context){
 
-var value = context.parsed;
-var total = context.chart._metasets[0].total;
-
-var percent = (value/total*100).toFixed(1);
+var value=context.parsed;
+var percent=(value/total*100).toFixed(1);
 
 return context.label+" : "
-+ Math.round(value).toLocaleString('fr-FR')
++Math.round(value).toLocaleString('fr-FR')
 +" t éq CO₂ ("+percent+"%)";
+
 }
 }
 }
 }
-}
+
+},
+
+plugins:[centerText]
 
 });
 
-  });
+});
   
 /* ===============================
 EMISSIONS PAR DESTINATION
