@@ -24,18 +24,26 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
+
 body { font-family: 'Segoe UI', sans-serif; margin:0; background:#f4f6f8; color:#222;}
+
 header { background:#1f3c88; color:white; padding:25px;}
+
 .container { width:92%; max-width:1300px; margin:40px auto;}
+
 .card { background:white; padding:25px; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.08); margin-bottom:30px;}
+
 .metrics { display:flex; gap:20px; flex-wrap:wrap;}
+
 .metric-box { flex:1; min-width:220px; background:#eef2f7; padding:20px; border-radius:10px;}
+
 .metric-value { font-size:1.8em; font-weight:bold; margin-top:8px;}
+
 canvas { margin-top:20px;}
-table { width:100%; border-collapse:collapse; margin-top:15px;}
-th, td { padding:8px; border-bottom:1px solid #ddd; text-align:left; font-size:0.9em;}
-th { background:#f0f2f5;}
+
 footer { text-align:center; padding:30px; font-size:0.9em; color:#666;}
+
+/* ================= SHARE BUTTONS ================= */
 
 .share-links {
   display: flex;
@@ -73,57 +81,84 @@ footer { text-align:center; padding:30px; font-size:0.9em; color:#666;}
   opacity: 0.85;
 }
 
-/* ===== TABLE PRO STYLE ===== */
+/* ================= TABLE PRO STYLE ================= */
 
 .table-wrapper{
     max-height:600px;
     overflow:auto;
     border:1px solid #ccc;
+    border-radius:8px;
 }
+
+/* table base */
 
 .data-table{
-    border-collapse:collapse;
     width:100%;
+    border-collapse:collapse;
+    font-size:14px;
 }
 
-.data-table th{
+/* headers */
+
+.data-table thead th{
     position:sticky;
     top:0;
-    background:#f4f6f8;
+    background:#f0f2f5;
     text-align:center;
     cursor:pointer;
-    z-index:2;
+    z-index:5;
 }
+
+/* cells */
 
 .data-table th,
 .data-table td{
-    border:1px solid #ddd;
-    padding:6px;
+    padding:8px 10px;
+    border-bottom:1px solid #e5e5e5;
 }
+
+/* zebra rows */
+
+.data-table tbody tr:nth-child(even){
+    background:#fafafa;
+}
+
+/* hover row */
+
+.data-table tbody tr:hover{
+    background:#eef6ff;
+}
+
+/* centered columns */
 
 .center{
     text-align:center;
 }
 
+/* sticky first column */
+
 .sticky-col{
     position:sticky;
     left:0;
     background:white;
-    z-index:1;
+    z-index:4;
 }
 
-.dark-mode .data-table{
-    background:#1e1e1e;
-    color:white;
+/* total row */
+
+.total-row{
+    position:sticky;
+    top:52px;
+    background:#f6faff;
+    font-weight:bold;
+    z-index:3;
 }
 
-.dark-mode .data-table th{
-    background:#2c2c2c;
+.total-row td{
+    font-weight:bold;
 }
 
-.dark-mode .sticky-col{
-    background:#2c2c2c;
-}
+/* clear filter cross */
 
 .clear-filter{
     position:absolute;
@@ -138,7 +173,34 @@ footer { text-align:center; padding:30px; font-size:0.9em; color:#666;}
 .clear-filter:hover{
     color:red;
 }
-  
+
+/* ================= DARK MODE ================= */
+
+.dark-mode .data-table{
+    background:#1e1e1e;
+    color:white;
+}
+
+.dark-mode .data-table thead th{
+    background:#2c2c2c;
+}
+
+.dark-mode .sticky-col{
+    background:#2c2c2c;
+}
+
+.dark-mode .data-table tbody tr:nth-child(even){
+    background:#252525;
+}
+
+.dark-mode .data-table tbody tr:hover{
+    background:#333;
+}
+
+.dark-mode .total-row{
+    background:#2a2a2a;
+}
+
 </style>
 
 <script type="application/ld+json">
@@ -848,26 +910,43 @@ function createTable(containerId, data){
     /* ================= FORMAT ================= */
 
     function formatDistance(value){
-        var n = parseFloat(String(value).replace(',','.'));
-        if(isNaN(n)) return value;
-        return Math.round(n).toLocaleString('fr-FR');
-    }
+    var n = parseFloat(String(value).replace(',','.'));
+    if(isNaN(n)) return value;
+    return Math.round(n).toLocaleString('fr-FR');
+}
 
-    function formatEmission(value){
-        var n = parseFloat(String(value).replace(',','.'));
-        if(isNaN(n)) return value;
-        return n.toLocaleString('fr-FR',{
-            minimumFractionDigits:2,
-            maximumFractionDigits:2
-        });
-    }
+function formatEmission(value){
+    var n = parseFloat(String(value).replace(',','.'));
+    if(isNaN(n)) return value;
+    return n.toLocaleString('fr-FR',{
+        minimumFractionDigits:2,
+        maximumFractionDigits:2
+    });
+}
 
-    function formatValue(header,value){
-        var lower = header.toLowerCase();
-        if(lower.includes("distance")) return formatDistance(value);
-        if(lower.includes("emission")) return formatEmission(value);
-        return value;
-    }
+function formatDateFR(value){
+    if(!value) return "";
+
+    var d = new Date(value);
+    if(isNaN(d)) return value;
+
+    return d.toLocaleDateString('fr-FR',{
+        weekday:'long',
+        day:'2-digit',
+        month:'2-digit',
+        year:'numeric'
+    });
+}
+
+function formatValue(header,value){
+    var lower = header.toLowerCase();
+
+    if(lower.includes("date")) return formatDateFR(value);
+    if(lower.includes("distance")) return formatDistance(value);
+    if(lower.includes("emission")) return formatEmission(value);
+
+    return value;
+}
 
     /* ================= BUILD TABLE ================= */
 
