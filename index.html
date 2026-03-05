@@ -1151,9 +1151,7 @@ data.forEach(function(row){
 
     var dest = row[cityColumn] || "Inconnue";
 
-    var emission = parseFloat(
-        String(row["Emissions de GES (t éq CO2)"] || "0").replace(',','.')
-    );
+    var emission = parseFloat(row.emissions);
 
     if(isNaN(emission)) emission = 0;
 
@@ -1170,8 +1168,8 @@ data.forEach(function(row){
 
 /* Agrégation des deux fichiers */
 
-aggregate(departures,"destination"); // vols au départ
-aggregate(arrivals,"origine");       // vols à l'arrivée
+aggregate(departures, "destination");
+aggregate(arrivals, "origine");
 
 /* Conversion en tableau */
 
