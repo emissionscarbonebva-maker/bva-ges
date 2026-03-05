@@ -201,6 +201,110 @@ footer { text-align:center; padding:30px; font-size:0.9em; color:#666;}
     background:#2a2a2a;
 }
 
+/* ===== INFO BOX ===== */
+
+.info-box{
+background:#eef5ff;
+border-left:5px solid #1f3c88;
+padding:18px 22px;
+border-radius:10px;
+margin-bottom:30px;
+}
+
+.info-box h3{
+margin-top:0;
+font-size:1.2em;
+}
+
+.info-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:15px;
+margin-top:12px;
+}
+
+.info-item{
+background:white;
+padding:12px 14px;
+border-radius:8px;
+box-shadow:0 2px 6px rgba(0,0,0,0.05);
+font-size:0.9em;
+}
+
+/* ===== TOOLTIP ===== */
+
+.tooltip{
+position:relative;
+display:inline-block;
+cursor:help;
+margin-left:6px;
+}
+
+.tooltip-icon{
+display:inline-flex;
+align-items:center;
+justify-content:center;
+width:16px;
+height:16px;
+font-size:11px;
+border-radius:50%;
+background:#1f3c88;
+color:white;
+font-weight:bold;
+}
+
+.tooltip-text{
+visibility:hidden;
+opacity:0;
+position:absolute;
+bottom:130%;
+left:50%;
+transform:translateX(-50%);
+background:#333;
+color:white;
+padding:8px 10px;
+border-radius:6px;
+font-size:0.8em;
+width:220px;
+text-align:left;
+transition:0.2s;
+z-index:999;
+}
+
+.tooltip:hover .tooltip-text{
+visibility:visible;
+opacity:1;
+}
+
+/* ===== TOOLTIPS ===== */
+
+.tooltip {
+  position: relative;
+  cursor: help;
+}
+
+.tooltip::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: 120%;
+  left: 0;
+  background: #1f3c88;
+  color: white;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 0.8em;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(4px);
+  transition: 0.2s;
+}
+
+.tooltip:hover::after {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 </style>
 
 <script type="application/ld+json">
@@ -256,6 +360,36 @@ Les émissions incluent :
 </p>
 </div>
 
+<div class="card info-card">
+<h2>Comment lire ce site</h2>
+
+<ul>
+<li><strong>Émissions :</strong> exprimées en tonnes équivalent CO₂.</li>
+
+<li><strong>Scopes :</strong>
+<ul>
+<li>Scope 1 : émissions directes des avions</li>
+<li>Scope 2 : émissions liées à l’électricité</li>
+<li>Scope 3 : émissions indirectes (production carburant, transport, etc.)</li>
+</ul>
+</li>
+
+<li><strong>Distances :</strong> distance orthodromique entre aéroports (km).</li>
+
+<li><strong>Données :</strong> mises à jour quotidiennement.</li>
+
+<li><strong>Tableaux :</strong>
+<ul>
+<li>Utilisez les filtres dans les colonnes</li>
+<li>Cliquez sur ⋮ pour trier ou filtrer</li>
+<li>Le total s’adapte aux filtres appliqués</li>
+</ul>
+</li>
+
+</ul>
+
+</div>
+  
 <div class="card">
 <h2>Indicateurs clés</h2>
 <div class="metrics">
@@ -266,32 +400,52 @@ Les émissions incluent :
 </div>
 
 <div class="card">
-<h2>Émissions journalières par scope</h2>
+<h2 class="tooltip" data-tip="Émissions quotidiennes de CO₂e réparties selon les différents scopes (1 : émissions directes, 2 : électricité, 3 : émissions indirectes).">
+Émissions journalières par scope ⓘ
+</h2>
 <canvas id="chartDaily"></canvas>
 </div>
 
 <div class="card">
-<h2>Cumul annuel par scope</h2>
+<h2 class="tooltip" data-tip="Total des émissions depuis le 1er janvier par catégorie d'émission">
+Cumul annuel par scope ⓘ
+</h2>
 <canvas id="chartCumul"></canvas>
 </div>
 
+<div class="card">
+<h2>Cumul total des émissions depuis le 1er janvier ⓘ</h2>
+<canvas id="chartTotalCumul"></canvas>
+</div>
+  
 <div class="card">
 <h2>Émissions journalières par compagnie</h2>
 <canvas id="chartAirlines"></canvas>
 </div>
 
 <div class="card">
-<h2>Rotations journalières par compagnie</h2>
+<h2 class="tooltip" data-tip="Nombre de vols effectués chaque jour par compagnie">
+Rotations journalières par compagnie ⓘ
+</h2>
 <canvas id="chartRotations"></canvas>
 </div>
 
 <div class="card">
-<h2>Vols départ depuis le 1er janvier</h2>
+<h2>Émissions cumulées par destination ⓘ</h2>
+<canvas id="chartRoutes"></canvas>
+</div>
+  
+<div class="card">
+<h2 class="tooltip" data-tip="Liste détaillée des vols au départ avec distance et émissions estimées">
+Vols départ ⓘ
+</h2>
 <div id="tableDepartures"></div>
 </div>
 
 <div class="card">
-<h2>Vols arrivée depuis le 1er janvier</h2>
+<h2 class="tooltip" data-tip="Liste détaillée des vols à l'arrivée avec distance et émissions estimées">
+Vols arrivée ⓘ
+</h2>
 <div id="tableArrivals"></div>
 </div>
 
@@ -888,6 +1042,140 @@ text:"Nombre de rotations"
 
 });
 
+/* ===== CUMUL TOTAL GLOBAL ===== */
+
+parseCSV('./data/EXPORT_daily_scopes.csv',(data,headers)=>{
+
+data.sort((a,b)=> new Date(a[headers[0]]) - new Date(b[headers[0]]));
+
+let labels=[];
+let cumul=[];
+let total=0;
+
+data.forEach(row=>{
+
+let dayTotal=0;
+
+for(let i=1;i<=5;i++){
+
+let raw=row[headers[i]];
+let v = raw ? parseFloat(raw.replace(',','.')) : 0;
+
+if(isNaN(v)) v=0;
+
+dayTotal+=v;
+}
+
+total+=dayTotal;
+
+labels.push(row[headers[0]]);
+cumul.push(total);
+
+});
+
+new Chart(document.getElementById("chartTotalCumul"),{
+
+type:'line',
+
+data:{
+labels:labels,
+datasets:[{
+label:"Cumul total émissions",
+data:cumul,
+borderWidth:3,
+fill:true,
+backgroundColor:"rgba(31,60,136,0.2)",
+borderColor:"#1f3c88"
+}]
+},
+
+options:{
+responsive:true,
+plugins:{
+legend:{position:'top'},
+zoom:{
+pan:{enabled:true,mode:'x'},
+zoom:{wheel:{enabled:true},pinch:{enabled:true},mode:'x'}
+}
+},
+scales:{
+x:{title:{display:true,text:"Date"}},
+y:{
+beginAtZero:true,
+title:{
+display:true,
+text:"Tonnes équivalent CO₂"
+}
+}
+}
+}
+
+});
+
+});
+
+/* ===== EMISSIONS PAR DESTINATION ===== */
+
+parseCSV('./data/EXPORT_departures_YTD.csv',(data)=>{
+
+let destinations={};
+
+data.forEach(row=>{
+
+let dest=row.destination || row.Destination || "Autres";
+
+let v=parseFloat(String(row.emissions).replace(',','.'));
+
+if(isNaN(v)) v=0;
+
+if(!destinations[dest])
+destinations[dest]=0;
+
+destinations[dest]+=v;
+
+});
+
+let labels=Object.keys(destinations);
+let values=Object.values(destinations);
+
+new Chart(document.getElementById("chartRoutes"),{
+
+type:'bar',
+
+data:{
+labels:labels,
+datasets:[{
+label:"Émissions cumulées",
+data:values
+}]
+},
+
+options:{
+responsive:true,
+plugins:{
+legend:{display:false}
+},
+scales:{
+x:{
+title:{
+display:true,
+text:"Destination"
+}
+},
+y:{
+beginAtZero:true,
+title:{
+display:true,
+text:"Tonnes équivalent CO₂"
+}
+}
+}
+}
+
+});
+
+});
+  
 /* ===== TABLE DATA PRO V7 - STABLE ===== */
 
 function createTable(containerId, data){
