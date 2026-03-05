@@ -1828,7 +1828,14 @@ right:6px;
 
 document.head.appendChild(style);
 
-/* ===== TABLE ARRIVALS ===== */
+/* ===== TABLE DEPARTURES ===== */
+
+parseCSV('./data/EXPORT_departures_YTD.csv', function(data){
+    createTable("tableDepartures", data);
+});
+
+  
+  /* ===== TABLE ARRIVALS ===== */
 
 parseCSV('./data/EXPORT_arrivals_YTD.csv', function(data){
     createTable("tableArrivals", data);
