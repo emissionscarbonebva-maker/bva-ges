@@ -1,4 +1,4 @@
-﻿date,Numéro vol,Compagnie,Destination,Distance (km),Emissions de GES (t éq CO2)
+﻿date,numero_vol,compagnie,destination,distance_km,emission)
 2026-03-05,RYR25,Ryanair,Dublin,399.2647059,4.901348087
 2026-03-05,RYR7479,Ryanair,Porto,642.5921053,7.888419736
 2026-03-05,RYS7234,Ryanair,Vilnius,875.7142857,10.75021277
