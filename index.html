@@ -1197,18 +1197,52 @@ return context.label+" : "
   
 /* ===============================
 EMISSIONS PAR DESTINATION
+Départs + Arrivées
 Tri décroissant + limite 45 + 85%
-Compatible EXPORT_departures_YTD.csv
 ================================ */
 
-parseCSV('./data/EXPORT_departures_YTD.csv', function(data){
+Promise.all([
+    fetch('./data/EXPORT_departures_YTD.csv').then(r=>r.text()),
+    fetch('./data/EXPORT_arrivals_YTD.csv').then(r=>r.text())
+])
+.then(function(files){
+
+function parse(text){
+
+    var rows = text.split('\n').filter(r=>r.trim()!=="");
+
+    var sep = rows[0].indexOf(';') !== -1 ? ';' : ',';
+
+    var headers = rows[0].split(sep);
+
+    var result=[];
+
+    for(var i=1;i<rows.length;i++){
+
+        var cols = rows[i].split(sep);
+        var obj={};
+
+        headers.forEach(function(h,index){
+            obj[h.trim()] = cols[index] ? cols[index].trim() : "";
+        });
+
+        result.push(obj);
+    }
+
+    return result;
+}
+
+var departures = parse(files[0]);
+var arrivals = parse(files[1]);
 
 var destinationMap = {};
 var totalEmissions = 0;
 
-/* Agrégation */
+/* ======================
+DEPARTS
+====================== */
 
-data.forEach(function(row){
+departures.forEach(function(row){
 
     var dest = row.destination || "Inconnue";
 
@@ -1225,7 +1259,30 @@ data.forEach(function(row){
 
 });
 
-/* Conversion en tableau */
+/* ======================
+ARRIVEES
+====================== */
+
+arrivals.forEach(function(row){
+
+    var dest = row.origin || row.origine || row.departure || "Inconnue";
+
+    var emission = parseFloat(row.emissions);
+
+    if(isNaN(emission)) emission = 0;
+
+    if(!destinationMap[dest]){
+        destinationMap[dest] = 0;
+    }
+
+    destinationMap[dest] += emission;
+    totalEmissions += emission;
+
+});
+
+/* ======================
+CONVERSION TABLEAU
+====================== */
 
 var destinationArray = Object.keys(destinationMap).map(function(dest){
     return {
@@ -1234,13 +1291,17 @@ var destinationArray = Object.keys(destinationMap).map(function(dest){
     };
 });
 
-/* Tri décroissant */
+/* ======================
+TRI
+====================== */
 
 destinationArray.sort(function(a,b){
     return b.emission - a.emission;
 });
 
-/* Limitation 45 destinations OU 85% cumul */
+/* ======================
+LIMITATION 45 OU 85%
+====================== */
 
 var filteredDestinations = [];
 var cumulative = 0;
@@ -1261,7 +1322,9 @@ destinationArray.forEach(function(item){
 
 });
 
-/* Ajout catégorie AUTRES */
+/* ======================
+AUTRES
+====================== */
 
 if(otherTotal > 0){
 
@@ -1272,7 +1335,9 @@ if(otherTotal > 0){
 
 }
 
-/* Labels et valeurs */
+/* ======================
+DATA CHART
+====================== */
 
 var labels = filteredDestinations.map(function(d){
     return d.destination;
@@ -1282,43 +1347,42 @@ var values = filteredDestinations.map(function(d){
     return Math.round(d.emission * 10) / 10;
 });
 
-/* Graphique */
+/* ======================
+GRAPH
+====================== */
 
 new Chart(
-    document.getElementById("chartDestination"),
-    {
-        type:"bar",    
-      data:{
-            labels:labels,
-            datasets:[
-                {
-                    label:"Émissions (t éq CO₂)",
-                    data:values
-                }
-            ]
-        },
-        options:{
-            responsive:true,
-            plugins:{
-                legend:{display:false}
-            },
-            scales:{
-                x:{
-                    ticks:{
-                        maxRotation:90,
-                        minRotation:45
-                    }
-                },
-                y:{
-                    title:{
-                        display:true,
-                        text:"Emissions de gaz à effet de serre (en t éq CO₂)"
-                    }
-                }
-            }
-        }
-    }
-);
+document.getElementById("chartDestination"),
+{
+type:"bar",
+
+data:{
+labels:labels,
+datasets:[{
+label:"Émissions (t éq CO₂)",
+data:values
+}]
+},
+
+options:{
+responsive:true,
+plugins:{legend:{display:false}},
+scales:{
+x:{
+ticks:{
+maxRotation:90,
+minRotation:45
+}
+},
+y:{
+title:{
+display:true,
+text:"Emissions de gaz à effet de serre (en t éq CO₂)"
+}
+}
+}
+}
+});
 
 });
 
