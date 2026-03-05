@@ -1110,9 +1110,10 @@ text:"Tonnes équivalent CO₂"
 
 /* ===============================
 EMISSIONS PAR DESTINATION
-Tri décroissant + limite 45 + 85% cumul
-+ catégorie "Autres destinations"
+Tri décroissant + limite 45 + 85%
 ================================ */
+
+parseCSV('./data/EXPORT_routes.csv', function(data){
 
 var destinationMap = {};
 var totalEmissions = 0;
@@ -1209,17 +1210,7 @@ new Chart(
         options:{
             responsive:true,
             plugins:{
-                legend:{display:false},
-                tooltip:{
-                    callbacks:{
-                        label:function(ctx){
-                            return ctx.raw.toLocaleString('fr-FR',{
-                                minimumFractionDigits:2,
-                                maximumFractionDigits:2
-                            }) + " tCO₂e";
-                        }
-                    }
-                }
+                legend:{display:false}
             },
             scales:{
                 x:{
@@ -1238,6 +1229,8 @@ new Chart(
         }
     }
 );
+
+});
 
  
 /* ===== TABLE DATA PRO V7 - STABLE ===== */
