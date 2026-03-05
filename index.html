@@ -1129,7 +1129,7 @@ text:"Tonnes équivalent CO₂"
 /* ===============================
 EMISSIONS PAR DESTINATION
 Somme départs + arrivées
-Tri décroissant + limite 45 + 85%
+Tri décroissant + limite 50 + 90%
 ================================ */
 
 /* Chargement des départs */
@@ -1145,13 +1145,15 @@ var totalEmissions = 0;
 
 /* Fonction d'agrégation */
 
-function aggregate(data){
+function aggregate(data, cityColumn){
 
 data.forEach(function(row){
 
-    var dest = row.destination || "Inconnue";
+    var dest = row[cityColumn] || "Inconnue";
 
-    var emission = parseFloat(row.emissions);
+    var emission = parseFloat(
+        String(row["Emissions de GES (t éq CO2)"] || "0").replace(',','.')
+    );
 
     if(isNaN(emission)) emission = 0;
 
@@ -1168,8 +1170,8 @@ data.forEach(function(row){
 
 /* Agrégation des deux fichiers */
 
-aggregate(departures);
-aggregate(arrivals);
+aggregate(departures,"destination"); // vols au départ
+aggregate(arrivals,"origine");       // vols à l'arrivée
 
 /* Conversion en tableau */
 
