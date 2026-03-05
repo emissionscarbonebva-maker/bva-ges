@@ -1132,7 +1132,7 @@ text:"Tonnes équivalent CO₂"
 
 });
 
-/* ===== DONUT SCOPES DETAIL ===== */
+/* ===== DONUT SCOPES PRO DASHBOARD ===== */
 
 parseCSV('./data/EXPORT_cumul_scopes.csv',(data)=>{
 
@@ -1142,7 +1142,7 @@ if(!data || data.length===0) return;
 
 var row = data[0];
 
-/* ===== EXTRACTION DES VALEURS ===== */
+/* ===== EXTRACTION ===== */
 
 var cumul_vols       = parseFloat(row.cumul_vols || 0);
 var cumul_acces_ind  = parseFloat(row.cumul_acces_ind || 0);
@@ -1165,7 +1165,7 @@ cumul_acces_coll +
 cumul_employes +
 cumul_scope_1_2;
 
-/* ===== PALETTE COULEURS ===== */
+/* ===== PALETTE ===== */
 
 let colors = [
 "#9467bd",
@@ -1175,15 +1175,36 @@ let colors = [
 "#1f77b4"
 ];
 
-/* ===== PLUGIN TEXTE CENTRAL ===== */
+/* ===== LABELS ===== */
+
+var labels = [
+"Aéronefs (scope 3)",
+"Accès individuels passagers (scope 3)",
+"Accès collectifs passagers (scope 3)",
+"Accès employés (scope 3)",
+"Emissions directes de l'aéroport (scope 1 & 2)"
+];
+
+var values = [
+cumul_vols,
+cumul_acces_ind,
+cumul_acces_coll,
+cumul_employes,
+cumul_scope_1_2
+];
+
+/* ===== TEXTE CENTRAL ===== */
 
 const centerText = {
 id:'centerText',
 afterDraw(chart){
 
 const {ctx} = chart;
-const centerX = chart.getDatasetMeta(0).data[0].x;
-const centerY = chart.getDatasetMeta(0).data[0].y;
+const meta = chart.getDatasetMeta(0);
+if(!meta.data.length) return;
+
+const x = meta.data[0].x;
+const y = meta.data[0].y;
 
 ctx.save();
 
@@ -1194,20 +1215,60 @@ ctx.textBaseline="middle";
 
 ctx.font="600 14px sans-serif";
 ctx.fillStyle="#666";
-ctx.fillText("Émissions totales",centerX,centerY-12);
+ctx.fillText("Émissions totales",x,y-14);
 
 /* valeur */
 
-ctx.font="700 20px sans-serif";
+ctx.font="700 22px sans-serif";
 ctx.fillStyle="#000";
 
 ctx.fillText(
 Math.round(total).toLocaleString('fr-FR')+" t",
-centerX,
-centerY+12
+x,
+y+10
 );
 
 ctx.restore();
+
+}
+};
+
+/* ===== POURCENTAGES SUR LES SEGMENTS ===== */
+
+const percentLabels = {
+id:'percentLabels',
+afterDatasetsDraw(chart){
+
+const {ctx} = chart;
+
+chart.data.datasets[0].data.forEach((value,i)=>{
+
+if(value===0) return;
+
+var meta = chart.getDatasetMeta(0).data[i];
+
+var percent = (value/total*100);
+
+if(percent < 2) return; // évite labels illisibles
+
+var position = meta.tooltipPosition();
+
+ctx.save();
+ctx.fillStyle="#fff";
+ctx.font="600 12px sans-serif";
+ctx.textAlign="center";
+ctx.textBaseline="middle";
+
+ctx.fillText(
+percent.toFixed(1)+"%",
+position.x,
+position.y
+);
+
+ctx.restore();
+
+});
+
 }
 };
 
@@ -1219,42 +1280,40 @@ document.getElementById("chartScopes"),
 type:"doughnut",
 
 data:{
-labels:[
-"Aéronefs (scope 3)",
-"Accès individuels passagers (scope 3)",
-"Accès collectifs passagers (scope 3)",
-"Accès employés (scope 3)",
-"Émissions directes de l'aéroport (scope 1 & 2)"
-],
-
+labels:labels,
 datasets:[{
-data:[
-cumul_vols,
-cumul_acces_ind,
-cumul_acces_coll,
-cumul_employes,
-cumul_scope_1_2
-],
+data:values,
 backgroundColor:colors,
-borderWidth:1
+borderWidth:2,
+borderColor:"#fff",
+hoverOffset:8
 }]
 },
 
 options:{
 responsive:true,
-cutout:"65%",
+cutout:"68%",
+
+animation:{
+duration:1200,
+easing:"easeOutQuart"
+},
 
 plugins:{
 legend:{
-position:"bottom"
+position:"bottom",
+labels:{
+padding:16,
+boxWidth:14
+}
 },
 
 tooltip:{
 callbacks:{
 label:function(context){
 
-var value=context.parsed;
-var percent=(value/total*100).toFixed(1);
+var value = context.parsed;
+var percent = (value/total*100).toFixed(1);
 
 return context.label+" : "
 +Math.round(value).toLocaleString('fr-FR')
@@ -1264,10 +1323,9 @@ return context.label+" : "
 }
 }
 }
-
 },
 
-plugins:[centerText]
+plugins:[centerText,percentLabels]
 
 });
 
