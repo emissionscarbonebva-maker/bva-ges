@@ -308,10 +308,10 @@ font-weight:bold;
   <img src="logo-bva.png" alt="Observatoire carbone BVA" style="height:170px;">
   <div>
     <h1 style="margin:0;">
-      Aéroport Paris-Beauvais (BVA) – Suivi indépendant des émissions de GES
+      Suivi indépendant des émissions de gaz à effet de serre de l'aéroport de Paris-Beauvais (BVA) pour l'année 2026
     </h1>
     <p style="margin:5px 0 0 0;">
-      Données issues des exports automatisés – Mise à jour GitHub
+      Données issues d'exports automatisés – Mise à jour GitHub
     </p>
   </div>
 </header>
@@ -324,46 +324,47 @@ font-weight:bold;
 
 <p>
 Ce site présente une analyse indépendante des émissions de gaz à effet de serre
-de l’aéroport de Paris-Beauvais (BVA). Les données sont issues d’exports publics
-et retraitées afin de présenter une vision journalière et cumulée des émissions carbone.
+de l’aéroport de Paris-Beauvais (BVA) pour l'année 2026. Les données sont issues de sources publiques
+et retraitées afin de présenter une vision journalière et cumulée des émissions.
 </p>
 
 <p>
 L’aéroport de Paris-Beauvais se situe dans l’Oise et constitue
-le principal aéroport low-cost du nord de l’Île-de-France.
+le principal aéroport low-cost du nord de l’Île-de-France, et le 9ème aéroport Français en terme de trafic passagers.
 </p>
 
 <p>
 Les émissions présentées sur ce site correspondent aux activités
-liées aux vols commerciaux opérés depuis la plateforme.
+liées aux vols commerciaux opérés depuis et à destination de la plateforme.
 </p>
   
 <p>
 Les émissions incluent :
-<br>• Les vols commerciaux
-<br>• Les déplacements des passagers
-<br>• Les déplacements des employés
-<br>• Les émissions directes de l’aéroport (scope 1 et 2)
+<br>• Les opération des aéronefs (stationnement, roulage, decollage attérissage et demi-croisière) - Scope 3
+<br>• Les accès terrestres collectifs et individuels à l'aéroport des passagers - Scope 3
+<br>• Les accès terrestres à l'aéroport des employés - Scope 3
+<br>• Les émissions directes de l’aéroport - Scope 1 & 2
 </p>
 </div>
 
 <div class="card info-card">
-<h2>Comment lire ce site</h2>
+<h2>Comment lire et utiliser ce site</h2>
 
 <ul>
-<li><strong>Émissions :</strong> exprimées en tonnes équivalent CO₂.</li>
+<li><strong>Émissions de gaz à effet de serre :</strong> exprimées en tonnes équivalent dioxyde de carbone (t éq CO₂).</li>
 
 <li><strong>Scopes :</strong>
 <ul>
-<li>Scope 1 : émissions directes des avions</li>
-<li>Scope 2 : émissions liées à l’électricité</li>
-<li>Scope 3 : émissions indirectes (production carburant, transport, etc.)</li>
+<li>Scope 1 : émissions directes de l'aéroport : chauffage, appareils de pistes thermique, ... /li>
+<li>Scope 2 : émissions liées à l’électricité consommé par l'aéroport : éclairages aérogares, éclairages pistes, appareils de pistes électriques, ... </li>
+<li>Scope 3 : émissions indirectes : production et approvisionnement en carburant d'aviation, combustion du carburant d'aviation par les aéronefs,
+  combustion de carburant pour les transports terrestres des passagers et employés, ... </li>
 </ul>
 </li>
 
-<li><strong>Distances :</strong> distance orthodromique entre aéroports (km).</li>
+<li><strong>Distances :</strong> moyenne de plusieurs relevés d'un site de t de distance entre l'aéroport de Paris-Beauvais et les aéroports d'origines et de destination disponible sur des site de traking </li>
 
-<li><strong>Données :</strong> mises à jour quotidiennement.</li>
+<li><strong>Données :</strong> mises à jour périodiquement (plusieurs fois par semaine) </li>
 
 <li><strong>Tableaux :</strong>
 <ul>
@@ -396,13 +397,6 @@ Moyenne journalière
 Écart-type journalier
 <div id="stdDev" class="metric-value">...</div>
 </div>
-
-<div class="card">
-<h2 class="tooltip" data-tip="Répartition des émissions selon les catégories du GHG Protocol.">
-Répartition des émissions par scope ⓘ
-</h2>
-
-<canvas id="chartScopes"></canvas>
 
 </div>
   
