@@ -1128,160 +1128,159 @@ text:"Tonnes équivalent CO₂"
  
 /* ===============================
 EMISSIONS PAR DESTINATION
-Départs + Arrivées
+Somme départs + arrivées
 Tri décroissant + limite 45 + 85%
-Tooltip avec %
 ================================ */
+
+/* Chargement des départs */
+
+parseCSV('./data/EXPORT_departures_YTD.csv', function(departures){
+
+/* Chargement des arrivées */
+
+parseCSV('./data/EXPORT_arrivals_YTD.csv', function(arrivals){
 
 var destinationMap = {};
 var totalEmissions = 0;
 
 /* Fonction d'agrégation */
 
-function processData(data){
+function aggregate(data){
 
-    data.forEach(function(row){
+data.forEach(function(row){
 
-        var dest = row.destination || "Inconnue";
+    var dest = row.destination || "Inconnue";
 
-        var emission = parseFloat(row.emissions);
-        if(isNaN(emission)) emission = 0;
+    var emission = parseFloat(row.emissions);
 
-        if(!destinationMap[dest]){
-            destinationMap[dest] = 0;
-        }
+    if(isNaN(emission)) emission = 0;
 
-        destinationMap[dest] += emission;
-        totalEmissions += emission;
+    if(!destinationMap[dest]){
+        destinationMap[dest] = 0;
+    }
 
+    destinationMap[dest] += emission;
+    totalEmissions += emission;
+
+});
+
+}
+
+/* Agrégation des deux fichiers */
+
+aggregate(departures);
+aggregate(arrivals);
+
+/* Conversion en tableau */
+
+var destinationArray = Object.keys(destinationMap).map(function(dest){
+    return {
+        destination: dest,
+        emission: destinationMap[dest]
+    };
+});
+
+/* Tri décroissant */
+
+destinationArray.sort(function(a,b){
+    return b.emission - a.emission;
+});
+
+/* Limitation 45 destinations OU 85% cumul */
+
+var filteredDestinations = [];
+var cumulative = 0;
+var otherTotal = 0;
+
+destinationArray.forEach(function(item){
+
+    if(
+        filteredDestinations.length < 50 &&
+        cumulative / totalEmissions < 0.90
+    ){
+        filteredDestinations.push(item);
+        cumulative += item.emission;
+    }
+    else{
+        otherTotal += item.emission;
+    }
+
+});
+
+/* Ajout catégorie AUTRES */
+
+if(otherTotal > 0){
+
+    filteredDestinations.push({
+        destination:"Autres destinations",
+        emission:otherTotal
     });
 
 }
 
-/* Chargement DEPARTS */
+/* Labels et valeurs */
 
-parseCSV('./data/EXPORT_departures_YTD.csv', function(dataDepartures){
+var labels = filteredDestinations.map(function(d){
+    return d.destination;
+});
 
-    processData(dataDepartures);
+var values = filteredDestinations.map(function(d){
+    return Math.round(d.emission * 10) / 10;
+});
 
-    /* Chargement ARRIVEES */
+/* Graphique */
 
-    parseCSV('./data/EXPORT_arrivals_YTD.csv', function(dataArrivals){
+new Chart(
+    document.getElementById("chartDestination"),
+    {
+        type:"bar",
+        data:{
+            labels:labels,
+            datasets:[
+                {
+                    label:"Émissions (t éq CO₂)",
+                    data:values
+                }
+            ]
+        },
+        options:{
+            responsive:true,
+            plugins:{
+                legend:{display:false},
+                tooltip:{
+                    callbacks:{
+                        label:function(context){
 
-        processData(dataArrivals);
+                            var value = context.parsed.y;
+                            var percent = (value / totalEmissions * 100).toFixed(1);
 
-        /* Conversion en tableau */
-
-        var destinationArray = Object.keys(destinationMap).map(function(dest){
-            return {
-                destination: dest,
-                emission: destinationMap[dest]
-            };
-        });
-
-        /* Tri décroissant */
-
-        destinationArray.sort(function(a,b){
-            return b.emission - a.emission;
-        });
-
-        /* Limitation 45 destinations OU 85% cumul */
-
-        var filteredDestinations = [];
-        var cumulative = 0;
-        var otherTotal = 0;
-
-        destinationArray.forEach(function(item){
-
-            if(
-                filteredDestinations.length < 50 &&
-                cumulative / totalEmissions < 0.90
-            ){
-                filteredDestinations.push(item);
-                cumulative += item.emission;
-            }
-            else{
-                otherTotal += item.emission;
-            }
-
-        });
-
-        /* Ajout catégorie AUTRES */
-
-        if(otherTotal > 0){
-
-            filteredDestinations.push({
-                destination:"Autres destinations",
-                emission:otherTotal
-            });
-
-        }
-
-        /* Labels et valeurs */
-
-        var labels = filteredDestinations.map(function(d){
-            return d.destination;
-        });
-
-        var values = filteredDestinations.map(function(d){
-            return Math.round(d.emission * 10) / 10;
-        });
-
-        /* Graphique */
-
-        new Chart(
-            document.getElementById("chartDestination"),
-            {
-                type:"bar",
-                data:{
-                    labels:labels,
-                    datasets:[
-                        {
-                            label:"Émissions (t éq CO₂)",
-                            data:values
-                        }
-                    ]
-                },
-                options:{
-                    responsive:true,
-                    plugins:{
-                        legend:{display:false},
-                        tooltip:{
-                            callbacks:{
-                                label:function(context){
-
-                                    var value = context.parsed.y;
-                                    var percent = (value / totalEmissions * 100).toFixed(2);
-
-                                    return value.toLocaleString('fr-FR') +
-                                    " t éq CO₂ (" + percent + " %)";
-
-                                }
-                            }
-                        }
-                    },
-                    scales:{
-                        x:{
-                            ticks:{
-                                maxRotation:90,
-                                minRotation:45
-                            }
-                        },
-                        y:{
-                            title:{
-                                display:true,
-                                text:"Emissions de gaz à effet de serre (en t éq CO₂)"
-                            }
+                            return value.toLocaleString('fr-FR') +
+                                   " t éq CO₂ (" + percent + "%)";
                         }
                     }
                 }
+            },
+            scales:{
+                x:{
+                    ticks:{
+                        maxRotation:90,
+                        minRotation:45
+                    }
+                },
+                y:{
+                    title:{
+                        display:true,
+                        text:"Emissions de gaz à effet de serre (en t éq CO₂)"
+                    }
+                }
             }
-        );
+        }
+    }
+);
 
-    });
+}); // fin arrivals
 
-});
-
+}); // fin departures
  
 /* ===== TABLE DATA PRO V7 - STABLE ===== */
 
