@@ -581,68 +581,6 @@ y:{beginAtZero:true}
 }
 });
 }
-
-
-/* ===== CAMEMBERT SCOPES ===== */
-
-parseCSV('./data/EXPORT_cumul_scopes.csv',(data)=>{
-
-if(!data || data.length===0) return;
-
-var row = data[data.length-1];
-
-var scope12 = parseFloat(row.scope_1_2 || 0);
-var total = parseFloat(row.cumul_total || 0);
-
-if(isNaN(scope12)) scope12=0;
-if(isNaN(total)) total=0;
-
-var scope3 = total - scope12;
-
-new Chart(
-document.getElementById("chartScopes"),
-{
-type:"pie",
-
-data:{
-labels:[
-"Scope 1 & 2",
-"Scope 3"
-],
-
-datasets:[{
-data:[
-scope12,
-scope3
-]
-}]
-},
-
-options:{
-responsive:true,
-plugins:{
-legend:{
-position:"bottom"
-},
-tooltip:{
-callbacks:{
-label:function(context){
-
-var value = context.parsed;
-var total = context.chart._metasets[0].total;
-
-var percent = (value/total*100).toFixed(1);
-
-return context.label+" : "
-+ Math.round(value).toLocaleString('fr-FR')
-+" t éq CO₂ ("+percent+"%)";
-}
-}
-}
-}
-}
-
-});
   
 /* ===== 1 DAILY SCOPES ===== */
 
@@ -1185,6 +1123,67 @@ text:"Tonnes équivalent CO₂"
 
 });
 
+/* ===== CAMEMBERT SCOPES ===== */
+
+parseCSV('./data/EXPORT_cumul_scopes.csv',(data)=>{
+
+if(!data || data.length===0) return;
+
+var row = data[data.length-1];
+
+var scope12 = parseFloat(row.scope_1_2 || 0);
+var total = parseFloat(row.cumul_total || 0);
+
+if(isNaN(scope12)) scope12=0;
+if(isNaN(total)) total=0;
+
+var scope3 = total - scope12;
+
+new Chart(
+document.getElementById("chartScopes"),
+{
+type:"pie",
+
+data:{
+labels:[
+"Scope 1 & 2",
+"Scope 3"
+],
+
+datasets:[{
+data:[
+scope12,
+scope3
+]
+}]
+},
+
+options:{
+responsive:true,
+plugins:{
+legend:{
+position:"bottom"
+},
+tooltip:{
+callbacks:{
+label:function(context){
+
+var value = context.parsed;
+var total = context.chart._metasets[0].total;
+
+var percent = (value/total*100).toFixed(1);
+
+return context.label+" : "
++ Math.round(value).toLocaleString('fr-FR')
++" t éq CO₂ ("+percent+"%)";
+}
+}
+}
+}
+}
+
+});
+  
 /* ===============================
 EMISSIONS PAR DESTINATION
 Tri décroissant + limite 45 + 85%
