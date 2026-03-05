@@ -397,6 +397,15 @@ Moyenne journalière
 <div id="stdDev" class="metric-value">...</div>
 </div>
 
+<div class="card">
+<h2 class="tooltip" data-tip="Répartition des émissions selon les catégories du GHG Protocol.">
+Répartition des émissions par scope ⓘ
+</h2>
+
+<canvas id="chartScopes"></canvas>
+
+</div>
+  
 </div>
 </div>
 
@@ -1183,6 +1192,8 @@ return context.label+" : "
 }
 
 });
+
+  });
   
 /* ===============================
 EMISSIONS PAR DESTINATION
@@ -1780,6 +1791,8 @@ parseCSV('./data/EXPORT_arrivals_YTD.csv', function(data){
 });
 
 });
+
+console.log("SCRIPT OK");
   
 </script>
 
