@@ -1151,9 +1151,7 @@ data.forEach(function(row){
 
     var dest = row.destination || "Inconnue";
 
-    var emission = parseFloat(
-        (row["Emissions de GES (t éq CO2)"] || "0").replace(",",".")
-    );
+    var emission = parseFloat(row.emissions);
 
     if(isNaN(emission)) emission = 0;
 
@@ -1188,7 +1186,7 @@ destinationArray.sort(function(a,b){
     return b.emission - a.emission;
 });
 
-/* Limitation 45 destinations OU 85% cumul */
+/* Limitation 50 destinations OU 90% cumul */
 
 var filteredDestinations = [];
 var cumulative = 0;
@@ -1197,8 +1195,8 @@ var otherTotal = 0;
 destinationArray.forEach(function(item){
 
     if(
-        filteredDestinations.length < 45 &&
-        cumulative / totalEmissions < 0.85
+        filteredDestinations.length < 50 &&
+        cumulative / totalEmissions < 0.90
     ){
         filteredDestinations.push(item);
         cumulative += item.emission;
@@ -1280,9 +1278,9 @@ new Chart(
     }
 );
 
-}); // arrivals
+}); // fin arrivals
 
-}); // departures
+}); // fin departures
  
 /* ===== TABLE DATA PRO V7 - STABLE ===== */
 
