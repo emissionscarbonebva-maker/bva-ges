@@ -1200,8 +1200,7 @@ var values = filteredDestinations.map(function(d){
 new Chart(
     document.getElementById("chartDestination"),
     {
-        type:"bar",
-        indexAxis: 'y',      
+        type:"bar",    
       data:{
             labels:labels,
             datasets:[
@@ -1226,7 +1225,7 @@ new Chart(
                 y:{
                     title:{
                         display:true,
-                        text:"tCO₂e"
+                        text:"Emissions de gaz à effet de serre (en t éq CO₂)"
                     }
                 }
             }
