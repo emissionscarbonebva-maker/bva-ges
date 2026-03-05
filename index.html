@@ -1494,6 +1494,24 @@ function updateCount(){
         .innerText = filteredData.length.toLocaleString('fr-FR');
 }
 
+/* ================= FILTER BADGES ================= */
+
+function updateBadges(){
+
+    container.querySelectorAll(".filtered-header")
+    .forEach(function(th){
+
+        var header = th.getAttribute("data-header");
+
+        if(activeFilters[header])
+            th.classList.add("filtered");
+        else
+            th.classList.remove("filtered");
+
+    });
+
+}
+  
     /* ================= MENU POPUP ================= */
 
 container.querySelectorAll(".col-menu").forEach(function(btn){
