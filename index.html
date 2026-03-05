@@ -20,6 +20,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
@@ -1132,7 +1133,7 @@ text:"Tonnes équivalent CO₂"
 
 });
 
-/* ===== DONUT SCOPES VERSION LISIBILITE ===== */
+/* ===== DONUT SCOPES STYLE DASHBOARD ===== */
 
 parseCSV('./data/EXPORT_cumul_scopes.csv',(data)=>{
 
@@ -1163,7 +1164,7 @@ var labels = [
 "Accès individuels passagers (scope 3)",
 "Accès collectifs passagers (scope 3)",
 "Accès employés (scope 3)",
-"Emissions directes de l'aéroport (scope 1 & 2)"
+"Émissions directes de l'aéroport (scope 1 & 2)"
 ];
 
 var values = [
@@ -1196,6 +1197,7 @@ afterDraw(chart){
 
 const {ctx} = chart;
 const meta = chart.getDatasetMeta(0);
+
 if(!meta.data.length) return;
 
 const x = meta.data[0].x;
@@ -1206,13 +1208,9 @@ ctx.save();
 ctx.textAlign="center";
 ctx.textBaseline="middle";
 
-/* titre */
-
 ctx.font="600 14px sans-serif";
 ctx.fillStyle="#666";
-ctx.fillText("Émissions totales",x,y-15);
-
-/* valeur */
+ctx.fillText("Émissions totales",x,y-14);
 
 ctx.font="700 22px sans-serif";
 ctx.fillStyle="#000";
@@ -1240,7 +1238,8 @@ labels:labels,
 datasets:[{
 data:values,
 backgroundColor:colors,
-borderWidth:1
+borderColor:"#fff",
+borderWidth:2
 }]
 },
 
@@ -1249,6 +1248,26 @@ responsive:true,
 cutout:"65%",
 
 plugins:{
+
+/* ===== LABELS AUTOUR DU DONUT ===== */
+
+datalabels:{
+color:"#000",
+font:{
+weight:"600",
+size:12
+},
+formatter:(value,ctx)=>{
+return ctx.chart.data.labels[ctx.dataIndex];
+},
+anchor:'end',
+align:'end',
+offset:8,
+clip:false
+},
+
+/* ===== LEGENDE AVEC POURCENTAGES ===== */
+
 legend:{
 position:"right",
 
@@ -1258,10 +1277,9 @@ boxWidth:14,
 
 generateLabels:function(chart){
 
-var data = chart.data;
-var dataset = data.datasets[0];
+var dataset = chart.data.datasets[0];
 
-return data.labels.map(function(label,i){
+return chart.data.labels.map(function(label,i){
 
 var value = dataset.data[i];
 var percent = total ? (value/total*100) : 0;
@@ -1271,15 +1289,17 @@ text: label + " — " + percent.toFixed(1) + " %",
 fillStyle: dataset.backgroundColor[i],
 strokeStyle: dataset.backgroundColor[i],
 lineWidth:0,
-hidden:isNaN(dataset.data[i]),
 index:i
 };
 
 });
 
 }
+
 }
 },
+
+/* ===== TOOLTIP ===== */
 
 tooltip:{
 callbacks:{
@@ -1300,7 +1320,7 @@ return context.label+" : "
 
 },
 
-plugins:[centerText]
+plugins:[centerText,ChartDataLabels]
 
 });
 
