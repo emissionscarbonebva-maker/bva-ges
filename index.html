@@ -1111,6 +1111,7 @@ text:"Tonnes équivalent CO₂"
 /* ===============================
 EMISSIONS PAR DESTINATION
 Tri décroissant + limite 45 + 85%
+Compatible EXPORT_departures_YTD.csv
 ================================ */
 
 parseCSV('./data/EXPORT_departures_YTD.csv', function(data){
@@ -1123,19 +1124,21 @@ var totalEmissions = 0;
 data.forEach(function(row){
 
     var dest = row.destination || "Inconnue";
-    var emission = parseFloat(String(row.emission).replace(',','.'));
+
+    var emission = parseFloat(row.emissions);
 
     if(isNaN(emission)) emission = 0;
 
-    if(!destinationMap[dest])
+    if(!destinationMap[dest]){
         destinationMap[dest] = 0;
+    }
 
     destinationMap[dest] += emission;
     totalEmissions += emission;
 
 });
 
-/* Conversion tableau */
+/* Conversion en tableau */
 
 var destinationArray = Object.keys(destinationMap).map(function(dest){
     return {
@@ -1189,7 +1192,7 @@ var labels = filteredDestinations.map(function(d){
 });
 
 var values = filteredDestinations.map(function(d){
-    return d.emission;
+    return Math.round(d.emission * 10) / 10;
 });
 
 /* Graphique */
