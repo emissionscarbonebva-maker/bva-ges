@@ -253,29 +253,6 @@ color:white;
 font-weight:bold;
 }
 
-.tooltip-text{
-visibility:hidden;
-opacity:0;
-position:absolute;
-bottom:130%;
-left:50%;
-transform:translateX(-50%);
-background:#333;
-color:white;
-padding:8px 10px;
-border-radius:6px;
-font-size:0.8em;
-width:220px;
-text-align:left;
-transition:0.2s;
-z-index:999;
-}
-
-.tooltip:hover .tooltip-text{
-visibility:visible;
-opacity:1;
-}
-
 /* ===== TOOLTIPS ===== */
 
 .tooltip {
@@ -351,6 +328,16 @@ de l’aéroport de Paris-Beauvais (BVA). Les données sont issues d’exports p
 et retraitées afin de présenter une vision journalière et cumulée des émissions carbone.
 </p>
 
+<p>
+L’aéroport de Paris-Beauvais se situe dans l’Oise et constitue
+le principal aéroport low-cost du nord de l’Île-de-France.
+</p>
+
+<p>
+Les émissions présentées sur ce site correspondent aux activités
+liées aux vols commerciaux opérés depuis la plateforme.
+</p>
+  
 <p>
 Les émissions incluent :
 <br>• Les vols commerciaux
@@ -1114,67 +1101,148 @@ text:"Tonnes équivalent CO₂"
 
 });
 
-/* ===== EMISSIONS PAR DESTINATION ===== */
+/* ===============================
+EMISSIONS PAR DESTINATION
+Tri décroissant + limite 45 + 85% cumul
++ catégorie "Autres destinations"
+================================ */
 
-parseCSV('./data/EXPORT_departures_YTD.csv',(data)=>{
+var destinationMap = {};
+var totalEmissions = 0;
 
-let destinations={};
+/* Agrégation */
 
-data.forEach(row=>{
+data.forEach(function(row){
 
-let dest=row.destination || row.Destination || "Autres";
+    var dest = row.destination || "Inconnue";
+    var emission = parseFloat(String(row.emission).replace(',','.'));
 
-let v=parseFloat(String(row.emissions).replace(',','.'));
+    if(isNaN(emission)) emission = 0;
 
-if(isNaN(v)) v=0;
+    if(!destinationMap[dest])
+        destinationMap[dest] = 0;
 
-if(!destinations[dest])
-destinations[dest]=0;
-
-destinations[dest]+=v;
-
-});
-
-let labels=Object.keys(destinations);
-let values=Object.values(destinations);
-
-new Chart(document.getElementById("chartRoutes"),{
-
-type:'bar',
-
-data:{
-labels:labels,
-datasets:[{
-label:"Émissions cumulées",
-data:values
-}]
-},
-
-options:{
-responsive:true,
-plugins:{
-legend:{display:false}
-},
-scales:{
-x:{
-title:{
-display:true,
-text:"Destination"
-}
-},
-y:{
-beginAtZero:true,
-title:{
-display:true,
-text:"Tonnes équivalent CO₂"
-}
-}
-}
-}
+    destinationMap[dest] += emission;
+    totalEmissions += emission;
 
 });
 
+/* Conversion tableau */
+
+var destinationArray = Object.keys(destinationMap).map(function(dest){
+    return {
+        destination: dest,
+        emission: destinationMap[dest]
+    };
 });
+
+/* Tri décroissant */
+
+destinationArray.sort(function(a,b){
+    return b.emission - a.emission;
+});
+
+/* Limitation 45 destinations OU 85% cumul */
+
+var filteredDestinations = [];
+var cumulative = 0;
+var otherTotal = 0;
+
+destinationArray.forEach(function(item){
+
+    if(
+        filteredDestinations.length < 45 &&
+        cumulative / totalEmissions < 0.85
+    ){
+        filteredDestinations.push(item);
+        cumulative += item.emission;
+    }
+    else{
+        otherTotal += item.emission;
+    }
+
+});
+
+/* Ajout catégorie AUTRES */
+
+if(otherTotal > 0){
+
+    filteredDestinations.push({
+        destination:"Autres destinations",
+        emission:otherTotal
+    });
+
+}
+
+/* Labels et valeurs */
+
+var labels = filteredDestinations.map(function(d){
+    return d.destination;
+});
+
+var values = filteredDestinations.map(function(d){
+    return d.emission;
+});
+
+/* Graphique */
+
+new Chart(
+    document.getElementById("chartDestination"),
+    {
+        type:"bar",
+        data:{
+            labels:labels,
+            datasets:[
+                {
+                    label:"Émissions (tCO₂e)",
+                    data:values
+                }
+            ]
+        },
+        options:{
+            responsive:true,
+            plugins:{
+                legend:{display:false},
+                tooltip:{
+                    callbacks:{
+                        label:function(ctx){
+                            return ctx.raw.toLocaleString('fr-FR',{
+                                minimumFractionDigits:2,
+                                maximumFractionDigits:2
+                            }) + " tCO₂e";
+                        }
+                    }
+                }
+            },
+            scales:{
+                x:{
+                    ticks:{
+                        maxRotation:90,
+                        minRotation:45
+                    }
+                },
+                y:{
+                    title:{
+                        display:true,
+                        text:"tCO₂e"
+                    }
+                }
+            }
+        }
+    }
+);
+
+<div class="card">
+<h2>Émissions par destination</h2>
+
+<canvas id="chartDestination"></canvas>
+
+<p style="font-size:0.85em;color:#666;margin-top:10px;">
+Les principales destinations représentant au moins 85 % des émissions sont affichées. 
+Les autres sont regroupées dans la catégorie « Autres destinations ».
+</p>
+
+</div>
   
 /* ===== TABLE DATA PRO V7 - STABLE ===== */
 
