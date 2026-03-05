@@ -1195,75 +1195,107 @@ return context.label+" : "
 
   });
   
-/* ===============================
-EMISSIONS PAR DESTINATION
+/* ==========================================
+EMISSIONS PAR DESTINATION (DEPARTS + ARRIVEES)
 Tri décroissant + limite 45 + 85%
-Compatible EXPORT_departures_YTD.csv
-================================ */
+========================================== */
 
-parseCSV('./data/EXPORT_departures_YTD.csv', function(data){
+Promise.all([
+    fetch('./data/EXPORT_departures_YTD.csv').then(r=>r.text()),
+    fetch('./data/EXPORT_arrivals_YTD.csv').then(r=>r.text())
+]).then(function(files){
+
+function parseLocalCSV(text){
+
+    var rows = text.split('\n').filter(r=>r.trim()!=="");
+    var sep = rows[0].includes(';') ? ';' : ',';
+
+    var headers = rows[0].split(sep).map(h=>h.trim());
+
+    return rows.slice(1).map(function(row){
+
+        var cols=row.split(sep);
+        var obj={};
+
+        headers.forEach(function(h,i){
+            obj[h]=cols[i] ? cols[i].trim() : "";
+        });
+
+        return obj;
+    });
+}
+
+var departures = parseLocalCSV(files[0]);
+var arrivals = parseLocalCSV(files[1]);
+
+var allFlights = departures.concat(arrivals);
 
 var destinationMap = {};
 var totalEmissions = 0;
 
-/* Agrégation */
+/* ===== AGREGATION ===== */
 
-data.forEach(function(row){
+allFlights.forEach(function(row){
 
     var dest = row.destination || "Inconnue";
 
-    var emission = parseFloat(row.emissions);
+    var emission = parseFloat(String(row.emissions).replace(',','.'));
 
     if(isNaN(emission)) emission = 0;
 
-    if(!destinationMap[dest]){
+    if(!destinationMap[dest])
         destinationMap[dest] = 0;
-    }
 
     destinationMap[dest] += emission;
+
     totalEmissions += emission;
 
 });
 
-/* Conversion en tableau */
+/* ===== CONVERSION TABLEAU ===== */
 
 var destinationArray = Object.keys(destinationMap).map(function(dest){
+
     return {
         destination: dest,
         emission: destinationMap[dest]
     };
+
 });
 
-/* Tri décroissant */
+/* ===== TRI DECROISSANT ===== */
 
 destinationArray.sort(function(a,b){
     return b.emission - a.emission;
 });
 
-/* Limitation 45 destinations OU 85% cumul */
+/* ===== LIMITATION 45 OU 85% ===== */
 
-var filteredDestinations = [];
-var cumulative = 0;
-var otherTotal = 0;
+var filteredDestinations=[];
+var cumulative=0;
+var otherTotal=0;
 
 destinationArray.forEach(function(item){
 
     if(
         filteredDestinations.length < 45 &&
-        cumulative / totalEmissions < 0.85
+        cumulative/totalEmissions < 0.85
     ){
+
         filteredDestinations.push(item);
         cumulative += item.emission;
-    }
-    else{
+
+    }else{
+
         otherTotal += item.emission;
+
     }
 
 });
 
-/* Ajout catégorie AUTRES */
+/* ===== AUTRES DESTINATIONS ===== */
 
-if(otherTotal > 0){
+if(otherTotal>0){
 
     filteredDestinations.push({
         destination:"Autres destinations",
@@ -1272,53 +1304,54 @@ if(otherTotal > 0){
 
 }
 
-/* Labels et valeurs */
+/* ===== DATASET ===== */
 
-var labels = filteredDestinations.map(function(d){
-    return d.destination;
-});
+var labels = filteredDestinations.map(d=>d.destination);
 
 var values = filteredDestinations.map(function(d){
-    return Math.round(d.emission * 10) / 10;
+    return Math.round(d.emission*10)/10;
 });
 
-/* Graphique */
+/* ===== GRAPH ===== */
 
 new Chart(
-    document.getElementById("chartDestination"),
-    {
-        type:"bar",    
-      data:{
-            labels:labels,
-            datasets:[
-                {
-                    label:"Émissions (t éq CO₂)",
-                    data:values
-                }
-            ]
-        },
-        options:{
-            responsive:true,
-            plugins:{
-                legend:{display:false}
-            },
-            scales:{
-                x:{
-                    ticks:{
-                        maxRotation:90,
-                        minRotation:45
-                    }
-                },
-                y:{
-                    title:{
-                        display:true,
-                        text:"Emissions de gaz à effet de serre (en t éq CO₂)"
-                    }
-                }
-            }
-        }
-    }
-);
+document.getElementById("chartDestination"),
+{
+type:"bar",
+
+data:{
+labels:labels,
+datasets:[{
+label:"Émissions (t éq CO₂)",
+data:values
+}]
+},
+
+options:{
+responsive:true,
+
+plugins:{
+legend:{display:false}
+},
+
+scales:{
+x:{
+ticks:{
+maxRotation:90,
+minRotation:45
+}
+},
+
+y:{
+title:{
+display:true,
+text:"Emissions de gaz à effet de serre (en t éq CO₂)"
+}
+}
+}
+}
+
+});
 
 });
 
