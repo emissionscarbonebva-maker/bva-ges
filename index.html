@@ -1132,13 +1132,13 @@ text:"Tonnes équivalent CO₂"
 
 });
 
-/* ===== DONUT SCOPES PRO DASHBOARD ===== */
+/* ===== DONUT SCOPES VERSION LISIBILITE ===== */
 
 parseCSV('./data/EXPORT_cumul_scopes.csv',(data)=>{
 
 if(!data || data.length===0) return;
 
-/* ===== PREMIERE LIGNE DU CSV ===== */
+/* ===== PREMIERE LIGNE ===== */
 
 var row = data[0];
 
@@ -1156,26 +1156,7 @@ if(isNaN(cumul_acces_coll)) cumul_acces_coll=0;
 if(isNaN(cumul_employes)) cumul_employes=0;
 if(isNaN(cumul_scope_1_2)) cumul_scope_1_2=0;
 
-/* ===== TOTAL ===== */
-
-var total =
-cumul_vols +
-cumul_acces_ind +
-cumul_acces_coll +
-cumul_employes +
-cumul_scope_1_2;
-
-/* ===== PALETTE ===== */
-
-let colors = [
-"#9467bd",
-"#d62728",
-"#2ca02c",
-"#ff7f0e",
-"#1f77b4"
-];
-
-/* ===== LABELS ===== */
+/* ===== DATA ===== */
 
 var labels = [
 "Aéronefs (scope 3)",
@@ -1191,6 +1172,20 @@ cumul_acces_ind,
 cumul_acces_coll,
 cumul_employes,
 cumul_scope_1_2
+];
+
+/* ===== TOTAL ===== */
+
+var total = values.reduce((a,b)=>a+b,0);
+
+/* ===== COULEURS ===== */
+
+let colors = [
+"#9467bd",
+"#d62728",
+"#2ca02c",
+"#ff7f0e",
+"#1f77b4"
 ];
 
 /* ===== TEXTE CENTRAL ===== */
@@ -1215,7 +1210,7 @@ ctx.textBaseline="middle";
 
 ctx.font="600 14px sans-serif";
 ctx.fillStyle="#666";
-ctx.fillText("Émissions totales",x,y-14);
+ctx.fillText("Émissions totales",x,y-15);
 
 /* valeur */
 
@@ -1233,45 +1228,6 @@ ctx.restore();
 }
 };
 
-/* ===== POURCENTAGES SUR LES SEGMENTS ===== */
-
-const percentLabels = {
-id:'percentLabels',
-afterDatasetsDraw(chart){
-
-const {ctx} = chart;
-
-chart.data.datasets[0].data.forEach((value,i)=>{
-
-if(value===0) return;
-
-var meta = chart.getDatasetMeta(0).data[i];
-
-var percent = (value/total*100);
-
-if(percent < 2) return; // évite labels illisibles
-
-var position = meta.tooltipPosition();
-
-ctx.save();
-ctx.fillStyle="#fff";
-ctx.font="600 12px sans-serif";
-ctx.textAlign="center";
-ctx.textBaseline="middle";
-
-ctx.fillText(
-percent.toFixed(1)+"%",
-position.x,
-position.y
-);
-
-ctx.restore();
-
-});
-
-}
-};
-
 /* ===== CHART ===== */
 
 new Chart(
@@ -1284,27 +1240,44 @@ labels:labels,
 datasets:[{
 data:values,
 backgroundColor:colors,
-borderWidth:2,
-borderColor:"#fff",
-hoverOffset:8
+borderWidth:1
 }]
 },
 
 options:{
 responsive:true,
-cutout:"68%",
-
-animation:{
-duration:1200,
-easing:"easeOutQuart"
-},
+cutout:"65%",
 
 plugins:{
 legend:{
-position:"bottom",
+position:"right",
+
 labels:{
-padding:16,
-boxWidth:14
+padding:18,
+boxWidth:14,
+
+generateLabels:function(chart){
+
+var data = chart.data;
+var dataset = data.datasets[0];
+
+return data.labels.map(function(label,i){
+
+var value = dataset.data[i];
+var percent = total ? (value/total*100) : 0;
+
+return {
+text: label + " — " + percent.toFixed(1) + " %",
+fillStyle: dataset.backgroundColor[i],
+strokeStyle: dataset.backgroundColor[i],
+lineWidth:0,
+hidden:isNaN(dataset.data[i]),
+index:i
+};
+
+});
+
+}
 }
 },
 
@@ -1312,8 +1285,8 @@ tooltip:{
 callbacks:{
 label:function(context){
 
-var value = context.parsed;
-var percent = (value/total*100).toFixed(1);
+var value=context.parsed;
+var percent=(value/total*100).toFixed(2);
 
 return context.label+" : "
 +Math.round(value).toLocaleString('fr-FR')
@@ -1322,10 +1295,12 @@ return context.label+" : "
 }
 }
 }
+
 }
+
 },
 
-plugins:[centerText,percentLabels]
+plugins:[centerText]
 
 });
 
