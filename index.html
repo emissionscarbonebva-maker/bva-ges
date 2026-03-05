@@ -379,10 +379,24 @@ Les émissions incluent :
   
 <div class="card">
 <h2>Indicateurs clés</h2>
+
 <div class="metrics">
-<div class="metric-box">Total période<div id="total" class="metric-value">...</div></div>
-<div class="metric-box">Moyenne journalière<div id="average" class="metric-value">...</div></div>
-<div class="metric-box">Jour le plus émetteur<div id="maxDay" class="metric-value">...</div></div>
+
+<div class="metric-box">
+Total période
+<div id="total" class="metric-value">...</div>
+</div>
+
+<div class="metric-box">
+Moyenne journalière
+<div id="average" class="metric-value">...</div>
+</div>
+
+<div class="metric-box">
+Écart-type journalier
+<div id="stdDev" class="metric-value">...</div>
+</div>
+
 </div>
 </div>
 
@@ -568,6 +582,68 @@ y:{beginAtZero:true}
 });
 }
 
+
+/* ===== CAMEMBERT SCOPES ===== */
+
+parseCSV('./data/EXPORT_cumul_scopes.csv',(data)=>{
+
+if(!data || data.length===0) return;
+
+var row = data[data.length-1];
+
+var scope12 = parseFloat(row.scope_1_2 || 0);
+var total = parseFloat(row.cumul_total || 0);
+
+if(isNaN(scope12)) scope12=0;
+if(isNaN(total)) total=0;
+
+var scope3 = total - scope12;
+
+new Chart(
+document.getElementById("chartScopes"),
+{
+type:"pie",
+
+data:{
+labels:[
+"Scope 1 & 2",
+"Scope 3"
+],
+
+datasets:[{
+data:[
+scope12,
+scope3
+]
+}]
+},
+
+options:{
+responsive:true,
+plugins:{
+legend:{
+position:"bottom"
+},
+tooltip:{
+callbacks:{
+label:function(context){
+
+var value = context.parsed;
+var total = context.chart._metasets[0].total;
+
+var percent = (value/total*100).toFixed(1);
+
+return context.label+" : "
++ Math.round(value).toLocaleString('fr-FR')
++" t éq CO₂ ("+percent+"%)";
+}
+}
+}
+}
+}
+
+});
+  
 /* ===== 1 DAILY SCOPES ===== */
 
 parseCSV('./data/EXPORT_daily_scopes.csv',(data,headers)=>{
@@ -632,28 +708,29 @@ maxDate=date;
 });
 
 // ===== INDICATEURS =====
+
 document.getElementById("total").innerText =
 Math.round(total).toLocaleString('fr-FR') + " tonnes éq CO2";
 
+var average = labels.length > 0 ? total/labels.length : 0;
+
 document.getElementById("average").innerText =
-labels.length > 0
-? Math.round(total/labels.length).toLocaleString('fr-FR') + " tonnes éq CO2"
-: "0 tonnes éq CO2";
+Math.round(average).toLocaleString('fr-FR') + " tonnes éq CO2";
 
-if(maxDate){
-let dateObj = new Date(maxDate);
-let formattedDate = isNaN(dateObj)
-? maxDate
-: dateObj.toLocaleDateString('fr-FR');
+/* ===== ECART TYPE ===== */
 
-document.getElementById("maxDay").innerText =
-formattedDate + " avec " +
-Math.round(max).toLocaleString('fr-FR') +
-" tonnes éq CO2";
-}else{
-document.getElementById("maxDay").innerText =
-"Aucune donnée disponible";
-}
+var variance = 0;
+
+totalSeries.forEach(function(v){
+variance += Math.pow(v - average,2);
+});
+
+variance = variance / totalSeries.length;
+
+var stdDev = Math.sqrt(variance);
+
+document.getElementById("stdDev").innerText =
+Math.round(stdDev).toLocaleString('fr-FR') + " tonnes éq CO2";
 
 // ===== AJOUT SERIE TOTAL =====
 datasets.push({
