@@ -20,7 +20,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
@@ -309,10 +308,10 @@ font-weight:bold;
   <img src="logo-bva.png" alt="Observatoire carbone BVA" style="height:170px;">
   <div>
     <h1 style="margin:0;">
-      Suivi indépendant des émissions de gaz à effet de serre de l'aéroport Paris-Beauvais (BVA) pour l'année 2026
+      Aéroport Paris-Beauvais (BVA) – Suivi indépendant des émissions de GES
     </h1>
     <p style="margin:5px 0 0 0;">
-      Données issues d'exports automatisés – Mise à jour GitHub
+      Données issues des exports automatisés – Mise à jour GitHub
     </p>
   </div>
 </header>
@@ -321,29 +320,29 @@ font-weight:bold;
 
 <!-- ===== TEXTE INDEXABLE GOOGLE ===== -->
 <div class="card">
-<h2>Analyse des émissions de gaz à effet de serre de l’aéroport Paris-Beauvais en 2026</h2>
+<h2>Analyse des émissions carbone de l’aéroport Paris-Beauvais en 2026</h2>
 
 <p>
 Ce site présente une analyse indépendante des émissions de gaz à effet de serre
 de l’aéroport de Paris-Beauvais (BVA). Les données sont issues d’exports publics
-et retraitées afin de présenter une vision journalière et cumulée des émissions.
+et retraitées afin de présenter une vision journalière et cumulée des émissions carbone.
 </p>
 
 <p>
 L’aéroport de Paris-Beauvais se situe dans l’Oise et constitue
-le principal aéroport low-cost du nord de l’Île-de-France, et le 9ème aéroport Français en terme de passagers.
+le principal aéroport low-cost du nord de l’Île-de-France.
 </p>
 
 <p>
 Les émissions présentées sur ce site correspondent aux activités
-liées aux vols commerciaux opérés depuis ou à destination de la plateforme.
+liées aux vols commerciaux opérés depuis la plateforme.
 </p>
   
 <p>
 Les émissions incluent :
-<br>• Les vols commerciaux (scope 3)
-<br>• Les accès terrestres des passagers en transports individuels et collectifs (scope 3)
-<br>• Les accès terrestres des employés (scope 3)
+<br>• Les vols commerciaux
+<br>• Les déplacements des passagers
+<br>• Les déplacements des employés
 <br>• Les émissions directes de l’aéroport (scope 1 et 2)
 </p>
 </div>
@@ -352,13 +351,13 @@ Les émissions incluent :
 <h2>Comment lire ce site</h2>
 
 <ul>
-<li><strong>Émissions de gaz à effet de serre :</strong> exprimées en tonnes équivalent dioxyde de carbone (t éq CO2).</li>
+<li><strong>Émissions :</strong> exprimées en tonnes équivalent CO₂.</li>
 
 <li><strong>Scopes :</strong>
 <ul>
-<li>Scope 1 : émissions directes de l'aéroport : chauffage, appareils de pistes thermique, ...</li>
-<li>Scope 2 : émissions liées à la production d'électricité consommée directement par l'aéroport : éclairage aérogare, éclairage piste, appareils de pistes électrique, ...</li>
-<li>Scope 3 : émissions indirectes : vols commerciaux (production carburant, transport, etc.)</li>
+<li>Scope 1 : émissions directes des avions</li>
+<li>Scope 2 : émissions liées à l’électricité</li>
+<li>Scope 3 : émissions indirectes (production carburant, transport, etc.)</li>
 </ul>
 </li>
 
@@ -1133,198 +1132,68 @@ text:"Tonnes équivalent CO₂"
 
 });
 
-/* ===== DONUT SCOPES STYLE DASHBOARD ===== */
+/* ===== CAMEMBERT SCOPES ===== */
 
 parseCSV('./data/EXPORT_cumul_scopes.csv',(data)=>{
 
 if(!data || data.length===0) return;
 
-/* ===== PREMIERE LIGNE ===== */
+var row = data[data.length-1];
 
-var row = data[0];
+var scope12 = parseFloat(row.scope_1_2 || 0);
+var total = parseFloat(row.cumul_total || 0);
 
-/* ===== EXTRACTION ===== */
+if(isNaN(scope12)) scope12=0;
+if(isNaN(total)) total=0;
 
-var cumul_vols       = parseFloat(row.cumul_vols || 0);
-var cumul_acces_ind  = parseFloat(row.cumul_acces_ind || 0);
-var cumul_acces_coll = parseFloat(row.cumul_acces_coll || 0);
-var cumul_employes   = parseFloat(row.cumul_employes || 0);
-var cumul_scope_1_2  = parseFloat(row.cumul_scope_1_2 || 0);
-
-if(isNaN(cumul_vols)) cumul_vols=0;
-if(isNaN(cumul_acces_ind)) cumul_acces_ind=0;
-if(isNaN(cumul_acces_coll)) cumul_acces_coll=0;
-if(isNaN(cumul_employes)) cumul_employes=0;
-if(isNaN(cumul_scope_1_2)) cumul_scope_1_2=0;
-
-/* ===== DATA ===== */
-
-var labels = [
-"Aéronefs (scope 3)",
-"Accès individuels passagers (scope 3)",
-"Accès collectifs passagers (scope 3)",
-"Accès employés (scope 3)",
-"Émissions directes de l'aéroport (scope 1 & 2)"
-];
-
-var values = [
-cumul_vols,
-cumul_acces_ind,
-cumul_acces_coll,
-cumul_employes,
-cumul_scope_1_2
-];
-
-/* ===== TOTAL ===== */
-
-var total = values.reduce((a,b)=>a+b,0);
-
-/* ===== COULEURS ===== */
-
-let colors = [
-"#9467bd",
-"#d62728",
-"#2ca02c",
-"#ff7f0e",
-"#1f77b4"
-];
-
-/* ===== TEXTE CENTRAL ===== */
-
-const centerText = {
-id:'centerText',
-afterDraw(chart){
-
-const {ctx} = chart;
-const meta = chart.getDatasetMeta(0);
-
-if(!meta.data.length) return;
-
-const x = meta.data[0].x;
-const y = meta.data[0].y;
-
-ctx.save();
-
-ctx.textAlign="center";
-ctx.textBaseline="middle";
-
-ctx.font="600 14px sans-serif";
-ctx.fillStyle="#666";
-ctx.fillText("Émissions totales",x,y-14);
-
-ctx.font="700 22px sans-serif";
-ctx.fillStyle="#000";
-
-ctx.fillText(
-Math.round(total).toLocaleString('fr-FR')+" t",
-x,
-y+10
-);
-
-ctx.restore();
-
-}
-};
-
-/* ===== CHART ===== */
+var scope3 = total - scope12;
 
 new Chart(
 document.getElementById("chartScopes"),
 {
-type:"doughnut",
+type:"pie",
 
 data:{
-labels:labels,
+labels:[
+"Scope 1 & 2",
+"Scope 3"
+],
+
 datasets:[{
-data:values,
-backgroundColor:colors,
-borderColor:"#fff",
-borderWidth:2
+data:[
+scope12,
+scope3
+]
 }]
 },
 
 options:{
 responsive:true,
-cutout:"65%",
-
 plugins:{
-
-/* ===== LABELS AUTOUR DU DONUT ===== */
-
-datalabels:{
-color:"#000",
-font:{
-weight:"600",
-size:12
-},
-formatter:(value,ctx)=>{
-return ctx.chart.data.labels[ctx.dataIndex];
-},
-anchor:'end',
-align:'end',
-offset:8,
-clip:false
-},
-
-/* ===== LEGENDE AVEC POURCENTAGES ===== */
-
 legend:{
-position:"right",
-
-labels:{
-padding:18,
-boxWidth:14,
-
-generateLabels:function(chart){
-
-var dataset = chart.data.datasets[0];
-
-return chart.data.labels.map(function(label,i){
-
-var value = dataset.data[i];
-var percent = total ? (value/total*100) : 0;
-
-return {
-text: label + " — " + percent.toFixed(1) + " %",
-fillStyle: dataset.backgroundColor[i],
-strokeStyle: dataset.backgroundColor[i],
-lineWidth:0,
-index:i
-};
-
-});
-
-}
-
-}
+position:"bottom"
 },
-
-/* ===== TOOLTIP ===== */
-
 tooltip:{
 callbacks:{
 label:function(context){
 
-var value=context.parsed;
-var percent=(value/total*100).toFixed(2);
+var value = context.parsed;
+var total = context.chart._metasets[0].total;
+
+var percent = (value/total*100).toFixed(1);
 
 return context.label+" : "
-+Math.round(value).toLocaleString('fr-FR')
++ Math.round(value).toLocaleString('fr-FR')
 +" t éq CO₂ ("+percent+"%)";
-
 }
 }
 }
-
 }
-
-},
-
-plugins:[centerText,ChartDataLabels]
+}
 
 });
 
-});
+  });
   
 /* ===============================
 EMISSIONS PAR DESTINATION
@@ -1454,494 +1323,445 @@ new Chart(
 });
 
  
-/* ===== TABLE DATA PRO V8 - OPTIMIZED ===== */
+/* ===== TABLE DATA PRO V7 - STABLE ===== */
 
 function createTable(containerId, data){
 
-if(!data || data.length===0){
-document.getElementById(containerId).innerHTML="<p>Aucune donnée disponible</p>";
-return;
-}
+    if(!data || data.length === 0){
+        document.getElementById(containerId).innerHTML =
+            "<p>Aucune donnée disponible</p>";
+        return;
+    }
 
-var container=document.getElementById(containerId);
-var headers=Object.keys(data[0]);
-var activeFilters={};
-var sortDirection=1;
-var currentPage=1;
-var rowsPerPage=200;
-var filteredData=[...data];
-var debounceTimer;
+    var container = document.getElementById(containerId);
+    var headers = Object.keys(data[0]);
+    var activeFilters = {};
+    var sortDirection = 1;
+    var currentPage = 1;
+    var rowsPerPage = 200;
+    var filteredData = [...data];
+    var debounceTimer;
 
-/* ================= PREPROCESS DATA ================= */
-
-data.forEach(function(row){
-
-row._search=Object.values(row).join(" ").toLowerCase();
-
-row._num={};
-
-headers.forEach(function(h){
-
-var n=parseFloat(String(row[h]).replace(',','.'));
-
-if(!isNaN(n)) row._num[h]=n;
-
-});
-
-});
-
-/* ================= FORMAT ================= */
+    /* ================= FORMAT ================= */
 
 function formatDistance(value){
-var n=parseFloat(String(value).replace(',','.'));
-if(isNaN(n)) return value;
-return Math.round(n).toLocaleString('fr-FR');
+    var n = parseFloat(String(value).replace(',','.'));
+    if(isNaN(n)) return value;
+    return Math.round(n).toLocaleString('fr-FR');
 }
 
 function formatEmission(value){
-var n=parseFloat(String(value).replace(',','.'));
-if(isNaN(n)) return value;
-return n.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2});
+    var n = parseFloat(String(value).replace(',','.'));
+    if(isNaN(n)) return value;
+    return n.toLocaleString('fr-FR',{
+        minimumFractionDigits:2,
+        maximumFractionDigits:2
+    });
 }
 
 function formatDateFR(value){
 
-if(!value) return "";
+    if(!value) return "";
 
-var d=new Date(value);
-if(isNaN(d)) return value;
+    var d = new Date(value);
+    if(isNaN(d)) return value;
 
-var str=d.toLocaleDateString('fr-FR',{
-weekday:'long',
-day:'2-digit',
-month:'2-digit',
-year:'numeric'
-});
+    var str = d.toLocaleDateString('fr-FR',{
+        weekday:'long',
+        day:'2-digit',
+        month:'2-digit',
+        year:'numeric'
+    });
 
-return str.charAt(0).toUpperCase()+str.slice(1);
+    return str.charAt(0).toUpperCase()+str.slice(1);
 }
 
 function formatValue(header,value){
 
-var lower=header.toLowerCase();
+    var lower = header.toLowerCase();
 
-if(lower.includes("date")) return formatDateFR(value);
-if(lower.includes("distance")) return formatDistance(value);
-if(lower.includes("emission")) return formatEmission(value);
+    if(lower.includes("date")) return formatDateFR(value);
+    if(lower.includes("distance")) return formatDistance(value);
+    if(lower.includes("emission")) return formatEmission(value);
 
-return value;
+    return value;
 }
 
-/* ================= BUILD TABLE ================= */
+    /* ================= BUILD TABLE ================= */
 
-var html="";
+    var html = "";
 
-html+='<div style="margin-bottom:10px; display:flex; justify-content:space-between;">';
-html+='<div><strong id="'+containerId+'-count"></strong> vols affichés</div>';
-html+='<div>';
-html+='<button id="'+containerId+'-reset">Réinitialiser</button> ';
-html+='<button id="'+containerId+'-export">Exporter</button>';
-html+='</div></div>';
+    html += '<div style="margin-bottom:10px; display:flex; justify-content:space-between;">';
+    html += '<div><strong id="'+containerId+'-count"></strong> vols affichés</div>';
+    html += '<div>';
+    html += '<button id="'+containerId+'-reset">Réinitialiser</button> ';
+    html += '<button id="'+containerId+'-export">Exporter</button>';
+    html += '</div></div>';
 
-html+='<div class="table-wrapper">';
-html+='<table class="data-table"><thead>';
+    html += '<div class="table-wrapper">';
+    html += '<table class="data-table"><thead>';
 
-html+='<tr>';
+    /* HEADER */
 
-headers.forEach(function(h,i){
+    html += '<tr>';
 
-html+='<th class="'+(i===0?'sticky-col':'')+' filtered-header" data-header="'+h+'">';
-html+='<div style="display:flex; justify-content:space-between; align-items:center;">';
-html+='<span>'+h+'</span>';
-html+='<span class="col-menu" data-col="'+h+'" style="cursor:pointer;">⋮</span>';
-html+='</div></th>';
+    headers.forEach(function(h,i){
+        html += '<th class="'+(i===0?'sticky-col':'')+' filtered-header" data-header="'+h+'">';
+        html += '<div style="display:flex; justify-content:space-between; align-items:center;">';
+        html += '<span>'+h+'</span>';
+        html += '<span class="col-menu" data-col="'+h+'" style="cursor:pointer;">⋮</span>';
+        html += '</div></th>';
+    });
 
-});
+    html += '</tr>';
 
-html+='</tr>';
+    /* FILTER ROW */
 
-html+='<tr>';
+    html += '<tr>';
 
-headers.forEach(function(h,i){
+    headers.forEach(function(h,i){
+        html += '<th class="'+(i===0?'sticky-col':'')+'">';
+        html += '<div style="position:relative;">';
+        html += '<input type="text" data-filter="'+h+'" placeholder="Filtrer..." style="width:100%;">';
+        html += '<span class="clear-filter" data-clear="'+h+'" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); cursor:pointer;">✕</span>';
+        html += '</div></th>';
+    });
 
-html+='<th class="'+(i===0?'sticky-col':'')+'">';
-html+='<div style="position:relative;">';
-html+='<input type="text" data-filter="'+h+'" placeholder="Filtrer..." style="width:100%;">';
-html+='<span class="clear-filter" data-clear="'+h+'" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); cursor:pointer;">✕</span>';
-html+='</div></th>';
+    html += '</tr></thead><tbody>';
 
-});
+    /* TOTAL ROW */
 
-html+='</tr></thead><tbody>';
+    html += '<tr class="total-row"></tr>';
 
-html+='<tr class="total-row"></tr>';
+    html += '</tbody></table></div>';
 
-html+='</tbody></table></div>';
+    html += '<div style="margin-top:10px; text-align:center;">';
+    html += '<button id="'+containerId+'-prev">◀</button> ';
+    html += '<span id="'+containerId+'-page"></span>';
+    html += ' <button id="'+containerId+'-next">▶</button>';
+    html += '</div>';
 
-html+='<div style="margin-top:10px; text-align:center;">';
-html+='<button id="'+containerId+'-prev">◀</button> ';
-html+='<span id="'+containerId+'-page"></span>';
-html+=' <button id="'+containerId+'-next">▶</button>';
-html+='</div>';
+    container.innerHTML = html;
 
-container.innerHTML=html;
+    var tbody = container.querySelector("tbody");
+    var totalRow = tbody.querySelector(".total-row");
 
-var tbody=container.querySelector("tbody");
-var totalRow=tbody.querySelector(".total-row");
-
-/* ================= RENDER ================= */
+    /* ================= RENDER ================= */
 
 function renderTable(){
 
-tbody.querySelectorAll("tr:not(.total-row)").forEach(tr=>tr.remove());
+    tbody.querySelectorAll("tr:not(.total-row)").forEach(tr=>tr.remove());
 
-var start=(currentPage-1)*rowsPerPage;
-var end=start+rowsPerPage;
-var pageData=filteredData.slice(start,end);
+    var start = (currentPage-1)*rowsPerPage;
+    var end = start + rowsPerPage;
+    var pageData = filteredData.slice(start,end);
 
-var frag=document.createDocumentFragment();
+    pageData.forEach(function(row){
 
-pageData.forEach(function(row){
+        var tr = document.createElement("tr");
 
-var tr=document.createElement("tr");
+        headers.forEach(function(h){
 
-headers.forEach(function(h){
+            var td = document.createElement("td");
 
-var td=document.createElement("td");
+            if(h.toLowerCase().includes("date") ||
+               h.toLowerCase().includes("distance") ||
+               h.toLowerCase().includes("emission"))
+                td.className="center";
 
-if(h.toLowerCase().includes("date")||
-h.toLowerCase().includes("distance")||
-h.toLowerCase().includes("emission"))
-td.className="center";
+            td.innerText = formatValue(h,row[h]||"");
+            tr.appendChild(td);
+        });
 
-td.innerText=formatValue(h,row[h]||"");
+        tbody.appendChild(tr);
+    });
 
-tr.appendChild(td);
-
-});
-
-frag.appendChild(tr);
-
-});
-
-tbody.appendChild(frag);
-
-updateTotal();
-updateCount();
-updatePagination();
-updateBadges();
-
+    updateTotal();
+    updateCount();
+    updatePagination();
+    updateBadges();
 }
 
-/* ================= FILTER ================= */
+    /* ================= FILTER ================= */
 
 function applyFilters(){
 
-if(Object.keys(activeFilters).length===0){
-filteredData=[...data];
-}
-else{
+    filteredData = data.filter(function(row){
 
-filteredData=data.filter(function(row){
+        return headers.every(function(h){
 
-return headers.every(function(h){
+            if(!activeFilters[h]) return true;
 
-if(!activeFilters[h]) return true;
+            var value = String(row[h]||"").toLowerCase();
+            return value.includes(activeFilters[h].toLowerCase());
+        });
+    });
 
-var value=String(row[h]||"").toLowerCase();
-
-return value.includes(activeFilters[h].toLowerCase());
-
-});
-
-});
-
+    currentPage = 1;
+    renderTable();
 }
 
-currentPage=1;
-renderTable();
-
-}
-
-/* ================= TOTAL ================= */
+    /* ================= TOTAL ================= */
 
 function updateTotal(){
 
-var sourceData=(Object.keys(activeFilters).length===0)?data:filteredData;
+    var sourceData;
 
-var total=0;
+    if(Object.keys(activeFilters).length===0)
+        sourceData = data;
+    else
+        sourceData = filteredData;
 
-sourceData.forEach(function(row){
+    var total = 0;
 
-headers.forEach(function(h){
+    sourceData.forEach(function(row){
 
-if(h.toLowerCase().includes("emission")){
+        headers.forEach(function(h){
 
-var n=row._num[h];
+            if(h.toLowerCase().includes("emission")){
 
-if(!isNaN(n)) total+=n;
+                var n = parseFloat(String(row[h]).replace(',','.'));
 
+                if(!isNaN(n)) total += n;
+            }
+        });
+    });
+
+    totalRow.innerHTML="";
+
+    headers.forEach(function(h,i){
+
+        var td=document.createElement("td");
+
+        if(i===0){
+            td.innerHTML="<strong>TOTAL</strong>";
+        }
+        else if(h.toLowerCase().includes("emission")){
+
+            td.className="center";
+
+            td.innerHTML="<strong>"+total.toLocaleString('fr-FR',{
+                minimumFractionDigits:2,
+                maximumFractionDigits:2
+            })+"</strong>";
+        }
+
+        totalRow.appendChild(td);
+    });
 }
 
-});
-
-});
-
-totalRow.innerHTML="";
-
-headers.forEach(function(h,i){
-
-var td=document.createElement("td");
-
-if(i===0){
-
-td.innerHTML="<strong>TOTAL</strong>";
-
-}
-else if(h.toLowerCase().includes("emission")){
-
-td.className="center";
-
-td.innerHTML="<strong>"+total.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+"</strong>";
-
-}
-
-totalRow.appendChild(td);
-
-});
-
-}
-
-/* ================= PAGINATION ================= */
+    /* ================= PAGINATION ================= */
 
 function updatePagination(){
 
-var totalPages=Math.max(1,Math.ceil(filteredData.length/rowsPerPage));
+    var totalPages = Math.ceil(filteredData.length / rowsPerPage);
 
-container.querySelector("#"+containerId+"-page").innerText="Page "+currentPage+" / "+totalPages;
+    container.querySelector("#"+containerId+"-page")
+        .innerText = "Page "+currentPage+" / "+totalPages;
 
-document.getElementById(containerId+"-prev").onclick=function(){
+    document.getElementById(containerId+"-prev").onclick=function(){
 
-if(currentPage>1){
-currentPage--;
-renderTable();
+        if(currentPage>1){
+            currentPage--;
+            renderTable();
+        }
+    };
+
+    document.getElementById(containerId+"-next").onclick=function(){
+
+        if(currentPage<totalPages){
+            currentPage++;
+            renderTable();
+        }
+    };
 }
 
-};
-
-document.getElementById(containerId+"-next").onclick=function(){
-
-if(currentPage<totalPages){
-currentPage++;
-renderTable();
-}
-
-};
-
-}
-
-/* ================= COUNT ================= */
+    /* ================= COUNT ================= */
 
 function updateCount(){
 
-container.querySelector("#"+containerId+"-count").innerText=filteredData.length.toLocaleString('fr-FR');
-
+    container.querySelector("#"+containerId+"-count")
+        .innerText = filteredData.length.toLocaleString('fr-FR');
 }
 
 /* ================= FILTER BADGES ================= */
 
 function updateBadges(){
 
-container.querySelectorAll(".filtered-header").forEach(function(th){
+    container.querySelectorAll(".filtered-header")
+    .forEach(function(th){
 
-var header=th.getAttribute("data-header");
+        var header = th.getAttribute("data-header");
 
-if(activeFilters[header]) th.classList.add("filtered");
-else th.classList.remove("filtered");
+        if(activeFilters[header])
+            th.classList.add("filtered");
+        else
+            th.classList.remove("filtered");
 
-});
+    });
 
 }
-
-/* ================= MENU POPUP ================= */
+  
+    /* ================= MENU POPUP ================= */
 
 container.querySelectorAll(".col-menu").forEach(function(btn){
 
-btn.addEventListener("click",function(e){
+    btn.addEventListener("click", function(e){
 
-e.stopPropagation();
+        e.stopPropagation();
 
-var col=btn.getAttribute("data-col");
-var index=headers.indexOf(col);
+        var col = btn.getAttribute("data-col");
+        var index = headers.indexOf(col);
 
-var old=document.querySelector(".column-menu");
-if(old) old.remove();
+        var old = document.querySelector(".column-menu");
+        if(old) old.remove();
 
-var menu=document.createElement("div");
-menu.className="column-menu";
+        var menu = document.createElement("div");
+        menu.className="column-menu";
+        menu.style.position="fixed";
+        menu.style.background="#fff";
+        menu.style.border="1px solid #ccc";
+        menu.style.borderRadius="8px";
+        menu.style.boxShadow="0 8px 20px rgba(0,0,0,0.15)";
+        menu.style.padding="6px 0";
+        menu.style.zIndex="99999";
 
-menu.style.position="fixed";
-menu.style.background="#fff";
-menu.style.border="1px solid #ccc";
-menu.style.borderRadius="8px";
-menu.style.boxShadow="0 8px 20px rgba(0,0,0,0.15)";
-menu.style.padding="6px 0";
-menu.style.zIndex="99999";
+        var rect = btn.getBoundingClientRect();
+        menu.style.left = rect.left+"px";
+        menu.style.top  = rect.bottom+"px";
 
-var rect=btn.getBoundingClientRect();
-menu.style.left=rect.left+"px";
-menu.style.top=rect.bottom+"px";
+        function addItem(label,action){
+            var item=document.createElement("div");
+            item.innerText=label;
+            item.style.padding="8px 14px";
+            item.style.cursor="pointer";
+            item.addEventListener("click",function(){
+                action();
+                menu.remove();
+            });
+            menu.appendChild(item);
+        }
 
-function addItem(label,action){
+        addItem("Tri ascendant",function(){
+            sortDirection=1;
+            sortColumn(index);
+        });
 
-var item=document.createElement("div");
+        addItem("Tri descendant",function(){
+            sortDirection=-1;
+            sortColumn(index);
+        });
 
-item.innerText=label;
-item.style.padding="8px 14px";
-item.style.cursor="pointer";
+        addItem("Effacer le filtre",function(){
+            delete activeFilters[col];
+            container.querySelector('[data-filter="'+col+'"]').value="";
+            applyFilters();
+        });
 
-item.addEventListener("click",function(){
-action();
-menu.remove();
+        document.body.appendChild(menu);
+
+        document.addEventListener("click",function(){
+            menu.remove();
+        },{once:true});
+    });
 });
-
-menu.appendChild(item);
-
-}
-
-addItem("Tri ascendant",function(){
-sortDirection=1;
-sortColumn(index);
-});
-
-addItem("Tri descendant",function(){
-sortDirection=-1;
-sortColumn(index);
-});
-
-addItem("Effacer le filtre",function(){
-
-delete activeFilters[col];
-
-container.querySelector('[data-filter="'+col+'"]').value="";
-
-applyFilters();
-
-});
-
-document.body.appendChild(menu);
-
-document.addEventListener("click",function(){
-menu.remove();
-},{once:true});
-
-});
-
-});
-
-/* ================= SORT ================= */
 
 function sortColumn(index){
 
-var col=headers[index];
+    filteredData.sort(function(a,b){
 
-filteredData.sort(function(a,b){
+        var A=a[headers[index]];
+        var B=b[headers[index]];
 
-var A=a._num[col] ?? a[col];
-var B=b._num[col] ?? b[col];
+        var numA=parseFloat(String(A).replace(',','.'));
+        var numB=parseFloat(String(B).replace(',','.'));
 
-if(typeof A==="number" && typeof B==="number")
-return (A-B)*sortDirection;
+        if(!isNaN(numA)&&!isNaN(numB))
+            return (numA-numB)*sortDirection;
 
-return String(A).localeCompare(String(B))*sortDirection;
+        return String(A).localeCompare(String(B))*sortDirection;
+    });
 
-});
-
-renderTable();
-
+    renderTable();
 }
 
-/* ================= INPUT FILTER ================= */
+    /* ================= DEBOUNCE INPUT ================= */
 
 container.querySelectorAll("[data-filter]").forEach(function(input){
 
-input.addEventListener("input",function(){
+    input.addEventListener("input", function(){
 
-clearTimeout(debounceTimer);
+        clearTimeout(debounceTimer);
 
-debounceTimer=setTimeout(function(){
+        debounceTimer=setTimeout(function(){
 
-var col=input.getAttribute("data-filter");
+            var col=input.getAttribute("data-filter");
+            activeFilters[col]=input.value.trim();
 
-activeFilters[col]=input.value.trim();
+            if(!activeFilters[col]) delete activeFilters[col];
 
-if(!activeFilters[col]) delete activeFilters[col];
+            applyFilters();
 
-applyFilters();
-
-},250);
-
-});
-
+        },300);
+    });
 });
 
 /* ================= CLEAR FILTER ================= */
 
 container.querySelectorAll(".clear-filter").forEach(function(btn){
 
-btn.addEventListener("click",function(e){
+    btn.addEventListener("click", function(e){
 
-e.stopPropagation();
+        e.stopPropagation();
 
-var col=btn.getAttribute("data-clear");
-var input=container.querySelector('[data-filter="'+col+'"]');
+        var col = btn.getAttribute("data-clear");
+        var input = container.querySelector('[data-filter="'+col+'"]');
 
-input.value="";
-delete activeFilters[col];
+        input.value="";
+        delete activeFilters[col];
 
-applyFilters();
+        clearTimeout(debounceTimer);
 
+        applyFilters();
+    });
 });
 
+    /* ================= RESET ================= */
+
+document.getElementById(containerId+"-reset")
+.addEventListener("click",function(){
+
+    activeFilters={};
+
+    container.querySelectorAll("[data-filter]").forEach(i=>i.value="");
+
+    var dateIndex=headers.findIndex(h=>h.toLowerCase().includes("date"));
+
+    if(dateIndex!==-1){
+
+        data.sort(function(a,b){
+
+            return new Date(b[headers[dateIndex]]) -
+                   new Date(a[headers[dateIndex]]);
+        });
+    }
+
+    filteredData=[...data];
+    currentPage=1;
+
+    renderTable();
 });
 
-/* ================= RESET ================= */
-
-document.getElementById(containerId+"-reset").addEventListener("click",function(){
-
-activeFilters={};
-
-container.querySelectorAll("[data-filter]").forEach(i=>i.value="");
-
-var dateIndex=headers.findIndex(h=>h.toLowerCase().includes("date"));
-
-if(dateIndex!==-1){
-
-data.sort(function(a,b){
-return new Date(b[headers[dateIndex]])-new Date(a[headers[dateIndex]]);
-});
-
-}
-
-filteredData=[...data];
-currentPage=1;
+    /* ================= INIT ================= */
 
 renderTable();
-
-});
-
-/* ================= INIT ================= */
-
-renderTable();
-
 }
 
 /* ===== BADGE CSS ===== */
 
-var style=document.createElement("style");
-
-style.innerHTML=`
-.filtered{
+var style = document.createElement("style");
+style.innerHTML = `
+.filtered {
 background:#e6f2ff !important;
 position:relative;
 }
@@ -1956,7 +1776,6 @@ top:6px;
 right:6px;
 }
 `;
-
 document.head.appendChild(style);
 
 /* ===== TABLE DEPARTURES ===== */
@@ -1965,8 +1784,7 @@ parseCSV('./data/EXPORT_departures_YTD.csv', function(data){
     createTable("tableDepartures", data);
 });
 
-  
-  /* ===== TABLE ARRIVALS ===== */
+/* ===== TABLE ARRIVALS ===== */
 
 parseCSV('./data/EXPORT_arrivals_YTD.csv', function(data){
     createTable("tableArrivals", data);
