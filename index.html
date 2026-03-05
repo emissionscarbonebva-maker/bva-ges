@@ -20,6 +20,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
@@ -43,6 +44,12 @@ canvas { margin-top:20px;}
 
 footer { text-align:center; padding:30px; font-size:0.9em; color:#666;}
 
+#chartScopes{
+max-width:420px;
+margin:20px auto;
+display:block;
+}
+  
 /* ================= SHARE BUTTONS ================= */
 
 .share-links {
@@ -404,6 +411,10 @@ Répartition des émissions par scope ⓘ
 
 <canvas id="chartScopes"></canvas>
 
+<p style="font-size:0.85em;color:#666;margin-top:10px;">
+<i class="fas fa-mouse-pointer"></i> Cliquer sur une part pour afficher le détail du Scope 3.
+</p>
+  
 </div>
   
 </div>
@@ -1132,47 +1143,83 @@ text:"Tonnes équivalent CO₂"
 
 });
 
-/* ===== CAMEMBERT SCOPES ===== */
+/* ===== CAMEMBERT SCOPES AVEC DETAIL SCOPE 3 ===== */
 
 parseCSV('./data/EXPORT_cumul_scopes.csv',(data)=>{
 
 if(!data || data.length===0) return;
 
-var row = data[data.length-1];
+var row = data[0];
 
-var scope12 = parseFloat(row.scope_1_2 || 0);
-var total = parseFloat(row.cumul_total || 0);
+/* Lecture des données */
 
-if(isNaN(scope12)) scope12=0;
-if(isNaN(total)) total=0;
+var scope12 = parseFloat(row.cumul_scope_1_2 || 0);
+var vols = parseFloat(row.cumul_vols || 0);
+var accesInd = parseFloat(row.cumul_acces_ind || 0);
+var accesColl = parseFloat(row.cumul_acces_coll || 0);
+var employes = parseFloat(row.cumul_employes || 0);
 
-var scope3 = total - scope12;
+if(isNaN(scope12)) scope12 = 0;
+if(isNaN(vols)) vols = 0;
+if(isNaN(accesInd)) accesInd = 0;
+if(isNaN(accesColl)) accesColl = 0;
+if(isNaN(employes)) employes = 0;
 
-new Chart(
+var scope3Total = vols + accesInd + accesColl + employes;
+
+/* Graphique principal */
+
+var chartScopes = new Chart(
 document.getElementById("chartScopes"),
 {
 type:"pie",
 
+plugins:[ChartDataLabels],
+
 data:{
 labels:[
-"Scope 1 & 2",
+"Émissions directes aéroport - Scope 1 & 2",
 "Scope 3"
 ],
 
 datasets:[{
 data:[
 scope12,
-scope3
+scope3Total
 ]
 }]
 },
 
 options:{
 responsive:true,
+
 plugins:{
 legend:{
 position:"bottom"
 },
+
+/* ===== POURCENTAGES DANS LE CAMEMBERT ===== */
+
+datalabels:{
+formatter:function(value,context){
+
+var data = context.chart.data.datasets[0].data;
+var total = data.reduce(function(a,b){return a+b;},0);
+
+var percent = (value/total*100).toFixed(1);
+
+if(percent < 2) return "";   // évite les labels minuscules
+
+return percent+"%";
+
+},
+color:"#ffffff",
+font:{
+weight:"bold",
+size:12
+}
+},
+
 tooltip:{
 callbacks:{
 label:function(context){
@@ -1185,15 +1232,65 @@ var percent = (value/total*100).toFixed(1);
 return context.label+" : "
 + Math.round(value).toLocaleString('fr-FR')
 +" t éq CO₂ ("+percent+"%)";
+
 }
 }
 }
+},
+
+onClick:function(evt,elements){
+
+if(!elements.length) return;
+
+var index = elements[0].index;
+
+/* Si on clique sur Scope 3 */
+
+if(index===1){
+
+chartScopes.data.labels = [
+"Vols",
+"Accès passagers individuels",
+"Accès passagers collectifs",
+"Accès employés"
+];
+
+chartScopes.data.datasets[0].data = [
+vols,
+accesInd,
+accesColl,
+employes
+];
+
+chartScopes.update();
+
 }
+
+/* Si on clique ailleurs → retour */
+
+else{
+
+chartScopes.data.labels = [
+"Émissions directes aéroport - Scope 1 & 2",
+"Scope 3"
+];
+
+chartScopes.data.datasets[0].data = [
+scope12,
+scope3Total
+];
+
+chartScopes.update();
+
 }
+
+}
+
+}
+
+);
 
 });
-
-  });
   
 /* ===============================
 EMISSIONS PAR DESTINATION
