@@ -282,6 +282,23 @@ font-weight:bold;
   transform: translateY(0);
 }
 
+  /* =================  BOUTON EXPORT ================= */
+  
+.export-btn{
+margin-top:15px;
+padding:8px 14px;
+border:none;
+background:#1f3c88;
+color:white;
+border-radius:6px;
+cursor:pointer;
+font-size:0.9em;
+}
+
+.export-btn:hover{
+opacity:0.9;
+}
+  
 </style>
 
 <script type="application/ld+json">
@@ -407,6 +424,11 @@ Moyenne journalière
 Émissions journalières par scope ⓘ
 </h2>
 <canvas id="chartDaily"></canvas>
+
+  <button class="export-btn" onclick="exportChartCSV(chartDailyInstance,'emissions_journalieres_scopes.csv')">
+<i class="fa fa-download"></i> Exporter
+</button>
+  
 </div>
 
 <div class="card">
@@ -414,16 +436,31 @@ Moyenne journalière
 Cumul annuel par scope ⓘ
 </h2>
 <canvas id="chartCumul"></canvas>
+
+<button class="export-btn" onclick="exportChartCSV(chartDailyInstance,'cumul_scopes.csv')">
+<i class="fa fa-download"></i> Exporter
+</button>
+  
 </div>
 
 <div class="card">
 <h2>Cumul total des émissions depuis le 1er janvier ⓘ</h2>
 <canvas id="chartTotalCumul"></canvas>
+
+<button class="export-btn" onclick="exportChartCSV(chartDailyInstance,'cumul_total.csv')">
+<i class="fa fa-download"></i> Exporter
+</button>
+  
 </div>
   
 <div class="card">
 <h2>Émissions journalières par compagnie</h2>
 <canvas id="chartAirlines"></canvas>
+
+<button class="export-btn" onclick="exportChartCSV(chartDailyInstance,'emissions_journalieres_compagnie.csv')">
+<i class="fa fa-download"></i> Exporter
+</button>
+  
 </div>
 
 <div class="card">
@@ -431,6 +468,11 @@ Cumul annuel par scope ⓘ
 Rotations journalières par compagnie ⓘ
 </h2>
 <canvas id="chartRotations"></canvas>
+
+  <button class="export-btn" onclick="exportChartCSV(chartDailyInstance,'rotations_journalieres_compagnie.csv')">
+<i class="fa fa-download"></i> Exporter
+</button>
+  
 </div>
 
 <div class="card">
@@ -438,6 +480,10 @@ Rotations journalières par compagnie ⓘ
 
 <canvas id="chartDestination"></canvas>
 
+<button class="export-btn" onclick="exportChartCSV(chartDailyInstance,'emissions_destinations.csv')">
+<i class="fa fa-download"></i> Exporter
+</button>
+  
 <p style="font-size:0.85em;color:#666;margin-top:10px;">
 Les principales destinations représentant au moins 90% des émissions sont affichées.
 Les autres sont regroupées dans « Autres destinations ».
@@ -533,6 +579,50 @@ Hébergement : GitHub Pages (GitHub Inc.)
 
 <script>
 
+/* ===== EXPORT CSV POUR LES GRAPHIQUES ===== */
+
+function exportChartCSV(chart, filename){
+
+let csv = [];
+
+/* header */
+let header = ["Date"];
+
+chart.data.datasets.forEach(ds=>{
+header.push(ds.label);
+});
+
+csv.push(header.join(";"));
+
+/* rows */
+
+chart.data.labels.forEach((label,i)=>{
+
+let row = [label];
+
+chart.data.datasets.forEach(ds=>{
+row.push(ds.data[i]);
+});
+
+csv.push(row.join(";"));
+
+});
+
+/* create file */
+
+let blob = new Blob([csv.join("\n")], {type:"text/csv;charset=utf-8;"});
+
+let link = document.createElement("a");
+
+link.href = URL.createObjectURL(blob);
+link.download = filename;
+
+link.click();
+
+}
+
+//Autres fonctions ...
+  
 document.addEventListener("DOMContentLoaded", function(){
 
 function parseCSV(url, callback){
@@ -564,7 +654,7 @@ function parseCSV(url, callback){
 }
 
 function createChart(canvasId, labels, datasets){
-new Chart(document.getElementById(canvasId),{
+var chartDailyInstance = new Chart(document.getElementById(canvasId),{
 type:'line',
 data:{labels:labels,datasets:datasets},
 options:{
@@ -682,7 +772,7 @@ borderColor:"#000000"
 });
 
 // ===== CREATION GRAPHIQUE =====
-new Chart(document.getElementById("chartDaily"),{
+var chartDailyInstance = new Chart(document.getElementById("chartDaily"),{
 type:'line',
 data:{
 labels:labels,
@@ -802,7 +892,7 @@ ds.data.push(val);
 
 // --- Création graphique ---
 
-new Chart(document.getElementById("chartCumul"),{
+var chartDailyInstance = new Chart(document.getElementById("chartCumul"),{
 type:'line',
 data:{
 labels:labels,
@@ -909,7 +999,7 @@ borderColor: colors[comp] || "rgb(120,120,120)" // couleur par défaut si nouvel
 
 // ===== Création graphique personnalisée =====
 
-new Chart(document.getElementById("chartAirlines"),{
+var chartDailyInstance = new Chart(document.getElementById("chartAirlines"),{
 type:'line',
 data:{
 labels:labels,
@@ -1003,7 +1093,7 @@ borderColor: colors[comp] || "rgb(120,120,120)" // couleur par défaut
 
 // ===== Création graphique personnalisée =====
 
-new Chart(document.getElementById("chartRotations"),{
+var chartDailyInstance = new Chart(document.getElementById("chartRotations"),{
 type:'line',
 data:{
 labels:labels,
@@ -1084,7 +1174,7 @@ cumul.push(total);
 
 });
 
-new Chart(document.getElementById("chartTotalCumul"),{
+var chartDailyInstance = new Chart(document.getElementById("chartTotalCumul"),{
 
 type:'line',
 
