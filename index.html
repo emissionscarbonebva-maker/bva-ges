@@ -425,7 +425,8 @@ Moyenne journalière
 </h2>
 <canvas id="chartDaily"></canvas>
 
-  <button class="export-btn" onclick="exportChartCSV(chartDailyInstance,'emissions_journalieres_scopes.csv')">
+ <button class="export-btn"
+onclick="exportChartCSV('chartDaily','emissions_journalieres_scopes.csv')">
 <i class="fa fa-download"></i> Exporter
 </button>
   
@@ -437,7 +438,8 @@ Cumul annuel par scope ⓘ
 </h2>
 <canvas id="chartCumul"></canvas>
 
-<button class="export-btn" onclick="exportChartCSV(chartDailyInstance,'cumul_scopes.csv')">
+<button class="export-btn"
+onclick="exportChartCSV('chartCumul','cumul_annuel_scopes.csv')">
 <i class="fa fa-download"></i> Exporter
 </button>
   
@@ -447,7 +449,8 @@ Cumul annuel par scope ⓘ
 <h2>Cumul total des émissions depuis le 1er janvier ⓘ</h2>
 <canvas id="chartTotalCumul"></canvas>
 
-<button class="export-btn" onclick="exportChartCSV(chartDailyInstance,'cumul_total.csv')">
+<button class="export-btn"
+onclick="exportChartCSV('chartTotalCumul','cumul_total.csv')">
 <i class="fa fa-download"></i> Exporter
 </button>
   
@@ -457,7 +460,8 @@ Cumul annuel par scope ⓘ
 <h2>Émissions journalières par compagnie</h2>
 <canvas id="chartAirlines"></canvas>
 
-<button class="export-btn" onclick="exportChartCSV(chartDailyInstance,'emissions_journalieres_compagnie.csv')">
+<button class="export-btn"
+onclick="exportChartCSV('chartAirlines','emissions_compagnies.csv')">
 <i class="fa fa-download"></i> Exporter
 </button>
   
@@ -469,7 +473,8 @@ Rotations journalières par compagnie ⓘ
 </h2>
 <canvas id="chartRotations"></canvas>
 
-  <button class="export-btn" onclick="exportChartCSV(chartDailyInstance,'rotations_journalieres_compagnie.csv')">
+  <button class="export-btn"
+onclick="exportChartCSV('chartRotations','rotations_compagnies.csv')">
 <i class="fa fa-download"></i> Exporter
 </button>
   
@@ -480,7 +485,8 @@ Rotations journalières par compagnie ⓘ
 
 <canvas id="chartDestination"></canvas>
 
-<button class="export-btn" onclick="exportChartCSV(chartDailyInstance,'emissions_destinations.csv')">
+<button class="export-btn"
+onclick="exportChartCSV('chartDestination','emissions_destinations.csv')">
 <i class="fa fa-download"></i> Exporter
 </button>
   
