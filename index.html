@@ -579,13 +579,19 @@ Hébergement : GitHub Pages (GitHub Inc.)
 
 <script>
 
-/* ===== EXPORT CSV POUR LES GRAPHIQUES ===== */
+ /* ===== EXPORT CSV DES GRAPHIQUES ===== */
 
-function exportChartCSV(chart, filename){
+function exportChartCSV(chartId, filename){
+
+let chart = Chart.getChart(chartId);
+
+if(!chart){
+alert("Graphique non disponible");
+return;
+}
 
 let csv = [];
 
-/* header */
 let header = ["Date"];
 
 chart.data.datasets.forEach(ds=>{
@@ -593,8 +599,6 @@ header.push(ds.label);
 });
 
 csv.push(header.join(";"));
-
-/* rows */
 
 chart.data.labels.forEach((label,i)=>{
 
@@ -608,9 +612,7 @@ csv.push(row.join(";"));
 
 });
 
-/* create file */
-
-let blob = new Blob([csv.join("\n")], {type:"text/csv;charset=utf-8;"});
+let blob = new Blob([csv.join("\n")],{type:"text/csv;charset=utf-8;"});
 
 let link = document.createElement("a");
 
