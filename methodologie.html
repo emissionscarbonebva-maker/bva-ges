@@ -162,6 +162,96 @@ La distance utilisée correspond à la distance orthodromique (great-circle dist
 les aéroports d’origine et de destination.
 </p>
 
+<h3>Construction du facteur d’émission par avion et par kilomètre</h3>
+
+<p>
+Le facteur d’émission utilisé dans les calculs correspond aux <strong>émissions totales de gaz à effet de serre
+par avion et par kilomètre parcouru</strong> (kg CO₂e / avion / km).
+Ce facteur est construit à partir des données publiques publiées par les compagnies aériennes,
+principalement <em>Ryanair</em> et <em>Wizz Air</em>, qui représentent la majorité du trafic de l’aéroport.
+Les calculs détaillés sont disponibles dans le fichier <em>« Calcul FE Avions.xlsx »</em> mis à disposition
+sur cette page.
+</p>
+
+<p>
+La méthode consiste à reconstituer les émissions moyennes associées à un vol type à partir de
+trois types d’informations issues des rapports annuels des compagnies :
+</p>
+
+<ul>
+<li>les <strong>émissions totales annuelles de Scope 1</strong> (émissions directes liées au carburant),</li>
+<li>le <strong>nombre total de vols opérés</strong> (sectors flown),</li>
+<li>la <strong>distance moyenne des vols</strong> (average sector length).</li>
+</ul>
+
+<p>
+Ces données permettent de calculer successivement :
+</p>
+
+<p><strong>1. Les émissions moyennes par avion et par vol</strong></p>
+
+<p>
+Émissions par vol = Émissions annuelles / Nombre total de vols
+</p>
+
+<p>
+Par exemple, pour Ryanair en 2024 :
+</p>
+
+<ul>
+<li>Émissions Scope 1 : ~16,5 Mt CO₂</li>
+<li>Nombre de vols : ~1 109 332</li>
+</ul>
+
+<p>
+Soit environ <strong>15 à 16 tonnes de CO₂ par vol</strong> pour un Boeing 737-800 typique.
+</p>
+
+<p><strong>2. Les émissions par avion et par kilomètre</strong></p>
+
+<p>
+Émissions par km = Émissions par vol / Distance moyenne de vol
+</p>
+
+<p>
+Avec une distance moyenne d’environ <strong>1 260 km</strong>, cela conduit à un facteur d’émission
+d’environ :
+</p>
+
+<ul>
+<li>≈ <strong>12,6 kg CO₂ / avion / km</strong> pour un Boeing 737-800</li>
+<li>≈ <strong>10 kg CO₂ / avion / km</strong> pour un Boeing 737-8200 « Gamechanger » (version plus efficiente)</li>
+</ul>
+
+<p>
+Ces valeurs sont cohérentes avec les intensités carbone déclarées par la compagnie
+(environ 65 g CO₂ / passager.km) une fois appliqués les taux de remplissage moyens
+observés (environ 94 %).
+</p>
+
+<p>
+Pour tenir compte de l’évolution de la flotte, un <strong>coefficient de correction</strong> est appliqué
+selon la répartition des types d’avions. Par exemple, le Boeing 737-8200 consomme
+environ <strong>20 % de carburant en moins</strong> que le Boeing 737-800 pour un nombre de sièges
+légèrement supérieur, ce qui réduit le facteur d’émission moyen de la flotte au fil du
+temps.
+</p>
+
+<p>
+Une approche similaire est appliquée pour <strong>Wizz Air</strong>, à partir des données de flotte
+(A320/A321, versions CEO et NEO) et des intensités carbone publiées dans les rapports
+annuels. Les versions <em>neo</em> sont supposées réduire les émissions d’environ
+<strong>20 % par siège</strong> par rapport aux versions <em>ceo</em>, conformément aux informations
+communiquées par les constructeurs et les compagnies.
+</p>
+
+<p>
+Les facteurs d’émission obtenus sont ensuite appliqués aux distances entre aéroports
+pour estimer les émissions associées aux vols opérés depuis l’aéroport étudié.
+L’ensemble des hypothèses, données sources et étapes de calcul sont documentées dans
+le fichier <em>« Calcul FE Avions.xlsx »</em> afin de permettre la reproduction des résultats.
+</p>
+  
 </div>
 
 
