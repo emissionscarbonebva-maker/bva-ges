@@ -1930,28 +1930,46 @@ fetch("data/EXPORT_update_time.csv")
 .then(response => response.text())
 .then(text => {
 
-const lines = text.trim().split("\n");
+const lines = text.trim().split(/\r?\n/);
 const data = lines[1].split(",");
 
-const date = data[0];
-const time = data[1];
+const date = data[0].trim();
+const time = data[1].trim();
 
 const d = new Date(date + "T" + time);
 
+if(!isNaN(d)){
+
 const formatted =
-d.toLocaleDateString("fr-FR", {
+d.toLocaleDateString("fr-FR",{
 day:"numeric",
 month:"long",
 year:"numeric"
-}) +
-" à " +
-d.toLocaleTimeString("fr-FR", {
+})
++
+" à "
++
+d.toLocaleTimeString("fr-FR",{
 hour:"2-digit",
 minute:"2-digit"
 });
 
 document.getElementById("update-date").innerHTML =
 "dernière mise à jour le " + formatted;
+
+}
+else{
+
+document.getElementById("update-date").innerHTML =
+"date de mise à jour indisponible";
+
+}
+
+})
+.catch(() => {
+
+document.getElementById("update-date").innerHTML =
+"date de mise à jour indisponible";
 
 });
 
