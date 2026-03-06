@@ -426,10 +426,9 @@ liées aux vols commerciaux opérés depuis et à destination de la plateforme.
   
 <p>
 Les émissions incluent :
-<br>• Les opération des aéronefs (stationnement, roulage, decollage attérissage et demi-croisière) - Scope 3
-<br>• Les accès terrestres collectifs et individuels à l'aéroport des passagers - Scope 3
-<br>• Les accès terrestres à l'aéroport des employés - Scope 3
-<br>• Les émissions directes de l’aéroport - Scope 1 & 2
+<br>• Scope 1 & 2 : émissions directes de l'aéroport : chauffage, appareils de pistes, électricité ...
+<br>• Scope 3 : émissions indirectes : production et approvisionnement en carburant d'aviation, combustion du carburant d'aviation par les aéronefs,
+  combustion de carburant pour les transports terrestres des passagers et employés, ...
 </p>
 
   <p>
@@ -446,18 +445,12 @@ est disponible sur une page dédiée.
 <ul>
 <li><strong>Émissions de gaz à effet de serre :</strong> exprimées en tonnes équivalent dioxyde de carbone (t éq CO₂).</li>
 
-<li><strong>Scopes :</strong>
-<ul>
-<li>Scope 1 : émissions directes de l'aéroport : chauffage, appareils de pistes thermique, ... </li>
-<li>Scope 2 : émissions liées à l’électricité consommé par l'aéroport : éclairages aérogares, éclairages pistes, appareils de pistes électriques, ... </li>
-<li>Scope 3 : émissions indirectes : production et approvisionnement en carburant d'aviation, combustion du carburant d'aviation par les aéronefs,
-  combustion de carburant pour les transports terrestres des passagers et employés, ... </li>
-</ul>
-</li>
-
 <li><strong>Distances :</strong> moyenne de plusieurs relevés d'un site de t de distance entre l'aéroport de Paris-Beauvais et les aéroports d'origines et de destination disponible sur des site de traking </li>
 
-<li><strong>Données :</strong> mises à jour périodiquement (plusieurs fois par semaine) </li>
+<li>
+<strong>Données :</strong>
+<span id="update-date">chargement...</span>
+</li>
 
 <li><strong>Tableaux :</strong>
 <ul>
@@ -1937,6 +1930,39 @@ parseCSV('./data/EXPORT_arrivals_YTD.csv', function(data){
 
 console.log("SCRIPT OK");
   
+</script>
+
+<script>
+
+fetch("data/EXPORT_update_time.csv")
+.then(response => response.text())
+.then(text => {
+
+const lines = text.trim().split("\n");
+const data = lines[1].split(",");
+
+const date = data[0];
+const time = data[1];
+
+const d = new Date(date + "T" + time);
+
+const formatted =
+d.toLocaleDateString("fr-FR", {
+day:"numeric",
+month:"long",
+year:"numeric"
+}) +
+" à " +
+d.toLocaleTimeString("fr-FR", {
+hour:"2-digit",
+minute:"2-digit"
+});
+
+document.getElementById("update-date").innerHTML =
+"dernière mise à jour le " + formatted;
+
+});
+
 </script>
 
 </body>
