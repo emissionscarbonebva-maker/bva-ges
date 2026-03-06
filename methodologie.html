@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+
+<meta charset="UTF-8">
+<title>Méthodologie – Estimation des émissions aériennes</title>
+
+<style>
+
+body{
+font-family:'Segoe UI',sans-serif;
+margin:0;
+background:#f4f6f8;
+color:#222;
+line-height:1.6;
+}
+
+header{
+background:#1f3c88;
+color:white;
+padding:25px;
+}
+
+header h1{
+margin:0;
+}
+
+nav{
+margin-top:10px;
+}
+
+nav a{
+color:white;
+margin-right:20px;
+text-decoration:none;
+font-weight:500;
+}
+
+.container{
+width:92%;
+max-width:1000px;
+margin:40px auto;
+}
+
+h2{
+color:#1f3c88;
+margin-top:40px;
+}
+
+.card{
+background:white;
+padding:25px;
+border-radius:10px;
+box-shadow:0 2px 8px rgba(0,0,0,0.08);
+margin-bottom:30px;
+}
+
+table{
+border-collapse:collapse;
+width:100%;
+margin-top:15px;
+}
+
+th,td{
+padding:10px;
+border-bottom:1px solid #ddd;
+text-align:left;
+}
+
+th{
+background:#f0f3f7;
+}
+
+footer{
+margin-top:50px;
+padding:20px;
+text-align:center;
+font-size:0.9em;
+color:#666;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h1>Méthodologie</h1>
+
+<nav>
+<a href="index.html">Accueil</a>
+<a href="methodologie.html">Méthodologie</a>
+</nav>
+
+</header>
+
+<div class="container">
+
+<div class="card">
+
+<h2>Objectif du projet</h2>
+
+<p>
+Ce site vise à estimer les émissions de gaz à effet de serre associées aux vols commerciaux
+au départ et à l’arrivée de l’aéroport étudié. Les estimations sont calculées quotidiennement
+à partir de données publiques sur le trafic aérien et de facteurs d’émission issus de
+références scientifiques et institutionnelles.
+</p>
+
+<p>
+L’objectif est de fournir une vision transparente et accessible de l’impact climatique
+du transport aérien à l’échelle locale.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h2>Sources de données</h2>
+
+<ul>
+
+<li>Données de vols : informations quotidiennes sur les départs et arrivées (compagnie, destination, type d’appareil).</li>
+
+<li>Distances entre aéroports : calculées à partir des coordonnées géographiques des aéroports.</li>
+
+<li>Types d’appareils : classification basée sur les désignateurs ICAO des aéronefs.</li>
+
+<li>Facteurs d’émissions : bases de données publiques (ADEME Base Carbone, EMEP/EEA, littérature scientifique).</li>
+
+</ul>
+
+</div>
+
+
+<div class="card">
+
+<h2>Méthode de calcul des émissions</h2>
+
+<p>
+Les émissions de CO₂e sont estimées à partir de la distance entre les aéroports et d’un facteur
+d’émission moyen associé au type d’appareil utilisé pour le vol.
+</p>
+
+<p><strong>Formule simplifiée :</strong></p>
+
+<p>
+
+Émissions = Distance × Facteur d'émission × Nombre de rotations
+
+</p>
+
+<p>
+La distance utilisée correspond à la distance orthodromique (great-circle distance) entre
+les aéroports d’origine et de destination.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h2>Répartition par scope</h2>
+
+<table>
+
+<tr>
+<th>Scope</th>
+<th>Description</th>
+</tr>
+
+<tr>
+<td>Scope 1</td>
+<td>Émissions directes liées à la combustion du carburant lors des vols.</td>
+</tr>
+
+<tr>
+<td>Scope 2</td>
+<td>Émissions liées à la consommation d’électricité des infrastructures aéroportuaires.</td>
+</tr>
+
+<tr>
+<td>Scope 3</td>
+<td>Émissions indirectes amont (production et transport du carburant).</td>
+</tr>
+
+<tr>
+<td>Scope 4</td>
+<td>Autres émissions indirectes liées à la chaîne d’exploitation.</td>
+</tr>
+
+<tr>
+<td>Scope 5</td>
+<td>Autres impacts climatiques indirects associés aux opérations aériennes.</td>
+</tr>
+
+</table>
+
+</div>
+
+
+<div class="card">
+
+<h2>Limites des estimations</h2>
+
+<p>
+Les valeurs présentées sur ce site doivent être interprétées comme des estimations
+approximatives et non comme des mesures exactes.
+</p>
+
+<ul>
+
+<li>Les facteurs d’émission utilisés sont des moyennes.</li>
+
+<li>La charge réelle des avions (nombre de passagers ou fret) n’est pas prise en compte.</li>
+
+<li>Les trajectoires réelles peuvent différer de la distance théorique entre aéroports.</li>
+
+<li>Certains types d’appareils peuvent être estimés lorsque l’information n’est pas disponible.</li>
+
+</ul>
+
+</div>
+
+
+<div class="card">
+
+<h2>Mise à jour des données</h2>
+
+<p>
+Les données présentées sur ce site sont mises à jour régulièrement afin d’intégrer les
+vols les plus récents disponibles dans les bases de données publiques.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h2>Réutilisation des données</h2>
+
+<p>
+Les données présentées peuvent être réutilisées à des fins de recherche, d’analyse ou
+de journalisme, sous réserve de mentionner la source du site.
+</p>
+
+</div>
+
+</div>
+
+<footer>
+
+Site d’estimation des émissions du transport aérien – Projet indépendant.
+
+</footer>
+
+</body>
+</html>
