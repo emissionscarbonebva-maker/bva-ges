@@ -1130,6 +1130,7 @@ text:"Tonnes équivalent CO₂"
 EMISSIONS PAR DESTINATION
 Somme départs + arrivées
 Tri décroissant + limite 50 + 90%
+Ajout du nombre de destinations dans "Autres"
 ================================ */
 
 /* Chargement des départs */
@@ -1145,14 +1146,19 @@ var totalEmissions = 0;
 
 /* Fonction d'agrégation */
 
-function aggregate(data, cityColumn){
+function aggregate(data, type){
 
 data.forEach(function(row){
 
-    var dest = row[cityColumn] || "Inconnue";
+    var dest;
+
+    if(type === "departures"){
+        dest = row.destination || "Inconnue";
+    } else {
+        dest = row.origine || "Inconnue";
+    }
 
     var emission = parseFloat(row.emissions);
-
     if(isNaN(emission)) emission = 0;
 
     if(!destinationMap[dest]){
@@ -1168,8 +1174,8 @@ data.forEach(function(row){
 
 /* Agrégation des deux fichiers */
 
-aggregate(departures, "destination");
-aggregate(arrivals, "origine");
+aggregate(departures,"departures");
+aggregate(arrivals,"arrivals");
 
 /* Conversion en tableau */
 
@@ -1191,6 +1197,7 @@ destinationArray.sort(function(a,b){
 var filteredDestinations = [];
 var cumulative = 0;
 var otherTotal = 0;
+var otherCount = 0;
 
 destinationArray.forEach(function(item){
 
@@ -1203,6 +1210,7 @@ destinationArray.forEach(function(item){
     }
     else{
         otherTotal += item.emission;
+        otherCount++;
     }
 
 });
@@ -1212,8 +1220,8 @@ destinationArray.forEach(function(item){
 if(otherTotal > 0){
 
     filteredDestinations.push({
-        destination:"Autres destinations",
-        emission:otherTotal
+        destination: "Autres (" + otherCount + " destinations)",
+        emission: otherTotal
     });
 
 }
@@ -1278,9 +1286,9 @@ new Chart(
     }
 );
 
-}); // fin arrivals
+}); // arrivals
 
-}); // fin departures
+}); // departures
  
 /* ===== TABLE DATA PRO V7 - STABLE ===== */
 
