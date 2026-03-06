@@ -47,6 +47,10 @@ color:#1f3c88;
 margin-top:40px;
 }
 
+h3{
+margin-top:20px;
+}
+
 .card{
 background:white;
 padding:25px;
@@ -86,17 +90,19 @@ color:#666;
 <body>
 
 <header style="display:flex; align-items:center; gap:20px;">
-  <img src="logo-bva.png" alt="Observatoire carbone BVA" style="height:170px;">
-  <div>
-    <h1 style="margin:0;">
-      Méthodologie - Suivi indépendant des émissions de gaz à effet de serre de l'aéroport de Paris-Beauvais (BVA) pour l'année 2026
-    </h1>
-   <nav>
+<img src="logo-bva.png" alt="Observatoire carbone BVA" style="height:170px;">
+<div>
+<h1 style="margin:0;">
+Méthodologie - Suivi indépendant des émissions de gaz à effet de serre de l'aéroport de Paris-Beauvais (BVA) pour l'année 2026
+</h1>
+
+<nav>
 <a href="index.html">Retour suivi</a>
 </nav>
-  </div>
+
+</div>
 </header>
-  
+
 <div class="container">
 
 <div class="card">
@@ -105,18 +111,41 @@ color:#666;
 
 <p>
 Ce site vise à estimer les émissions de gaz à effet de serre associées aux vols commerciaux
-au départ et à destination de l’aéroport de Paris-Beauvais. Les estimations sont calculées régulièrement
-à partir de données publiques sur le trafic aérien et de facteurs d’émission issus de
-références scientifiques et institutionnelles ou calculés à partir des sources publiques disponibles.
+au départ et à destination de l’aéroport de Paris-Beauvais. Les estimations sont calculées
+régulièrement à partir de données publiques sur le trafic aérien et de facteurs d’émission
+issus de références scientifiques, institutionnelles ou calculés à partir de sources publiques.
 </p>
 
 <p>
-L’objectif de ce site est de fournir une vision transparente et accessible de l’impact de l’activité 
-  de l’aéroport (et en particulier du transport aérien) sur le dérèglement climatique, 
-  à partir de données publiques et de méthodes de calcul documentées.
-Cette démarche s’inscrit dans un contexte où les émissions de gaz à effet de serre associéese 
-  à l’activité de l’aéroport font encore l’objet de peu d’informations publiques détaillées.
+L’objectif de ce site est de fournir une vision transparente et accessible de l’impact de
+l’activité de l’aéroport — et en particulier du transport aérien — sur le dérèglement
+climatique, à partir de données publiques et de méthodes de calcul documentées.
+Cette démarche s’inscrit dans un contexte où les émissions de gaz à effet de serre
+associées à l’activité de l’aéroport font encore l’objet de peu d’informations publiques détaillées.
 </p>
+
+</div>
+
+
+<div class="card">
+
+<h2>Périmètre des émissions prises en compte</h2>
+
+<p>
+L’estimation des émissions repose sur une approche par postes d’émissions afin
+d’approcher l’empreinte carbone globale de l’activité aéroportuaire.
+</p>
+
+<ul>
+
+<li>Émissions liées aux vols (croisière et opérations aéroportuaires)</li>
+<li>Approvisionnement en carburant aviation</li>
+<li>Fabrication et amortissement des avions</li>
+<li>Déplacements des passagers vers et depuis l’aéroport</li>
+<li>Déplacements domicile-travail des employés</li>
+<li>Consommation énergétique des infrastructures</li>
+
+</ul>
 
 </div>
 
@@ -127,13 +156,13 @@ Cette démarche s’inscrit dans un contexte où les émissions de gaz à effet 
 
 <ul>
 
-<li>Données de vols : informations quotidiennes sur les départs et arrivées (compagnie, destination, type d’appareil).</li>
+<li>Données de vols : horaires et destinations des vols commerciaux.</li>
 
-<li>Distances entre aéroports : calculées à partir des coordonnées géographiques des aéroports.</li>
+<li>Données de trajectoires : analyse de vols réels via la plateforme FlightAware.</li>
 
-<li>Types d’appareils : classification basée sur les désignateurs ICAO des aéronefs.</li>
+<li>Données de flotte et d’intensité carbone : rapports annuels des compagnies aériennes.</li>
 
-<li>Facteurs d’émissions : bases de données publiques (ADEME Base Carbone, EMEP/EEA, littérature scientifique).</li>
+<li>Facteurs d’émissions : ADEME Base Carbone, EMEP/EEA et littérature scientifique.</li>
 
 </ul>
 
@@ -145,113 +174,126 @@ Cette démarche s’inscrit dans un contexte où les émissions de gaz à effet 
 <h2>Méthode de calcul des émissions</h2>
 
 <p>
-Les émissions de CO₂e sont estimées à partir de la distance entre les aéroports et d’un facteur
-d’émission moyen associé au type d’appareil utilisé pour le vol.
+Les émissions de CO₂e sont estimées à partir de la distance parcourue par les avions
+et d’un facteur d’émission spécifique au type d’appareil utilisé.
 </p>
 
-<p><strong>Formule simplifiée :</strong></p>
+<h3>Formule simplifiée</h3>
 
 <p>
-
-Émissions = Distance × Facteur d'émission × Nombre de rotations
-
-</p>
-
-<p>
-La distance utilisée correspond à la distance orthodromique (great-circle distance) entre
-les aéroports d’origine et de destination.
-</p>
-
-<h3>Construction du facteur d’émission par avion et par kilomètre</h3>
-
-<p>
-Le facteur d’émission utilisé dans les calculs correspond aux <strong>émissions totales de gaz à effet de serre
-par avion et par kilomètre parcouru</strong> (kg CO₂e / avion / km).
-Ce facteur est construit à partir des données publiques publiées par les compagnies aériennes,
-principalement <em>Ryanair</em> et <em>Wizz Air</em>, qui représentent la majorité du trafic de l’aéroport.
-Les calculs détaillés sont disponibles dans le fichier <em>« Calcul FE Avions.xlsx »</em> mis à disposition
-sur cette page.
+<strong>
+Émissions = Distance × Facteur d’émission × Nombre de rotations
+</strong>
 </p>
 
 <p>
-La méthode consiste à reconstituer les émissions moyennes associées à un vol type à partir de
-trois types d’informations issues des rapports annuels des compagnies :
+Les facteurs d’émission utilisés sont calculés à partir des données publiques
+de consommation de carburant et d’intensité carbone publiées dans les rapports
+annuels des principales compagnies opérant à Beauvais, notamment Ryanair et Wizz Air.
 </p>
 
-<ul>
-<li>les <strong>émissions totales annuelles de Scope 1</strong> (émissions directes liées au carburant),</li>
-<li>le <strong>nombre total de vols opérés</strong> (sectors flown),</li>
-<li>la <strong>distance moyenne des vols</strong> (average sector length).</li>
-</ul>
+</div>
+
+
+<div class="card">
+
+<h2>Calcul de la distance des vols</h2>
 
 <p>
-Ces données permettent de calculer successivement :
-</p>
-
-<p><strong>1. Les émissions moyennes par avion et par vol</strong></p>
-
-<p>
-Émissions par vol = Émissions annuelles / Nombre total de vols
+La distance utilisée dans les calculs ne correspond pas à la distance
+orthodromique (« vol d’oiseau ») entre les aéroports.
 </p>
 
 <p>
-Par exemple, pour Ryanair en 2024 :
-</p>
-
-<ul>
-<li>Émissions Scope 1 : ~16,5 Mt CO₂</li>
-<li>Nombre de vols : ~1 109 332</li>
-</ul>
-
-<p>
-Soit environ <strong>15 à 16 tonnes de CO₂ par vol</strong> pour un Boeing 737-800 typique.
-</p>
-
-<p><strong>2. Les émissions par avion et par kilomètre</strong></p>
-
-<p>
-Émissions par km = Émissions par vol / Distance moyenne de vol
+Les avions suivent en réalité des trajectoires plus longues en raison
+des routes aériennes, des procédures de départ et d’arrivée, des contraintes
+du contrôle aérien et des conditions météorologiques.
 </p>
 
 <p>
-Avec une distance moyenne d’environ <strong>1 260 km</strong>, cela conduit à un facteur d’émission
-d’environ :
-</p>
-
-<ul>
-<li>≈ <strong>12,6 kg CO₂ / avion / km</strong> pour un Boeing 737-800</li>
-<li>≈ <strong>10 kg CO₂ / avion / km</strong> pour un Boeing 737-8200 « Gamechanger » (version plus efficiente)</li>
-</ul>
-
-<p>
-Ces valeurs sont cohérentes avec les intensités carbone déclarées par la compagnie
-(environ 65 g CO₂ / passager.km) une fois appliqués les taux de remplissage moyens
-observés (environ 94 %).
+Afin d’obtenir une estimation plus réaliste, les distances utilisées
+sont calculées à partir de données de trajectoires réelles issues
+de la plateforme de suivi des vols <strong>FlightAware</strong>.
 </p>
 
 <p>
-Pour tenir compte de l’évolution de la flotte, un <strong>coefficient de correction</strong> est appliqué
-selon la répartition des types d’avions. Par exemple, le Boeing 737-8200 consomme
-environ <strong>20 % de carburant en moins</strong> que le Boeing 737-800 pour un nombre de sièges
-légèrement supérieur, ce qui réduit le facteur d’émission moyen de la flotte au fil du
-temps.
+Pour chaque liaison aérienne, plusieurs vols représentatifs sont analysés
+afin de mesurer la distance réellement parcourue entre les aéroports.
+La distance moyenne observée est ensuite utilisée dans les calculs.
 </p>
 
-<p>
-Une approche similaire est appliquée pour <strong>Wizz Air</strong>, à partir des données de flotte
-(A320/A321, versions CEO et NEO) et des intensités carbone publiées dans les rapports
-annuels. Les versions <em>neo</em> sont supposées réduire les émissions d’environ
-<strong>20 % par siège</strong> par rapport aux versions <em>ceo</em>, conformément aux informations
-communiquées par les constructeurs et les compagnies.
-</p>
+</div>
+
+
+<div class="card">
+
+<h2>Facteurs d’émission utilisés</h2>
 
 <p>
-Les facteurs d’émission obtenus sont ensuite appliqués aux distances entre aéroports
-pour estimer les émissions associées aux vols opérés depuis l’aéroport étudié.
-L’ensemble des hypothèses, données sources et étapes de calcul sont documentées dans
-le fichier <em>« Calcul FE Avions.xlsx »</em> afin de permettre la reproduction des résultats.
+Le tableau ci-dessous présente les principaux facteurs d’émission utilisés
+dans les calculs ainsi que leurs sources ou méthodes d’estimation.
 </p>
-  
+
+<table>
+
+<tr>
+<th>Poste d’émission</th>
+<th>Facteur d’émission</th>
+<th>Unité</th>
+<th>Source</th>
+</tr>
+
+<tr>
+<td>Vol – Boeing 737-800 (Ryanair)</td>
+<td>≈ 12,6</td>
+<td>kg CO₂ / km / avion</td>
+<td>Calcul à partir des rapports annuels Ryanair</td>
+</tr>
+
+<tr>
+<td>Vol – Boeing 737-8200 (Ryanair)</td>
+<td>≈ 10,1</td>
+<td>kg CO₂ / km / avion</td>
+<td>Gain de consommation d’environ 20 %</td>
+</tr>
+
+<tr>
+<td>Vol – Airbus A320 / A321 (Wizz Air)</td>
+<td>≈ 9 à 12</td>
+<td>kg CO₂ / km / avion</td>
+<td>Rapports annuels Wizz Air</td>
+</tr>
+
+<tr>
+<td>Approvisionnement carburant</td>
+<td>à compléter</td>
+<td>% supplémentaire</td>
+<td>Analyse cycle de vie carburant</td>
+</tr>
+
+<tr>
+<td>Fabrication des avions</td>
+<td>à compléter</td>
+<td>kg CO₂ / km</td>
+<td>Amortissement sur durée de vie</td>
+</tr>
+
+<tr>
+<td>Transport passagers (voiture)</td>
+<td>à compléter</td>
+<td>kg CO₂ / passager.km</td>
+<td>ADEME Base Carbone</td>
+</tr>
+
+<tr>
+<td>Transport collectif</td>
+<td>à compléter</td>
+<td>kg CO₂ / passager.km</td>
+<td>ADEME Base Carbone</td>
+</tr>
+
+</table>
+
 </div>
 
 
@@ -268,27 +310,17 @@ le fichier <em>« Calcul FE Avions.xlsx »</em> afin de permettre la reproductio
 
 <tr>
 <td>Scope 1</td>
-<td>Émissions directes liées à la combustion du carburant lors des vols.</td>
+<td>Émissions directes liées à la combustion du carburant lors des vols et aux véhicules opérationnels.</td>
 </tr>
 
 <tr>
 <td>Scope 2</td>
-<td>Émissions liées à la consommation d’électricité des infrastructures aéroportuaires.</td>
+<td>Émissions indirectes liées à la consommation d’électricité des infrastructures aéroportuaires.</td>
 </tr>
 
 <tr>
 <td>Scope 3</td>
-<td>Émissions indirectes amont (production et transport du carburant).</td>
-</tr>
-
-<tr>
-<td>Scope 4</td>
-<td>Autres émissions indirectes liées à la chaîne d’exploitation.</td>
-</tr>
-
-<tr>
-<td>Scope 5</td>
-<td>Autres impacts climatiques indirects associés aux opérations aériennes.</td>
+<td>Émissions indirectes amont : production et transport du carburant, fabrication des avions, déplacements des passagers.</td>
 </tr>
 
 </table>
@@ -301,7 +333,7 @@ le fichier <em>« Calcul FE Avions.xlsx »</em> afin de permettre la reproductio
 <h2>Limites des estimations</h2>
 
 <p>
-Les valeurs présentées sur ce site doivent être interprétées comme des estimations
+Les valeurs présentées doivent être interprétées comme des estimations
 approximatives et non comme des mesures exactes.
 </p>
 
@@ -309,11 +341,11 @@ approximatives et non comme des mesures exactes.
 
 <li>Les facteurs d’émission utilisés sont des moyennes.</li>
 
-<li>La charge réelle des avions (nombre de passagers ou fret) n’est pas prise en compte.</li>
+<li>La consommation réelle dépend des conditions de vol et du remplissage des avions.</li>
 
-<li>Les trajectoires réelles peuvent différer de la distance théorique entre aéroports.</li>
+<li>Les trajectoires réelles peuvent varier selon les routes aériennes et le trafic.</li>
 
-<li>Certains types d’appareils peuvent être estimés lorsque l’information n’est pas disponible.</li>
+<li>Certaines hypothèses sont nécessaires lorsque les données exactes ne sont pas disponibles.</li>
 
 </ul>
 
@@ -325,8 +357,8 @@ approximatives et non comme des mesures exactes.
 <h2>Mise à jour des données</h2>
 
 <p>
-Les données présentées sur ce site sont mises à jour régulièrement afin d’intégrer les
-vols les plus récents disponibles dans les bases de données publiques.
+Les données présentées sur ce site sont mises à jour régulièrement afin
+d’intégrer les vols les plus récents disponibles dans les bases de données publiques.
 </p>
 
 </div>
@@ -337,8 +369,8 @@ vols les plus récents disponibles dans les bases de données publiques.
 <h2>Réutilisation des données</h2>
 
 <p>
-Les données présentées peuvent être réutilisées à des fins de recherche, d’analyse ou
-de journalisme, sous réserve de mentionner la source du site.
+Les données présentées peuvent être réutilisées à des fins de recherche,
+d’analyse ou de journalisme, sous réserve de mentionner la source du site.
 </p>
 
 </div>
