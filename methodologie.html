@@ -1,171 +1,44 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-
-<meta charset="UTF-8">
-<title>Méthodologie – Estimation des émissions aériennes</title>
-
-<style>
-
-body{
-font-family:'Segoe UI',sans-serif;
-margin:0;
-background:#f4f6f8;
-color:#222;
-line-height:1.6;
-}
-
-header{
-background:#1f3c88;
-color:white;
-padding:25px;
-}
-
-header h1{
-margin:0;
-}
-
-nav{
-margin-top:10px;
-}
-
-nav a{
-color:white;
-margin-right:20px;
-text-decoration:none;
-font-weight:500;
-}
-
-.container{
-width:92%;
-max-width:1000px;
-margin:40px auto;
-}
-
-h2{
-color:#1f3c88;
-margin-top:40px;
-}
-
-h3{
-color:#333;
-margin-top:25px;
-}
-
-.card{
-background:white;
-padding:25px;
-border-radius:10px;
-box-shadow:0 2px 8px rgba(0,0,0,0.08);
-margin-bottom:30px;
-}
-
-table{
-border-collapse:collapse;
-width:100%;
-margin-top:15px;
-}
-
-th,td{
-padding:10px;
-border-bottom:1px solid #ddd;
-text-align:left;
-}
-
-th{
-background:#f0f3f7;
-}
-
-footer{
-margin-top:50px;
-padding:20px;
-text-align:center;
-font-size:0.9em;
-color:#666;
-}
-
-</style>
-
-</head>
-
-<body>
-
-<header style="display:flex; align-items:center; gap:20px;">
-<img src="logo-bva.png" alt="Observatoire carbone BVA" style="height:170px;">
-<div>
-<h1 style="margin:0;">
-Méthodologie - Suivi indépendant des émissions de gaz à effet de serre de l'aéroport de Paris-Beauvais (BVA) pour l'année 2026
-</h1>
-
-<nav>
-<a href="index.html">Retour suivi</a>
-</nav>
-
-</div>
-</header>
-
 <div class="container">
 
 <div class="card">
-
 <h2>Objectif du projet</h2>
 
 <p>
 Ce site vise à estimer les émissions de gaz à effet de serre associées aux vols commerciaux
-au départ et à destination de l’aéroport de Paris-Beauvais. Les estimations sont calculées régulièrement
-à partir de données publiques sur le trafic aérien et de facteurs d’émission issus de
-références scientifiques et institutionnelles ou calculés à partir des sources publiques disponibles.
+au départ et à destination de l’aéroport de Paris-Beauvais.
 </p>
 
 <p>
-L’objectif de ce site est de fournir une vision transparente et accessible de l’impact de l’activité 
-de l’aéroport (et en particulier du transport aérien) sur le dérèglement climatique, 
-à partir de données publiques et de méthodes de calcul documentées.
-Cette démarche s’inscrit dans un contexte où les émissions de gaz à effet de serre associées 
-à l’activité de l’aéroport font encore l’objet de peu d’informations publiques détaillées.
+L’objectif est de fournir une vision transparente et accessible de l’impact de l’activité
+de l’aéroport sur le dérèglement climatique à partir de données publiques
+et de méthodes de calcul documentées.
 </p>
-
 </div>
 
-<div class="card">
 
+<div class="card">
 <h2>Périmètre des émissions prises en compte</h2>
 
 <p>
-L’estimation des émissions de gaz à effet de serre associées à l’activité de l’aéroport
-repose sur une approche par postes d’émissions visant à approcher l’empreinte carbone
-globale du trafic aérien et des activités associées.
-</p>
-
-<p>
-Les émissions sont réparties en plusieurs catégories correspondant aux principaux
-processus contribuant à l’impact climatique de l’activité aéroportuaire :
+L’estimation repose sur une approche par postes d’émissions afin d’approcher
+l’empreinte carbone globale de l’activité aéroportuaire.
 </p>
 
 <ul>
-<li>émissions liées aux vols commerciaux,</li>
-<li>émissions liées à l’approvisionnement en carburant aviation,</li>
-<li>émissions liées à la fabrication et à l’amortissement des aéronefs,</li>
-<li>émissions liées aux déplacements des passagers vers et depuis l’aéroport,</li>
-<li>émissions liées aux déplacements domicile-travail des employés,</li>
-<li>émissions liées à l’exploitation de l’aéroport (énergie et véhicules).</li>
+<li>émissions liées aux vols commerciaux</li>
+<li>approvisionnement en carburant</li>
+<li>fabrication des avions</li>
+<li>transport des passagers</li>
+<li>transport des employés</li>
+<li>fonctionnement de l’aéroport</li>
 </ul>
-
 </div>
 
-<div class="card">
 
 <div class="card">
-
 <h2>Principales sources d’émissions liées à l’activité aéroportuaire</h2>
 
-<p>
-L’empreinte carbone associée à l’activité d’un aéroport ne se limite pas aux
-émissions des avions. Elle résulte d’un ensemble d’activités directes et indirectes.
-</p>
-
 <table>
-
 <tr>
 <th>Source d'émission</th>
 <th>Exemple</th>
@@ -173,54 +46,51 @@ L’empreinte carbone associée à l’activité d’un aéroport ne se limite p
 
 <tr>
 <td>Transport aérien</td>
-<td>Combustion du kérosène lors des vols.</td>
+<td>Combustion du kérosène lors des vols</td>
 </tr>
 
 <tr>
 <td>Production du carburant</td>
-<td>Extraction du pétrole, raffinage et transport du carburant aviation.</td>
+<td>Extraction et raffinage du pétrole</td>
 </tr>
 
 <tr>
 <td>Fabrication des avions</td>
-<td>Production des matériaux et assemblage des aéronefs.</td>
+<td>Production des matériaux et assemblage</td>
 </tr>
 
 <tr>
 <td>Accès des passagers</td>
-<td>Voitures, bus, navettes ou trains utilisés pour rejoindre l’aéroport.</td>
+<td>Voitures, bus, navettes ou trains</td>
 </tr>
 
 <tr>
-<td>Déplacements des employés</td>
-<td>Trajets domicile-travail des personnels de l’aéroport et des compagnies.</td>
+<td>Déplacements employés</td>
+<td>Trajets domicile-travail</td>
 </tr>
 
 <tr>
 <td>Fonctionnement de l’aéroport</td>
-<td>Électricité, chauffage, véhicules de service.</td>
+<td>Électricité, chauffage, véhicules</td>
 </tr>
 
 </table>
-
 </div>
-  
+
+
+<div class="card">
 <h2>Émissions liées aux vols</h2>
 
 <p>
 Les émissions associées aux vols représentent la principale source d’impact climatique.
-Elles sont estimées à partir de la distance parcourue par les avions et d’un facteur
-d’émission moyen par type d’appareil.
+Elles sont estimées à partir de la distance parcourue par les avions
+et d’un facteur d’émission spécifique au type d’appareil.
 </p>
+</div>
+
 
 <div class="card">
-
 <h2>Schéma simplifié du calcul des émissions d’un vol</h2>
-
-<p>
-Chaque vol est traité individuellement à partir des informations disponibles
-sur le trafic aérien et des facteurs d’émission associés au type d’appareil utilisé.
-</p>
 
 <table>
 
@@ -231,277 +101,182 @@ sur le trafic aérien et des facteurs d’émission associés au type d’appare
 
 <tr>
 <td>1. Identification du vol</td>
-<td>Récupération des informations publiques : compagnie, destination, type d’appareil.</td>
+<td>Compagnie, destination et type d’appareil</td>
 </tr>
 
 <tr>
-<td>2. Distance réellement parcourue</td>
-<td>Distance moyenne observée entre les deux aéroports à partir des trajectoires FlightAware.</td>
+<td>2. Distance parcourue</td>
+<td>Distance moyenne observée à partir des trajectoires FlightAware</td>
 </tr>
 
 <tr>
 <td>3. Facteur d’émission avion</td>
-<td>Facteur spécifique (kgCO₂e / avion / km) calculé pour chaque type d’appareil.</td>
+<td>Facteur spécifique (kgCO₂e / avion / km)</td>
 </tr>
 
 <tr>
-<td>4. Calcul des émissions</td>
+<td>4. Calcul</td>
 <td>Émissions = Distance × Facteur d’émission</td>
 </tr>
 
 <tr>
 <td>5. Agrégation</td>
-<td>Les émissions sont ensuite additionnées pour obtenir les totaux journaliers, mensuels et annuels.</td>
+<td>Total journalier, mensuel et annuel</td>
 </tr>
 
 </table>
-
 </div>
 
-<div class="card">
 
+<div class="card">
 <h2>Construction des facteurs d’émission des avions</h2>
 
 <p>
-Les facteurs d’émission spécifiques aux appareils utilisés à l’aéroport de Beauvais
-ont été estimés à partir de données publiques relatives à la consommation de carburant
-et aux caractéristiques des principaux avions exploités par les compagnies présentes
-sur la plateforme (notamment Ryanair et Wizz Air).
+Les facteurs d’émission des appareils sont estimés à partir des données de consommation
+de carburant des principaux avions opérant à Beauvais
+(Boeing 737-800, Airbus A321, etc.).
 </p>
 
 <p>
-La consommation moyenne de carburant par kilomètre a été estimée à partir de données
-techniques disponibles pour les appareils majoritairement utilisés sur ces liaisons
-(par exemple Boeing 737-800 ou Airbus A321).
-</p>
-
-<p>
-Les émissions directes de CO₂ liées à la combustion du carburant sont ensuite calculées
-à partir du facteur d’émission standard du kérosène aviation.
-</p>
-
-<p>
-Les facteurs d’émission intègrent également plusieurs composantes complémentaires
-afin d’approcher plus fidèlement l’empreinte carbone totale du transport aérien :
+Les calculs intègrent :
 </p>
 
 <ul>
-<li>émissions liées à la combustion du carburant en vol,</li>
-<li>émissions amont liées à la production et au transport du carburant,</li>
-<li>émissions liées à la fabrication et à l’amortissement des avions.</li>
+<li>la combustion du carburant</li>
+<li>la production du carburant</li>
+<li>la fabrication des avions</li>
 </ul>
 
 <p>
-Le détail du calcul des facteurs d’émission est disponible dans le fichier suivant :
+Le détail des calculs est disponible ici :
 <a href="calcul_FE_avions.xlsx">Télécharger le fichier de calcul</a>
 </p>
 
 </div>
 
+
 <div class="card">
-
-<h2>Émissions liées à l’approvisionnement en carburant</h2>
-
-<p>
-Les émissions liées à la combustion du kérosène dans les moteurs d’avion ne représentent
-pas l’ensemble de l’empreinte carbone du carburant aviation.
-</p>
+<h2>Approvisionnement en carburant</h2>
 
 <p>
-L’extraction, le raffinage et le transport du carburant génèrent également
-des émissions de gaz à effet de serre. Ces émissions amont sont intégrées
-dans les calculs à l’aide d’un facteur d’émission complémentaire appliqué
-à la consommation de carburant.
+Les émissions amont liées à la production et au transport du carburant
+sont intégrées afin de prendre en compte le cycle de vie du kérosène
+(well-to-tank).
 </p>
-
-<p>
-Ces émissions correspondent généralement aux émissions « well-to-tank »
-du cycle de vie du carburant.
-</p>
-
 </div>
 
+
 <div class="card">
-
-<h2>Émissions liées à la fabrication des avions</h2>
-
-<p>
-La fabrication des aéronefs génère également des émissions de gaz à effet
-de serre (production de l’aluminium, composites, moteurs, etc.).
-</p>
+<h2>Fabrication des avions</h2>
 
 <p>
-Ces émissions sont réparties sur la durée de vie opérationnelle estimée
-des appareils afin d’obtenir un facteur d’émission moyen par kilomètre parcouru.
+Les émissions liées à la fabrication des aéronefs sont réparties sur la durée
+de vie estimée des appareils afin d’obtenir un facteur d’émission moyen
+par kilomètre parcouru.
 </p>
-
 </div>
 
+
 <div class="card">
-
-<h2>Déplacements des passagers vers l’aéroport</h2>
-
-<p>
-Les déplacements des passagers entre leur domicile ou leur lieu de séjour
-et l’aéroport constituent une source d’émissions supplémentaire.
-</p>
+<h2>Transport des passagers</h2>
 
 <p>
-Ces émissions sont estimées en distinguant deux catégories :
+Les déplacements des passagers vers et depuis l’aéroport sont estimés
+en distinguant :
 </p>
 
 <ul>
-<li>transports collectifs (train, bus, navettes),</li>
-<li>transports individuels (voiture particulière, taxi, VTC).</li>
+<li>transports collectifs</li>
+<li>transports individuels</li>
 </ul>
-
-<p>
-Les estimations reposent sur le nombre annuel de passagers, la distance
-moyenne d’accès à l’aéroport et les facteurs d’émission associés aux
-différents modes de transport.
-</p>
-
 </div>
 
+
 <div class="card">
-
-<h2>Déplacements domicile-travail des employés</h2>
-
-<p>
-Les déplacements domicile-travail des employés de l’aéroport et des
-entreprises présentes sur la plateforme constituent également
-une source d’émissions indirectes.
-</p>
+<h2>Transport des employés</h2>
 
 <p>
-Ces émissions sont estimées à partir du nombre d’employés présents
-sur la plateforme, de la distance moyenne domicile-travail et
-de la répartition modale des déplacements.
+Les déplacements domicile-travail des employés sont estimés à partir
+du nombre d’employés et de la distance moyenne parcourue.
 </p>
-
 </div>
 
-<div class="card">
 
+<div class="card">
 <h2>Facteurs d’émission utilisés</h2>
 
 <table>
 
 <tr>
-<th>Poste d'émission</th>
+<th>Poste</th>
 <th>Unité</th>
-<th>Source ou méthode</th>
+<th>Source</th>
 </tr>
 
 <tr>
-<td>Vols commerciaux</td>
+<td>Vols</td>
 <td>kgCO₂e / avion / km</td>
-<td>Calcul spécifique basé sur la consommation carburant des appareils utilisés</td>
+<td>Calcul spécifique</td>
 </tr>
 
 <tr>
-<td>Approvisionnement carburant</td>
+<td>Carburant amont</td>
 <td>kgCO₂e / kg carburant</td>
-<td>Données cycle de vie carburant aviation</td>
+<td>Données cycle de vie</td>
 </tr>
 
 <tr>
-<td>Fabrication des avions</td>
+<td>Fabrication avions</td>
 <td>kgCO₂e / avion / km</td>
-<td>Amortissement des émissions de fabrication sur la durée de vie</td>
+<td>Amortissement sur durée de vie</td>
 </tr>
 
 <tr>
-<td>Transport passagers collectif</td>
+<td>Transport passagers</td>
 <td>kgCO₂e / passager / km</td>
-<td>Facteurs d’émission transports publics</td>
-</tr>
-
-<tr>
-<td>Transport passagers individuel</td>
-<td>kgCO₂e / passager / km</td>
-<td>Facteurs voiture particulière</td>
+<td>Facteurs transport</td>
 </tr>
 
 <tr>
 <td>Transport employés</td>
 <td>kgCO₂e / personne / km</td>
-<td>Estimation basée sur déplacements domicile-travail</td>
+<td>Estimation déplacements</td>
 </tr>
 
 </table>
-
 </div>
 
-<div class="card">
 
-<h2>Classification des émissions (Scopes)</h2>
+<div class="card">
+<h2>Classification des émissions</h2>
 
 <ul>
-<li><strong>Scope 1 :</strong> émissions directes liées à la combustion de carburant et aux véhicules.</li>
-<li><strong>Scope 2 :</strong> émissions liées à la consommation d’électricité des infrastructures.</li>
-<li><strong>Scope 3 :</strong> autres émissions indirectes (vols, fabrication avions, transport passagers, transport employés, carburant amont).</li>
+<li><strong>Scope 1 :</strong> émissions directes</li>
+<li><strong>Scope 2 :</strong> consommation d’électricité</li>
+<li><strong>Scope 3 :</strong> émissions indirectes</li>
 </ul>
-
 </div>
 
-<div class="card">
 
+<div class="card">
 <h2>Limites des estimations</h2>
 
 <ul>
-
-<li>Les facteurs d’émission utilisés sont des moyennes.</li>
-
-<li>La charge réelle des avions n’est pas prise en compte.</li>
-
-<li>Les trajectoires réelles peuvent varier selon les vols.</li>
-
-<li>Certaines données sont estimées lorsque les informations publiques ne sont pas disponibles.</li>
-
+<li>facteurs d’émission moyens</li>
+<li>charge réelle des avions non connue</li>
+<li>variabilité des trajectoires</li>
+<li>données parfois estimées</li>
 </ul>
-
 </div>
+
 
 <div class="card">
-
-<h2>Transparence et reproductibilité des calculs</h2>
-
-<p>
-L’ensemble des estimations présentées sur ce site repose sur des méthodes
-de calcul volontairement transparentes afin de permettre leur compréhension
-et leur reproduction par toute personne souhaitant analyser les données.
-</p>
+<h2>Transparence et reproductibilité</h2>
 
 <p>
-Les principales hypothèses méthodologiques, les facteurs d’émission utilisés
-ainsi que les fichiers de calcul sont rendus publics afin de permettre :
+Les méthodes et fichiers de calcul sont rendus publics afin de permettre
+la vérification et la reproduction indépendante des résultats.
 </p>
-
-<ul>
-
-<li>la vérification indépendante des résultats,</li>
-
-<li>l’amélioration éventuelle des hypothèses utilisées,</li>
-
-<li>la réutilisation des méthodes pour d’autres aéroports.</li>
-
-</ul>
-
-<p>
-Cette démarche s’inscrit dans une volonté de contribuer à une meilleure
-compréhension des impacts climatiques du transport aérien à l’échelle locale.
-</p>
-
-</div>
-  
 </div>
 
-<footer>
-
-Site d’estimation des émissions du transport aérien – Projet indépendant.
-
-</footer>
-
-</body>
-</html>
+</div>
