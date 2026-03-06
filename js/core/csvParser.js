@@ -15,10 +15,9 @@ let result = [];
 for(let i=1;i<rows.length;i++){
 
 let cols = rows[i].split(sep);
+let obj = {};
 
-let obj={};
-
-headers.forEach((h,index)=>{
+headers.forEach((h,index) => {
 obj[h.trim()] = cols[index] ? cols[index].trim() : "";
 });
 
