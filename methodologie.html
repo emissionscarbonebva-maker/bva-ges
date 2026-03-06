@@ -155,6 +155,56 @@ processus contribuant à l’impact climatique de l’activité aéroportuaire :
 
 <div class="card">
 
+<div class="card">
+
+<h2>Principales sources d’émissions liées à l’activité aéroportuaire</h2>
+
+<p>
+L’empreinte carbone associée à l’activité d’un aéroport ne se limite pas aux
+émissions des avions. Elle résulte d’un ensemble d’activités directes et indirectes.
+</p>
+
+<table>
+
+<tr>
+<th>Source d'émission</th>
+<th>Exemple</th>
+</tr>
+
+<tr>
+<td>Transport aérien</td>
+<td>Combustion du kérosène lors des vols.</td>
+</tr>
+
+<tr>
+<td>Production du carburant</td>
+<td>Extraction du pétrole, raffinage et transport du carburant aviation.</td>
+</tr>
+
+<tr>
+<td>Fabrication des avions</td>
+<td>Production des matériaux et assemblage des aéronefs.</td>
+</tr>
+
+<tr>
+<td>Accès des passagers</td>
+<td>Voitures, bus, navettes ou trains utilisés pour rejoindre l’aéroport.</td>
+</tr>
+
+<tr>
+<td>Déplacements des employés</td>
+<td>Trajets domicile-travail des personnels de l’aéroport et des compagnies.</td>
+</tr>
+
+<tr>
+<td>Fonctionnement de l’aéroport</td>
+<td>Électricité, chauffage, véhicules de service.</td>
+</tr>
+
+</table>
+
+</div>
+  
 <h2>Émissions liées aux vols</h2>
 
 <p>
@@ -163,42 +213,48 @@ Elles sont estimées à partir de la distance parcourue par les avions et d’un
 d’émission moyen par type d’appareil.
 </p>
 
-<p><strong>Formule simplifiée :</strong></p>
+<div class="card">
+
+<h2>Schéma simplifié du calcul des émissions d’un vol</h2>
 
 <p>
-Émissions = Distance × Facteur d’émission × Nombre de rotations
+Chaque vol est traité individuellement à partir des informations disponibles
+sur le trafic aérien et des facteurs d’émission associés au type d’appareil utilisé.
 </p>
 
-<h3>Calcul de la distance réellement parcourue</h3>
+<table>
 
-<p>
-La distance utilisée dans les calculs ne correspond pas à la distance orthodromique
-(distance « à vol d’oiseau ») entre les aéroports.
-</p>
+<tr>
+<th>Étape</th>
+<th>Description</th>
+</tr>
 
-<p>
-Les avions suivent en réalité des trajectoires plus longues en raison :
-</p>
+<tr>
+<td>1. Identification du vol</td>
+<td>Récupération des informations publiques : compagnie, destination, type d’appareil.</td>
+</tr>
 
-<ul>
-<li>des procédures de départ et d’arrivée,</li>
-<li>des contraintes du contrôle aérien,</li>
-<li>des routes aériennes disponibles,</li>
-<li>des conditions météorologiques.</li>
-</ul>
+<tr>
+<td>2. Distance réellement parcourue</td>
+<td>Distance moyenne observée entre les deux aéroports à partir des trajectoires FlightAware.</td>
+</tr>
 
-<p>
-Afin de mieux représenter la distance réellement parcourue, les distances utilisées
-sont calculées à partir de données de trajectoires réelles issues de la plateforme
-de suivi des vols FlightAware.
-</p>
+<tr>
+<td>3. Facteur d’émission avion</td>
+<td>Facteur spécifique (kgCO₂e / avion / km) calculé pour chaque type d’appareil.</td>
+</tr>
 
-<p>
-Pour chaque liaison aérienne, plusieurs vols représentatifs sont analysés afin
-de mesurer la distance effectivement parcourue entre les aéroports.
-La distance moyenne observée est ensuite utilisée dans les calculs.
+<tr>
+<td>4. Calcul des émissions</td>
+<td>Émissions = Distance × Facteur d’émission</td>
+</tr>
 
-</p>
+<tr>
+<td>5. Agrégation</td>
+<td>Les émissions sont ensuite additionnées pour obtenir les totaux journaliers, mensuels et annuels.</td>
+</tr>
+
+</table>
 
 </div>
 
@@ -407,6 +463,38 @@ de la répartition modale des déplacements.
 
 </div>
 
+<div class="card">
+
+<h2>Transparence et reproductibilité des calculs</h2>
+
+<p>
+L’ensemble des estimations présentées sur ce site repose sur des méthodes
+de calcul volontairement transparentes afin de permettre leur compréhension
+et leur reproduction par toute personne souhaitant analyser les données.
+</p>
+
+<p>
+Les principales hypothèses méthodologiques, les facteurs d’émission utilisés
+ainsi que les fichiers de calcul sont rendus publics afin de permettre :
+</p>
+
+<ul>
+
+<li>la vérification indépendante des résultats,</li>
+
+<li>l’amélioration éventuelle des hypothèses utilisées,</li>
+
+<li>la réutilisation des méthodes pour d’autres aéroports.</li>
+
+</ul>
+
+<p>
+Cette démarche s’inscrit dans une volonté de contribuer à une meilleure
+compréhension des impacts climatiques du transport aérien à l’échelle locale.
+</p>
+
+</div>
+  
 </div>
 
 <footer>
