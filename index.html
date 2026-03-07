@@ -965,6 +965,9 @@ const DISPLAY_LABELS = {
   "cumul_scope_1_2": "Emissions directes aéroport BVA (Scope 1 & 2)",
   "cumul_total": "Cumul total",
 
+  // 6) Émissions par destination
+  "vols": "Nombre de vols (YTD)"
+ 
   // 7) Vols départ — EXPORT_departures_YTD.csv
   "numero_vol": "Numéro du vol",
   "compagnie": "Compagnie aérienne",
@@ -1392,94 +1395,149 @@ new Chart(document.getElementById("chartTotalCumul"),{
 });
 });
 
-  /* ===== EMISSIONS PAR DESTINATION (Départs + Arrivées) ===== */
-  parseCSV('./data/EXPORT_departures_YTD.csv', function(departures){
-    parseCSV('./data/EXPORT_arrivals_YTD.csv', function(arrivals){
+ /* ===== EMISSIONS PAR DESTINATION (Départs + Arrivées) ===== */
+parseCSV('./data/EXPORT_departures_YTD.csv', function (departures) {
+  parseCSV('./data/EXPORT_arrivals_YTD.csv', function (arrivals) {
 
-      const destinationMap = {};
-      let totalEmissions = 0;
+    // On agrège par destination (départs) + origine (arrivées)
+    // -> total des émissions ET nombre de vols
+    const destinationMap = {}; // { [destination]: { emission: number, vols: number } }
+    let totalEmissions = 0;
 
-      function aggregate(data, type){
-        data.forEach(row => {
-          const dest = (type === "departures")
-            ? (row.destination || "Inconnue")
-            : (row.origine || "Inconnue");
+    function safeNum(x) {
+      const n = parseFloat(String(x).replace(',', '.'));
+      return isNaN(n) ? 0 : n;
+    }
 
-          let emission = parseFloat(row.emissions);
-          if(isNaN(emission)) emission = 0;
+    function add(dest, emission) {
+      if (!dest) dest = "Inconnue";
+      if (!destinationMap[dest]) destinationMap[dest] = { emission: 0, vols: 0 };
+      destinationMap[dest].emission += emission;
+      destinationMap[dest].vols += 1;           // <-- compteur de vols
+      totalEmissions += emission;
+    }
 
-          if(!destinationMap[dest]) destinationMap[dest] = 0;
-          destinationMap[dest] += emission;
-          totalEmissions += emission;
-        });
+    // Départs : utiliser 'destination' (CSV départs)
+    departures.forEach(row => {
+      add(row.destination || "Inconnue", safeNum(row.emissions));
+    });
+
+    // Arrivées : utiliser 'origine' (CSV arrivées)
+    arrivals.forEach(row => {
+      add(row.origine || "Inconnue", safeNum(row.emissions));
+    });
+
+    // Transformation en tableau & tri décroissant par émissions
+    const destinationArray = Object.keys(destinationMap).map(dest => ({
+      destination: dest,
+      emission: destinationMap[dest].emission,
+      vols: destinationMap[dest].vols
+    }));
+    destinationArray.sort((a, b) => b.emission - a.emission);
+
+    // Limitation : top 50 OU 90% des émissions cumulées
+    const filteredDestinations = [];
+    let cumulative = 0;
+    let otherEmission = 0;
+    let otherVols = 0;
+    let otherCount = 0;
+
+    destinationArray.forEach(item => {
+      if (filteredDestinations.length < 50 && (totalEmissions === 0 ? 0 : cumulative / totalEmissions) < 0.90) {
+        filteredDestinations.push(item);
+        cumulative += item.emission;
+      } else {
+        otherEmission += item.emission;
+        otherVols += item.vols;
+        otherCount++;
       }
+    });
 
-      aggregate(departures,"departures");
-      aggregate(arrivals,"arrivals");
-
-      const destinationArray = Object.keys(destinationMap).map(dest => ({
-        destination: dest,
-        emission: destinationMap[dest]
-      }));
-
-      // Tri décroissant
-      destinationArray.sort((a,b) => b.emission - a.emission);
-
-      // Limitation 50 destinations OU 90% cumul
-      const filteredDestinations = [];
-      let cumulative = 0;
-      let otherTotal = 0;
-      let otherCount = 0;
-
-      destinationArray.forEach(item => {
-        if(filteredDestinations.length < 50 && cumulative / totalEmissions < 0.90){
-          filteredDestinations.push(item);
-          cumulative += item.emission;
-        } else {
-          otherTotal += item.emission;
-          otherCount++;
-        }
+    if (otherEmission > 0 || otherVols > 0) {
+      filteredDestinations.push({
+        destination: `Autres (${otherCount} destinations)`,
+        emission: otherEmission,
+        vols: otherVols
       });
+    }
 
-      if(otherTotal > 0){
-        filteredDestinations.push({
-          destination: `Autres (${otherCount} destinations)`,
-          emission: otherTotal
-        });
-      }
+    // Jeux de données pour le chart
+    const labels = filteredDestinations.map(d => d.destination);
+    const valuesEmissions = filteredDestinations.map(d => Math.round(d.emission * 10) / 10);
+    const valuesVols = filteredDestinations.map(d => d.vols);
 
-      const labels = filteredDestinations.map(d => d.destination);
-      const values = filteredDestinations.map(d => Math.round(d.emission * 10) / 10);
+    // Chart mixte : barres (émissions) + ligne (vols) avec axe secondaire
+    new Chart(document.getElementById("chartDestination"), {
+      type: "bar",
+      data: {
+        labels,
+        datasets: [
+          {
+            type: "bar",
+            label: displayName("emissions"), // "Emissions GES (t éq CO2)"
+            data: valuesEmissions,
+            yAxisID: "y",
+            backgroundColor: "rgba(31, 60, 136, 0.25)",
+            borderColor: "#1f3c88",
+            borderWidth: 1
+          },
+          {
+            type: "line",
+            label: displayName("vols"),
+            data: valuesVols,
+            yAxisID: "y1",
+            borderColor: "#d62728",
+            backgroundColor: "rgba(214, 39, 40, 0.15)",
+            borderWidth: 2,
+            pointRadius: 2,
+            tension: 0.2,
+            fill: false
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: true },
+          tooltip: {
+            callbacks: {
+              // Affichage contextuel en fonction du dataset
+              label: function (context) {
+                const dsLabel = context.dataset.label || "";
+                const value = context.parsed.y;
 
-      new Chart(document.getElementById("chartDestination"), {
-        type:"bar",
-        data:{
-          labels,
-          datasets:[ { label: displayName("emissions"), data: values } ] // "Emissions GES (t éq CO2)"
-        },
-        options:{
-          responsive:true,
-          plugins:{
-            legend:{ display:false },
-            tooltip:{
-              callbacks:{
-                label: function(context){
-                  const value = context.parsed.y;
-                  const percent = (value / totalEmissions * 100).toFixed(1);
-                  return value.toLocaleString('fr-FR') + " t éq CO₂ (" + percent + "%)";
+                if (context.dataset.yAxisID === "y") {
+                  // Emissions (barres)
+                  const percent = totalEmissions > 0 ? ((value / totalEmissions) * 100).toFixed(1) : 0;
+                  return `${dsLabel} : ${value.toLocaleString('fr-FR')} t éq CO₂ (${percent} %)`;
+                } else {
+                  // Vols (ligne)
+                  return `${dsLabel} : ${value.toLocaleString('fr-FR')} vols`;
                 }
               }
             }
+          }
+        },
+        scales: {
+          x: {
+            ticks: { maxRotation: 90, minRotation: 45 }
           },
-          scales:{
-            x:{ ticks:{ maxRotation:90, minRotation:45 } },
-            y:{ title:{ display:true, text:"Emissions de gaz à effet de serre (en t éq CO₂)" } }
+          y: {
+            beginAtZero: true,
+            title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" }
+          },
+          y1: {
+            beginAtZero: true,
+            position: "right",
+            grid: { drawOnChartArea: false }, // rend les grilles distinctes
+            title: { display: true, text: "Nombre de vols (cumul depuis le 1er janvier)" }
           }
         }
-      });
+      }
+    });
 
-    }); // arrivals
-  }); // departures
+  }); // arrivals
+});   // departures
 
   /* ===== TABLE DATA PRO V7 - STABLE ===== */
   function createTable(containerId, data){
