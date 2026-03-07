@@ -22,7 +22,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3</script>"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2</script>"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
@@ -1067,9 +1067,15 @@ document.addEventListener("DOMContentLoaded", function(){
           }
         },
         
+
 scales: {
-  x: { title: { display: true, text: "Date" } },
-  y:{ beginAtZero:true, title:{ display:true, text:"Emissions de gaz à effet de serre (en t éq CO2)" } }
+  x: {
+    type: 'time',
+    time: { unit: 'day', parser: 'dd/MM/yyyy' },
+    title: { display: true, text: "Date" }
+  },
+  y: { beginAtZero:true, title:{ display:true, text:"Emissions de gaz à effet de serre (en t éq CO2)" } }
+
         }
       }
     });
@@ -1168,9 +1174,15 @@ scales: {
           }
         },
         
+
 scales: {
-  x: { title: { display: true, text: "Date" } },
-  y:{ beginAtZero:true, title:{ display:true, text:"Emissions de gaz à effet de serre (en t éq CO2)" } }
+  x: {
+    type: 'time',
+    time: { unit: 'day', parser: 'dd/MM/yyyy' },
+    title: { display: true, text: "Date" }
+  },
+  y: { beginAtZero:true, title:{ display:true, text:"Emissions de gaz à effet de serre (en t éq CO2)" } }
+
         }
       }
     });
@@ -1232,9 +1244,15 @@ scales: {
           }
         },
        
+
 scales: {
-  x: { title: { display: true, text: "Date" } },
-  y:{ beginAtZero:true, title:{ display:true, text:"Emissions de gaz à effet de serre (en t éq CO2)" } }
+  x: {
+    type: 'time',
+    time: { unit: 'day', parser: 'dd/MM/yyyy' },
+    title: { display: true, text: "Date" }
+  },
+  y: { beginAtZero:true, title:{ display:true, text:"Emissions de gaz à effet de serre (en t éq CO2)" } }
+
         }
       }
     });
@@ -1296,9 +1314,15 @@ scales: {
           }
         },
         
+
 scales: {
-  x: { title: { display: true, text: "Date" } },
-  y:{ beginAtZero:true, title:{ display:true, text:"Emissions de gaz à effet de serre (en t éq CO2)" } }
+  x: {
+    type: 'time',
+    time: { unit: 'day', parser: 'dd/MM/yyyy' },
+    title: { display: true, text: "Date" }
+  },
+  y: { beginAtZero:true, title:{ display:true, text:"Emissions de gaz à effet de serre (en t éq CO2)" } }
+
         }
       }
     });
@@ -1345,9 +1369,15 @@ scales: {
           zoom:{ pan:{enabled:true,mode:'x'}, zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' } }
         },
         
+
 scales: {
-  x: { title: { display: true, text: "Date" } },
-  y:{ beginAtZero:true, title:{ display:true, text:"Emissions de gaz à effet de serre (en t éq CO2)" } }
+  x: {
+    type: 'time',
+    time: { unit: 'day', parser: 'dd/MM/yyyy' },
+    title: { display: true, text: "Date" }
+  },
+  y: { beginAtZero:true, title:{ display:true, text:"Emissions de gaz à effet de serre (en t éq CO2)" } }
+
         }
       }
     });
