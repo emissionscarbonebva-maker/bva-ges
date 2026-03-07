@@ -573,7 +573,46 @@ font-size:0.9em;
 .export-btn:hover{
 opacity:0.9;
 }
-  
+
+
+/* === NARROW CONTENT: limiter la largeur des cartes avec graphes & tableaux === */
+
+/* 1) Variable de largeur max pour le contenu étroit */
+:root {
+  --narrow-max: 980px; /* ajuste ici : 720, 900, 1100… */
+}
+
+/* 2) Cartes qui contiennent : canvas (Chart.js) ou wrapper de tableau */
+.main .card:has(canvas),
+.main .card:has(.table-wrapper),
+.main .card:has(#tableDepartures),
+.main .card:has(#tableArrivals) {
+  width: 100%;
+  max-width: var(--narrow-max);
+  margin-inline: auto; /* centre horizontalement */
+}
+
+/* 3) Sécurité : les canvas ne dépassent pas */
+.main .card canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* 4) La zone scrollable des tableaux reste fluide */
+.table-wrapper {
+  max-width: 100%;
+  overflow: auto;
+}
+
+/* (Optionnel) Si tu utilises .chart-container, neutralise sa limite fixe */
+.chart-container {
+  width: 100%;
+  max-width: 100%;        /* au lieu de 700px si tu veux laisser la carte piloter la largeur */
+  margin-inline: auto;
+}
+
+ 
 </style>
 
 <script type="application/ld+json">
