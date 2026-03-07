@@ -145,13 +145,19 @@ border-radius:6px;
 .menu a:hover{
 background:#1f3c88;
 }
-
+ 
 .icon{
 font-size:18px;
 width:30px;
 text-align:center;
 }
 
+.menu a.active{
+background:#2e55c7;
+box-shadow:inset 4px 0 0 #ffffff;
+font-weight:600;
+}
+ 
 /* MENU */
 
 .menu-section{
@@ -2223,7 +2229,25 @@ sidebar.classList.contains("collapsed")
 );
 
 });
-  
+
+/* MENU ACTIF AUTOMATIQUE */
+
+let currentPage = window.location.pathname.split("/").pop();
+
+if(currentPage === ""){
+currentPage = "index.html";
+}
+
+document.querySelectorAll(".menu a").forEach(link => {
+
+const linkPage = link.getAttribute("href");
+
+if(linkPage === currentPage){
+link.classList.add("active");
+}
+
+});
+ 
 </script>
 
 </body>
