@@ -97,7 +97,15 @@ padding:40px;
 /* HEADER */
 
 header{
+background:#1f3c88;
+color:white;
+padding:25px;
 margin-bottom:30px;
+}
+
+header h1{
+color:white;
+margin:0;
 }
 
 h1{
@@ -483,7 +491,7 @@ opacity:0.9;
 <div class="sidebar">
 
 <div class="logo">
-<img src="logo.png">
+<img src="logo-bva.png">
 </div>
 
 <div class="menu-section">
@@ -762,29 +770,21 @@ Hébergement : GitHub Pages (GitHub Inc.)
 
 /* MENU COLLAPSIBLE */
 
-document.querySelectorAll(".menu-title").forEach(title => {
+document.addEventListener("DOMContentLoaded", function(){
 
-title.addEventListener("click", () => {
+document.querySelectorAll(".menu-title").forEach(function(title){
 
-const items = title.nextElementSibling;
+title.addEventListener("click", function(){
 
-items.style.display =
-items.style.display === "block" ? "none" : "block";
+var items = title.nextElementSibling;
+
+if(items.style.display === "block"){
+items.style.display = "none";
+}else{
+items.style.display = "block";
+}
 
 });
-
-});
-
-/* SCROLL FLUIDE */
-
-document.querySelectorAll('.menu-items a[href^="#"]').forEach(link => {
-
-link.addEventListener("click", function(e){
-
-e.preventDefault();
-
-document.querySelector(this.getAttribute("href"))
-.scrollIntoView({behavior:"smooth"});
 
 });
 
