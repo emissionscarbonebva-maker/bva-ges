@@ -7,10 +7,10 @@
 
 <!-- ===== SEO ===== -->
 <meta name="description" content="Analyse indépendante des émissions carbone de l’aéroport Paris-Beauvais (BVA). Données publiques, émissions journalières, cumul annuel et analyse par compagnie aérienne.">
-<meta name="keywords" content="BVA, carbone, GES, émissions, Beauvais, empreinte carbone aéroport Beauvais, gaz effet de serre, pollution Beauvais, émissions aviation France, bilan carbone, bilan carbone aéroport Beauvais">
+<meta name="keywords" content="BVA, carbone, GES, émissions, Beauvais, empreinte carbone aéroport Beauvais, gaz effet de serre, pollution Beauvais, émissions aviation France, bilan carbone, 
+ bilan carbone aéroport Beauvais">
 <meta name="author" content="Analyse indépendante BVA">
 <meta name="robots" content="index, follow">
-<meta name="keywords" content="BVA carbone, émissions Beauvais, méthodologie calcul émissions aviation, empreinte carbone aéroport Beauvais">
 
 <!-- ===== Open Graph ===== -->
 <meta property="og:title" content="Émissions carbone Aéroport Paris-Beauvais (BVA)">
@@ -46,13 +46,10 @@ padding:20px 10px;
 box-sizing:border-box;
 transition:width 0.25s;
 overflow:visible;
-}
-
- .sidebar{
-width:240px;
 flex-shrink:0;
-} 
-
+z-index:1000;
+}
+ 
 /* Mode réduit */
 
 .sidebar.collapsed{
@@ -86,7 +83,9 @@ position:relative;
 .sidebar.collapsed .menu a:hover::after{
 content:attr(data-title);
 position:absolute;
-left:80px;
+left:90px;
+top:50%;
+transform:translateY(-50%);
 background:#162d63;
 color:white;
 padding:6px 10px;
@@ -96,7 +95,8 @@ font-size:14px;
 z-index:9999;
 box-shadow:0 4px 12px rgba(0,0,0,0.2);
 }
-
+ 
+ 
 .sidebar.collapsed .menu a::after{
 opacity:0;
 transition:opacity 0.15s ease;
@@ -104,10 +104,6 @@ transition:opacity 0.15s ease;
 
 .sidebar.collapsed .menu a:hover::after{
 opacity:1;
-}
- 
-.sidebar{
-z-index:1000;
 }
   
 /* Logo */
@@ -149,26 +145,7 @@ color:white;
 text-decoration:none;
 padding:10px;
 border-radius:6px;
-}
-
-.menu a{
 position:relative;
-}
- 
-.sidebar.collapsed .menu a:hover::after{
-content:attr(data-title);
-position:absolute;
-left:90px;
-top:50%;
-transform:translateY(-50%);
-background:#162d63;
-color:white;
-padding:6px 10px;
-border-radius:6px;
-white-space:nowrap;
-font-size:14px;
-z-index:9999;
-box-shadow:0 4px 12px rgba(0,0,0,0.2);
 }
  
 .menu a:hover{
@@ -890,26 +867,6 @@ Hébergement : GitHub Pages (GitHub Inc.)
 
 <script>
 
-/* GRAPH */
-
-const ctx = document.getElementById("chart");
-
-new Chart(ctx,{
-
-type:"line",
-
-data:{
-labels:["2022","2023","2024"],
-datasets:[{
-label:"tCO2e",
-data:[12,10,7],
-borderColor:"#162d63",
-fill:false
-}]
-}
-
-});
-  
  /* ===== EXPORT CSV DES GRAPHIQUES ===== */
 
 function exportChartCSV(chartId, filename){
