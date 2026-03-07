@@ -21,8 +21,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/date-fns@2.30.0/dist/date-fns.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
@@ -1071,7 +1072,7 @@ document.addEventListener("DOMContentLoaded", function(){
 scales: {
   x: {
     type: 'time',
-    time: { unit: 'day', parser: 'dd/MM/yyyy' },
+    time: { unit: 'day', parser: 'yyyy-MM-dd' },
     title: { display: true, text: "Date" }
   },
   y: { beginAtZero:true, title:{ display:true, text:"Emissions de gaz à effet de serre (en t éq CO2)" } }
@@ -1178,7 +1179,7 @@ scales: {
 scales: {
   x: {
     type: 'time',
-    time: { unit: 'day', parser: 'dd/MM/yyyy' },
+    time: { unit: 'day', parser: 'yyyy-MM-dd' },
     title: { display: true, text: "Date" }
   },
   y: { beginAtZero:true, title:{ display:true, text:"Emissions de gaz à effet de serre (en t éq CO2)" } }
@@ -1248,7 +1249,7 @@ scales: {
 scales: {
   x: {
     type: 'time',
-    time: { unit: 'day', parser: 'dd/MM/yyyy' },
+    time: { unit: 'day', parser: 'yyyy-MM-dd' },
     title: { display: true, text: "Date" }
   },
   y: { beginAtZero:true, title:{ display:true, text:"Emissions de gaz à effet de serre (en t éq CO2)" } }
@@ -1318,7 +1319,7 @@ scales: {
 scales: {
   x: {
     type: 'time',
-    time: { unit: 'day', parser: 'dd/MM/yyyy' },
+    time: { unit: 'day', parser: 'yyyy-MM-dd' },
     title: { display: true, text: "Date" }
   },
   y: { beginAtZero:true, title:{ display:true, text:"Emissions de gaz à effet de serre (en t éq CO2)" } }
@@ -1373,7 +1374,7 @@ scales: {
 scales: {
   x: {
     type: 'time',
-    time: { unit: 'day', parser: 'dd/MM/yyyy' },
+    time: { unit: 'day', parser: 'yyyy-MM-dd' },
     title: { display: true, text: "Date" }
   },
   y: { beginAtZero:true, title:{ display:true, text:"Emissions de gaz à effet de serre (en t éq CO2)" } }
