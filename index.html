@@ -760,6 +760,56 @@ Hébergement : GitHub Pages (GitHub Inc.)
 
 <script>
 
+/* MENU COLLAPSIBLE */
+
+document.querySelectorAll(".menu-title").forEach(title => {
+
+title.addEventListener("click", () => {
+
+const items = title.nextElementSibling;
+
+items.style.display =
+items.style.display === "block" ? "none" : "block";
+
+});
+
+});
+
+/* SCROLL FLUIDE */
+
+document.querySelectorAll('.menu-items a[href^="#"]').forEach(link => {
+
+link.addEventListener("click", function(e){
+
+e.preventDefault();
+
+document.querySelector(this.getAttribute("href"))
+.scrollIntoView({behavior:"smooth"});
+
+});
+
+});
+
+/* GRAPH */
+
+const ctx = document.getElementById("chart");
+
+new Chart(ctx,{
+
+type:"line",
+
+data:{
+labels:["2022","2023","2024"],
+datasets:[{
+label:"tCO2e",
+data:[12,10,7],
+borderColor:"#162d63",
+fill:false
+}]
+}
+
+});
+  
  /* ===== EXPORT CSV DES GRAPHIQUES ===== */
 
 function exportChartCSV(chartId, filename){
