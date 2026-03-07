@@ -1054,29 +1054,27 @@ document.addEventListener("DOMContentLoaded", function(){
     });
 
     // Graphique
-    new Chart(document.getElementById("chartDaily"), {
-      type:'line',
-      data:{ labels, datasets },
-      options:{
-        responsive:true,
-        interaction:{ mode:'index', intersect:false },
-        plugins:{
-          legend:{ position:'top' },
-          zoom:{
-            pan:{ enabled:true, mode:'x' },
-            zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' }
-          }
-        },
-        
+    
+new Chart(document.getElementById("chartDaily"), {
+  type:'line',
+  data:{ labels, datasets },
+  options:{
+    responsive:true,
+    interaction:{ mode:'index', intersect:false },
+    plugins:{
+      legend:{ position:'top' },
+      zoom:{
+        pan:{ enabled:true, mode:'x' },
+        zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' }
+      }
+    },
+    scales: {
+      x: { title: { display: true, text: "Date" } },
+      y: { beginAtZero: true, title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO2)" } }
+    }
+  }
+});
 
-
-scales: {
-  x: { title: { display: true, text: "Date" } },
-  y: { beginAtZero: true, title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO2)" } }
-}
-       
-    });
-  });
 
   /* ===== 2 CUMUL – VERSION PRODUCTION ===== */
   parseCSV('./data/EXPORT_cumul_scopes.csv', (data,headers) => {
@@ -1139,46 +1137,44 @@ scales: {
     });
 
     // Graphique
-    new Chart(document.getElementById("chartCumul"), {
-      type:'line',
-      data:{ labels, datasets },
-      options:{
-        responsive:true,
-        interaction:{ mode:'index', intersect:false },
-        plugins:{
-          legend:{ position:'top' },
-          tooltip:{
-            callbacks:{
-              label: function(context){
-                const value = context.parsed.y || 0;
-                const valueRounded = Math.round(value);
-                // total empilé du jour
-                let total = 0;
-                context.chart.data.datasets.forEach(ds => {
-                  total += ds.data[context.dataIndex] || 0;
-                });
-                const percent = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                return context.dataset.label + " : "
-                  + valueRounded.toLocaleString('fr-FR')
-                  + " t éq CO2"
-                  + " (" + percent + "%)";
-              }
-            }
-          },
-          zoom:{
-            pan:{ enabled:true, mode:'x' },
-            zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' }
+    
+ew Chart(document.getElementById("chartCumul"), {
+  type:'line',
+  data:{ labels, datasets },
+  options:{
+    responsive:true,
+    interaction:{ mode:'index', intersect:false },
+    plugins:{
+      legend:{ position:'top' },
+      tooltip:{
+        callbacks:{
+          label: function(context){
+            const value = context.parsed.y || 0;
+            const valueRounded = Math.round(value);
+            let total = 0;
+            context.chart.data.datasets.forEach(ds => {
+              total += ds.data[context.dataIndex] || 0;
+            });
+            const percent = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+            return context.dataset.label + " : "
+              + valueRounded.toLocaleString('fr-FR')
+              + " t éq CO2"
+              + " (" + percent + "%)";
           }
-        },
-        
+        }
+      },
+      zoom:{
+        pan:{ enabled:true, mode:'x' },
+        zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' }
+      }
+    },
+    scales: {
+      x: { title: { display: true, text: "Date" } },
+      y: { beginAtZero: true, stacked: true, title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO2)" } }
+    }
+  }
+});
 
-
-scales: {
-  x: { title: { display: true, text: "Date" } },
-  y: { beginAtZero: true, stacked: true, title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO2)" } }
-       }
-    });
-  });
 
   /* ===== 3 AIRLINES ===== */
   parseCSV('./data/EXPORT_daily_airlines.csv', (data) => {
@@ -1211,39 +1207,38 @@ scales: {
       });
     });
 
-    new Chart(document.getElementById("chartAirlines"),{
-      type:'line',
-      data:{ labels, datasets },
-      options:{
-        responsive:true,
-        interaction:{ mode:'index', intersect:false },
-        plugins:{
-          legend:{ position:'top' },
-          tooltip:{
-            callbacks:{
-              label: function(context){
-                const value = context.parsed.y || 0;
-                const valueRounded = Math.round(value);
-                return context.dataset.label + " : "
-                  + valueRounded.toLocaleString('fr-FR')
-                  + " t éq CO2";
-              }
-            }
-          },
-          zoom:{
-            pan:{ enabled:true,mode:'x' },
-            zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' }
+    
+new Chart(document.getElementById("chartAirlines"),{
+  type:'line',
+  data:{ labels, datasets },
+  options:{
+    responsive:true,
+    interaction:{ mode:'index', intersect:false },
+    plugins:{
+      legend:{ position:'top' },
+      tooltip:{
+        callbacks:{
+          label: function(context){
+            const value = context.parsed.y || 0;
+            const valueRounded = Math.round(value);
+            return context.dataset.label + " : "
+              + valueRounded.toLocaleString('fr-FR')
+              + " t éq CO2";
           }
-        },
-       
-
-
-scales: {
-  x: { title: { display: true, text: "Date" } },
-  y: { beginAtZero: true, title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO2)" } }
+        }
+      },
+      zoom:{
+        pan:{ enabled:true,mode:'x' },
+        zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' }
       }
-    });
-  });
+    },
+    scales: {
+      x: { title: { display: true, text: "Date" } },
+      y: { beginAtZero: true, title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO2)" } }
+    }
+  }
+});
+
 
   /* ===== 4 ROTATIONS ===== */
   parseCSV('./data/EXPORT_daily_airlines.csv', (data) => {
@@ -1276,39 +1271,38 @@ scales: {
       });
     });
 
-    new Chart(document.getElementById("chartRotations"),{
-      type:'line',
-      data:{ labels, datasets },
-      options:{
-        responsive:true,
-        interaction:{ mode:'index', intersect:false },
-        plugins:{
-          legend:{ position:'top' },
-          tooltip:{
-            callbacks:{
-              label: function(context){
-                const value = context.parsed.y || 0;
-                const valueRounded = Math.round(value);
-                return context.dataset.label + " : "
-                  + valueRounded.toLocaleString('fr-FR')
-                  + " rotations";
-              }
-            }
-          },
-          zoom:{
-            pan:{ enabled:true,mode:'x' },
-            zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' }
+    
+new Chart(document.getElementById("chartRotations"),{
+  type:'line',
+  data:{ labels, datasets },
+  options:{
+    responsive:true,
+    interaction:{ mode:'index', intersect:false },
+    plugins:{
+      legend:{ position:'top' },
+      tooltip:{
+        callbacks:{
+          label: function(context){
+            const value = context.parsed.y || 0;
+            const valueRounded = Math.round(value);
+            return context.dataset.label + " : "
+              + valueRounded.toLocaleString('fr-FR')
+              + " rotations";
           }
-        },
-        
-
-
-scales: {
-  x: { title: { display: true, text: "Date" } },
-  y: { beginAtZero: true, title: { display: true, text: "Nombre de rotations" } }
+        }
+      },
+      zoom:{
+        pan:{ enabled:true,mode:'x' },
+        zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' }
       }
-    });
-  });
+    },
+    scales: {
+      x: { title: { display: true, text: "Date" } },
+      y: { beginAtZero: true, title: { display: true, text: "Nombre de rotations" } }
+    }
+  }
+});
+
 
   /* ===== CUMUL TOTAL GLOBAL ===== */
   parseCSV('./data/EXPORT_daily_scopes.csv', (data,headers) => {
@@ -1331,34 +1325,33 @@ scales: {
       cumul.push(total);
     });
 
-    new Chart(document.getElementById("chartTotalCumul"),{
-      type:'line',
-      data:{
-        labels,
-        datasets:[{
-          label:"Cumul total émissions",
-          data:cumul,
-          borderWidth:3,
-          fill:true,
-          backgroundColor:"rgba(31,60,136,0.2)",
-          borderColor:"#1f3c88"
-        }]
-      },
-      options:{
-        responsive:true,
-        plugins:{
-          legend:{ position:'top' },
-          zoom:{ pan:{enabled:true,mode:'x'}, zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' } }
-        },
-        
+    
+new Chart(document.getElementById("chartTotalCumul"),{
+  type:'line',
+  data:{
+    labels,
+    datasets:[{
+      label:"Cumul total émissions",
+      data:cumul,
+      borderWidth:3,
+      fill:true,
+      backgroundColor:"rgba(31,60,136,0.2)",
+      borderColor:"#1f3c88"
+    }]
+  },
+  options:{
+    responsive:true,
+    plugins:{
+      legend:{ position:'top' },
+      zoom:{ pan:{enabled:true,mode:'x'}, zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' } }
+    },
+    scales: {
+      x: { title: { display: true, text: "Date" } },
+      y: { beginAtZero: true, title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO2)" } }
+    }
+  }
+});
 
-
-scales: {
-  x: { title: { display: true, text: "Date" } },
-  y: { beginAtZero: true, title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO2)" } }
-      }
-    });
-  });
 
   /* ===== EMISSIONS PAR DESTINATION (Départs + Arrivées) ===== */
   parseCSV('./data/EXPORT_departures_YTD.csv', function(departures){
