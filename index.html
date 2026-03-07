@@ -1395,147 +1395,192 @@ new Chart(document.getElementById("chartTotalCumul"),{
 });
 });
 
- /* ===== EMISSIONS PAR DESTINATION (Départs + Arrivées) ===== */
+ /* ===== EMISSIONS PAR DESTINATION (Départs + Arrivées) + tri dynamique ===== */
 parseCSV('./data/EXPORT_departures_YTD.csv', function (departures) {
   parseCSV('./data/EXPORT_arrivals_YTD.csv', function (arrivals) {
 
-    // On agrège par destination (départs) + origine (arrivées)
-    // -> total des émissions ET nombre de vols
-    const destinationMap = {}; // { [destination]: { emission: number, vols: number } }
+    // --- Agrégation commune départs+arrivées ---
+    const destinationMap = {}; // { [destination]: { emission:number, vols:number } }
     let totalEmissions = 0;
 
-    function safeNum(x) {
+    const toNum = (x) => {
       const n = parseFloat(String(x).replace(',', '.'));
       return isNaN(n) ? 0 : n;
-    }
+    };
 
-    function add(dest, emission) {
-      if (!dest) dest = "Inconnue";
-      if (!destinationMap[dest]) destinationMap[dest] = { emission: 0, vols: 0 };
-      destinationMap[dest].emission += emission;
-      destinationMap[dest].vols += 1;           // <-- compteur de vols
+    function addAgg(dest, emission) {
+      const key = dest && String(dest).trim() ? String(dest).trim() : "Inconnue";
+      if (!destinationMap[key]) destinationMap[key] = { emission: 0, vols: 0 };
+      destinationMap[key].emission += emission;
+      destinationMap[key].vols += 1;         // 1 ligne = 1 vol
       totalEmissions += emission;
     }
 
-    // Départs : utiliser 'destination' (CSV départs)
-    departures.forEach(row => {
-      add(row.destination || "Inconnue", safeNum(row.emissions));
-    });
+    // Départs : colonne 'destination'
+    departures.forEach(row => addAgg(row.destination, toNum(row.emissions)));
 
-    // Arrivées : utiliser 'origine' (CSV arrivées)
-    arrivals.forEach(row => {
-      add(row.origine || "Inconnue", safeNum(row.emissions));
-    });
+    // Arrivées : colonne 'origine'
+    arrivals.forEach(row => addAgg(row.origine, toNum(row.emissions)));
 
-    // Transformation en tableau & tri décroissant par émissions
-    const destinationArray = Object.keys(destinationMap).map(dest => ({
-      destination: dest,
-      emission: destinationMap[dest].emission,
-      vols: destinationMap[dest].vols
-    }));
-    destinationArray.sort((a, b) => b.emission - a.emission);
+    // --- UI : boutons de tri (créés dynamiquement) ---
+    (function ensureSortControls(){
+      const canvas = document.getElementById("chartDestination");
+      if (!canvas) return;
+      // container au-dessus du canvas
+      const controls = document.createElement("div");
+      controls.style.display = "flex";
+      controls.style.alignItems = "center";
+      controls.style.gap = "8px";
+      controls.style.margin = "6px 0 4px 0";
 
-    // Limitation : top 50 OU 90% des émissions cumulées
-    const filteredDestinations = [];
-    let cumulative = 0;
-    let otherEmission = 0;
-    let otherVols = 0;
-    let otherCount = 0;
+      const strong = document.createElement("strong");
+      strong.textContent = "Trier par :";
+      const btnEmi = document.createElement("button");
+      const btnVols = document.createElement("button");
+      btnEmi.textContent = "Émissions";
+      btnVols.textContent = "Vols";
 
-    destinationArray.forEach(item => {
-      if (filteredDestinations.length < 50 && (totalEmissions === 0 ? 0 : cumulative / totalEmissions) < 0.90) {
-        filteredDestinations.push(item);
-        cumulative += item.emission;
-      } else {
-        otherEmission += item.emission;
-        otherVols += item.vols;
-        otherCount++;
-      }
-    });
-
-    if (otherEmission > 0 || otherVols > 0) {
-      filteredDestinations.push({
-        destination: `Autres (${otherCount} destinations)`,
-        emission: otherEmission,
-        vols: otherVols
+      // style léger
+      [btnEmi, btnVols].forEach(b => {
+        b.style.padding = "6px 10px";
+        b.style.border = "1px solid #cbd5e1";
+        b.style.borderRadius = "6px";
+        b.style.background = "#f8fafc";
+        b.style.cursor = "pointer";
       });
-    }
 
-    // Jeux de données pour le chart
-    const labels = filteredDestinations.map(d => d.destination);
-    const valuesEmissions = filteredDestinations.map(d => Math.round(d.emission * 10) / 10);
-    const valuesVols = filteredDestinations.map(d => d.vols);
+      // insertion
+      controls.appendChild(strong);
+      controls.appendChild(btnEmi);
+      controls.appendChild(btnVols);
+      canvas.parentElement.insertBefore(controls, canvas);
 
-    // Chart mixte : barres (émissions) + ligne (vols) avec axe secondaire
-    new Chart(document.getElementById("chartDestination"), {
-      type: "bar",
-      data: {
-        labels,
-        datasets: [
-          {
-            type: "bar",
-            label: displayName("emissions"), // "Emissions GES (t éq CO2)"
-            data: valuesEmissions,
-            yAxisID: "y",
-            backgroundColor: "rgba(31, 60, 136, 0.25)",
-            borderColor: "#1f3c88",
-            borderWidth: 1
-          },
-          {
-            type: "line",
-            label: displayName("vols"),
-            data: valuesVols,
-            yAxisID: "y1",
-            borderColor: "#d62728",
-            backgroundColor: "rgba(214, 39, 40, 0.15)",
-            borderWidth: 2,
-            pointRadius: 2,
-            tension: 0.2,
-            fill: false
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { display: true },
-          tooltip: {
-            callbacks: {
-              // Affichage contextuel en fonction du dataset
-              label: function (context) {
-                const dsLabel = context.dataset.label || "";
-                const value = context.parsed.y;
+      // on stocke sur le canvas pour réutiliser plus bas
+      canvas._sortBtns = { btnEmi, btnVols };
+    })();
 
-                if (context.dataset.yAxisID === "y") {
-                  // Emissions (barres)
-                  const percent = totalEmissions > 0 ? ((value / totalEmissions) * 100).toFixed(1) : 0;
-                  return `${dsLabel} : ${value.toLocaleString('fr-FR')} t éq CO₂ (${percent} %)`;
-                } else {
-                  // Vols (ligne)
-                  return `${dsLabel} : ${value.toLocaleString('fr-FR')} vols`;
+    // --- État du tri + instance chart ---
+    let sortKey = "emission"; // "emission" ou "vols"
+    let chartDest = null;
+
+    function buildDestinationChart() {
+      // 1) Transformer en array + trier selon sortKey
+      const destinationArray = Object.keys(destinationMap).map(dest => ({
+        destination: dest,
+        emission: destinationMap[dest].emission,
+        vols: destinationMap[dest].vols
+      }));
+      destinationArray.sort((a, b) => b[sortKey] - a[sortKey]);
+
+      // 2) Limiter : Top 50 OU 90% cumul d'émissions
+      const filteredDestinations = [];
+      let cumulative = 0;
+      let otherEmission = 0;
+      let otherVols = 0;
+      let otherCount = 0;
+
+      destinationArray.forEach(item => {
+        if (filteredDestinations.length < 50 && (totalEmissions === 0 ? 0 : (cumulative / totalEmissions)) < 0.90) {
+          filteredDestinations.push(item);
+          cumulative += item.emission;
+        } else {
+          otherEmission += item.emission;
+          otherVols += item.vols;
+          otherCount++;
+        }
+      });
+
+      if (otherEmission > 0 || otherVols > 0) {
+        filteredDestinations.push({
+          destination: `Autres (${otherCount} destinations)`,
+          emission: otherEmission,
+          vols: otherVols
+        });
+      }
+
+      // 3) Données pour le chart
+      const labels = filteredDestinations.map(d => d.destination);
+      const valuesEmissions = filteredDestinations.map(d => Math.round(d.emission * 10) / 10);
+      const valuesVols = filteredDestinations.map(d => d.vols);
+
+      // 4) (Re)création du chart
+      const ctx = document.getElementById("chartDestination");
+      if (chartDest) chartDest.destroy();
+
+      chartDest = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels,
+          datasets: [
+            {
+              type: "bar",
+              label: displayName("emissions"), // "Emissions GES (t éq CO2)"
+              data: valuesEmissions,
+              yAxisID: "y",
+              backgroundColor: "rgba(31, 60, 136, 0.25)",
+              borderColor: "#1f3c88",
+              borderWidth: 1,
+              maxBarThickness: 28
+            },
+            {
+              type: "line",
+              label: "Nombre de vols (YTD)",
+              data: valuesVols,
+              yAxisID: "y1",
+              borderColor: "#d62728",
+              backgroundColor: "rgba(214, 39, 40, 0.15)",
+              borderWidth: 2,
+              pointRadius: 2,
+              tension: 0.2,
+              fill: false
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: true },
+            tooltip: {
+              callbacks: {
+                label: function (context) {
+                  const val = context.parsed.y;
+                  if (context.dataset.yAxisID === "y") {
+                    const percent = totalEmissions > 0 ? ((val / totalEmissions) * 100).toFixed(1) : 0;
+                    return `${context.dataset.label} : ${val.toLocaleString('fr-FR')} t éq CO₂ (${percent} %)`;
+                  } else {
+                    return `${context.dataset.label} : ${val.toLocaleString('fr-FR')} vols`;
+                  }
                 }
               }
             }
-          }
-        },
-        scales: {
-          x: {
-            ticks: { maxRotation: 90, minRotation: 45 }
           },
-          y: {
-            beginAtZero: true,
-            title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" }
-          },
-          y1: {
-            beginAtZero: true,
-            position: "right",
-            grid: { drawOnChartArea: false }, // rend les grilles distinctes
-            title: { display: true, text: "Nombre de vols (cumul depuis le 1er janvier)" }
+          scales: {
+            x: { ticks: { maxRotation: 90, minRotation: 45 } },
+            y: {
+              beginAtZero: true,
+              title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" }
+            },
+            y1: {
+              beginAtZero: true,
+              position: "right",
+              grid: { drawOnChartArea: false },
+              title: { display: true, text: "Nombre de vols (cumul depuis le 1er janvier)" },
+              ticks: {
+                stepSize: 1,
+                callback: (v) => Number.isInteger(v) ? v : ""
+              }
+            }
           }
         }
-      }
-    });
+      });
+    }
 
+    // --- Brancher les boutons et déclencher le premier rendu ---
+    const btns = document.getElementById("chartDestination")._sortBtns || {};
+    btns.btnEmi?.addEventListener("click", () => { sortKey = "emission"; buildDestinationChart(); });
+    btns.btnVols?.addEventListener("click", () => { sortKey = "vols"; buildDestinationChart(); });
+
+    buildDestinationChart(); // rendu initial (par émissions)
   }); // arrivals
 });   // departures
 
