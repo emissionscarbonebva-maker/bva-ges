@@ -36,25 +36,67 @@ background:#f5f6fa;
 /* SIDEBAR */
 
 .sidebar{
-width:260px;
+width:240px;
 background:#162d63;
 color:white;
 height:100vh;
 position:sticky;
 top:0;
-padding:20px;
+padding:20px 10px;
 box-sizing:border-box;
-overflow-y:auto;
+transition:width 0.3s;
+overflow:hidden;
 }
+
+/* Mode réduit */
+
+.sidebar.collapsed{
+width:70px;
+}
+
+/* Logo */
 
 .logo{
 text-align:center;
-margin-bottom:25px;
+margin-bottom:20px;
 }
 
 .logo img{
-max-width:120px;
-height:auto;
+max-width:140px;
+transition:opacity 0.3s;
+}
+
+/* bouton */
+
+.toggle-btn{
+background:none;
+border:none;
+color:white;
+font-size:20px;
+cursor:pointer;
+margin-bottom:20px;
+}
+
+/* menu */
+
+.menu a{
+display:flex;
+align-items:center;
+gap:10px;
+color:white;
+text-decoration:none;
+padding:10px;
+border-radius:6px;
+}
+
+.menu a:hover{
+background:#1f3c88;
+}
+
+.icon{
+font-size:18px;
+width:30px;
+text-align:center;
 }
 
 /* MENU */
@@ -488,40 +530,39 @@ opacity:0.9;
 
 <!-- SIDEBAR -->
 
-<div class="sidebar">
+<div class="sidebar" id="sidebar">
 
 <div class="logo">
-<img src="logo-bva.png">
+<img src="logo.png">
 </div>
 
-<div class="menu-section">
+<button id="toggleSidebar" class="toggle-btn">☰</button>
 
-<div class="menu-title">📊 Observatoire</div>
+<nav class="menu">
 
-<div class="menu-items">
+<a href="#intro">
+<span class="icon">🏠</span>
+<span class="text">Accueil</span>
+</a>
 
-<a href="#intro">Introduction</a>
-<a href="#graph">Graphique</a>
-<a href="#table">Données</a>
+<a href="#graph">
+<span class="icon">📊</span>
+<span class="text">Graphique</span>
+</a>
+
+<a href="#table">
+<span class="icon">📄</span>
+<span class="text">Données</span>
+</a>
+
+<a href="methodologie.html">
+<span class="icon">📘</span>
+<span class="text">Méthodologie</span>
+</a>
+
+</nav>
 
 </div>
-
-</div>
-
-<div class="menu-section">
-
-<div class="menu-title">📘 Documentation</div>
-
-<div class="menu-items">
-
-<a href="methodologie.html">Méthodologie</a>
-
-</div>
-
-</div>
-
-</div>
-
 
 <!-- MAIN -->
 
@@ -2135,6 +2176,17 @@ document.getElementById("update-date").innerHTML =
 
 });
 
+//menu retractable//
+  
+const sidebar = document.getElementById("sidebar");
+const toggle = document.getElementById("toggleSidebar");
+
+toggle.addEventListener("click", function(){
+
+sidebar.classList.toggle("collapsed");
+
+});
+  
 </script>
 
 </body>
