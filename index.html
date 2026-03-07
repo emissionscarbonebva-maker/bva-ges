@@ -44,9 +44,14 @@ position:sticky;
 top:0;
 padding:20px 10px;
 box-sizing:border-box;
-transition:width 0.3s;
+transition:width 0.25s;
 overflow:hidden;
 }
+
+ .sidebar{
+width:240px;
+flex-shrink:0;
+} 
 
 /* Mode réduit */
 
@@ -62,6 +67,16 @@ display:none;
 justify-content:center;
 }
 
+.toggle-btn i{
+transition:transform 0.3s ease;
+}
+
+/* rotation quand menu réduit */
+
+.sidebar.collapsed .toggle-btn i{
+transform:rotate(180deg);
+}
+  
 /* TOOLTIP SIDEBAR mode réduit */
 
 .sidebar.collapsed .menu a{
@@ -71,13 +86,19 @@ position:relative;
 .sidebar.collapsed .menu a:hover::after{
 content:attr(data-title);
 position:absolute;
-left:70px;
+left:80px;
 background:#162d63;
 color:white;
-padding:5px 10px;
+padding:6px 10px;
 border-radius:6px;
 white-space:nowrap;
 font-size:14px;
+z-index:9999;
+box-shadow:0 4px 12px rgba(0,0,0,0.2);
+}
+
+.sidebar{
+z-index:1000;
 }
   
 /* Logo */
@@ -165,8 +186,9 @@ opacity:0.8;
 /* MAIN */
 
 .main{
-flex:1;
+flex:1 1 auto;
 padding:40px;
+min-width:0;
 }
 
 /* HEADER */
@@ -568,7 +590,9 @@ opacity:0.9;
 <img src="logo-bva.png">
 </div>
 
-<button id="toggleSidebar" class="toggle-btn">☰</button>
+<button id="toggleSidebar" class="toggle-btn">
+<i class="fa-solid fa-angle-left"></i>
+</button>
 
 <nav class="menu">
 
@@ -2191,9 +2215,22 @@ document.getElementById("update-date").innerHTML =
 const sidebar = document.getElementById("sidebar");
 const toggle = document.getElementById("toggleSidebar");
 
+/* restauration état */
+
+if(localStorage.getItem("sidebarCollapsed") === "true"){
+sidebar.classList.add("collapsed");
+}
+
+/* clic bouton */
+
 toggle.addEventListener("click", function(){
 
 sidebar.classList.toggle("collapsed");
+
+localStorage.setItem(
+"sidebarCollapsed",
+sidebar.classList.contains("collapsed")
+);
 
 });
   
