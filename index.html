@@ -97,6 +97,15 @@ z-index:9999;
 box-shadow:0 4px 12px rgba(0,0,0,0.2);
 }
 
+.sidebar.collapsed .menu a::after{
+opacity:0;
+transition:opacity 0.15s ease;
+}
+
+.sidebar.collapsed .menu a:hover::after{
+opacity:1;
+}
+ 
 .sidebar{
 z-index:1000;
 }
