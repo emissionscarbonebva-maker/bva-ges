@@ -22,21 +22,56 @@ margin:0;
 color:#222;
 }
 
+
+/* ===== SIDEBAR ===== */
+
+.sidebar{
+position:fixed;
+left:0;
+top:0;
+width:230px;
+height:100vh;
+background:#162d63;
+color:white;
+padding:25px 20px;
+box-sizing:border-box;
+}
+
+.sidebar h2{
+font-size:18px;
+margin-top:0;
+margin-bottom:25px;
+}
+
+.sidebar a{
+display:block;
+color:white;
+text-decoration:none;
+padding:10px 0;
+border-bottom:1px solid rgba(255,255,255,0.15);
+}
+
+.sidebar a:hover{
+opacity:0.8;
+}
+
+/* ===== PAGE ===== */
+
+.main{
+margin-left:230px;
+}
+
 header{
 background:#1f3c88;
 color:white;
 padding:25px;
 }
 
-/* ===== CONTAINER ===== */
-
 .container{
 width:92%;
 max-width:1500px;
 margin:40px auto;
 }
-
-/* ===== CARDS ===== */
 
 .card{
 background:white;
@@ -50,10 +85,10 @@ border-left:6px solid #1f3c88;
 .card h2{
 margin-top:0;
 color:#1f3c88;
-font-size:1.6em;
 border-bottom:2px solid #e6e9ef;
 padding-bottom:6px;
 }
+
 
 .card ul{
 padding-left:20px;
