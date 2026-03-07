@@ -22,6 +22,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3</script>"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
@@ -1065,8 +1066,13 @@ document.addEventListener("DOMContentLoaded", function(){
             zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' }
           }
         },
-        scales:{
-          x:{ title:{ display:true, text:"Date" } },
+        
+scales: {
+  x: {
+    type: 'time',
+    time: { unit: 'day' }, // ou 'week'/'month' selon
+    title: { display: true, text: "Date" }
+  },
           y:{ beginAtZero:true, title:{ display:true, text:"Emissions de gaz à effet de serre (en t éq CO2)" } }
         }
       }
@@ -1165,8 +1171,14 @@ document.addEventListener("DOMContentLoaded", function(){
             zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' }
           }
         },
-        scales:{
-          x:{ stacked:true, title:{ display:true, text:"Date" } },
+        
+scales: {
+  x: {
+    type: 'time',
+    time: { unit: 'day' }, // ou 'week'/'month' selon
+    title: { display: true, text: "Date" }
+  },
+
           y:{ stacked:true, beginAtZero:true, title:{ display:true, text:"Emissions de gaz à effet de serre (en t éq CO2)" } }
         }
       }
@@ -1228,8 +1240,14 @@ document.addEventListener("DOMContentLoaded", function(){
             zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' }
           }
         },
-        scales:{
-          x:{ title:{ display:true, text:"Date" } },
+       
+scales: {
+  x: {
+    type: 'time',
+    time: { unit: 'day' }, // ou 'week'/'month' selon
+    title: { display: true, text: "Date" }
+  },
+
           y:{ beginAtZero:true, title:{ display:true, text:"Emissions de gaz à effet de serre (en t éq CO2)" } }
         }
       }
@@ -1291,8 +1309,14 @@ document.addEventListener("DOMContentLoaded", function(){
             zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' }
           }
         },
-        scales:{
-          x:{ title:{ display:true, text:"Date" } },
+        
+scales: {
+  x: {
+    type: 'time',
+    time: { unit: 'day' }, // ou 'week'/'month' selon
+    title: { display: true, text: "Date" }
+  },
+
           y:{ beginAtZero:true, title:{ display:true, text:"Nombre de rotations" } }
         }
       }
@@ -1339,8 +1363,14 @@ document.addEventListener("DOMContentLoaded", function(){
           legend:{ position:'top' },
           zoom:{ pan:{enabled:true,mode:'x'}, zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' } }
         },
-        scales:{
-          x:{ title:{ display:true, text:"Date" } },
+        
+scales: {
+  x: {
+    type: 'time',
+    time: { unit: 'day' }, // ou 'week'/'month' selon
+    title: { display: true, text: "Date" }
+  },
+
           y:{ beginAtZero:true, title:{ display:true, text:"Tonnes équivalent CO₂" } }
         }
       }
@@ -1526,6 +1556,44 @@ document.addEventListener("DOMContentLoaded", function(){
 
     container.innerHTML = html;
 
+
+/ === Export CSV du tableau (après container.innerHTML = html) ===
+const exportBtn = document.getElementById(containerId + "-export");
+if (exportBtn) {
+  exportBtn.addEventListener("click", function () {
+    // On exporte les données actuellement filtrées (visible dans la table)
+    const rows = [];
+    // En-têtes mappés
+    rows.push(headers.map(h => displayName(h)).join(";"));
+
+    // Données filtrées paginées ou complètes ? -> ici : complètes (filtrées)
+    const dataToExport = filteredData.length ? filteredData : data;
+
+    dataToExport.forEach(rowObj => {
+      const row = headers.map(h => {
+        let val = (rowObj[h] ?? "").toString();
+
+        // Remplacer les points-virgules dans les valeurs pour ne pas casser le CSV
+        val = val.replace(/;/g, ",");
+        return val;
+      });
+      rows.push(row.join(";"));
+    });
+
+    // Ajout BOM pour Excel + téléchargement
+    const csvContent = "\uFEFF" + rows.join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    const fileBase =
+      containerId === "tableDepartures" ? "vols_depart" :
+      containerId === "tableArrivals"  ? "vols_arrivee" : containerId;
+    a.download = fileBase + "_export.csv";
+    a.click();
+  });
+}
+   
     const tbody = container.querySelector("tbody");
     const totalRow = tbody.querySelector(".total-row");
 
