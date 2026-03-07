@@ -11,67 +11,154 @@
 <meta name="description" content="Méthodologie de calcul des émissions de gaz à effet de serre associées à l'activité de l'aéroport de Paris-Beauvais.">
 <meta name="robots" content="index, follow">
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 <style>
 
 /* ===== GLOBAL ===== */
 
 body{
-font-family:'Segoe UI',sans-serif;
-background:#f4f6f8;
 margin:0;
-color:#222;
+font-family:Arial, sans-serif;
+display:flex;
+background:#f5f6fa;
 }
-
 
 /* ===== SIDEBAR ===== */
 
 .sidebar{
-position:fixed;
-left:0;
-top:0;
-width:230px;
-height:100vh;
+width:240px;
 background:#162d63;
 color:white;
-padding:25px 20px;
+height:100vh;
+position:sticky;
+top:0;
+padding:20px 10px;
 box-sizing:border-box;
+transition:width 0.25s;
+overflow:hidden;
+flex-shrink:0;
+z-index:1000;
 }
 
-.sidebar h2{
-font-size:18px;
-margin-top:0;
-margin-bottom:25px;
+.sidebar.collapsed{
+width:100px;
 }
 
-.sidebar a{
-display:block;
+.sidebar.collapsed .text{
+display:none;
+}
+
+.sidebar.collapsed .menu a{
+justify-content:center;
+}
+
+.toggle-btn i{
+transition:transform 0.3s ease;
+}
+
+.sidebar.collapsed .toggle-btn i{
+transform:rotate(180deg);
+}
+
+/* TOOLTIP */
+
+.sidebar.collapsed .menu a{
+position:relative;
+}
+
+.sidebar.collapsed .menu a:hover::after{
+content:attr(data-title);
+position:absolute;
+left:80px;
+background:#162d63;
+color:white;
+padding:6px 10px;
+border-radius:6px;
+white-space:nowrap;
+font-size:14px;
+z-index:9999;
+box-shadow:0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* LOGO */
+
+.logo{
+text-align:center;
+margin-bottom:20px;
+}
+
+.logo img{
+max-width:140px;
+transition:all 0.3s;
+}
+
+.sidebar.collapsed .logo img{
+max-width:50px;
+}
+
+/* TOGGLE BUTTON */
+
+.toggle-btn{
+background:none;
+border:none;
+color:white;
+font-size:20px;
+cursor:pointer;
+margin-bottom:20px;
+}
+
+/* MENU */
+
+.menu a{
+display:flex;
+align-items:center;
+gap:10px;
 color:white;
 text-decoration:none;
-padding:10px 0;
-border-bottom:1px solid rgba(255,255,255,0.15);
+padding:10px;
+border-radius:6px;
 }
 
-.sidebar a:hover{
-opacity:0.8;
+.menu a:hover{
+background:#1f3c88;
 }
 
-/* ===== PAGE ===== */
+.icon{
+font-size:18px;
+width:30px;
+text-align:center;
+}
+
+/* ===== MAIN ===== */
 
 .main{
-margin-left:230px;
+flex:1 1 auto;
+padding:40px;
+min-width:0;
 }
+
+/* ===== HEADER ===== */
 
 header{
 background:#1f3c88;
 color:white;
 padding:25px;
+margin-bottom:30px;
 }
 
-.container{
-width:92%;
-max-width:1500px;
-margin:40px auto;
+header h1{
+margin:0;
 }
+
+/* ===== CONTAINER ===== */
+
+.container{
+max-width:1200px;
+margin:auto;
+}
+
+/* ===== CARDS ===== */
 
 .card{
 background:white;
@@ -89,20 +176,19 @@ border-bottom:2px solid #e6e9ef;
 padding-bottom:6px;
 }
 
+.card p{
+line-height:1.6;
+}
 
 .card ul{
 padding-left:20px;
 }
 
-.card p{
-line-height:1.6;
-}
-
 .card li{
 margin-bottom:6px;
 }
-  
-/* ===== TABLES ===== */
+
+/* ===== TABLE ===== */
 
 .table-wrapper{
 max-height:600px;
@@ -148,30 +234,41 @@ color:#666;
 
 <body>
 
-<div class="sidebar">
+<!-- SIDEBAR -->
 
-<h2>Observatoire BVA</h2>
+<div class="sidebar" id="sidebar">
 
-<a href="index.html">📊 Tableau de bord</a>
+<div class="logo">
+<img src="logo-bva.png">
+</div>
 
-<a href="methodologie.html">📘 Méthodologie</a>
+<button id="toggleSidebar" class="toggle-btn">
+<i class="fa-solid fa-angle-left"></i>
+</button>
+
+<nav class="menu">
+
+<a href="index.html" data-title="Accueil">
+<span class="icon">🏠</span>
+<span class="text">Accueil</span>
+</a>
+
+<a href="methodologie.html" data-title="Méthodologie">
+<span class="icon">📘</span>
+<span class="text">Méthodologie</span>
+</a>
+
+</nav>
 
 </div>
+
+<!-- MAIN -->
 
 <div class="main">
 
-<header style="display:flex; align-items:center; gap:20px;">
+<header>
 
-<img src="logo-bva.png" style="height:100px;">
-
-<div>
-<h1 style="margin:0;">
-Emissions de gaz à effet de serre de l'aéroport de Paris-Beauvais (BVA) pour l'année 2026
-</h1>
-<p style="margin:5px 0 0 0;">
-Méthodologie
-</p>
-</div>
+<h1>Méthodologie de calcul des émissions de gaz à effet de serre</h1>
 
 </header>
 
@@ -459,9 +556,42 @@ du nombre d’employés et de la distance moyenne parcourue.
 Les méthodes et fichiers de calcul sont rendus publics afin de permettre
 la vérification et la reproduction indépendante des résultats.
 </p>
+
 </div>
 
 </div>
+
+<footer>
+Observatoire citoyen indépendant – Analyse des émissions de GES liées à l’activité de l’aéroport Paris-Beauvais |
+Contact : <a href="mailto:emissionscarbonebva@gmail.com">emissionscarbonebva@gmail.com</a> |
+Hébergement : GitHub Pages
+</footer>
+
+</div>
+
+<script>
+
+/* MENU RETRACTABLE */
+
+const sidebar = document.getElementById("sidebar");
+const toggle = document.getElementById("toggleSidebar");
+
+if(localStorage.getItem("sidebarCollapsed") === "true"){
+sidebar.classList.add("collapsed");
+}
+
+toggle.addEventListener("click", function(){
+
+sidebar.classList.toggle("collapsed");
+
+localStorage.setItem(
+"sidebarCollapsed",
+sidebar.classList.contains("collapsed")
+);
+
+});
+
+</script>
 
 </body>
 </html>
