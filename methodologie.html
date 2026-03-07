@@ -124,12 +124,18 @@ border-radius:6px;
 background:#1f3c88;
 }
 
+.menu a.active{
+background:#2e55c7;
+box-shadow:inset 4px 0 0 #ffffff;
+font-weight:600;
+}
+  
 .icon{
 font-size:18px;
 width:30px;
 text-align:center;
 }
-
+  
 /* ===== MAIN ===== */
 
 .main{
@@ -591,6 +597,24 @@ sidebar.classList.contains("collapsed")
 
 });
 
+/* MENU ACTIF AUTOMATIQUE */
+
+let currentPage = window.location.pathname.split("/").pop();
+
+if(currentPage === ""){
+currentPage = "index.html";
+}
+
+document.querySelectorAll(".menu a").forEach(link => {
+
+const linkPage = link.getAttribute("href");
+
+if(linkPage === currentPage){
+link.classList.add("active");
+}
+
+});
+  
 </script>
 
 </body>
