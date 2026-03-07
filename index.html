@@ -51,9 +51,35 @@ overflow:hidden;
 /* Mode réduit */
 
 .sidebar.collapsed{
-width:70px;
+width:100px;
 }
 
+.sidebar.collapsed .text{
+display:none;
+}
+
+.sidebar.collapsed .menu a{
+justify-content:center;
+}
+
+/* TOOLTIP SIDEBAR mode réduit */
+
+.sidebar.collapsed .menu a{
+position:relative;
+}
+
+.sidebar.collapsed .menu a:hover::after{
+content:attr(data-title);
+position:absolute;
+left:70px;
+background:#162d63;
+color:white;
+padding:5px 10px;
+border-radius:6px;
+white-space:nowrap;
+font-size:14px;
+}
+  
 /* Logo */
 
 .logo{
@@ -63,7 +89,13 @@ margin-bottom:20px;
 
 .logo img{
 max-width:140px;
-transition:opacity 0.3s;
+transition:all 0.3s;
+}
+
+/* logo réduit */
+
+.sidebar.collapsed .logo img{
+max-width:50px;
 }
 
 /* bouton */
@@ -540,22 +572,22 @@ opacity:0.9;
 
 <nav class="menu">
 
-<a href="#intro">
+<a href="#intro" data-title="Accueil">
 <span class="icon">🏠</span>
 <span class="text">Accueil</span>
 </a>
 
-<a href="#graph">
+<a href="#graph" data-title="Graphique">
 <span class="icon">📊</span>
 <span class="text">Graphique</span>
 </a>
 
-<a href="#table">
+<a href="#table" data-title="Données">
 <span class="icon">📄</span>
 <span class="text">Données</span>
 </a>
 
-<a href="methodologie.html">
+<a href="methodologie.html" data-title="Méthodologie">
 <span class="icon">📘</span>
 <span class="text">Méthodologie</span>
 </a>
@@ -808,28 +840,6 @@ Hébergement : GitHub Pages (GitHub Inc.)
 </footer>
 
 <script>
-
-/* MENU COLLAPSIBLE */
-
-document.addEventListener("DOMContentLoaded", function(){
-
-document.querySelectorAll(".menu-title").forEach(function(title){
-
-title.addEventListener("click", function(){
-
-var items = title.nextElementSibling;
-
-if(items.style.display === "block"){
-items.style.display = "none";
-}else{
-items.style.display = "block";
-}
-
-});
-
-});
-
-});
 
 /* GRAPH */
 
