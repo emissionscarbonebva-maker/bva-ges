@@ -1381,11 +1381,11 @@ let chartCumulInstance = null;
 
 function buildChartCumul(period) {
   // headers déjà nettoyés ; dateKey = headers[0]
-  const dateKey = headers[0];
+  const dateKey  = headers[0];
   const totalKey = headers.find(h => h === "cumul_total");
   const scopeCols = headers.filter(h => h !== dateKey && h !== totalKey);
 
-  // 1) indexer par période -> dernière ligne de la période
+  // 1) indexer par période -> dernière ligne de la période (cumul à fin de période)
   const periodLastRow = {}; // { pkey -> row }
   data.forEach(row => {
     const pkey = makePeriodKey(row[dateKey], period);
@@ -1395,60 +1395,85 @@ function buildChartCumul(period) {
     }
   });
 
+  // 2) labels triés + type selon période
   const labels = sortPeriodKeys(Object.keys(periodLastRow), period);
-  const colors = ["#9467bd","#d62728","#2ca02c","#ff7f0e","#1f77b4"];
-  const datasets = scopeCols.map((col, i) => ({
-    label: displayName(col),
-    data: labels.map(pk => {
-      const raw = periodLastRow[pk][col];
-      let v = raw ? parseFloat(String(raw).replace(',','.').trim()) : 0;
-      return isNaN(v) ? 0 : v;
-    }),
-    borderWidth: 1.5,
-    fill: true,
-    backgroundColor: colors[i % colors.length] + "55",
-    borderColor: colors[i % colors.length],
-    stack: "stack1"
-  }));
+  const isDay  = (period === "day");
 
-  
-const isDay = (period === "day");
+  // 3) Mapping de couleurs identique au daily
+  const colorMap = {
+    "scope_1_2":        "#9467bd", // Emissions directes aéroport (Scope 1&2)
+    "scope_employes":   "#d62728", // Accès employés
+    "scope_acces_coll": "#2ca02c", // Accès collectifs passagers
+    "scope_acces_ind":  "#ff7f0e", // Accès individuels passagers
+    "scope_vols":       "#1f77b4"  // Opérations aéronefs (Scope 3)
+  };
 
-if (chartCumulInstance) chartCumulInstance.destroy();
-chartCumulInstance = new Chart(document.getElementById("chartCumul"), {
-  type: isDay ? 'line' : 'bar',
-  data: { labels, datasets },
-  options: {
-    responsive: true,
-    interaction: { mode:'index', intersect:false },
-    plugins: {
-      legend: { position:'top' },
-      tooltip: {
-        callbacks: {
-          label: function(ctx){
-            const value = ctx.parsed.y || 0;
-            let total = 0;
-            ctx.chart.data.datasets.forEach(ds => { total += ds.data[ctx.dataIndex] || 0; });
-            const percent = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-            return `${ctx.dataset.label} : ${Math.round(value).toLocaleString('fr-FR')} t éq CO₂ (${percent}%)`;
+  // 4) Ordre imposé dans toutes les vues
+  const desiredOrder = [
+    "scope_1_2",
+    "scope_employes",
+    "scope_acces_coll",
+    "scope_acces_ind",
+    "scope_vols"
+  ];
+  const orderedCols = desiredOrder
+    .filter(k => scopeCols.includes(k))
+    .concat(scopeCols.filter(k => !desiredOrder.includes(k))); // au cas où une clé "surprise" apparaît
+
+  // 5) Datasets dans l’ordre voulu
+  const datasets = orderedCols.map(col => {
+    const c = colorMap[col] || "#888888";
+    return {
+      label: displayName(col),
+      data: labels.map(pk => {
+        const raw = periodLastRow[pk][col];
+        let v = raw ? parseFloat(String(raw).replace(',', '.').trim()) : 0;
+        return isNaN(v) ? 0 : v;
+      }),
+      borderWidth: 1.5,
+      fill: true,
+      backgroundColor: c + (isDay ? "33" : "55"), // un peu plus transparent en "jour"
+      borderColor: c,
+      stack: "stack1"
+    };
+  });
+
+  // 6) (Re)création du chart
+  if (chartCumulInstance) chartCumulInstance.destroy();
+  chartCumulInstance = new Chart(document.getElementById("chartCumul"), {
+    type: isDay ? 'line' : 'bar',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      interaction: { mode:'index', intersect:false },
+      plugins: {
+        legend: { position:'top' },
+        tooltip: {
+          callbacks: {
+            label: function(ctx){
+              const value = ctx.parsed.y || 0;
+              let total = 0;
+              ctx.chart.data.datasets.forEach(ds => { total += ds.data[ctx.dataIndex] || 0; });
+              const percent = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+              return `${ctx.dataset.label} : ${Math.round(value).toLocaleString('fr-FR')} t éq CO₂ (${percent}%)`;
+            }
           }
+        },
+        zoom: { pan:{enabled:true, mode:'x'}, zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' } }
+      },
+      scales: {
+        x: { 
+          title: { display: true, text: (isDay ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")) },
+          stacked: !isDay          // empilé pour barres (semaine/mois)
+        },
+        y: { 
+          beginAtZero: true, 
+          stacked: !isDay,         // empilé pour barres (semaine/mois)
+          title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" }
         }
-      },
-      zoom: { pan:{enabled:true, mode:'x'}, zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' } }
-    },
-    scales: {
-      x: { 
-        title: { display: true, text: (isDay ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")) },
-        stacked: !isDay          // empilé pour barres
-      },
-      y: { 
-        beginAtZero: true, 
-        stacked: !isDay,         // empilé pour barres
-        title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" }
       }
     }
-  }
-});
+  });
 }
 
 const initCumulPeriod = ensurePeriodControls("chartCumul", buildChartCumul);
