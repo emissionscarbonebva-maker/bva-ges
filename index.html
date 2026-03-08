@@ -1,4 +1,4 @@
-OK, je dois avoir louper une parenthese ou acolade, tu peux vérifier<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
@@ -1201,13 +1201,14 @@ function ensurePeriodControls(canvasId, onChange) {
     });
 
     // ====== Contrôles & reconstruction ======
+
 let chartDailyInstance = null;
 
 function buildChartDaily(period) {
-  const dateKey  = headers[0];
-  const scopeKeys = headers.slice(1, 6); // 5 scopes
+  const dateKey   = headers[0];
+  const scopeKeys = headers.slice(1, 6); // on attend 5 scopes
 
-  // Agrégation par période
+  // --- Agrégation par période (day / week / month) ---
   const perScope = {};
   scopeKeys.forEach(k => perScope[k] = {});
   const periodsSet = new Set();
@@ -1224,30 +1225,61 @@ function buildChartDaily(period) {
   });
 
   const labels = sortPeriodKeys(Array.from(periodsSet), period);
-  const isDay = (period === "day");
+  const isDay  = (period === "day");
 
-  const colors = ["#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd"];
-  const datasets = scopeKeys.map((k, i) => ({
-    type: isDay ? "line" : "bar",
-    label: displayName(k),
-    data: labels.map(pk => perScope[k][pk] || 0),
-    borderColor: colors[i],
-    backgroundColor: isDay ? colors[i] + "33" : colors[i] + "AA",
-    borderWidth: 2,
-    fill: isDay,                 // aires empilées en JOUR
-    stack: isDay ? "stackS" : "stackS" // même pile (utile pour barres)
-  }));
+  // --- Couleurs par clé CSV (aligné sur tes teintes) ---
+  const colorMap = {
+    "scope_1_2":        "#9467bd", // Emissions directes aéroport (Scope 1&2)
+    "scope_employes":   "#d62728", // Accès employés
+    "scope_acces_coll": "#2ca02c", // Accès collectifs passagers
+    "scope_acces_ind":  "#ff7f0e", // Accès individuels passagers
+    "scope_vols":       "#1f77b4"  // Opérations aéronefs (Scope 3)
+  };
 
+  // --- Ordre imposé dans toutes les vues ---
+  const desiredOrder = [
+    "scope_1_2",
+    "scope_employes",
+    "scope_acces_coll",
+    "scope_acces_ind",
+    "scope_vols"
+  ];
+  // On garde l’ordre désiré pour les clés présentes,
+  // puis on ajoute d’éventuelles clés "surprises" à la fin.
+  const orderedKeys = desiredOrder
+    .filter(k => scopeKeys.includes(k))
+    .concat(scopeKeys.filter(k => !desiredOrder.includes(k)));
+
+  // --- Datasets ---
+  const datasets = orderedKeys.map(k => {
+    const c  = colorMap[k] || "#888888";
+    const bg = isDay ? (c + "33") : (c + "AA");  // alpha 20% (jour) / 67% (agrégé)
+    return {
+      type: isDay ? "line" : "bar",
+      label: displayName(k),
+      data: labels.map(pk => perScope[k][pk] || 0),
+      borderColor: c,
+      backgroundColor: bg,
+      borderWidth: 2,
+      fill: isDay,        // aires empilées en "jour"
+      stack: "stackS"     // même pile pour toutes les périodes
+    };
+  });
+
+  // --- (Re)création du chart ---
   if (chartDailyInstance) chartDailyInstance.destroy();
   chartDailyInstance = new Chart(document.getElementById("chartDaily"), {
     type: isDay ? "line" : "bar",
     data: { labels, datasets },
     options: {
       responsive: true,
-      interaction: { mode:'index', intersect:false },
+      interaction: { mode: 'index', intersect: false },
       plugins: {
         legend: { position: 'top' },
-        zoom: { pan: {enabled:true, mode:'x'}, zoom: {wheel:{enabled:true}, pinch:{enabled:true}, mode:'x'} },
+        zoom: {
+          pan:  { enabled: true, mode: 'x' },
+          zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }
+        },
         tooltip: {
           callbacks: {
             label: (ctx) => {
@@ -1258,19 +1290,23 @@ function buildChartDaily(period) {
         }
       },
       scales: {
-        x: { 
-          title: { display: true, text: (isDay ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")) },
-          stacked: !isDay         // empilage horizontal pour barres
+        x: {
+          title: {
+            display: true,
+            text: isDay ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")
+          },
+          stacked: !isDay  // barres empilées en semaine/mois
         },
-        y: { 
+        y: {
           beginAtZero: true,
-          stacked: true,          // empilage vertical (jour ET barres)
+          stacked: true,   // empilage vertical (aires jour & barres agrégées)
           title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" }
         }
       }
     }
   });
 }
+
 
 
 // Installer les boutons et premier rendu
