@@ -1442,19 +1442,20 @@ buildChartCumul(initCumulPeriod);
     });
 
     
+
 let chartTotalCumulInstance = null;
 
 function buildChartTotalCumul(period) {
-  // on reconstruit first cumul quotidien (labelsDaily, cumulDaily)
+  // 1) Recalcule le cumul quotidien "perDay" (date -> cumul à fin de jour)
   const dateKey = headers[0];
-  const perDay = []; // { date, cumul }
-
+  const perDay = []; // [{ date, value }]
   let running = 0;
+
   data.forEach(row => {
     let dayTotal = 0;
     for (let i = 1; i <= 5; i++) {
       const raw = row[headers[i]];
-      let v = raw ? parseFloat(raw.replace(',','.')) : 0;
+      let v = raw ? parseFloat(String(raw).replace(',', '.')) : 0;
       if (isNaN(v)) v = 0;
       dayTotal += v;
     }
@@ -1462,13 +1463,55 @@ function buildChartTotalCumul(period) {
     perDay.push({ date: row[dateKey], value: running });
   });
 
-  // agrégation
-  
-if (period !== "day") {
-  // ... (labels, values déjà calculés)
+  // 2) Vue JOUR = courbe
+  if (period === "day") {
+    const labels = perDay.map(d => d.date);
+    const values = perDay.map(d => d.value);
+
+    if (chartTotalCumulInstance) chartTotalCumulInstance.destroy();
+    chartTotalCumulInstance = new Chart(document.getElementById("chartTotalCumul"), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          label: "Cumul total émissions",
+          data: values,
+          borderWidth: 3,
+          fill: true,
+          backgroundColor: "rgba(31,60,136,0.2)",
+          borderColor: "#1f3c88"
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'top' },
+          zoom: { pan: {enabled: true, mode: 'x'}, zoom: { wheel: {enabled: true}, pinch: {enabled: true}, mode: 'x' } }
+        },
+        scales: {
+          x: { title: { display: true, text: "Date" } },
+          y: { beginAtZero: true, title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" } }
+        }
+      }
+    });
+    return; // ⬅ important : on sort ici
+  }
+
+  // 3) Vue SEMAINE/MOIS = barres (échantillon à la fin de période)
+  const lastByPeriod = {}; // { pkey -> { date, value } (dernier jour de la période) }
+  perDay.forEach(d => {
+    const pkey = makePeriodKey(d.date, period);
+    if (!lastByPeriod[pkey] || new Date(d.date) > new Date(lastByPeriod[pkey].date)) {
+      lastByPeriod[pkey] = d;
+    }
+  });
+
+  const labels = sortPeriodKeys(Object.keys(lastByPeriod), period);
+  const values = labels.map(pk => lastByPeriod[pk].value);
+
   if (chartTotalCumulInstance) chartTotalCumulInstance.destroy();
   chartTotalCumulInstance = new Chart(document.getElementById("chartTotalCumul"), {
-    type: 'bar',  // <-- barres en période agrégée
+    type: 'bar', // barres en semaine/mois
     data: {
       labels,
       datasets: [{
@@ -1482,8 +1525,8 @@ if (period !== "day") {
     options: {
       responsive: true,
       plugins: {
-        legend:{ position:'top' },
-        zoom:{ pan:{enabled:true,mode:'x'}, zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' } }
+        legend: { position: 'top' },
+        zoom: { pan: {enabled: true, mode: 'x'}, zoom: { wheel: {enabled: true}, pinch: {enabled: true}, mode: 'x' } }
       },
       scales: {
         x: { title: { display: true, text: (period === "week" ? "Semaine (ISO)" : "Mois") } },
@@ -1491,72 +1534,8 @@ if (period !== "day") {
       }
     }
   });
-
-} else {
-  // ------ Vue jour ------
-  // ... (labels/values déjà calculés)
-  if (chartTotalCumulInstance) chartTotalCumulInstance.destroy();
-  chartTotalCumulInstance = new Chart(document.getElementById("chartTotalCumul"),{
-    type:'line',
-    data:{
-      labels,
-      datasets:[{
-        label:"Cumul total émissions",
-        data:values,
-        borderWidth:3,
-        fill:true,
-        backgroundColor:"rgba(31,60,136,0.2)",
-        borderColor:"#1f3c88"
-      }]
-    },
-    options:{
-      responsive:true,
-      plugins:{
-        legend:{ position:'top' },
-        zoom:{ pan:{enabled:true,mode:'x'}, zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' } }
-      },
-      scales: {
-        x: { title: { display: true, text: "Date" } },
-        y: { beginAtZero: true, title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" } }
-      }
-    }
-  });
 }
 
-
-  } else {
-    // vue Jour (comme avant)
-    const labels = perDay.map(d => d.date);
-    const values = perDay.map(d => d.value);
-
-    if (chartTotalCumulInstance) chartTotalCumulInstance.destroy();
-    chartTotalCumulInstance = new Chart(document.getElementById("chartTotalCumul"),{
-      type:'line',
-      data:{
-        labels,
-        datasets:[{
-          label:"Cumul total émissions",
-          data:values,
-          borderWidth:3,
-          fill:true,
-          backgroundColor:"rgba(31,60,136,0.2)",
-          borderColor:"#1f3c88"
-        }]
-      },
-      options:{
-        responsive:true,
-        plugins:{
-          legend:{ position:'top' },
-          zoom:{ pan:{enabled:true,mode:'x'}, zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' } }
-        },
-        scales: {
-          x: { title: { display: true, text: "Date" } },
-          y: { beginAtZero: true, title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO2)" } }
-        }
-      }
-    });
-  }
-}
 
 const initTotalCumulPeriod = ensurePeriodControls("chartTotalCumul", buildChartTotalCumul);
 buildChartTotalCumul(initTotalCumulPeriod);
