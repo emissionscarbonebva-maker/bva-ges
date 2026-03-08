@@ -1010,6 +1010,111 @@ document.addEventListener("DOMContentLoaded", function(){
       });
   }
 
+/* ========= Utils Périodes & Contrôles ========= */
+
+// 0.1 – Génère une clé de période
+function makePeriodKey(dateStr, period) {
+  const d = new Date(dateStr);
+  if (isNaN(d)) return dateStr;
+  if (period === "day") return dateStr;
+  if (period === "week") {
+    const y = dateFns.getISOWeekYear(d);
+    const w = String(dateFns.getISOWeek(d)).padStart(2, "0");
+    return `${y}-S${w}`;
+  }
+  if (period === "month") {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    return `${y}-${m}`;
+  }
+  return dateStr;
+}
+
+// 0.2 – Tri des clés de période
+function sortPeriodKeys(keys, period) {
+  if (period === "day" || period === "month") {
+    // "YYYY-MM-DD" ou "YYYY-MM" triés lexicographiquement
+    return keys.sort((a,b) => a.localeCompare(b));
+  }
+  if (period === "week") {
+    // "YYYY-SWW" → trier par année puis semaine
+    return keys.sort((a,b) => {
+      const [ay, aw] = a.split("-S");
+      const [by, bw] = b.split("-S");
+      if (ay !== by) return Number(ay) - Number(by);
+      return Number(aw) - Number(bw);
+    });
+  }
+  return keys;
+}
+
+// 0.3 – Création des 3 boutons au-dessus d’un canvas
+function ensurePeriodControls(canvasId, onChange) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+
+  // éviter les doublons
+  if (canvas._periodControls) return canvas._periodControls.value;
+
+  const holder = document.createElement("div");
+  holder.className = "period-controls";
+  holder.style.display = "flex";
+  holder.style.alignItems = "center";
+  holder.style.gap = "8px";
+  holder.style.margin = "8px 0 4px 0";
+
+  const strong = document.createElement("strong");
+  strong.textContent = "Vue :";
+
+  const mkBtn = (label, value) => {
+    const b = document.createElement("button");
+    b.textContent = label;
+    b.dataset.value = value;
+    b.className = "btn-period";
+    Object.assign(b.style, {
+      padding: "6px 10px",
+      border: "1px solid #cbd5e1",
+      borderRadius: "6px",
+      background: "#f8fafc",
+      cursor: "pointer"
+    });
+    b.addEventListener("click", () => {
+      setActive(value);
+      localStorage.setItem(`agg_${canvasId}`, value);
+      onChange?.(value);
+    });
+    return b;
+  };
+
+  const btnDay = mkBtn("Par jour", "day");
+  const btnWeek = mkBtn("Par semaine", "week");
+  const btnMonth = mkBtn("Par mois", "month");
+
+  holder.appendChild(strong);
+  holder.appendChild(btnDay);
+  holder.appendChild(btnWeek);
+  holder.appendChild(btnMonth);
+
+  // Insérer avant le canvas
+  canvas.parentElement.insertBefore(holder, canvas);
+
+  function setActive(val) {
+    [btnDay, btnWeek, btnMonth].forEach(b => {
+      b.style.background = (b.dataset.value === val) ? "#e2e8f0" : "#f8fafc";
+      b.style.borderColor = (b.dataset.value === val) ? "#94a3b8" : "#cbd5e1";
+      b.style.fontWeight = (b.dataset.value === val) ? "600" : "500";
+    });
+    canvas._periodControls.value = val;
+  }
+
+  // État initial
+  canvas._periodControls = { setActive, value: "day" };
+  const saved = localStorage.getItem(`agg_${canvasId}`) || "day";
+  setActive(saved);
+
+  return saved;
+}
+ 
   function createChart(canvasId, labels, datasets){
     new Chart(document.getElementById(canvasId), {
       type:'line',
@@ -1095,28 +1200,85 @@ document.addEventListener("DOMContentLoaded", function(){
       borderColor:"#000000"
     });
 
-    // Graphique
-    
-new Chart(document.getElementById("chartDaily"), {
-  type:'line',
-  data:{ labels, datasets },
-  options:{
-    responsive:true,
-    interaction:{ mode:'index', intersect:false },
-    plugins:{
-      legend:{ position:'top' },
-      zoom:{
-        pan:{ enabled:true, mode:'x' },
-        zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' }
+    // ====== Contrôles & reconstruction ======
+let chartDailyInstance = null;
+
+function buildChartDaily(period) {
+  // 1) Préparer agrégation par période
+  // headers: [date, s1, s2, s3, s4, s5]
+  const dateKey = headers[0];
+
+  // Série par scope : { periodKey -> valeur }
+  const scopeKeys = headers.slice(1, 6);
+  const perScope = {};
+  scopeKeys.forEach(k => perScope[k] = {});
+
+  const periodsSet = new Set();
+
+  data.forEach(row => {
+    const pkey = makePeriodKey(row[dateKey], period);
+    periodsSet.add(pkey);
+    scopeKeys.forEach(k => {
+      const raw = row[k];
+      let v = raw ? parseFloat(String(raw).replace(',', '.')) : 0;
+      if (isNaN(v)) v = 0;
+      perScope[k][pkey] = (perScope[k][pkey] || 0) + v;
+    });
+  });
+
+  const labels = sortPeriodKeys(Array.from(periodsSet), period);
+
+  // 2) Construire datasets (mêmes couleurs/labels que ton code)
+  const colors = ["#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd"];
+  const datasets = scopeKeys.map((k, i) => ({
+    type: (period === "day") ? "line" : "bar",
+    label: displayName(k),
+    data: labels.map(pk => perScope[k][pk] || 0),
+    borderWidth: 2,
+    fill: false,
+    borderColor: colors[i],
+    backgroundColor: colors[i] + (period === "day" ? "" : "55")
+  }));
+
+  // 3) Série totale (somme scopes)
+  const totalSeries = labels.map((_, idx) =>
+    scopeKeys.reduce((sum, k) => sum + (datasets[scopeKeys.indexOf(k)].data[idx] || 0), 0)
+  );
+  datasets.push({
+    type: "line",
+    label: "Total scopes",
+    data: totalSeries,
+    borderWidth: 3,
+    fill: false,
+    borderColor: "#000000"
+  });
+
+  // 4) (Re)créer le chart
+  if (chartDailyInstance) chartDailyInstance.destroy();
+  chartDailyInstance = new Chart(document.getElementById("chartDaily"), {
+    type: (period === "day") ? "line" : "bar",
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      interaction: { mode:'index', intersect:false },
+      plugins: {
+        legend: { position: 'top' },
+        zoom: {
+          pan: { enabled: true, mode: 'x' },
+          zoom: { wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' }
+        }
+      },
+      scales: {
+        x: { title: { display: true, text: (period === "day" ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")) } },
+        y: { beginAtZero: true, title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO2)" } }
       }
-    },
-    scales: {
-      x: { title: { display: true, text: "Date" } },
-      y: { beginAtZero: true, title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO2)" } }
     }
-  }
-});
-});
+  });
+}
+
+// Installer les boutons et premier rendu
+const initDailyPeriod = ensurePeriodControls("chartDaily", buildChartDaily);
+buildChartDaily(initDailyPeriod);
 
   /* ===== 2 CUMUL – VERSION PRODUCTION ===== */
   parseCSV('./data/EXPORT_cumul_scopes.csv', (data,headers) => {
