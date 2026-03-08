@@ -20,11 +20,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
-<script src="https://cdn.jsdelivr.net/npm/date-fns@2.30.0/dist/date-fns.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1ript src="https://cdn.jsdelivr.net/npm/date-fns@2.30.0/dist/date-fns.min.jsps://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2</script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2ttps://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css
 
 <style>
 
@@ -630,7 +627,7 @@ opacity:0.9;
 }
 </script>
 
-<link rel="icon" type="image/png" href="Favicon/favicon.png">  
+Favicon/favicon.png  
 </head>
 
 <body>
@@ -640,7 +637,7 @@ opacity:0.9;
 <div class="sidebar" id="sidebar">
 
 <div class="logo">
-<img src="logo-bva.png">
+logo-bva.png
 </div>
 
 <button id="toggleSidebar" class="toggle-btn">
@@ -649,12 +646,12 @@ opacity:0.9;
 
 <nav class="menu">
 
-<a href="index.html" data-title="Accueil">
+index.html
 <span class="icon">🏠</span>
 <span class="text">Accueil</span>
 </a>
 
-<a href="methodologie.html" data-title="Méthodologie">
+methodologie.html
 <span class="icon">📘</span>
 <span class="text">Méthodologie</span>
 </a>
@@ -710,7 +707,7 @@ Sont incluses :
   
   <p>
   <br>
-La <a href="methodologie.html"><strong>méthodologie détaillée de calcul des émissions</strong></a>
+La methodologie.html<strong>méthodologie détaillée de calcul des émissions</strong></a>
 est disponible sur une page dédiée.
 </p>
 
@@ -766,17 +763,8 @@ onclick="exportChartCSV('chartCumul','cumul_annuel_scopes.csv')">
   
 </div>
 
-<div class="card">
-<h2>Cumul total des émissions depuis le 1er janvier ⓘ</h2>
-<canvas id="chartTotalCumul"></canvas>
+<!-- (SUPPRIMÉ) Ancien 3e graphique "Cumul total des émissions depuis le 1er janvier" -->
 
-<button class="export-btn"
-onclick="exportChartCSV('chartTotalCumul','cumul_total.csv')">
-<i class="fa fa-download"></i> Exporter
-</button>
-  
-</div>
-  
 <div class="card">
 <h2>Émissions journalières par compagnie</h2>
 <canvas id="chartAirlines"></canvas>
@@ -840,20 +828,20 @@ Vols arrivée ⓘ
   <p><strong>Partagez ce site :</strong></p>
 
 <div class="share-links">
-  <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://emissionscarbonebva-maker.github.io/bva-ges/" target="_blank" class="share-btn linkedin">
+  <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://emissionsa-maker.github.io/bva-ges/
     <i class="fab fa-linkedin"></i> Partager sur LinkedIn
   </a>
 
-  <a href="https://www.facebook.com/sharer/sharer.php?u=https://emissionscarbonebva-maker.github.io/bva-ges/" target="_blank" class="share-btn facebook">
+  <a href="https://www.facebook.com/sharerhp?u=https://emissionscarbonebva-maker.github.io/bva-ges/
     <i class="fab fa-facebook"></i> Partager sur Facebook
   </a>
 </div>
 
   <p>
     Liens utiles :
-    <br>• <a href="https://adera-association.com/" target="_blank">ADERA – Association pour l’environnement</a>
-    <br>• <a href="https://concertation.aeroportparisbeauvais.com/fr" target="_blank">Concertation Aéroport Paris-Beauvais</a>
-    <br>• <a href="https://www.aeroportparisbeauvais.com/professionnels/developpement-durable/le-bulletin-de-lenvironnement" target="_blank">Bulletin de l'environnement de l'aéroport de Paris-Beauvais</a>
+    <br>• <a href="https://adera-association.com/" target="_pour l’environnement</a>
+    <br>• https://concertation.aeroportparisbeauvais.com/frConcertation Aéroport Paris-Beauvais</a>
+    <br>• <a href="https://www.aeroportparisbeauvais.com/professionloppement-durable/le-bulletin-de-lenvironnementBulletin de l'environnement de l'aéroport de Paris-Beauvais</a>
   </p>
 </div>
 
@@ -877,7 +865,7 @@ d’un traitement, d’une agrégation et d’estimations propres aux auteurs du
 
 <p>
 Les calculs reposent sur des hypothèses méthodologiques explicitées dans la
-<a href="methodologie.html"><strong>page méthodologie</strong></a>.
+methodologie.html<strong>page méthodologie</strong></a>.
 Les résultats doivent être considérnés comme des estimations indicatives destinées 
 à alimenter le débat public.
 </p>
@@ -902,7 +890,7 @@ Les contenus, analyses et visualisations produits sur ce site peuvent être libr
 <footer>
 Observatoire citoyen indépendant – Analyse des émissions de GES liées à l’activité de l’aéroport Paris-Beauvais |
 Mentions légales |
-Contact : <a href="mailto:emissionscarbonebva@gmail.com">emissionscarbonebva@gmail.com</a> |
+Contact : mailto:emissionscarbonebva@gmail.comemissionscarbonebva@gmail.com</a> |
 Hébergement : GitHub Pages (GitHub Inc.)
 </footer>
 
@@ -1045,14 +1033,17 @@ function makePeriodKey(dateStr, period) {
     const m = String(d.getMonth() + 1).padStart(2, "0");
     return `${y}-${m}`;
   }
+  if (period === "year") {
+    return `${d.getFullYear()}`;
+  }
   return dateStr;
 }
 
 
 // 0.2 – Tri des clés de période
 function sortPeriodKeys(keys, period) {
-  if (period === "day" || period === "month") {
-    // "YYYY-MM-DD" ou "YYYY-MM" triés lexicographiquement
+  if (period === "day" || period === "month" || period === "year") {
+    // "YYYY-MM-DD" / "YYYY-MM" / "YYYY" triés lexicographiquement
     return keys.sort((a,b) => a.localeCompare(b));
   }
   if (period === "week") {
@@ -1067,7 +1058,7 @@ function sortPeriodKeys(keys, period) {
   return keys;
 }
 
-// 0.3 – Création des 3 boutons au-dessus d’un canvas
+/* 0.3 – Contrôles période simples (conservé pour Airlines/Rotations) */
 function ensurePeriodControls(canvasId, onChange) {
   const canvas = document.getElementById(canvasId);
   if (!canvas) return;
@@ -1134,508 +1125,562 @@ function ensurePeriodControls(canvasId, onChange) {
   return saved;
 }
 
+/* 0.4 – NOUVEAU : Contrôles combinés (période + mode), avec boutons de droite alignés à droite */
+function ensureChartControls(canvasId, onChange) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return { period: "day", mode: "scope" };
 
-  /*1 ===== Émissions journalières par scope ===== */
-  parseCSV('./data/EXPORT_daily_scopes.csv', (data,headers) => {
-    // Tri des dates (ancien → récent)
-    data.sort((a,b) => new Date(a[headers[0]]) - new Date(b[headers[0]]));
+  // éviter doublons
+  if (canvas._controls) return canvas._controls.state;
 
-    const labels = [];
-    const datasets = [];
-    const totalSeries = [];
+  const wrapper = document.createElement("div");
+  wrapper.style.display = "flex";
+  wrapper.style.alignItems = "center";
+  wrapper.style.justifyContent = "space-between";
+  wrapper.style.gap = "8px";
+  wrapper.style.margin = "8px 0 4px 0";
 
-    const colors = ["#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd"];
+  // Groupe gauche : Périodes
+  const left = document.createElement("div");
+  left.style.display = "flex"; left.style.alignItems = "center"; left.style.gap = "8px";
+  const labelLeft = document.createElement("strong");
+  labelLeft.textContent = "Vue :";
 
-    // Création des datasets pour les 5 scopes avec libellés mappés
-    for(let i=1;i<=5;i++){
-      const csvKey = headers[i];
-      datasets.push({
-        label: displayName(csvKey), // libellé affiché
-        data: [],
-        borderWidth: 2,
-        fill: false,
-        borderColor: colors[i-1]
-      });
-    }
-
-    let total=0;
-
-    // Boucle principale
-    data.forEach(row => {
-      const date = row[headers[0]];
-      labels.push(date);
-
-      let dayTotal=0;
-      for(let i=1;i<=5;i++){
-        const raw = row[headers[i]];
-        let v = raw ? parseFloat(raw.replace(',','.')) : 0;
-        if(isNaN(v)) v=0;
-        datasets[i-1].data.push(v);
-        dayTotal += v;
-      }
-      totalSeries.push(dayTotal);
-      total += dayTotal;
+  function mkBtn(label, value, group) {
+    const b = document.createElement("button");
+    b.textContent = label;
+    b.dataset.value = value;
+    b.className = `btn-${group}`;
+    Object.assign(b.style, {
+      padding: "6px 10px",
+      border: "1px solid #cbd5e1",
+      borderRadius: "6px",
+      background: "#f8fafc",
+      cursor: "pointer"
     });
-
-    // Indicateurs
-    document.getElementById("total").innerText =
-      Math.round(total).toLocaleString('fr-FR') + " tonnes éq CO2";
-
-    const average = labels.length > 0 ? total/labels.length : 0;
-    document.getElementById("average").innerText =
-      Math.round(average).toLocaleString('fr-FR') + " tonnes éq CO2";
-
-    let variance = 0;
-    totalSeries.forEach(v => { variance += Math.pow(v - average, 2); });
-    variance = variance / totalSeries.length;
-    const stdDev = Math.sqrt(variance);
-    document.getElementById("stdDev").innerText =
-      Math.round(stdDev).toLocaleString('fr-FR') + " tonnes éq CO2";
-
-    // Série total
-    datasets.push({
-      label:"Total scopes",
-      data:totalSeries,
-      borderWidth:3,
-      fill:false,
-      borderColor:"#000000"
-    });
-
-    // ====== Contrôles & reconstruction ======
-
-let chartDailyInstance = null;
-
-function buildChartDaily(period) {
-  const dateKey   = headers[0];
-  const scopeKeys = headers.slice(1, 6); // on attend 5 scopes
-
-  // --- Agrégation par période (day / week / month) ---
-  const perScope = {};
-  scopeKeys.forEach(k => perScope[k] = {});
-  const periodsSet = new Set();
-
-  data.forEach(row => {
-    const pkey = makePeriodKey(row[dateKey], period);
-    periodsSet.add(pkey);
-    scopeKeys.forEach(k => {
-      const raw = row[k];
-      let v = raw ? parseFloat(String(raw).replace(',', '.')) : 0;
-      if (isNaN(v)) v = 0;
-      perScope[k][pkey] = (perScope[k][pkey] || 0) + v;
-    });
-  });
-
-  const labels = sortPeriodKeys(Array.from(periodsSet), period);
-  const isDay  = (period === "day");
-
-  // --- Couleurs par clé CSV (aligné sur tes teintes) ---
-  const colorMap = {
-    "scope_1_2":        "#9467bd", // Emissions directes aéroport (Scope 1&2)
-    "scope_employes":   "#d62728", // Accès employés
-    "scope_acces_coll": "#2ca02c", // Accès collectifs passagers
-    "scope_acces_ind":  "#ff7f0e", // Accès individuels passagers
-    "scope_vols":       "#1f77b4"  // Opérations aéronefs (Scope 3)
-  };
-
-  // --- Ordre imposé dans toutes les vues ---
-  const desiredOrder = [
-    "scope_1_2",
-    "scope_employes",
-    "scope_acces_coll",
-    "scope_acces_ind",
-    "scope_vols"
-  ];
-  // On garde l’ordre désiré pour les clés présentes,
-  // puis on ajoute d’éventuelles clés "surprises" à la fin.
-  const orderedKeys = desiredOrder
-    .filter(k => scopeKeys.includes(k))
-    .concat(scopeKeys.filter(k => !desiredOrder.includes(k)));
-
-  // --- Datasets ---
-  const datasets = orderedKeys.map(k => {
-    const c  = colorMap[k] || "#888888";
-    const bg = isDay ? (c + "33") : (c + "AA");  // alpha 20% (jour) / 67% (agrégé)
-    return {
-      type: isDay ? "line" : "bar",
-      label: displayName(k),
-      data: labels.map(pk => perScope[k][pk] || 0),
-      borderColor: c,
-      backgroundColor: bg,
-      borderWidth: 2,
-      fill: isDay,        // aires empilées en "jour"
-      stack: "stackS"     // même pile pour toutes les périodes
-    };
-  });
-
-  // --- (Re)création du chart ---
-  if (chartDailyInstance) chartDailyInstance.destroy();
-  chartDailyInstance = new Chart(document.getElementById("chartDaily"), {
-    type: isDay ? "line" : "bar",
-    data: { labels, datasets },
-    options: {
-      responsive: true,
-      interaction: { mode: 'index', intersect: false },
-      plugins: {
-        legend: { position: 'top' },
-        zoom: {
-          pan:  { enabled: true, mode: 'x' },
-          zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }
-        },
-        tooltip: {
-          callbacks: {
-            label: (ctx) => {
-              const v = ctx.parsed.y || 0;
-              return `${ctx.dataset.label} : ${Math.round(v).toLocaleString('fr-FR')} t éq CO₂`;
-            }
-          }
-        }
-      },
-      scales: {
-        x: {
-          title: {
-            display: true,
-            text: isDay ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")
-          },
-          stacked: !isDay  // barres empilées en semaine/mois
-        },
-        y: {
-          beginAtZero: true,
-          stacked: true,   // empilage vertical (aires jour & barres agrégées)
-          title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" }
-        }
-      }
-    }
-  });
-}
-
-
-
-// Installer les boutons et premier rendu
-const initDailyPeriod = ensurePeriodControls("chartDaily", buildChartDaily);
-buildChartDaily(initDailyPeriod);
-});
-
- 
-  /*2 ===== Cumul annuel par scope ===== */
-  parseCSV('./data/EXPORT_cumul_scopes.csv', (data,headers) => {
-    if(!data || data.length === 0) return;
-
-    // Nettoyage des headers
-    headers = headers.map(h => h.replace(/\uFEFF/g,'').trim());
-
-    const dateKey = headers[0];
-    const totalKey = headers.find(h => h === "cumul_total");
-
-    // Tri chronologique
-    data.sort((a,b) => new Date(a[dateKey]) - new Date(b[dateKey]));
-
-    const labels = [];
-    const datasets = [];
-
-    // Construction des séries (hors date et cumul_total)
-    const seriesMeta = [];
-    headers.forEach(h => {
-      if(h === dateKey || h === totalKey) return;
-      const lastValue = parseFloat(data[data.length - 1][h]) || 0;
-      seriesMeta.push({
-        key: h,                 // conserve la clé CSV
-        label: displayName(h),  // libellé affiché
-        lastValue
-      });
-    });
-
-    // Tri du plus petit au plus grand
-    seriesMeta.sort((a,b) => a.lastValue - b.lastValue);
-
-    // Couleurs
-    const colors = ["#9467bd","#d62728","#2ca02c","#ff7f0e","#1f77b4"];
-
-    // Datasets
-    seriesMeta.forEach((serie,index) => {
-      datasets.push({
-        label: serie.label, // mappé
-        data: [],
-        borderWidth: 1.5,
-        fill: true,
-        backgroundColor: colors[index % colors.length] + "55",
-        borderColor: colors[index % colors.length],
-        stack: "stack1",
-        _csvKey: serie.key // garde la clé CSV pour lecture
-      });
-    });
-
-    // Données
-    data.forEach(row => {
-      labels.push(row[dateKey]);
-      datasets.forEach(ds => {
-        const key = ds._csvKey;
-        const raw = row[key];
-        let val = raw ? parseFloat(String(raw).replace(',','.').trim()) : 0;
-        if(isNaN(val)) val = 0;
-        ds.data.push(val);
-      });
-    });
-
-    // Graphique
-    
-let chartCumulInstance = null;
-
-function buildChartCumul(period) {
-  // headers déjà nettoyés ; dateKey = headers[0]
-  const dateKey  = headers[0];
-  const totalKey = headers.find(h => h === "cumul_total");
-  const scopeCols = headers.filter(h => h !== dateKey && h !== totalKey);
-
-  // 1) Index par période -> dernière ligne de la période (cumul "fin de période")
-  const periodLastRow = {}; // { pkey -> row }
-  data.forEach(row => {
-    const pkey = makePeriodKey(row[dateKey], period);
-    const current = periodLastRow[pkey];
-    if (!current || new Date(row[dateKey]) > new Date(current[dateKey])) {
-      periodLastRow[pkey] = row;
-    }
-  });
-
-  // 2) Labels triés + type selon période
-  const labels = sortPeriodKeys(Object.keys(periodLastRow), period);
-  const isDay  = (period === "day");
-
-  // 3) Palette COHÉRENTE pour les clés "cumul_*"
-  const colorMap = {
-    "cumul_scope_1_2":  "#9467bd", // Emissions directes aéroport (Scope 1&2)
-    "cumul_employes":   "#d62728", // Accès employés
-    "cumul_acces_coll": "#2ca02c", // Accès collectifs passagers
-    "cumul_acces_ind":  "#ff7f0e", // Accès individuels passagers
-    "cumul_vol":        "#1f77b4"  // Opérations aéronefs (Scope 3)
-  };
-
-  // 4) Ordre imposé dans TOUTES les vues
-  const desiredOrder = [
-    "cumul_scope_1_2",
-    "cumul_employes",
-    "cumul_acces_coll",
-    "cumul_acces_ind",
-    "cumul_vol"
-  ];
-  const orderedCols = desiredOrder
-    .filter(k => scopeCols.includes(k))
-    .concat(scopeCols.filter(k => !desiredOrder.includes(k))); // ajoute toute clé "surprise" à la fin
-
-  // 5) Datasets dans l'ordre voulu + couleurs dédiées "cumul_*"
-  const datasets = orderedCols.map(col => {
-    const c = colorMap[col] || "#888888";
-    return {
-      label: displayName(col),
-      data: labels.map(pk => {
-        const raw = periodLastRow[pk][col];
-        let v = raw ? parseFloat(String(raw).replace(',', '.').trim()) : 0;
-        return isNaN(v) ? 0 : v;
-      }),
-      borderWidth: 1.5,
-      fill: true,
-      backgroundColor: isDay ? (c + "33") : (c + "55"), // 20% (jour) / 33% (sem/mois)
-      borderColor: c,
-      stack: "stack1"
-    };
-  });
-
-  // 6) (Re)création du chart
-  if (chartCumulInstance) chartCumulInstance.destroy();
-  chartCumulInstance = new Chart(document.getElementById("chartCumul"), {
-    type: isDay ? 'line' : 'bar',
-    data: { labels, datasets },
-    options: {
-      responsive: true,
-      interaction: { mode:'index', intersect:false },
-      plugins: {
-        legend: { position:'top' },
-        tooltip: {
-          callbacks: {
-            label: function(ctx){
-              const value = ctx.parsed.y || 0;
-              let total = 0;
-              ctx.chart.data.datasets.forEach(ds => { total += ds.data[ctx.dataIndex] || 0; });
-              const percent = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-              return `${ctx.dataset.label} : ${Math.round(value).toLocaleString('fr-FR')} t éq CO₂ (${percent}%)`;
-            }
-          }
-        },
-        zoom: { pan:{enabled:true, mode:'x'}, zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' } }
-      },
-      scales: {
-        x: { 
-          title: { display: true, text: (isDay ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")) },
-          stacked: !isDay          // empilé pour barres (semaine/mois)
-        },
-        y: { 
-          beginAtZero: true, 
-          stacked: !isDay,         // empilé pour barres (semaine/mois)
-          title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" }
-        }
-      }
-    }
-  });
-}
-
-const initCumulPeriod = ensurePeriodControls("chartCumul", buildChartCumul);
-buildChartCumul(initCumulPeriod);
-});
-
- 
-   /*3 ===== CUMUL TOTAL GLOBAL ===== */
-  parseCSV('./data/EXPORT_daily_scopes.csv', (data,headers) => {
-    data.sort((a,b) => new Date(a[headers[0]]) - new Date(b[headers[0]]));
-
-    const labels = [];
-    const cumul = [];
-    let total = 0;
-
-    data.forEach(row => {
-      let dayTotal = 0;
-      for(let i=1;i<=5;i++){
-        const raw = row[headers[i]];
-        let v = raw ? parseFloat(raw.replace(',','.')) : 0;
-        if(isNaN(v)) v=0;
-        dayTotal += v;
-      }
-      total += dayTotal;
-      labels.push(row[headers[0]]);
-      cumul.push(total);
-    });
-
-    
-
-let chartTotalCumulInstance = null;
-
-function buildChartTotalCumul(period) {
-  // 1) Recalcule le cumul quotidien "perDay" (date -> cumul à fin de jour)
-  const dateKey = headers[0];
-  const perDay = []; // [{ date, value }]
-  let running = 0;
-
-  data.forEach(row => {
-    let dayTotal = 0;
-    for (let i = 1; i <= 5; i++) {
-      const raw = row[headers[i]];
-      let v = raw ? parseFloat(String(raw).replace(',', '.')) : 0;
-      if (isNaN(v)) v = 0;
-      dayTotal += v;
-    }
-    running += dayTotal;
-    perDay.push({ date: row[dateKey], value: running });
-  });
-
-  // 2) Vue JOUR = courbe
-  if (period === "day") {
-    const labels = perDay.map(d => d.date);
-    const values = perDay.map(d => d.value);
-
-    if (chartTotalCumulInstance) chartTotalCumulInstance.destroy();
-    chartTotalCumulInstance = new Chart(document.getElementById("chartTotalCumul"), {
-      type: 'line',
-      data: {
-        labels,
-        datasets: [{
-          label: "Cumul total émissions",
-          data: values,
-          borderWidth: 3,
-          fill: true,
-          backgroundColor: "rgba(31,60,136,0.2)",
-          borderColor: "#1f3c88"
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { position: 'top' },
-          zoom: { pan: {enabled: true, mode: 'x'}, zoom: { wheel: {enabled: true}, pinch: {enabled: true}, mode: 'x' } }
-        },
-        scales: {
-          x: { title: { display: true, text: "Date" } },
-          y: { beginAtZero: true, title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" } }
-        }
-      }
-    });
-    return; // ⬅ important : on sort ici
+    return b;
   }
 
-  // 3) Vue SEMAINE/MOIS = barres (échantillon à la fin de période)
-  const lastByPeriod = {}; // { pkey -> { date, value } (dernier jour de la période) }
-  perDay.forEach(d => {
-    const pkey = makePeriodKey(d.date, period);
-    if (!lastByPeriod[pkey] || new Date(d.date) > new Date(lastByPeriod[pkey].date)) {
-      lastByPeriod[pkey] = d;
-    }
+  const btnDay = mkBtn("Par jour", "day", "period");
+  const btnWeek = mkBtn("Par semaine", "week", "period");
+  const btnMonth = mkBtn("Par mois", "month", "period");
+  const btnYear = mkBtn("Sur l'année", "year", "period");
+
+  left.appendChild(labelLeft);
+  left.appendChild(btnDay);
+  left.appendChild(btnWeek);
+  left.appendChild(btnMonth);
+  left.appendChild(btnYear);
+
+  // Groupe droit : Mode d’affichage (ALIGNÉ À DROITE)
+  const right = document.createElement("div");
+  right.style.display = "flex"; right.style.alignItems = "center"; right.style.gap = "8px";
+  const labelRight = document.createElement("strong");
+  labelRight.textContent = "Affichage :";
+  const btnScope = mkBtn("Résultats par scope", "scope", "mode");
+  const btnTotal = mkBtn("Résultats cumulés", "total", "mode");
+  right.appendChild(labelRight);
+  right.appendChild(btnScope);
+  right.appendChild(btnTotal);
+
+  wrapper.appendChild(left);
+  wrapper.appendChild(right);
+  canvas.parentElement.insertBefore(wrapper, canvas);
+
+  // État + persistance
+  const savedPeriod = localStorage.getItem(`agg_${canvasId}`) || "day";
+  const savedMode   = localStorage.getItem(`mode_${canvasId}`) || "scope";
+
+  function styleActive(group, value) {
+    wrapper.querySelectorAll(`.btn-${group}`).forEach(b => {
+      const active = (b.dataset.value === value);
+      b.style.background  = active ? "#e2e8f0" : "#f8fafc";
+      b.style.borderColor = active ? "#94a3b8" : "#cbd5e1";
+      b.style.fontWeight  = active ? "600" : "500";
+    });
+  }
+
+  const state = { period: savedPeriod, mode: savedMode };
+
+  function setPeriod(p) {
+    state.period = p;
+    localStorage.setItem(`agg_${canvasId}`, p);
+    styleActive("period", p);
+    onChange?.(state);
+  }
+  function setMode(m) {
+    state.mode = m;
+    localStorage.setItem(`mode_${canvasId}`, m);
+    styleActive("mode", m);
+    onChange?.(state);
+  }
+
+  [btnDay,btnWeek,btnMonth,btnYear].forEach(b => {
+    b.addEventListener("click", () => setPeriod(b.dataset.value));
+  });
+  [btnScope,btnTotal].forEach(b => {
+    b.addEventListener("click", () => setMode(b.dataset.value));
   });
 
-  const labels = sortPeriodKeys(Object.keys(lastByPeriod), period);
-  const values = labels.map(pk => lastByPeriod[pk].value);
+  styleActive("period", state.period);
+  styleActive("mode", state.mode);
 
-  if (chartTotalCumulInstance) chartTotalCumulInstance.destroy();
-  chartTotalCumulInstance = new Chart(document.getElementById("chartTotalCumul"), {
-    type: 'bar', // barres en semaine/mois
-    data: {
-      labels,
-      datasets: [{
-        label: "Cumul total émissions",
-        data: values,
-        borderWidth: 1,
-        backgroundColor: "rgba(31,60,136,0.6)",
-        borderColor: "#1f3c88"
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { position: 'top' },
-        zoom: { pan: {enabled: true, mode: 'x'}, zoom: { wheel: {enabled: true}, pinch: {enabled: true}, mode: 'x' } }
-      },
-      scales: {
-        x: { title: { display: true, text: (period === "week" ? "Semaine (ISO)" : "Mois") } },
-        y: { beginAtZero: true, title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" } }
-      }
-    }
-  });
+  canvas._controls = { state, setPeriod, setMode };
+  return state;
 }
 
 
-const initTotalCumulPeriod = ensurePeriodControls("chartTotalCumul", buildChartTotalCumul);
-buildChartTotalCumul(initTotalCumulPeriod);
-});
- 
-   
-  /*4 ===== Emissions par conmpagnie ===== */
-  parseCSV('./data/EXPORT_daily_airlines.csv', (data) => {
-    const labels = [...new Set(data.map(r => r.date))].sort();
-    const compagnies = [...new Set(data.map(r => r.compagnie))];
-    const datasets = [];
+/* =========================
+   1) ÉMISSIONS JOURNALIÈRES
+   ========================= */
+parseCSV('./data/EXPORT_daily_scopes.csv', (data,headers) => {
+  // Tri des dates (ancien → récent)
+  data.sort((a,b) => new Date(a[headers[0]]) - new Date(b[headers[0]]));
 
-    const colors = {
-      "Ryanair": "rgb(223,186,47)",
-      "Wizz Air": "rgb(225,14,73)",
-      "HiSky": "rgb(19,62,103)",
-      "SkyUp": "rgb(255,58,32)",
-      "Volotea": "rgb(0,0,0)"
+  const labels = [];
+  const totalSeries = [];
+
+  let total=0;
+
+  data.forEach(row => {
+    const date = row[headers[0]];
+    labels.push(date);
+
+    let dayTotal=0;
+    for(let i=1;i<=5;i++){
+      const raw = row[headers[i]];
+      let v = raw ? parseFloat(raw.replace(',','.')) : 0;
+      if(isNaN(v)) v=0;
+      dayTotal += v;
+    }
+    totalSeries.push(dayTotal);
+    total += dayTotal;
+  });
+
+  // Indicateurs
+  document.getElementById("total").innerText =
+    Math.round(total).toLocaleString('fr-FR') + " tonnes éq CO2";
+
+  const average = labels.length > 0 ? total/labels.length : 0;
+  document.getElementById("average").innerText =
+    Math.round(average).toLocaleString('fr-FR') + " tonnes éq CO2";
+
+  let variance = 0;
+  totalSeries.forEach(v => { variance += Math.pow(v - average, 2); });
+  variance = variance / totalSeries.length;
+  const stdDev = Math.sqrt(variance);
+  document.getElementById("stdDev").innerText =
+    Math.round(stdDev).toLocaleString('fr-FR') + " tonnes éq CO2";
+
+  // ====== Construction dynamique avec périodes + modes ======
+  let chartDailyInstance = null;
+
+  function buildChartDaily({ period, mode }) {
+    const dateKey   = headers[0];
+    const scopeKeys = headers.slice(1, 6); // on attend 5 scopes
+    const isDay  = (period === "day");
+    const isYear = (period === "year");
+
+    // Couleurs par clé CSV
+    const colorMap = {
+      "scope_1_2":        "#9467bd",
+      "scope_employes":   "#d62728",
+      "scope_acces_coll": "#2ca02c",
+      "scope_acces_ind":  "#ff7f0e",
+      "scope_vols":       "#1f77b4"
     };
+    const orderedKeys = [
+      "scope_1_2",
+      "scope_employes",
+      "scope_acces_coll",
+      "scope_acces_ind",
+      "scope_vols"
+    ].filter(k => scopeKeys.includes(k)).concat(scopeKeys.filter(k => ![
+      "scope_1_2","scope_employes","scope_acces_coll","scope_acces_ind","scope_vols"
+    ].includes(k)));
 
-    compagnies.forEach(comp => {
-      const serie = [];
-      labels.forEach(d => {
-        const row = data.find(r => r.date===d && r.compagnie===comp);
-        let value = row ? parseFloat(row.emissions) : 0;
-        if(isNaN(value)) value = 0;
-        serie.push(value);
+    let chartType = isDay ? "line" : "bar";
+    let chartLabels = [];
+    let datasets = [];
+
+    if (isYear) {
+      // == Vue "Sur l'année" : un seul point (somme depuis le 1er janvier)
+      chartType = "bar";
+      chartLabels = ["Année en cours"];
+
+      if (mode === "scope") {
+        datasets = orderedKeys.map(k => {
+          // somme sur toute l'année
+          let sum = 0;
+          data.forEach(row => {
+            const raw = row[k];
+            let v = raw ? parseFloat(String(raw).replace(',','.')) : 0;
+            if (isNaN(v)) v = 0;
+            sum += v;
+          });
+          const c = colorMap[k] || "#888888";
+          return {
+            type: "bar",
+            label: displayName(k),
+            data: [sum],
+            borderColor: c,
+            backgroundColor: c + "AA",
+            borderWidth: 1.5,
+            stack: "yearStack"
+          };
+        });
+      } else {
+        // mode "total"
+        let sumTotal = 0;
+        data.forEach(row => {
+          for (let i=1;i<=5;i++) {
+            const raw = row[headers[i]];
+            let v = raw ? parseFloat(String(raw).replace(',','.')) : 0;
+            if (isNaN(v)) v = 0;
+            sumTotal += v;
+          }
+        });
+        datasets = [{
+          type: "bar",
+          label: "Total scopes",
+          data: [sumTotal],
+          borderWidth: 1.5,
+          borderColor: "#1f3c88",
+          backgroundColor: "rgba(31,60,136,0.6)"
+        }];
+      }
+    } else {
+      // == Vue Jour/Semaine/Mois
+      // Agrégation par période
+      const perScope = {};
+      scopeKeys.forEach(k => perScope[k] = {});
+      const periodsSet = new Set();
+
+      data.forEach(row => {
+        const pkey = makePeriodKey(row[dateKey], period);
+        periodsSet.add(pkey);
+        scopeKeys.forEach(k => {
+          const raw = row[k];
+          let v = raw ? parseFloat(String(raw).replace(',','.')) : 0;
+          if (isNaN(v)) v = 0;
+          perScope[k][pkey] = (perScope[k][pkey] || 0) + v;
+        });
       });
-      datasets.push({
-        label: comp,
-        data: serie,
-        borderWidth: 2,
-        fill: false,
-        borderColor: colors[comp] || "rgb(120,120,120)"
-      });
+
+      chartLabels = sortPeriodKeys(Array.from(periodsSet), period);
+
+      if (mode === "scope") {
+        datasets = orderedKeys.map(k => {
+          const c = colorMap[k] || "#888888";
+          const bg = isDay ? (c + "33") : (c + "AA");
+          return {
+            type: isDay ? "line" : "bar",
+            label: displayName(k),
+            data: chartLabels.map(pk => perScope[k][pk] || 0),
+            borderColor: c,
+            backgroundColor: bg,
+            borderWidth: 2,
+            fill: isDay,
+            stack: "stackS"
+          };
+        });
+      } else {
+        // mode "total" : une seule série (somme de tous les scopes)
+        const totals = chartLabels.map(pk => {
+          let s = 0;
+          scopeKeys.forEach(k => { s += (perScope[k][pk] || 0); });
+          return s;
+        });
+        datasets = [{
+          type: isDay ? "line" : "bar",
+          label: "Total scopes",
+          data: totals,
+          borderWidth: isDay ? 3 : 1.5,
+          fill: isDay,
+          backgroundColor: isDay ? "rgba(31,60,136,0.20)" : "rgba(31,60,136,0.60)",
+          borderColor: "#1f3c88"
+        }];
+      }
+    }
+
+    if (chartDailyInstance) chartDailyInstance.destroy();
+    chartDailyInstance = new Chart(document.getElementById("chartDaily"), {
+      type: chartType,
+      data: { labels: chartLabels, datasets },
+      options: {
+        responsive: true,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { position: 'top' },
+          zoom: {
+            pan:  { enabled: true, mode: 'x' },
+            zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }
+          },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => {
+                const v = (ctx.parsed.y ?? ctx.raw ?? 0);
+                return `${ctx.dataset.label} : ${Math.round(v).toLocaleString('fr-FR')} t éq CO₂`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: isYear ? "Année" : (isDay ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois"))
+            },
+            stacked: (mode === "scope" && !isDay)
+          },
+          y: {
+            beginAtZero: true,
+            stacked: (mode === "scope"),
+            title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" }
+          }
+        }
+      }
     });
+  }
 
-    
+  // Installer les nouveaux contrôles + 1er rendu
+  const controlsDaily = ensureChartControls("chartDaily", buildChartDaily);
+  buildChartDaily(controlsDaily);
+});
+
+ 
+/* =========================
+   2) CUMUL ANNUEL PAR SCOPE
+   ========================= */
+parseCSV('./data/EXPORT_cumul_scopes.csv', (data,headers) => {
+  if(!data || data.length === 0) return;
+
+  // Nettoyage des headers
+  headers = headers.map(h => h.replace(/\uFEFF/g,'').trim());
+
+  const dateKey = headers[0];
+  const totalKey = headers.find(h => h === "cumul_total");
+
+  // Tri chronologique
+  data.sort((a,b) => new Date(a[dateKey]) - new Date(b[dateKey]));
+
+  let chartCumulInstance = null;
+
+  function buildChartCumul({ period, mode }) {
+    const isDay  = (period === "day");
+    const isYear = (period === "year");
+
+    // Colonnes « scope »
+    const scopeCols = headers.filter(h => h !== dateKey && h !== totalKey);
+
+    // Ordre & couleurs cohérents
+    const colorMap = {
+      "cumul_scope_1_2":  "#9467bd",
+      "cumul_employes":   "#d62728",
+      "cumul_acces_coll": "#2ca02c",
+      "cumul_acces_ind":  "#ff7f0e",
+      "cumul_vol":        "#1f77b4"
+    };
+    const desiredOrder = [
+      "cumul_scope_1_2",
+      "cumul_employes",
+      "cumul_acces_coll",
+      "cumul_acces_ind",
+      "cumul_vol"
+    ];
+    const orderedCols = desiredOrder
+      .filter(k => scopeCols.includes(k))
+      .concat(scopeCols.filter(k => !desiredOrder.includes(k)));
+
+    let labels = [];
+    let datasets = [];
+    let chartType = isDay ? 'line' : 'bar';
+
+    if (isYear) {
+      // == Vue "Sur l'année" : dernier point disponible (YTD) -> 1 barre
+      const lastRow = data[data.length - 1];
+
+      labels = ["Année en cours"];
+      chartType = "bar";
+
+      if (mode === "scope") {
+        datasets = orderedCols.map(col => {
+          const c = colorMap[col] || "#888888";
+          const raw = lastRow[col];
+          let v = raw ? parseFloat(String(raw).replace(',', '.').trim()) : 0;
+          if (isNaN(v)) v = 0;
+          return {
+            type: "bar",
+            label: displayName(col),
+            data: [v],
+            borderWidth: 1.5,
+            backgroundColor: c + "55",
+            borderColor: c,
+            stack: "stackCumulY"
+          };
+        });
+      } else {
+        // mode "total"
+        let total = 0;
+        if (totalKey && lastRow[totalKey] !== undefined) {
+          const raw = lastRow[totalKey];
+          total = raw ? parseFloat(String(raw).replace(',', '.').trim()) : 0;
+          if (isNaN(total)) total = 0;
+        } else {
+          orderedCols.forEach(col => {
+            const raw = lastRow[col];
+            let v = raw ? parseFloat(String(raw).replace(',', '.').trim()) : 0;
+            if (!isNaN(v)) total += v;
+          });
+        }
+        datasets = [{
+          type: "bar",
+          label: displayName("cumul_total"),
+          data: [total],
+          borderWidth: 1.5,
+          backgroundColor: "rgba(31,60,136,0.6)",
+          borderColor: "#1f3c88"
+        }];
+      }
+    } else {
+      // == Jour/Semaine/Mois : on prend le dernier point de chaque période
+      const periodLastRow = {}; // { pkey -> row }
+      data.forEach(row => {
+        const pkey = makePeriodKey(row[dateKey], period);
+        const current = periodLastRow[pkey];
+        if (!current || new Date(row[dateKey]) > new Date(current[dateKey])) {
+          periodLastRow[pkey] = row;
+        }
+      });
+
+      labels = sortPeriodKeys(Object.keys(periodLastRow), period);
+
+      if (mode === "scope") {
+        datasets = orderedCols.map(col => {
+          const c = colorMap[col] || "#888888";
+          return {
+            type: isDay ? "line" : "bar",
+            label: displayName(col),
+            data: labels.map(pk => {
+              const raw = periodLastRow[pk][col];
+              let v = raw ? parseFloat(String(raw).replace(',', '.').trim()) : 0;
+              return isNaN(v) ? 0 : v;
+            }),
+            borderWidth: 1.5,
+            fill: isDay,
+            backgroundColor: isDay ? (c + "33") : (c + "55"),
+            borderColor: c,
+            stack: "stackCumul"
+          };
+        });
+      } else {
+        // mode "total"
+        const totals = labels.map(pk => {
+          let tot = 0;
+          if (totalKey && periodLastRow[pk][totalKey] !== undefined) {
+            const raw = periodLastRow[pk][totalKey];
+            tot = raw ? parseFloat(String(raw).replace(',', '.').trim()) : 0;
+            if (isNaN(tot)) tot = 0;
+          } else {
+            orderedCols.forEach(col => {
+              const raw = periodLastRow[pk][col];
+              let v = raw ? parseFloat(String(raw).replace(',', '.').trim()) : 0;
+              if (!isNaN(v)) tot += v;
+            });
+          }
+          return tot;
+        });
+
+        datasets = [{
+          type: isDay ? 'line' : 'bar',
+          label: displayName("cumul_total"),
+          data: totals,
+          borderWidth: isDay ? 2 : 1.5,
+          fill: isDay,
+          backgroundColor: isDay ? "rgba(31,60,136,0.2)" : "rgba(31,60,136,0.6)",
+          borderColor: "#1f3c88"
+        }];
+      }
+    }
+
+    if (chartCumulInstance) chartCumulInstance.destroy();
+    chartCumulInstance = new Chart(document.getElementById("chartCumul"), {
+      type: chartType,
+      data: { labels, datasets },
+      options: {
+        responsive: true,
+        interaction: { mode:'index', intersect:false },
+        plugins: {
+          legend: { position:'top' },
+          tooltip: {
+            callbacks: {
+              label: function(ctx){
+                const value = ctx.parsed.y || ctx.raw || 0;
+                // Afficher % pour mode scope
+                if (mode === "scope") {
+                  let total = 0;
+                  ctx.chart.data.datasets.forEach(ds => { total += ds.data[ctx.dataIndex] || 0; });
+                  const percent = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                  return `${ctx.dataset.label} : ${Math.round(value).toLocaleString('fr-FR')} t éq CO₂ (${percent}%)`;
+                }
+                return `${ctx.dataset.label} : ${Math.round(value).toLocaleString('fr-FR')} t éq CO₂`;
+              }
+            }
+          },
+          zoom: { pan:{enabled:true, mode:'x'}, zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' } }
+        },
+        scales: {
+          x: { 
+            title: { display: true, text: (isYear ? "Année" : (isDay ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois"))) },
+            stacked: (mode === "scope" && !isDay)
+          },
+          y: { 
+            beginAtZero: true, 
+            stacked: (mode === "scope" && !isDay),
+            title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" }
+          }
+        }
+      }
+    });
+  }
+
+  const controlsCumul = ensureChartControls("chartCumul", buildChartCumul);
+  buildChartCumul(controlsCumul);
+});
+
+ 
+/* ===== Emissions par conmpagnie ===== */
+parseCSV('./data/EXPORT_daily_airlines.csv', (data) => {
+  const labels = [...new Set(data.map(r => r.date))].sort();
+  const compagnies = [...new Set(data.map(r => r.compagnie))];
+  const datasets = [];
+
+  const colors = {
+    "Ryanair": "rgb(223,186,47)",
+    "Wizz Air": "rgb(225,14,73)",
+    "HiSky": "rgb(19,62,103)",
+    "SkyUp": "rgb(255,58,32)",
+    "Volotea": "rgb(0,0,0)"
+  };
+
+  compagnies.forEach(comp => {
+    const serie = [];
+    labels.forEach(d => {
+      const row = data.find(r => r.date===d && r.compagnie===comp);
+      let value = row ? parseFloat(row.emissions) : 0;
+      if(isNaN(value)) value = 0;
+      serie.push(value);
+    });
+    datasets.push({
+      label: comp,
+      data: serie,
+      borderWidth: 2,
+      fill: false,
+      borderColor: colors[comp] || "rgb(120,120,120)"
+    });
+  });
+
+  
 let chartAirlinesInstance = null;
 
 function buildChartAirlines(period, data) {
@@ -1713,38 +1758,38 @@ buildChartAirlines(airlinesPeriod, data);
 });
    
    
-  /*5 ===== Rotations par compagnie ===== */
-  parseCSV('./data/EXPORT_daily_airlines.csv', (data) => {
-    const labels = [...new Set(data.map(r => r.date))].sort();
-    const compagnies = [...new Set(data.map(r => r.compagnie))];
-    const datasets = [];
+/*5 ===== Rotations par compagnie ===== */
+parseCSV('./data/EXPORT_daily_airlines.csv', (data) => {
+  const labels = [...new Set(data.map(r => r.date))].sort();
+  const compagnies = [...new Set(data.map(r => r.compagnie))];
+  const datasets = [];
 
-    const colors = {
-      "Ryanair": "rgb(223,186,47)",
-      "Wizz Air": "rgb(225,14,73)",
-      "HiSky": "rgb(19,62,103)",
-      "SkyUp": "rgb(255,58,32)",
-      "Volotea": "rgb(0,0,0)"
-    };
+  const colors = {
+    "Ryanair": "rgb(223,186,47)",
+    "Wizz Air": "rgb(225,14,73)",
+    "HiSky": "rgb(19,62,103)",
+    "SkyUp": "rgb(255,58,32)",
+    "Volotea": "rgb(0,0,0)"
+  };
 
-    compagnies.forEach(comp => {
-      const serie = [];
-      labels.forEach(d => {
-        const row = data.find(r => r.date===d && r.compagnie===comp);
-        let value = row ? parseFloat(row.rotations) : 0;
-        if(isNaN(value)) value = 0;
-        serie.push(value);
-      });
-      datasets.push({
-        label: comp,
-        data: serie,
-        borderWidth: 2,
-        fill: false,
-        borderColor: colors[comp] || "rgb(120,120,120)"
-      });
+  compagnies.forEach(comp => {
+    const serie = [];
+    labels.forEach(d => {
+      const row = data.find(r => r.date===d && r.compagnie===comp);
+      let value = row ? parseFloat(row.rotations) : 0;
+      if(isNaN(value)) value = 0;
+      serie.push(value);
     });
+    datasets.push({
+      label: comp,
+      data: serie,
+      borderWidth: 2,
+      fill: false,
+      borderColor: colors[comp] || "rgb(120,120,120)"
+    });
+  });
 
-    
+  
 let chartRotationsInstance = null;
 
 function buildChartRotations(period, data) {
@@ -1820,7 +1865,7 @@ const rotationsPeriod = ensurePeriodControls("chartRotations", (p) => buildChart
 buildChartRotations(rotationsPeriod, data);
 });
    
-  /* ===== EMISSIONS PAR DESTINATION (Départs + Arrivées) + tri dynamique ===== */
+/* ===== EMISSIONS PAR DESTINATION (Départs + Arrivées) + tri dynamique ===== */
 parseCSV('./data/EXPORT_departures_YTD.csv', function (departures) {
   parseCSV('./data/EXPORT_arrivals_YTD.csv', function (arrivals) {
 
@@ -1987,10 +2032,6 @@ tooltip: {
         // on garde l’arrondi “tonnes” sur la valeur principale (comme avant)
         const valueRounded = Math.round(value).toLocaleString('fr-FR');
 
-        // Variante A — tout sur une ligne :
-        //return `${context.dataset.label} : ${valueRounded} t éq CO₂ (${percent} %) — Moyenne/vol : ${avgStr} t éq CO₂`;
-
-        // Variante B — sur 2 lignes (si tu préfères) :
         return [
           `${context.dataset.label} : ${valueRounded} t éq CO₂ (${percent} %)`,
           `Moyenne par vol : ${avgStr} t éq CO₂`
