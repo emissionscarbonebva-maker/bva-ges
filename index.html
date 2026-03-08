@@ -1123,13 +1123,17 @@ document.addEventListener("DOMContentLoaded", function(){
         delete activeFilters[col]; clearTimeout(debounceTimer); applyFilters();
       });
     });
-    document.getElementById(containerId+"-reset").addEventListener("click",()=>{
-      activeFilters={}; container.querySelectorAll("[data-filter]").forEach(i=> i.value="";
-      );
-      const dateIndex = headers.findIndex(h=> h.toLowerCase().includes("date"));
-      if (dateIndex!==-1){ data.sort((a,b)=> new Date(b[headers[dateIndex]]) - new Date(a[headers[dateIndex]])); }
-      filteredData=[...data]; currentPage=1; renderTable();
-    });
+    document.getElementById(containerId+"-reset").addEventListener("click", () => {
+  activeFilters = {};
+  container.querySelectorAll("[data-filter]").forEach((i) => { i.value = ""; });
+  const dateIndex = headers.findIndex((h) => h.toLowerCase().includes("date"));
+  if (dateIndex !== -1) {
+    data.sort((a, b) => new Date(b[headers[dateIndex]]) - new Date(a[headers[dateIndex]]));
+  }
+  filteredData = [...data];
+  currentPage = 1;
+  renderTable();
+});
 
     const exportBtn = document.getElementById(containerId+"-export");
     if (exportBtn) {
