@@ -28,26 +28,13 @@ https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css
 
 <style>
 body{
-margin:0;
-font-family:Arial, sans-serif;
-display:flex;
-background:#f5f6fa;
+  margin:0; font-family:Arial, sans-serif; display:flex; background:#f5f6fa;
 }
 
 /* SIDEBAR */
 .sidebar{
-width:240px;
-background:#162d63;
-color:white;
-height:100vh;
-position:sticky;
-top:0;
-padding:20px 10px;
-box-sizing:border-box;
-transition:width 0.25s;
-overflow:visible;
-flex-shrink:0;
-z-index:1000;
+  width:240px; background:#162d63; color:white; height:100vh; position:sticky; top:0;
+  padding:20px 10px; box-sizing:border-box; transition:width 0.25s; overflow:visible; flex-shrink:0; z-index:1000;
 }
 .sidebar.collapsed{ width:100px; }
 .sidebar.collapsed .text{ display:none; }
@@ -55,13 +42,12 @@ z-index:1000;
 .toggle-btn i{ transition:transform 0.3s ease; }
 .sidebar.collapsed .toggle-btn i{ transform:rotate(180deg); }
 
-/* TOOLTIP SIDEBAR mode réduit */
+/* Tooltip sidebar réduit */
 .sidebar.collapsed .menu a{ position:relative; }
 .sidebar.collapsed .menu a:hover::after{
-content:attr(data-title);
-position:absolute; left:90px; top:50%; transform:translateY(-50%);
-background:#162d63; color:white; padding:6px 10px; border-radius:6px;
-white-space:nowrap; font-size:14px; z-index:9999; box-shadow:0 4px 12px rgba(0,0,0,0.2);
+  content:attr(data-title); position:absolute; left:90px; top:50%; transform:translateY(-50%);
+  background:#162d63; color:white; padding:6px 10px; border-radius:6px; white-space:nowrap; font-size:14px;
+  z-index:9999; box-shadow:0 4px 12px rgba(0,0,0,0.2);
 }
 .sidebar.collapsed .menu a::after{ opacity:0; transition:opacity 0.15s ease; }
 .sidebar.collapsed .menu a:hover::after{ opacity:1; }
@@ -80,32 +66,21 @@ white-space:nowrap; font-size:14px; z-index:9999; box-shadow:0 4px 12px rgba(0,0
 .icon{ font-size:18px; width:30px; text-align:center; }
 .menu a.active{ background:#2e55c7; box-shadow:inset 4px 0 0 #ffffff; font-weight:600; }
 
-/* MENU */
-.menu-section{ margin-bottom:10px; }
-.menu-title{ cursor:pointer; padding:10px; font-weight:bold; background:#1f3c88; border-radius:4px; }
-.menu-items{ display:none; padding-left:10px; }
-.menu-items a{ display:block; color:white; text-decoration:none; padding:6px 0; font-size:14px; }
-.menu-items a:hover{ opacity:0.8; }
-
 /* MAIN */
 .main{ flex:1 1 auto; padding:40px; min-width:0; }
 
 /* HEADER */
 header{ background:#1f3c88; color:white; padding:25px; margin-bottom:30px; }
 header h1{ color:white; margin:0; }
-
 h1{ margin:0; color:#162d63; }
 
 /* SECTIONS */
 section{ margin-bottom:60px; scroll-margin-top:80px; }
 
-/* GRAPH */
-.chart-container{ max-width:700px; }
-
 /* ===== CARDS ===== */
 .card{
-background:white; padding:28px; border-radius:10px; box-shadow:0 4px 14px rgba(0,0,0,0.08);
-margin-bottom:35px; border-left:6px solid #1f3c88; transition:transform 0.15s ease;
+  background:white; padding:28px; border-radius:10px; box-shadow:0 4px 14px rgba(0,0,0,0.08);
+  margin-bottom:35px; border-left:6px solid #1f3c88; transition:transform 0.15s ease;
 }
 .card:hover{ transform:translateY(-2px); }
 .card table{ width:100%; border-collapse:collapse; margin-top:15px; font-size:14px; }
@@ -118,28 +93,26 @@ margin-bottom:35px; border-left:6px solid #1f3c88; transition:transform 0.15s ea
 .metric-value { font-size:1.8em; font-weight:bold; margin-top:8px;}
 canvas { margin-top:20px;}
 footer { text-align:center; padding:30px; font-size:0.9em; color:#666;}
-
 h2{
-color:#1f3c88; margin-top:0; margin-bottom:15px; font-size:1.6em;
-border-bottom:2px solid #e6e9ef; padding-bottom:6px;
+  color:#1f3c88; margin-top:0; margin-bottom:15px; font-size:1.6em;
+  border-bottom:2px solid #e6e9ef; padding-bottom:6px;
 }
 h3{ color:#444; font-size:1.2em; margin-top:20px; }
 
-/* ================= SHARE BUTTONS ================= */
+/* SHARE BUTTONS */
 .share-links { display:flex; flex-direction:column; gap:10px; margin-top:10px; }
 .share-btn { display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius:8px; text-decoration:none; font-weight:500; color:white; width:fit-content; transition:0.2s; }
 .share-btn i{ font-size:18px; }
 .linkedin{ background-color:#0077b5; } .facebook{ background-color:#1877f2; }
 .share-btn:hover{ opacity:0.85; }
 
-/* ================= TABLE PRO STYLE ================= */
+/* TABLE PRO */
 .table-wrapper{ max-height:600px; overflow:auto; border:1px solid #ccc; border-radius:8px; }
 .data-table{ width:100%; border-collapse:collapse; font-size:14px; }
 .data-table th, .data-table td{ padding:12px; border-bottom:1px solid #e6e6e6; text-align:left; }
 .data-table th{ background:#f1f4f8; font-weight:600; }
 .data-table tr:hover{ background:#f8fafc; }
 .data-table thead th{ position:sticky; top:0; background:#eef2f6; text-align:center; cursor:pointer; z-index:5; box-shadow:0 2px 10px rgba(0,0,0,0.15); }
-.data-table th, .data-table td{ padding:8px 10px; border-bottom:1px solid #e5e5e5; }
 .data-table tbody tr:nth-child(even){ background:#fafafa; }
 .data-table tbody tr:hover{ background:#eef6ff; }
 .center{ text-align:center; }
@@ -149,7 +122,7 @@ h3{ color:#444; font-size:1.2em; margin-top:20px; }
 .clear-filter{ position:absolute; right:6px; top:50%; transform:translateY(-50%); cursor:pointer; font-size:12px; color:#888; }
 .clear-filter:hover{ color:red; }
 
-/* ================= DARK MODE ================= */
+/* DARK MODE (optionnel) */
 .dark-mode .data-table{ background:#1e1e1e; color:white; }
 .dark-mode .data-table thead th{ background:#2c2c2c; }
 .dark-mode .sticky-col{ background:#2c2c2c; }
@@ -157,26 +130,20 @@ h3{ color:#444; font-size:1.2em; margin-top:20px; }
 .dark-mode .data-table tbody tr:hover{ background:#333; }
 .dark-mode .total-row{ background:#2a2a2a; }
 
-/* ===== INFO BOX ===== */
-.info-box{ background:#eef5ff; border-left:5px solid #1f3c88; padding:18px 22px; border-radius:10px; margin-bottom:30px; }
-.info-box h3{ margin-top:0; font-size:1.2em; }
-.info-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:15px; margin-top:12px; }
-.info-item{ background:white; padding:12px 14px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.05); font-size:0.9em; }
-
-/* ===== TOOLTIPS ===== */
+/* TOOLTIPS inline */
 .tooltip{ position:relative; cursor:help; }
 .tooltip::after{
-  content:attr(data-tip); position:absolute; bottom:120%; left:0; background:#1f3c88; color:white; padding:8px 10px; border-radius:6px;
-  font-size:0.8em; white-space:nowrap; opacity:0; pointer-events:none; transform:translateY(4px); transition:0.2s;
+  content:attr(data-tip); position:absolute; bottom:120%; left:0; background:#1f3c88; color:white; padding:8px 10px;
+  border-radius:6px; font-size:0.8em; white-space:nowrap; opacity:0; pointer-events:none; transform:translateY(4px); transition:0.2s;
 }
 .tooltip:hover::after{ opacity:1; transform:translateY(0); }
 
-/* =================  BOUTON EXPORT ================= */
+/* BOUTON EXPORT */
 .export-btn{ margin-top:15px; padding:8px 14px; border:none; background:#1f3c88; color:white; border-radius:6px; cursor:pointer; font-size:0.9em; }
 .export-btn:hover{ opacity:0.9; }
 
 /* === NARROW CONTENT === */
-:root { --narrow-max: 1050px; }
+:root { --narrow-max: 1400px; } /* élargi pour éviter l’effet “resserré” */
 .main .card:has(canvas),
 .main .card:has(.table-wrapper),
 .main .card:has(#tableDepartures),
@@ -196,14 +163,12 @@ h3{ color:#444; font-size:1.2em; margin-top:20px; }
   "url": "https://emissionscarbonebva-maker.github.io/bva-ges/",
   "description": "Analyse indépendante des émissions de gaz à effet de serre de l’aéroport Paris-Beauvais (BVA). Données publiques et visualisation journalière.",
   "inLanguage": "fr",
-  "author": {
-    "@type": "Organization",
-    "name": "Analyse indépendante BVA"
-  }
+  "author": { "@type": "Organization", "name": "Analyse indépendante BVA" }
 }
 </script>
 
-Favicon/favicon.png  
+<!-- Favicon PNG (et pensez à ajouter un /favicon.ico à la racine si vous voulez supprimer le 404 automatique du navigateur) -->
+Favicon/favicon.png
 </head>
 
 <body>
@@ -220,195 +185,146 @@ Favicon/favicon.png
 
 <!-- MAIN -->
 <div class="main">
-<header>
-  <h1>Observatoire des émissions de gaz à effet de serre de l'aéroport de Paris-Beauvais</h1>
-</header>
+  <header><h1>Observatoire des émissions de gaz à effet de serre de l'aéroport de Paris-Beauvais</h1></header>
 
-<div class="container">
+  <div class="container">
+    <div class="card">
+      <h2>Analyse des émissions en 2026</h2>
+      <p>Ce site présente une analyse indépendante des émissions de gaz à effet de serre
+        de l’aéroport de Paris-Beauvais (BVA) pour l'année 2026. Les données sont issues de sources publiques
+        et retraitées afin de présenter une vision journalière et cumulée des émissions.</p>
+      <p>L’aéroport de Paris-Beauvais se situe dans l’Oise et constitue
+        le principal aéroport low-cost du nord de l’Île-de-France, et le 9ème aéroport Français en terme de trafic passagers.</p>
+      <p>Sont incluses :
+        <br>• Les émissions directes du de l'aéroports : chauffage, consommation d'électricité, consommation de carburant pour les engins de pistes, ... (scope 1 & 2)
+        <br>• Les émissions liées aux transports terrestres des employés pour accéder à l'aéroport (Scope 3)
+        <br>• Les émissions liées au transports terrestres collectifs des passagers pour accéder à l'aéroport (Scope 3)
+        <br>• Les émissions liées au transports terrestres individuels des passagers pour accéder à l'aéroport (Scope 3)
+        <br>• Les émissions liées aux opérations des aéronefs : APU, roulage, décollage/atterrisage, vol demi-croisère, ainsi que la production et l'approvisionnement en carburant d'aviation et l'amortissement des aéronefs (Scope 3)</p>
+      <p>Les émissions de gaz à effet de serre sont exprimées en tonnes équivalent dioxyde de carbone (t éq CO₂).</p>
+      <p><strong>Données :</strong> <span id="update-date">chargement...</span></p>
+      <p><br>La methodologie.html<strong>méthodologie détaillée de calcul des émissions</strong></a> est disponible sur une page dédiée.</p>
+    </div>
 
-  <div class="card">
-    <h2>Analyse des émissions en 2026</h2>
-    <p>
-      Ce site présente une analyse indépendante des émissions de gaz à effet de serre
-      de l’aéroport de Paris-Beauvais (BVA) pour l'année 2026. Les données sont issues de sources publiques
-      et retraitées afin de présenter une vision journalière et cumulée des émissions.
-    </p>
-    <p>
-      L’aéroport de Paris-Beauvais se situe dans l’Oise et constitue
-      le principal aéroport low-cost du nord de l’Île-de-France, et le 9ème aéroport Français en terme de trafic passagers.
-    </p>
-    <p>
-      Sont incluses :
-      <br>• Les émissions directes du de l'aéroports : chauffage, consommation d'électricité, consommation de carburant pour les engins de pistes, ... (scope 1 & 2)
-      <br>• Les émissions liées aux transports terrestres des employés pour accéder à l'aéroport (Scope 3)
-      <br>• Les émissions liées au transports terrestres collectifs des passagers pour accéder à l'aéroport (Scope 3)
-      <br>• Les émissions liées au transports terrestres individuels des passagers pour accéder à l'aéroport (Scope 3)
-      <br>• Les émissions liées aux opérations des aéronefs : APU, roulage, décollage/atterrisage, vol demi-croisère, ainsi que la production et l'approvisionnement en carburant d'aviation et l'amortissement des aéronefs (Scope 3)
-    </p>
-    <p>Les émissions de gaz à effet de serre sont exprimées en tonnes équivalent dioxyde de carbone (t éq CO₂).</p>
-    <p><strong>Données :</strong> <span id="update-date">chargement...</span></p>
-    <p><br>La methodologie.html<strong>méthodologie détaillée de calcul des émissions</strong></a> est disponible sur une page dédiée.</p>
-  </div>
-
-  <div class="card">
-    <h2>Indicateurs clés</h2>
-    <div id="kpiGrid" style="display:grid; grid-template-columns: repeat(auto-fit,minmax(280px,1fr)); gap:16px;">
-      <!-- KPI 1 : Part aéronefs vs reste -->
-      <div class="kpi-box" id="kpiShareBox" style="background:#eef2f7; padding:16px; border-radius:10px;">
-        <h3 style="margin:0 0 8px 0;">Part des opérations aéronefs (YTD)</h3>
-        <canvas id="kpiShare" height="150"></canvas>
-        <div id="kpiShareText" style="margin-top:8px; font-size:0.95em; color:#333;"></div>
-      </div>
-
-      <!-- KPI 2 : Évolution annuelle -->
-      <div class="kpi-box" id="kpiTrendBox" style="background:#eef2f7; padding:16px; border-radius:10px;">
-        <h3 style="margin:0 0 8px 0;">Évolution annuelle des émissions</h3>
-        <canvas id="kpiTrend" height="150"></canvas>
-        <div style="margin-top:8px; font-size:0.85em; color:#555;">
-          Source : <code>EXPORT_yearly_total.csv</code> (année, émissions_totales [t éq CO₂], pax_total [optionnel])
+    <div class="card">
+      <h2>Indicateurs clés</h2>
+      <div id="kpiGrid" style="display:grid; grid-template-columns: repeat(auto-fit,minmax(280px,1fr)); gap:16px;">
+        <!-- KPI 1 -->
+        <div class="kpi-box" id="kpiShareBox" style="background:#eef2f7; padding:16px; border-radius:10px;">
+          <h3 style="margin:0 0 8px 0;">Part des opérations aéronefs (YTD)</h3>
+          <canvas id="kpiShare" height="150"></canvas>
+          <div id="kpiShareText" style="margin-top:8px; font-size:0.95em; color:#333;"></div>
+        </div>
+        <!-- KPI 2 -->
+        <div class="kpi-box" id="kpiTrendBox" style="background:#eef2f7; padding:16px; border-radius:10px;">
+          <h3 style="margin:0 0 8px 0;">Évolution annuelle des émissions</h3>
+          <canvas id="kpiTrend" height="150"></canvas>
+          <div style="margin-top:8px; font-size:0.85em; color:#555;">
+            Source : <code>EXPORT_yearly_total.csv</code> (année, émissions_totales [t éq CO₂], pax_total [optionnel])
+          </div>
+        </div>
+        <!-- KPI 3 : Duo compagnies -->
+        <div class="kpi-box" id="kpiDuoBox" style="background:#eef2f7; padding:16px; border-radius:10px;">
+          <h3 style="margin:0 0 8px 0;">Part des 2 compagnies leaders (YTD)</h3>
+          <canvas id="kpiDuo" height="150"></canvas>
+          <div id="kpiDuoText" style="margin-top:8px; font-size:0.95em; color:#333;"></div>
         </div>
       </div>
+    </div>
 
-      <!-- KPI 3 : Duo compagnies -->
-      <div class="kpi-box" id="kpiDuoBox" style="background:#eef2f7; padding:16px; border-radius:10px;">
-        <h3 style="margin:0 0 8px 0;">Part des 2 compagnies leaders (YTD)</h3>
-        <canvas id="kpiDuo" height="150"></canvas>
-        <div id="kpiDuoText" style="margin-top:8px; font-size:0.95em; color:#333;"></div>
-      </div>
+    <div class="card">
+      <h2 class="tooltip" data-tip="Émissions quotidiennes de CO₂e réparties selon les différents scopes (1 : émissions directes, 2 : électricité, 3 : émissions indirectes).">Émissions journalières par scope ⓘ</h2>
+      <canvas id="chartDaily"></canvas>
+      <button class="export-btn" onclick="exportChartCSV('chartDaily','emissions_journalieres_scopes.csv')"><i class="fa fa-download"></i> Exporter</button>
+    </div>
+
+    <div class="card">
+      <h2 class="tooltip" data-tip="Total des émissions depuis le 1er janvier par catégorie d'émission">Cumul annuel par scope ⓘ</h2>
+      <canvas id="chartCumul"></canvas>
+      <button class="export-btn" onclick="exportChartCSV('chartCumul','cumul_annuel_scopes.csv')"><i class="fa fa-download"></i> Exporter</button>
+    </div>
+
+    <div class="card">
+      <h2>Cumul total des émissions depuis le 1er janvier ⓘ</h2>
+      <canvas id="chartTotalCumul"></canvas>
+      <button class="export-btn" onclick="exportChartCSV('chartTotalCumul','cumul_total.csv')"><i class="fa fa-download"></i> Exporter</button>
+    </div>
+
+    <div class="card">
+      <h2>Émissions journalières par compagnie</h2>
+      <canvas id="chartAirlines"></canvas>
+      <button class="export-btn" onclick="exportChartCSV('chartAirlines','emissions_compagnies.csv')"><i class="fa fa-download"></i> Exporter</button>
+    </div>
+
+    <div class="card">
+      <h2 class="tooltip" data-tip="Nombre de vols effectués chaque jour par compagnie">Rotations journalières par compagnie ⓘ</h2>
+      <canvas id="chartRotations"></canvas>
+      <button class="export-btn" onclick="exportChartCSV('chartRotations','rotations_compagnies.csv')"><i class="fa fa-download"></i> Exporter</button>
+    </div>
+
+    <div class="card">
+      <h2>Émissions par destination ⓘ</h2>
+      <canvas id="chartDestination"></canvas>
+      <button class="export-btn" onclick="exportChartCSV('chartDestination','emissions_destinations.csv')"><i class="fa fa-download"></i> Exporter</button>
+      <p style="font-size:0.85em;color:#666;margin-top:10px;">
+        Les principales destinations représentant au moins 90% des émissions sont affichées.
+        Les autres sont regroupées dans « Autres destinations ».
+      </p>
+    </div>
+
+    <div class="card">
+      <h2 class="tooltip" data-tip="Liste détaillée des vols au départ avec distance et émissions estimées">Vols départ ⓘ</h2>
+      <div id="tableDepartures"></div>
+    </div>
+
+    <div class="card">
+      <h2 class="tooltip" data-tip="Liste détaillée des vols à l'arrivée avec distance et émissions estimées">Vols arrivée ⓘ</h2>
+      <div id="tableArrivals"></div>
     </div>
   </div>
 
   <div class="card">
-    <h2 class="tooltip" data-tip="Émissions quotidiennes de CO₂e réparties selon les différents scopes (1 : émissions directes, 2 : électricité, 3 : émissions indirectes).">
-      Émissions journalières par scope ⓘ
-    </h2>
-    <canvas id="chartDaily"></canvas>
-    <button class="export-btn" onclick="exportChartCSV('chartDaily','emissions_journalieres_scopes.csv')">
-      <i class="fa fa-download"></i> Exporter
-    </button>
-  </div>
-
-  <div class="card">
-    <h2 class="tooltip" data-tip="Total des émissions depuis le 1er janvier par catégorie d'émission">
-      Cumul annuel par scope ⓘ
-    </h2>
-    <canvas id="chartCumul"></canvas>
-    <button class="export-btn" onclick="exportChartCSV('chartCumul','cumul_annuel_scopes.csv')">
-      <i class="fa fa-download"></i> Exporter
-    </button>
-  </div>
-
-  <div class="card">
-    <h2>Cumul total des émissions depuis le 1er janvier ⓘ</h2>
-    <canvas id="chartTotalCumul"></canvas>
-    <button class="export-btn" onclick="exportChartCSV('chartTotalCumul','cumul_total.csv')">
-      <i class="fa fa-download"></i> Exporter
-    </button>
-  </div>
-
-  <div class="card">
-    <h2>Émissions journalières par compagnie</h2>
-    <canvas id="chartAirlines"></canvas>
-    <button class="export-btn" onclick="exportChartCSV('chartAirlines','emissions_compagnies.csv')">
-      <i class="fa fa-download"></i> Exporter
-    </button>
-  </div>
-
-  <div class="card">
-    <h2 class="tooltip" data-tip="Nombre de vols effectués chaque jour par compagnie">
-      Rotations journalières par compagnie ⓘ
-    </h2>
-    <canvas id="chartRotations"></canvas>
-    <button class="export-btn" onclick="exportChartCSV('chartRotations','rotations_compagnies.csv')">
-      <i class="fa fa-download"></i> Exporter
-    </button>
-  </div>
-
-  <div class="card">
-    <h2>Émissions par destination ⓘ</h2>
-    <canvas id="chartDestination"></canvas>
-    <button class="export-btn" onclick="exportChartCSV('chartDestination','emissions_destinations.csv')">
-      <i class="fa fa-download"></i> Exporter
-    </button>
-    <p style="font-size:0.85em;color:#666;margin-top:10px;">
-      Les principales destinations représentant au moins 90% des émissions sont affichées.
-      Les autres sont regroupées dans « Autres destinations ».
+    <h2>Ressources &amp; Partage</h2>
+    <p><strong>Partagez ce site :</strong></p>
+    <div class="share-links">
+      <atps://www.linkedin.com/sharing/share-offsite/?url=https://emissionscarbonebva-maker.github.io/bva-ges/<i class="fab fa-linkedin"></i> Partager sur LinkedIn</a>
+      https://www.facebook.com/sharer/sharer.php?u=https://emissionscarbonebva-maker.github.io/bva-ges/<i class="fab fa-facebook"></i> Partager sur Facebook</a>
+    </div>
+    <p>Liens utiles :
+      <br>• https://adera-association.com/ADERA – Association pour l’environnement</a>
+      <br>• https://concertation.aeroportparisbeauvais.com/frConcertation Aéroport Paris-Beauvais</a>
+      <br>• https://www.aeroportparisbeauvais.com/professionnels/developpement-durable/le-bulletin-de-lenvironnementBulletin de l'environnement de l'aéroport de Paris-Beauvais</a>
     </p>
   </div>
 
-  <div class="card">
-    <h2 class="tooltip" data-tip="Liste détaillée des vols au départ avec distance et émissions estimées">Vols départ ⓘ</h2>
-    <div id="tableDepartures"></div>
+  <div class="card" id="mentions">
+    <h2>Mentions légales</h2>
+    <p>Ce site constitue une initiative citoyenne indépendante visant à informer le public 
+      sur les émissions estimées de gaz à effet de serre liées à l’activité de l’aéroport Paris-Beauvais.</p>
+    <p>Il ne constitue pas un site officiel et n’est affilié ni à l’exploitant de l’aéroport 
+      ni aux compagnies aériennes mentionnées.</p>
+    <p>Les données présentées proviennent de sources accessibles publiquement et font l’objet 
+      d’un traitement, d’une agrégation et d’estimations propres aux auteurs du site.</p>
+    <p>Les calculs reposent sur des hypothèses méthodologiques explicitées dans la
+      methodologie.html<strong>page méthodologie</strong></a>. Les résultats doivent être considérnés comme des estimations indicatives destinées 
+      à alimenter le débat public.</p>
+    <p>Conformément à la liberté d’expression et d’information, ce site participe au débat public 
+      sur les enjeux environnementaux locaux, notamment dans le cadre du projet d’agrandissement 
+      de l’aéroport et de la révision du PCAET du Beauvaisis.</p>
+    <p>Les informations publiées sont fournies à titre informatif. 
+      Malgré le soin apporté à leur élaboration, l’auteur ne saurait être tenu responsable d’éventuelles erreurs, omissions ou interprétations faites à partir des données présentées.</p>
+    <p>Les contenus, analyses et visualisations produits sur ce site peuvent être librement cités sous réserve de mentionner la source.</p>
   </div>
 
-  <div class="card">
-    <h2 class="tooltip" data-tip="Liste détaillée des vols à l'arrivée avec distance et émissions estimées">Vols arrivée ⓘ</h2>
-    <div id="tableArrivals"></div>
-  </div>
+  <footer>
+    Observatoire citoyen indépendant – Analyse des émissions de GES liées à l’activité de l’aéroport Paris-Beauvais |
+    Mentions légales |
+    Contact : mailto:emissionscarbonebva@gmail.comemissionscarbonebva@gmail.com</a> |
+    Hébergement : GitHub Pages (GitHub Inc.)
+  </footer>
+</div> <!-- /main -->
 
-</div>
-
-<div class="card">
-  <h2>Ressources &amp; Partage</h2>
-  <p><strong>Partagez ce site :</strong></p>
-  <div class="share-links">
-    https://www.linkedin.com/sharing/share-offsite/?url=https://emissionscarbonebva-maker.github.io/bva-ges/
-      <i class="fab fa-linkedin"></i> Partager sur LinkedIn
-    </a>
-    https://www.facebook.com/sharer/sharer.php?u=https://emissionscarbonebva-maker.github.io/bva-ges/
-      <i class="fab fa-facebook"></i> Partager sur Facebook
-    </a>
-  </div>
-  <p>
-    Liens utiles :
-    <br>• https://adera-association.com/ADERA – Association pour l’environnement</a>
-    <br>• https://concertation.aeroportparisbeauvais.com/frConcertation Aéroport Paris-Beauvais</a>
-    <br>• https://www.aeroportparisbeauvais.com/professionnels/developpement-durable/le-bulletin-de-lenvironnementBulletin de l'environnement de l'aéroport de Paris-Beauvais</a>
-  </p>
-</div>
-
-<div class="card" id="mentions">
-  <h2>Mentions légales</h2>
-  <p>
-    Ce site constitue une initiative citoyenne indépendante visant à informer le public 
-    sur les émissions estimées de gaz à effet de serre liées à l’activité de l’aéroport Paris-Beauvais.
-  </p>
-  <p>
-    Il ne constitue pas un site officiel et n’est affilié ni à l’exploitant de l’aéroport 
-    ni aux compagnies aériennes mentionnées.
-  </p>
-  <p>
-    Les données présentées proviennent de sources accessibles publiquement et font l’objet 
-    d’un traitement, d’une agrégation et d’estimations propres aux auteurs du site.
-  </p>
-  <p>
-    Les calculs reposent sur des hypothèses méthodologiques explicitées dans la
-    methodologie.html<strong>page méthodologie</strong></a>.
-    Les résultats doivent être considérnés comme des estimations indicatives destinées 
-    à alimenter le débat public.
-  </p>
-  <p>
-    Conformément à la liberté d’expression et d’information, ce site participe au débat public 
-    sur les enjeux environnementaux locaux, notamment dans le cadre du projet d’agrandissement 
-    de l’aéroport et de la révision du PCAET du Beauvaisis.
-  </p>
-  <p>
-    Les informations publiées sont fournies à titre informatif. 
-    Malgré le soin apporté à leur élaboration, l’auteur ne saurait être tenu responsable d’éventuelles erreurs, omissions ou interprétations faites à partir des données présentées.
-  </p>
-  <p>
-    Les contenus, analyses et visualisations produits sur ce site peuvent être librement cités sous réserve de mentionner la source.
-  </p>
-</div>
-
-<footer>
-Observatoire citoyen indépendant – Analyse des émissions de GES liées à l’activité de l’aéroport Paris-Beauvais |
-Mentions légales |
-Contact : mailto:emissionscarbonebva@gmail.comemissionscarbonebva@gmail.com</a> |
-Hébergement : GitHub Pages (GitHub Inc.)
-</footer>
-
-<!-- ======================= SCRIPT CONSOLIDÉ ======================= -->
+<!-- ======================= SCRIPT CONSOLIDÉ (v2 hotfix) ======================= -->
 <script>
 /* ========= parseCSV en portée globale ========= */
 function parseCSV(url, callback){
@@ -537,7 +453,7 @@ function ensurePeriodControls(canvasId, onChange){
   const mkBtn = (label,val) => {
     const b = document.createElement("button"); b.textContent=label; b.dataset.value=val;
     Object.assign(b.style,{padding:"6px 10px",border:"1px solid #cbd5e1",borderRadius:"6px",background:"#f8fafc",cursor:"pointer"});
-    b.addEventListener("click",()=>{ setActive(val); localStorage.setItem(`agg_${canvasId}`, val); onChange?.(val); });
+    b.addEventListener("click",()=>{ setActive(val); localStorage.setItem(`agg_${canvasId}`, val); if (typeof onChange === 'function') { onChange(val); } });
     return b;
   };
   const btnDay=mkBtn("Par jour","day"), btnWeek=mkBtn("Par semaine","week"), btnMonth=mkBtn("Par mois","month");
@@ -563,7 +479,7 @@ document.addEventListener("DOMContentLoaded", function(){
   /* ========= KPI 1 : Donut aéronefs vs reste ========= */
   function buildKPIShare(){
     parseCSV('./data/EXPORT_daily_scopes.csv', (rows, headers)=>{
-      if (!rows?.length){ document.getElementById('kpiShareBox').style.display='none'; return; }
+      if (!rows || !rows.length){ document.getElementById('kpiShareBox').style.display='none'; return; }
       const keyVols='scope_vols', scopeKeys=headers.slice(1,6);
       let sumVols=0, sumOthers=0;
       rows.forEach(r=>{
@@ -591,10 +507,10 @@ document.addEventListener("DOMContentLoaded", function(){
     });
   }
 
-  /* ========= KPI 2 : Histogramme annuel + intensité (optionnelle) ========= */
+  /* ========= KPI 2 : Histogramme annuel + intensité ========= */
   function buildKPITrend(){
     parseCSV('./data/EXPORT_yearly_total.csv', (rows, headers)=>{
-      if (!rows?.length){ const b=document.getElementById('kpiTrendBox'); if(b) b.style.display='none'; return; }
+      if (!rows || !rows.length){ const b=document.getElementById('kpiTrendBox'); if(b) b.style.display='none'; return; }
       const norm = s => String(s||'').replace(/\uFEFF/g,'').trim().toLowerCase();
       const keyYear = headers.find(h=>norm(h)==='annee') || headers[0];
       const keyEmis = headers.find(h=>norm(h).includes('emission')) || headers[1];
@@ -642,7 +558,7 @@ document.addEventListener("DOMContentLoaded", function(){
   function buildKPIDuo(){
     parseCSV('./data/EXPORT_daily_airlines.csv', (rows)=>{
       const box = document.getElementById('kpiDuoBox');
-      if (!rows?.length || !box){ if(box) box.style.display='none'; return; }
+      if (!rows || !rows.length || !box){ if(box) box.style.display='none'; return; }
       const byComp = {};
       rows.forEach(r=>{
         const c=(r.compagnie||'').trim(); if(!c) return;
@@ -749,7 +665,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
   /* ========= Graphique 2 : Cumul annuel par scope ========= */
   parseCSV('./data/EXPORT_cumul_scopes.csv', (data, headers)=>{
-    if(!data?.length) return;
+    if(!data || !data.length) return;
     headers = headers.map(h=>h.replace(/\uFEFF/g,'').trim());
     const dateKey = headers[0];
     data.sort((a,b)=> new Date(a[dateKey]) - new Date(b[dateKey]));
@@ -1010,37 +926,56 @@ document.addEventListener("DOMContentLoaded", function(){
             { type:"line", label:"Nombre de vols (YTD)", data:valV, yAxisID:"y1",
               borderColor:"#d62728", backgroundColor:"rgba(214, 39, 40, 0.15)", borderWidth:2, pointRadius:2, tension:0.2, fill:false }
           ]},
-          options:{ responsive:true, plugins:{ legend:{display:true},
-            tooltip:{ callbacks:{ label:(ctx)=>{
-              const i=ctx.dataIndex, item=filtered[i]||{emission:0,vols:0};
-              if (ctx.dataset.yAxisID==="y"){
-                const value=item.emission||0; const percent= totalEmissions>0 ? ((value/totalEmissions)*100).toFixed(1) : 0;
-                const avg = item.vols>0 ? (item.emission/item.vols) : 0;
-                return [`${ctx.dataset.label} : ${Math.round(value).toLocaleString('fr-FR')} t éq CO₂ (${percent} %)`,
-                        `Moyenne par vol : ${avg.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})} t éq CO₂`];
-              } else {
-                const vols=item.vols||0; const pVols = totalVols>0 ? ((vols/totalVols)*100).toFixed(1) : 0;
-                return [`${ctx.dataset.label} : ${vols.toLocaleString('fr-FR')} vols`,`Part des vols : ${pVols} %`];
+          options:{
+            responsive:true,
+            plugins:{
+              legend:{ display:true },
+              tooltip:{
+                callbacks:{
+                  label:(ctx)=>{
+                    const i = ctx.dataIndex;
+                    const item = filtered[i] || { emission: 0, vols: 0 };
+                    if (ctx.dataset.yAxisID === "y") {
+                      const value = item.emission || 0;
+                      const percent = totalEmissions > 0 ? ((value / totalEmissions) * 100).toFixed(1) : 0;
+                      const avg = item.vols > 0 ? (item.emission / item.vols) : 0;
+                      return [
+                        `${ctx.dataset.label} : ${Math.round(value).toLocaleString('fr-FR')} t éq CO₂ (${percent} %)`,
+                        `Moyenne par vol : ${avg.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} t éq CO₂`
+                      ];
+                    } else {
+                      const vols = item.vols || 0;
+                      const percentVol = totalVols > 0 ? ((vols / totalVols) * 100).toFixed(1) : 0;
+                      return [
+                        `${ctx.dataset.label} : ${vols.toLocaleString('fr-FR')} vols`,
+                        `Part des vols : ${percentVol} %`
+                      ];
+                    }
+                  }
+                }
               }
-            } } } },
-            scales:{ x:{ ticks:{maxRotation:90,minRotation:45} },
-              y:{ beginAtZero:true, title:{display:true,text:"Emissions de gaz à effet de serre (en t éq CO₂)"} },
-              y1:{ beginAtZero:true, position:"right", grid:{drawOnChartArea:false}, title:{display:true,text:"Nombre de vols (cumul depuis le 1er janvier)"},
-                   ticks:{ stepSize:1, callback:(v)=> Number.isInteger(v)?v:"" } } }
+            },
+            scales:{
+              x:{ ticks:{ maxRotation:90, minRotation:45 } },
+              y:{ beginAtZero:true, title:{ display:true, text:"Emissions de gaz à effet de serre (en t éq CO₂)" } },
+              y1:{ beginAtZero:true, position:"right", grid:{ drawOnChartArea:false },
+                   title:{ display:true, text:"Nombre de vols (cumul depuis le 1er janvier)" },
+                   ticks:{ stepSize:1, callback:(v)=> Number.isInteger(v) ? v : "" } }
+            }
           }
         });
       }
 
       const btns = document.getElementById("chartDestination")._sortBtns || {};
-      btns.btnEmi?.addEventListener("click", ()=>{ sortKey="emission"; buildDestinationChart(); });
-      btns.btnVols?.addEventListener("click", ()=>{ sortKey="vols"; buildDestinationChart(); });
+      if (btns.btnEmi)  { btns.btnEmi.addEventListener("click",  ()=>{ sortKey="emission"; buildDestinationChart(); }); }
+      if (btns.btnVols) { btns.btnVols.addEventListener("click", ()=>{ sortKey="vols";     buildDestinationChart(); }); }
       buildDestinationChart();
     });
   });
 
   /* ========= TABLES Départs / Arrivées ========= */
   function createTable(containerId, data){
-    if(!data?.length){ document.getElementById(containerId).innerHTML = "<p>Aucune donnée disponible</p>"; return; }
+    if(!data || !data.length){ document.getElementById(containerId).innerHTML = "<p>Aucune donnée disponible</p>"; return; }
     const container = document.getElementById(containerId);
     const headers = Object.keys(data[0]);
     let activeFilters={}, sortDirection=1, currentPage=1, filteredData=[...data], debounceTimer;
@@ -1189,26 +1124,29 @@ document.addEventListener("DOMContentLoaded", function(){
       });
     });
     document.getElementById(containerId+"-reset").addEventListener("click",()=>{
-      activeFilters={}; container.querySelectorAll("[data-filter]").forEach(i=> i.value="");
+      activeFilters={}; container.querySelectorAll("[data-filter]").forEach(i=> i.value="";
+      );
       const dateIndex = headers.findIndex(h=> h.toLowerCase().includes("date"));
       if (dateIndex!==-1){ data.sort((a,b)=> new Date(b[headers[dateIndex]]) - new Date(a[headers[dateIndex]])); }
       filteredData=[...data]; currentPage=1; renderTable();
     });
 
     const exportBtn = document.getElementById(containerId+"-export");
-    exportBtn?.addEventListener("click", ()=>{
-      const rows=[]; rows.push(headers.map(h=> displayName(h)).join(";"));
-      const dataToExport = filteredData.length ? filteredData : data;
-      dataToExport.forEach(obj=>{
-        const row = headers.map(h => String(obj[h] ?? "").replace(/;/g, ","));
-        rows.push(row.join(";"));
+    if (exportBtn) {
+      exportBtn.addEventListener("click", ()=>{
+        const rows=[]; rows.push(headers.map(h=> displayName(h)).join(";"));
+        const dataToExport = filteredData.length ? filteredData : data;
+        dataToExport.forEach(obj=>{
+          const row = headers.map(h => String(obj[h] ?? "").replace(/;/g, ","));
+          rows.push(row.join(";"));
+        });
+        const csvContent = "\uFEFF"+rows.join("\n");
+        const blob = new Blob([csvContent], {type:"text/csv;charset=utf-8;"});
+        const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+        const base = containerId==="tableDepartures" ? "vols_depart" : (containerId==="tableArrivals" ? "vols_arrivee" : containerId);
+        a.download = base + "_export.csv"; a.click();
       });
-      const csvContent = "\uFEFF"+rows.join("\n");
-      const blob = new Blob([csvContent], {type:"text/csv;charset=utf-8;"});
-      const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
-      const base = containerId==="tableDepartures" ? "vols_depart" : (containerId==="tableArrivals" ? "vols_arrivee" : containerId);
-      a.download = base + "_export.csv"; a.click();
-    });
+    }
 
     renderTable();
   }
@@ -1231,17 +1169,19 @@ fetch("data/EXPORT_update_time.csv")
   const date = data[0].trim();
   const time = data[1].trim();
   const d = new Date(date + "T" + time);
+  const el = document.getElementById("update-date");
+  if(!el) return;
   if(!isNaN(d)){
-    const formatted =
-      d.toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"}) +
-      " à " +
-      d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
-    document.getElementById("update-date").innerHTML = "dernière mise à jour le " + formatted;
+    const formatted = d.toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"}) + " à " + d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+    el.innerHTML = "dernière mise à jour le " + formatted;
   } else {
-    document.getElementById("update-date").innerHTML = "date de mise à jour indisponible";
+    el.innerHTML = "date de mise à jour indisponible";
   }
 })
-.catch(() => { document.getElementById("update-date").innerHTML = "date de mise à jour indisponible"; });
+.catch(() => {
+  const el = document.getElementById("update-date");
+  if (el) el.innerHTML = "date de mise à jour indisponible";
+});
 
 // menu retractable
 const sidebar = document.getElementById("sidebar");
@@ -1259,8 +1199,6 @@ document.querySelectorAll(".menu a").forEach(link => {
   if(linkPage === currentPage){ link.classList.add("active"); }
 });
 </script>
-
-</div> <!-- /main -->
 
 </body>
 </html>
