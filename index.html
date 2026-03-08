@@ -1201,13 +1201,14 @@ function ensurePeriodControls(canvasId, onChange) {
     });
 
     // ====== Contrôles & reconstruction ======
+
 let chartDailyInstance = null;
 
 function buildChartDaily(period) {
-  const dateKey  = headers[0];
-  const scopeKeys = headers.slice(1, 6); // 5 scopes
+  const dateKey   = headers[0];
+  const scopeKeys = headers.slice(1, 6); // 5 scopes attendus
 
-  // Agrégation par période
+  // --- Agrégation par période (day/week/month) ---
   const perScope = {};
   scopeKeys.forEach(k => perScope[k] = {});
   const periodsSet = new Set();
@@ -1226,28 +1227,52 @@ function buildChartDaily(period) {
   const labels = sortPeriodKeys(Array.from(periodsSet), period);
   const isDay = (period === "day");
 
-  const colors = ["#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd"];
-  const datasets = scopeKeys.map((k, i) => ({
-    type: isDay ? "line" : "bar",
-    label: displayName(k),
-    data: labels.map(pk => perScope[k][pk] || 0),
-    borderColor: colors[i],
-    backgroundColor: isDay ? colors[i] + "33" : colors[i] + "AA",
-    borderWidth: 2,
-    fill: isDay,                 // aires empilées en JOUR
-    stack: isDay ? "stackS" : "stackS" // même pile (utile pour barres)
-  }));
+  // --- Mapping de couleurs par clé CSV (cohérent avec tes couleurs) ---
+  const colorMap = {
+    "scope_vols":      "#1f77b4", // Opérations aéronefs (Scope 3)
+    "scope_acces_ind": "#ff7f0e", // Accès individuels
+    "scope_acces_coll":"#2ca02c", // Accès collectifs
+    "scope_employes":  "#d62728", // Employés
+    "scope_1_2":       "#9467bd"  // Emissions directes aéroport (Scope 1&2)
+  };
 
+  // --- Ordonnancement des séries ---
+  // En "Jour" : on force 'scope_vols' en dernier (rendu par-dessus => au-dessus dans la pile)
+  let orderedKeys = [...scopeKeys];
+  if (isDay) {
+    orderedKeys = scopeKeys.filter(k => k !== "scope_vols").concat(["scope_vols"]);
+  }
+
+  // --- Datasets ---
+  const datasets = orderedKeys.map(k => {
+    const c = colorMap[k] || "#888888";
+    return {
+      type: isDay ? "line" : "bar",
+      label: displayName(k),
+      data: labels.map(pk => perScope[k][pk] || 0),
+      borderColor: c,
+      // 8‑digit hex pour l’alpha : 0x33 ≈ 20%, 0xAA ≈ 67%
+      backgroundColor: isDay ? (c + "33") : (c + "AA"),
+      borderWidth: 2,
+      fill: isDay,               // aires empilées en vue Jour
+      stack: "stackS"            // même pile pour toutes les périodes
+    };
+  });
+
+  // --- (Re)création du chart ---
   if (chartDailyInstance) chartDailyInstance.destroy();
   chartDailyInstance = new Chart(document.getElementById("chartDaily"), {
     type: isDay ? "line" : "bar",
     data: { labels, datasets },
     options: {
       responsive: true,
-      interaction: { mode:'index', intersect:false },
+      interaction: { mode: 'index', intersect: false },
       plugins: {
         legend: { position: 'top' },
-        zoom: { pan: {enabled:true, mode:'x'}, zoom: {wheel:{enabled:true}, pinch:{enabled:true}, mode:'x'} },
+        zoom: {
+          pan:   { enabled: true, mode: 'x' },
+          zoom:  { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }
+        },
         tooltip: {
           callbacks: {
             label: (ctx) => {
@@ -1258,19 +1283,23 @@ function buildChartDaily(period) {
         }
       },
       scales: {
-        x: { 
-          title: { display: true, text: (isDay ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")) },
-          stacked: !isDay         // empilage horizontal pour barres
+        x: {
+          title: {
+            display: true,
+            text: isDay ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")
+          },
+          stacked: !isDay // barres empilées uniquement en Semaine/Mois
         },
-        y: { 
+        y: {
           beginAtZero: true,
-          stacked: true,          // empilage vertical (jour ET barres)
+          stacked: true, // empilage vertical (aires jour & barres semaine/mois)
           title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" }
         }
       }
     }
   });
 }
+
 
 
 // Installer les boutons et premier rendu
