@@ -1385,7 +1385,7 @@ function buildChartCumul(period) {
   const totalKey = headers.find(h => h === "cumul_total");
   const scopeCols = headers.filter(h => h !== dateKey && h !== totalKey);
 
-  // 1) indexer par période -> dernière ligne de la période (cumul à fin de période)
+  // 1) Index par période -> dernière ligne de la période (cumul "fin de période")
   const periodLastRow = {}; // { pkey -> row }
   data.forEach(row => {
     const pkey = makePeriodKey(row[dateKey], period);
@@ -1395,32 +1395,32 @@ function buildChartCumul(period) {
     }
   });
 
-  // 2) labels triés + type selon période
+  // 2) Labels triés + type selon période
   const labels = sortPeriodKeys(Object.keys(periodLastRow), period);
   const isDay  = (period === "day");
 
-  // 3) Mapping de couleurs identique au daily
+  // 3) Palette COHÉRENTE pour les clés "cumul_*"
   const colorMap = {
-    "scope_1_2":        "#9467bd", // Emissions directes aéroport (Scope 1&2)
-    "scope_employes":   "#d62728", // Accès employés
-    "scope_acces_coll": "#2ca02c", // Accès collectifs passagers
-    "scope_acces_ind":  "#ff7f0e", // Accès individuels passagers
-    "scope_vols":       "#1f77b4"  // Opérations aéronefs (Scope 3)
+    "cumul_scope_1_2":  "#9467bd", // Emissions directes aéroport (Scope 1&2)
+    "cumul_employes":   "#d62728", // Accès employés
+    "cumul_acces_coll": "#2ca02c", // Accès collectifs passagers
+    "cumul_acces_ind":  "#ff7f0e", // Accès individuels passagers
+    "cumul_vol":        "#1f77b4"  // Opérations aéronefs (Scope 3)
   };
 
-  // 4) Ordre imposé dans toutes les vues
+  // 4) Ordre imposé dans TOUTES les vues
   const desiredOrder = [
-    "scope_1_2",
-    "scope_employes",
-    "scope_acces_coll",
-    "scope_acces_ind",
-    "scope_vols"
+    "cumul_scope_1_2",
+    "cumul_employes",
+    "cumul_acces_coll",
+    "cumul_acces_ind",
+    "cumul_vol"
   ];
   const orderedCols = desiredOrder
     .filter(k => scopeCols.includes(k))
-    .concat(scopeCols.filter(k => !desiredOrder.includes(k))); // au cas où une clé "surprise" apparaît
+    .concat(scopeCols.filter(k => !desiredOrder.includes(k))); // ajoute toute clé "surprise" à la fin
 
-  // 5) Datasets dans l’ordre voulu
+  // 5) Datasets dans l'ordre voulu + couleurs dédiées "cumul_*"
   const datasets = orderedCols.map(col => {
     const c = colorMap[col] || "#888888";
     return {
@@ -1432,7 +1432,7 @@ function buildChartCumul(period) {
       }),
       borderWidth: 1.5,
       fill: true,
-      backgroundColor: c + (isDay ? "33" : "55"), // un peu plus transparent en "jour"
+      backgroundColor: isDay ? (c + "33") : (c + "55"), // 20% (jour) / 33% (sem/mois)
       borderColor: c,
       stack: "stack1"
     };
