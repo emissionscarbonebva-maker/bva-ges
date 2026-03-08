@@ -1567,15 +1567,18 @@ tooltip: {
 
         // Variante B — sur 2 lignes (si tu préfères) :
         return [
-           `${context.dataset.label} : ${valueRounded} t éq CO₂ (${percent} %)`,
-           `Moyenne par vol : ${avgStr} t éq CO₂`
-         ].join('\n');
+          `${context.dataset.label} : ${valueRounded} t éq CO₂ (${percent} %)`,
+          `Moyenne par vol : ${avgStr} t éq CO₂`
+        ];
       } else {
         // === Ligne Vols ===
         const vols = item.vols || 0;
         const percentVol = totalVols > 0 ? ((vols / totalVols) * 100).toFixed(1) : 0;
 
-        return `${context.dataset.label} : ${vols.toLocaleString('fr-FR')} vols (${percentVol} %)`;
+        return [
+          `${context.dataset.label} : ${vols.toLocaleString('fr-FR')} vols`,
+          `Part des vols : ${percentVol} %`
+        ];
       }
     }
   }
