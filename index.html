@@ -717,7 +717,7 @@ est disponible sur une page dédiée.
 </div>
   
 <div class="card">
-  <h2>Indicateurs clés (version punchy)</h2>
+  <h2>Indicateurs clés</h2>
 
   <div id="kpiGrid" style="display:grid; grid-template-columns: repeat(auto-fit,minmax(280px,1fr)); gap:16px;">
     <!-- KPI 1 : Part aéronefs vs reste -->
@@ -1362,25 +1362,14 @@ function buildKPIDuo() {
   });
 }
 
-// === Lancer les KPI (adapte si tu conserves les deux premiers KPI) ===
-document.addEventListener('DOMContentLoaded', () => {
-  buildKPIShare();  // donut aéronefs vs reste
-  buildKPITrend();  // histogramme annuel + intensité (optionnelle)
-  buildKPIDuo();    // <-- remplace l'ancien buildKPITop5()
-});
+// === Lancer les KPI (on est déjà dans DOMContentLoaded) ===
+buildKPIShare();  // donut aéronefs vs reste
+buildKPITrend();  // histogramme annuel + intensité (optionnelle)
+buildKPIDuo();    // duo compagnies
 
-    // Série total
-    datasets.push({
-      label:"Total scopes",
-      data:totalSeries,
-      borderWidth:3,
-      fill:false,
-      borderColor:"#000000"
-    });
+// ====== Contrôles & reconstruction ======
 
-    // ====== Contrôles & reconstruction ======
-
-// ====== Variante B : ordre fixe dans toutes les vues ======
+/*1 ===== Émissions journalières par scope ===== */
 let chartDailyInstance = null;
 
 function buildChartDaily(period) {
@@ -1493,48 +1482,6 @@ const initDailyPeriod = ensurePeriodControls("chartDaily", buildChartDaily);
 buildChartDaily(initDailyPeriod);
 });
 
-/*1 ===== Émissions journalières par scope ===== */
-  parseCSV('./data/EXPORT_daily_scopes.csv', (data,headers) => {
-    // Tri des dates (ancien → récent)
-    data.sort((a,b) => new Date(a[headers[0]]) - new Date(b[headers[0]]));
-
-    const labels = [];
-    const datasets = [];
-    const totalSeries = [];
-
-    const colors = ["#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd"];
-
-    // Création des datasets pour les 5 scopes avec libellés mappés
-    for(let i=1;i<=5;i++){
-      const csvKey = headers[i];
-      datasets.push({
-        label: displayName(csvKey), // libellé affiché
-        data: [],
-        borderWidth: 2,
-        fill: false,
-        borderColor: colors[i-1]
-      });
-    }
-
-    let total=0;
-
-    // Boucle principale
-    data.forEach(row => {
-      const date = row[headers[0]];
-      labels.push(date);
-
-      let dayTotal=0;
-      for(let i=1;i<=5;i++){
-        const raw = row[headers[i]];
-        let v = raw ? parseFloat(raw.replace(',','.')) : 0;
-        if(isNaN(v)) v=0;
-        datasets[i-1].data.push(v);
-        dayTotal += v;
-      }
-      totalSeries.push(dayTotal);
-      total += dayTotal;
-    });
- 
   /*2 ===== Cumul annuel par scope ===== */
   parseCSV('./data/EXPORT_cumul_scopes.csv', (data,headers) => {
     if(!data || data.length === 0) return;
