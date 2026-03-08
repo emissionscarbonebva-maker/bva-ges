@@ -717,27 +717,30 @@ est disponible sur une page dédiée.
 </div>
   
 <div class="card">
-<h2>Indicateurs clés</h2>
+  <h2>Indicateurs clés (version punchy)</h2>
 
-<div class="metrics">
+  <div id="kpiGrid" style="display:grid; grid-template-columns: repeat(auto-fit,minmax(280px,1fr)); gap:16px;">
+    <!-- KPI 1 : Part aéronefs vs reste -->
+    <div class="kpi-box" id="kpiShareBox" style="background:#eef2f7; padding:16px; border-radius:10px;">
+      <h3 style="margin:0 0 8px 0;">Part des opérations aéronefs (YTD)</h3>
+      <canvas id="kpiShare" height="150"></canvas>
+      <div id="kpiShareText" style="margin-top:8px; font-size:0.95em; color:#333;"></div>
+    </div>
 
-<div class="metric-box">
-Total période
-<div id="total" class="metric-value">...</div>
-</div>
+    <!-- KPI 2 : Évolution annuelle -->
+    <div class="kpi-box" id="kpiTrendBox" style="background:#eef2f7; padding:16px; border-radius:10px;">
+      <h3 style="margin:0 0 8px 0;">Évolution annuelle des émissions</h3>
+      <canvas id="kpiTrend" height="150"></canvas>
+      <div style="margin-top:8px; font-size:0.85em; color:#555;">
+        Source : <code>EXPORT_yearly_total.csv</code> (année, émissions_totales [t éq CO₂], pax_total [optionnel])
+      </div>
+    </div>
 
-<div class="metric-box">
-Moyenne journalière
-<div id="average" class="metric-value">...</div>
-</div>
-
-<div class="metric-box">
-Écart-type journalier
-<div id="stdDev" class="metric-value">...</div>
-</div>
-
- 
-</div>
+    <!-- KPI 3 : Duo compagnies -->
+<div class="kpi-box" id="kpiDuoBox" style="background:#eef2f7; padding:16px; border-radius:10px;">
+  <h3 style="margin:0 0 8px 0;">Part des 2 compagnies leaders (YTD)</h3>
+  <canvas id="kpiDuo" height="150"></canvas>
+  <div id="kpiDuoText" style="margin-top:8px; font-size:0.95em; color:#333;"></div>
 </div>
 
 <div class="card">
@@ -1133,63 +1136,238 @@ function ensurePeriodControls(canvasId, onChange) {
   return saved;
 }
 
+ /* ========= KPI 1 : Donut Part aéronefs vs reste ========= */
+// Data source : ./data/EXPORT_daily_scopes.csv (mêmes colonnes que “daily scopes”)
+function buildKPIShare() {
+  parseCSV('./data/EXPORT_daily_scopes.csv', (rows, headers) => {
+    if (!rows || !rows.length) { document.getElementById('kpiShareBox').style.display='none'; return; }
 
-  /*1 ===== Émissions journalières par scope ===== */
-  parseCSV('./data/EXPORT_daily_scopes.csv', (data,headers) => {
-    // Tri des dates (ancien → récent)
-    data.sort((a,b) => new Date(a[headers[0]]) - new Date(b[headers[0]]));
+    const keyVols = 'scope_vols';
+    const scopeKeys = headers.slice(1, 6); // 5 scopes attendus
+    let sumVols = 0, sumOthers = 0;
 
-    const labels = [];
-    const datasets = [];
-    const totalSeries = [];
-
-    const colors = ["#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd"];
-
-    // Création des datasets pour les 5 scopes avec libellés mappés
-    for(let i=1;i<=5;i++){
-      const csvKey = headers[i];
-      datasets.push({
-        label: displayName(csvKey), // libellé affiché
-        data: [],
-        borderWidth: 2,
-        fill: false,
-        borderColor: colors[i-1]
+    rows.forEach(r => {
+      const vVols = parseFloat(String(r[keyVols]||'0').replace(',','.')) || 0;
+      sumVols += vVols;
+      scopeKeys.forEach(k => {
+        if (k !== keyVols) {
+          const v = parseFloat(String(r[k]||'0').replace(',','.')) || 0;
+          sumOthers += v;
+        }
       });
-    }
-
-    let total=0;
-
-    // Boucle principale
-    data.forEach(row => {
-      const date = row[headers[0]];
-      labels.push(date);
-
-      let dayTotal=0;
-      for(let i=1;i<=5;i++){
-        const raw = row[headers[i]];
-        let v = raw ? parseFloat(raw.replace(',','.')) : 0;
-        if(isNaN(v)) v=0;
-        datasets[i-1].data.push(v);
-        dayTotal += v;
-      }
-      totalSeries.push(dayTotal);
-      total += dayTotal;
     });
 
-    // Indicateurs
-    document.getElementById("total").innerText =
-      Math.round(total).toLocaleString('fr-FR') + " tonnes éq CO2";
+    const total = sumVols + sumOthers;
+    if (total <= 0) { document.getElementById('kpiShareBox').style.display='none'; return; }
 
-    const average = labels.length > 0 ? total/labels.length : 0;
-    document.getElementById("average").innerText =
-      Math.round(average).toLocaleString('fr-FR') + " tonnes éq CO2";
+    const pVols   = (sumVols/total*100);
+    const pOthers = 100 - pVols;
 
-    let variance = 0;
-    totalSeries.forEach(v => { variance += Math.pow(v - average, 2); });
-    variance = variance / totalSeries.length;
-    const stdDev = Math.sqrt(variance);
-    document.getElementById("stdDev").innerText =
-      Math.round(stdDev).toLocaleString('fr-FR') + " tonnes éq CO2";
+    const ctx = document.getElementById('kpiShare');
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Opérations aéronefs', 'Reste des activités'],
+        datasets: [{
+          data: [sumVols, sumOthers],
+          backgroundColor: ['#1f77b4', '#9aa4b2'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        cutout: '65%',
+        plugins: {
+          legend: { display: true, position: 'bottom' },
+          tooltip: { callbacks: {
+            label: (c) => `${c.label} : ${Math.round(c.parsed).toLocaleString('fr-FR')} t éq CO₂`
+          }}
+        }
+      }
+    });
+
+    document.getElementById('kpiShareText').innerHTML =
+      `<strong>${pVols.toFixed(1)} %</strong> des émissions proviennent des opérations aéronefs.`;
+  });
+}
+
+/* ========= KPI 2 : Histogramme annuel + Intensité CO₂/pax (optionnelle) ========= */
+/**
+ * Fichier attendu : ./data/EXPORT_yearly_total.csv (séparateur ; ou ,)
+ * Colonnes minimales : annee, emissions_total
+ * Optionnel : pax_total  -> permet d'afficher l'intensité (kg CO₂/pax) en courbe secondaire.
+ */
+function buildKPITrend() {
+  parseCSV('./data/EXPORT_yearly_total.csv', (rows, headers) => {
+    try {
+      if (!rows || !rows.length) throw new Error('no data');
+
+      // Clefs tolérées (insensibles au BOM/espaces)
+      const norm = s => String(s||'').replace(/\uFEFF/g,'').trim().toLowerCase();
+      const keyYear  = headers.find(h => norm(h)==='annee') || headers[0];
+      const keyEmis  = headers.find(h => norm(h).includes('emission')) || headers[1];
+      const keyPax   = headers.find(h => norm(h).includes('pax')) || null;
+
+      // Tri par année croissante
+      rows.sort((a,b) => Number(a[keyYear]) - Number(b[keyYear]));
+
+      const labels = rows.map(r => String(r[keyYear]));
+      const values = rows.map(r => {
+        const v = parseFloat(String(r[keyEmis]||'0').replace(',','.'));
+        return isNaN(v) ? 0 : v;
+      });
+
+      const hasPax = !!keyPax && rows.some(r => r[keyPax] && r[keyPax].trim() !== '');
+      const intensity = hasPax ? rows.map(r => {
+        const emisT = parseFloat(String(r[keyEmis]||'0').replace(',','.')) || 0; // t CO2e
+        const pax   = parseFloat(String(r[keyPax] ||'0').replace(/\s/g,'').replace(',','.')) || 0;
+        return pax>0 ? (emisT*1000)/pax : 0; // kg CO2e / pax
+      }) : null;
+
+      const ctx = document.getElementById('kpiTrend');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [
+            {
+              type:'bar',
+              label: 'Émissions totales (t éq CO₂)',
+              data: values,
+              backgroundColor: 'rgba(31,60,136,0.6)',
+              borderColor: '#1f3c88',
+              borderWidth: 1
+            },
+            ...(hasPax ? [{
+              type: 'line',
+              label: 'Intensité (kg CO₂ / pax)',
+              data: intensity,
+              yAxisID: 'y1',
+              borderColor: '#d62728',
+              backgroundColor: 'rgba(214,39,40,0.15)',
+              borderWidth: 2,
+              pointRadius: 2,
+              tension: 0.2,
+              fill: false
+            }] : [])
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position:'bottom' },
+            tooltip: {
+              callbacks: {
+                label: (c) => {
+                  const v = c.parsed.y || 0;
+                  return c.dataset.yAxisID==='y1'
+                    ? `${c.dataset.label} : ${v.toLocaleString('fr-FR', {maximumFractionDigits:1})}`
+                    : `${c.dataset.label} : ${Math.round(v).toLocaleString('fr-FR')} t éq CO₂`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: { title: {display:true, text:'Année'} },
+            y: { beginAtZero:true, title: {display:true, text:'Émissions (t éq CO₂)'} },
+            y1: hasPax ? {
+              beginAtZero:true, position:'right', grid:{drawOnChartArea:false},
+              title:{display:true, text:'Intensité (kg CO₂ / pax)'}
+            } : undefined
+          }
+        }
+      });
+    } catch(e) {
+      // Pas de fichier ou structure différente -> on masque la tuile
+      const box = document.getElementById('kpiTrendBox');
+      if (box) box.style.display = 'none';
+    }
+  });
+}
+
+/* ========= KPI 3 (nouveau) : Duo compagnies ========= */
+// Source : ./data/EXPORT_daily_airlines.csv (date, compagnie, emissions, rotations...)
+function buildKPIDuo() {
+  parseCSV('./data/EXPORT_daily_airlines.csv', (rows) => {
+    const box = document.getElementById('kpiDuoBox');
+    if (!rows || !rows.length || !box) { if (box) box.style.display='none'; return; }
+
+    // Agrégation par compagnie
+    const byComp = {};
+    rows.forEach(r => {
+      const comp = (r.compagnie || '').trim();
+      let v = parseFloat(String(r.emissions||'0').replace(',','.'));
+      if (isNaN(v)) v = 0;
+      if (!comp) return;
+      byComp[comp] = (byComp[comp] || 0) + v;
+    });
+
+    const entries = Object.entries(byComp).sort((a,b) => b[1]-a[1]);
+    const sumAll  = entries.reduce((s, [,v]) => s+v, 0);
+    if (sumAll <= 0) { box.style.display='none'; return; }
+
+    // Top 2 + autres
+    const [c1, v1] = entries[0] || ['—', 0];
+    const [c2, v2] = entries[1] || ['—', 0];
+    const vOther   = Math.max(0, sumAll - v1 - v2);
+
+    const p1 = (v1/sumAll*100);
+    const p2 = (v2/sumAll*100);
+    const pO = 100 - p1 - p2;
+
+    // Palette simple (tu peux l’ajuster)
+    const color = (name) => ({
+      "Ryanair": "rgb(223,186,47)",
+      "Wizz Air": "rgb(225,14,73)",
+      "HiSky": "rgb(19,62,103)",
+      "SkyUp": "rgb(255,58,32)"
+    }[name] || "rgb(154,164,178)"); // autres
+
+    const ctx = document.getElementById('kpiDuo');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Part des émissions (YTD)'],
+        datasets: [
+          { label: c1, data: [p1], backgroundColor: color(c1) },
+          { label: c2, data: [p2], backgroundColor: color(c2) },
+          { label: 'Autres', data: [pO], backgroundColor: 'rgb(154,164,178)' }
+        ]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        plugins: {
+          legend: { position: 'bottom' },
+          tooltip: {
+            callbacks: {
+              label: (c) => `${c.dataset.label} : ${c.parsed.x.toFixed(1)} %`
+            }
+          }
+        },
+        scales: {
+          x: {
+            beginAtZero: true, max: 100, stacked: true,
+            ticks: { callback: (v) => v + ' %' }
+          },
+          y: { stacked: true }
+        }
+      }
+    });
+
+    // Légende textuelle
+    const fmtT = (t) => Math.round(t).toLocaleString('fr-FR');
+    document.getElementById('kpiDuoText').innerHTML =
+      `<strong>${(p1+p2).toFixed(1)} %</strong> des émissions proviennent de <strong>${c1}</strong> (${fmtT(v1)} t éq CO₂) et <strong>${c2}</strong> (${fmtT(v2)} t éq CO₂).<br>` +
+      `Autres compagnies : ${pO.toFixed(1)} % (${fmtT(vOther)} t éq CO₂).`;
+  });
+}
+
+// === Lancer les KPI (adapte si tu conserves les deux premiers KPI) ===
+document.addEventListener('DOMContentLoaded', () => {
+  buildKPIShare();  // donut aéronefs vs reste
+  buildKPITrend();  // histogramme annuel + intensité (optionnelle)
+  buildKPIDuo();    // <-- remplace l'ancien buildKPITop5()
+});
 
     // Série total
     datasets.push({
@@ -1315,6 +1493,47 @@ const initDailyPeriod = ensurePeriodControls("chartDaily", buildChartDaily);
 buildChartDaily(initDailyPeriod);
 });
 
+/*1 ===== Émissions journalières par scope ===== */
+  parseCSV('./data/EXPORT_daily_scopes.csv', (data,headers) => {
+    // Tri des dates (ancien → récent)
+    data.sort((a,b) => new Date(a[headers[0]]) - new Date(b[headers[0]]));
+
+    const labels = [];
+    const datasets = [];
+    const totalSeries = [];
+
+    const colors = ["#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd"];
+
+    // Création des datasets pour les 5 scopes avec libellés mappés
+    for(let i=1;i<=5;i++){
+      const csvKey = headers[i];
+      datasets.push({
+        label: displayName(csvKey), // libellé affiché
+        data: [],
+        borderWidth: 2,
+        fill: false,
+        borderColor: colors[i-1]
+      });
+    }
+
+    let total=0;
+
+    // Boucle principale
+    data.forEach(row => {
+      const date = row[headers[0]];
+      labels.push(date);
+
+      let dayTotal=0;
+      for(let i=1;i<=5;i++){
+        const raw = row[headers[i]];
+        let v = raw ? parseFloat(raw.replace(',','.')) : 0;
+        if(isNaN(v)) v=0;
+        datasets[i-1].data.push(v);
+        dayTotal += v;
+      }
+      totalSeries.push(dayTotal);
+      total += dayTotal;
+    });
  
   /*2 ===== Cumul annuel par scope ===== */
   parseCSV('./data/EXPORT_cumul_scopes.csv', (data,headers) => {
