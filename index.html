@@ -20,13 +20,13 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- Chart.js + plugins (on garde, mais on a aussi un fallback dynamique côté JS) -->
-https://cdn.jsdelivr.net/npm/chart.js@3.9.1</script>
-<script src="https://cdn.jsdelivr.net/npm/dateist/date-fns.min.js</script>
-https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2</script>
-https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/date-fns@2.30.0/dist/date-fns.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-<link rel="icon" type="image/png" href="Favicon/favicon.png">  
+<style>
 
 body{
 margin:0;
@@ -97,6 +97,7 @@ font-size:14px;
 z-index:9999;
 box-shadow:0 4px 12px rgba(0,0,0,0.2);
 }
+ 
  
 .sidebar.collapsed .menu a::after{
 opacity:0;
@@ -505,9 +506,35 @@ box-shadow:0 2px 6px rgba(0,0,0,0.05);
 font-size:0.9em;
 }
 
-/* ===== Tooltip ===== */
+/* ===== TOOLTIP ===== */
 
-.tooltip{ position:relative; display:inline-block; cursor:help; margin-left:6px; }
+.tooltip{
+position:relative;
+display:inline-block;
+cursor:help;
+margin-left:6px;
+}
+
+.tooltip-icon{
+display:inline-flex;
+align-items:center;
+justify-content:center;
+width:16px;
+height:16px;
+font-size:11px;
+border-radius:50%;
+background:#1f3c88;
+color:white;
+font-weight:bold;
+}
+
+/* ===== TOOLTIPS ===== */
+
+.tooltip {
+  position: relative;
+  cursor: help;
+}
+
 .tooltip::after {
   content: attr(data-tip);
   position: absolute;
@@ -524,34 +551,68 @@ font-size:0.9em;
   transform: translateY(4px);
   transition: 0.2s;
 }
-.tooltip:hover::after { opacity: 1; transform: translateY(0); }
 
-/* ===== Bouton Export ===== */
-.export-btn{
-  margin-top:15px;
-  padding:8px 14px;
-  border:none;
-  background:#1f3c88;
-  color:white;
-  border-radius:6px;
-  cursor:pointer;
-  font-size:0.9em;
+.tooltip:hover::after {
+  opacity: 1;
+  transform: translateY(0);
 }
-.export-btn:hover{ opacity:0.9; }
 
-/* === Narrow content === */
-:root { --narrow-max: 1050px; }
+  /* =================  BOUTON EXPORT ================= */
+  
+.export-btn{
+margin-top:15px;
+padding:8px 14px;
+border:none;
+background:#1f3c88;
+color:white;
+border-radius:6px;
+cursor:pointer;
+font-size:0.9em;
+}
+
+.export-btn:hover{
+opacity:0.9;
+}
+
+
+/* === NARROW CONTENT: limiter la largeur des cartes avec graphes & tableaux === */
+
+/* 1) Variable de largeur max pour le contenu étroit */
+:root {
+  --narrow-max: 1050px; /* ajuste ici : 720, 900, 1100… */
+}
+
+/* 2) Cartes qui contiennent : canvas (Chart.js) ou wrapper de tableau */
 .main .card:has(canvas),
 .main .card:has(.table-wrapper),
 .main .card:has(#tableDepartures),
 .main .card:has(#tableArrivals) {
   width: 100%;
   max-width: var(--narrow-max);
+  margin-inline: auto; /* centre horizontalement */
+}
+
+/* 3) Sécurité : les canvas ne dépassent pas */
+.main .card canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* 4) La zone scrollable des tableaux reste fluide */
+.table-wrapper {
+  max-width: 100%;
+  overflow: auto;
+}
+
+/* (Optionnel) Si tu utilises .chart-container, neutralise sa limite fixe */
+.chart-container {
+  width: 100%;
+  max-width: 100%;        /* au lieu de 700px si tu veux laisser la carte piloter la largeur */
   margin-inline: auto;
 }
-.main .card canvas { display:block; max-width:100%; height:auto; }
-.table-wrapper { max-width:100%; overflow:auto; }
-.chart-container { width:100%; max-width:100%; margin-inline:auto; }
+
+ 
 </style>
 
 <script type="application/ld+json">
@@ -568,152 +629,306 @@ font-size:0.9em;
   }
 }
 </script>
+
+<link rel="icon" type="image/png" href="Favicon/favicon.png">  
 </head>
 
 <body>
 
 <!-- SIDEBAR -->
+
 <div class="sidebar" id="sidebar">
-  <div class="logo">logo-bva.png</div>
-  <button id="toggleSidebar" class="toggle-btn"><i class="fa-solid fa-angle-left"></i></button>
-  <nav class="menu">
-    index.html<span class="icon">🏠</span><span class="text">Accueil</span></a>
-    <a href="methodologie.html" data-title="Méthodologielass="text">Méthodologie</span></a>
-  </nav>
+
+<div class="logo">
+<img src="logo-bva.png">
+</div>
+
+<button id="toggleSidebar" class="toggle-btn">
+<i class="fa-solid fa-angle-left"></i>
+</button>
+
+<nav class="menu">
+
+<a href="index.html" data-title="Accueil">
+<span class="icon">🏠</span>
+<span class="text">Accueil</span>
+</a>
+
+<a href="methodologie.html" data-title="Méthodologie">
+<span class="icon">📘</span>
+<span class="text">Méthodologie</span>
+</a>
+
+</nav>
+
 </div>
 
 <!-- MAIN -->
+
 <div class="main">
-<header><h1>Observatoire des émissions de gaz à effet de serre de l'aéroport de Paris-Beauvais</h1></header>
+
+<header>
+
+<h1>Observatoire des émissions de gaz à effet de serre de l'aéroport de Paris-Beauvais</h1>
+
+</header>
+
 
 <div class="container">
 
-  <div class="card">
-    <h2>Analyse des émissions en 2026</h2>
-    <p>Ce site présente une analyse indépendante des émissions de gaz à effet de serre de l’aéroport de Paris-Beauvais (BVA) pour l'année 2026. Les données sont issues de sources publiques et retraitées afin de présenter une vision journalière et cumulée des émissions.</p>
-    <p>L’aéroport de Paris-Beauvais se situe dans l’Oise et constitue le principal aéroport low-cost du nord de l’Île-de-France, et le 9ème aéroport Français en terme de trafic passagers.</p>
-    <p>
-      Sont incluses :
-      <br>• Les émissions directes du de l'aéroports : chauffage, consommation d'électricité, consommation de carburant pour les engins de pistes, ... (scope 1 & 2)
-      <br>• Les émissions liées aux transports terrestres des employés pour accéder à l'aéroport (Scope 3)
-      <br>• Les émissions liées au transports terrestres collectifs des passagers pour accéder à l'aéroport (Scope 3)
-      <br>• Les émissions liées au transports terrestres individuels des passagers pour accéder à l'aéroport (Scope 3)
-      <br>• Les émissions liées aux opérations des aéronefs : APU, roulage, décollage/atterrisage, vol demi-croisère, ainsi que la production et l'approvisionnement en carburant d'aviatione et l'amortissement des aéronefs (Scope 3)
-    </p>
-    <p>Les émissions de gaz à effet de serre sont exprimées en tonnes équivalent dioxyde de carbone (t éq CO₂).</p>
-    <p><strong>Données :</strong> <span id="update-date">chargement...</span></p>
-    <p><br>La <a href="methodml<strong>méthodologie détaillée de calcul des émissions</strong></a> est disponible sur une page dédiée.</p>
-  </div>
+<div class="card">
+<h2>Analyse des émissions en 2026</h2>
+
+<p>
+Ce site présente une analyse indépendante des émissions de gaz à effet de serre
+de l’aéroport de Paris-Beauvais (BVA) pour l'année 2026. Les données sont issues de sources publiques
+et retraitées afin de présenter une vision journalière et cumulée des émissions.
+</p>
+
+<p>
+L’aéroport de Paris-Beauvais se situe dans l’Oise et constitue
+le principal aéroport low-cost du nord de l’Île-de-France, et le 9ème aéroport Français en terme de trafic passagers.
+</p>
+
+<p>
+Sont incluses :
+<br>• Les émissions directes du de l'aéroports : chauffage, consommation d'électricité, consommation de carburant pour les engins de pistes, ... (scope 1 & 2)
+<br>• Les émissions liées aux transports terrestres des employés pour accéder à l'aéroport (Scope 3)
+<br>• Les émissions liées au transports terrestres collectifs des passagers pour accéder à l'aéroport (Scope 3)
+<br>• Les émissions liées au transports terrestres individuels des passagers pour accéder à l'aéroport (Scope 3)
+<br>• Les émissions liées aux opérations des aéronefs : APU, roulage, décollage/atterrisage, vol demi-croisère, ainsi que la production et l'approvisionnement en carburant d'aviatione et l'amortissement des aéronefs (Scope 3)
+</p>
+
+  <p>
+    Les émissions de gaz à effet de serre sont exprimées en tonnes équivalent dioxyde de carbone (t éq CO₂).
+  </p>
+
+<p>
+<strong>Données :</strong>
+<span id="update-date">chargement...</span>
+</p>
   
-  <div class="card">
-    <h2>Indicateurs clés</h2>
-    <div class="metrics">
-      <div class="metric-box">Total période<div id="total" class="metric-value">...</div></div>
-      <div class="metric-box">Moyenne journalière<div id="average" class="metric-value">...</div></div>
-      <div class="metric-box">Écart-type journalier<div id="stdDev" class="metric-value">...</div></div>
-    </div>
-  </div>
+  <p>
+  <br>
+La <a href="methodologie.html"><strong>méthodologie détaillée de calcul des émissions</strong></a>
+est disponible sur une page dédiée.
+</p>
 
-  <div class="card">
-    <h2 class="tooltip" data-tip="Émissions quotidiennes de CO₂e réparties selon les différents scopes (1 : émissions directes, 2 : électricité, 3 : émissions indirectes).">Émissions journalières par scope ⓘ</h2>
-    <canvas id="chartDaily"></canvas>
-    <button class="export-btn" onclick="exportChartCSV('chartDaily','emissions_journalieres_scopes.csv')"><i class="fa fa-download"></i> Exporter</button>
-  </div>
-
-  <div class="card">
-    <h2 class="tooltip" data-tip="Total des émissions depuis le 1er janvier par catégorie d'émission">Cumul annuel par scope ⓘ</h2>
-    <canvas id="chartCumul"></canvas>
-    <button class="export-btn" onclick="exportChartCSV('chartCumul','cumul_annuel_scopes.csv')"><i class="fa fa-download"></i> Exporter</button>
-  </div>
-
-  <!-- (SUPPRIMÉ) Ancien 3e graphique -->
-
-  <div class="card">
-    <h2>Émissions journalières par compagnie</h2>
-    <canvas id="chartAirlines"></canvas>
-    <button class="export-btn" onclick="exportChartCSV('chartAirlines','emissions_compagnies.csv')"><i class="fa fa-download"></i> Exporter</button>
-  </div>
-
-  <div class="card">
-    <h2 class="tooltip" data-tip="Nombre de vols effectués chaque jour par compagnie">Rotations journalières par compagnie ⓘ</h2>
-    <canvas id="chartRotations"></canvas>
-    <button class="export-btn" onclick="exportChartCSV('chartRotations','rotations_compagnies.csv')"><i class="fa fa-download"></i> Exporter</button>
-  </div>
-
-  <div class="card">
-    <h2>Émissions par destination ⓘ</h2>
-    <canvas id="chartDestination"></canvas>
-    <button class="export-btn" onclick="exportChartCSV('chartDestination','emissions_destinations.csv')"><i class="fa fa-download"></i> Exporter</button>
-    <p style="font-size:0.85em;color:#666;margin-top:10px;">
-      Les principales destinations représentant au moins 90% des émissions sont affichées.
-      Les autres sont regroupées dans « Autres destinations ».
-    </p>
-  </div>
+</div>
   
-  <div class="card">
-    <h2 class="tooltip" data-tip="Liste détaillée des vols au départ avec distance et émissions estimées">Vols départ ⓘ</h2>
-    <div id="tableDepartures"></div>
-  </div>
+<div class="card">
+<h2>Indicateurs clés</h2>
 
-  <div class="card">
-    <h2 class="tooltip" data-tip="Liste détaillée des vols à l'arrivée avec distance et émissions estimées">Vols arrivée ⓘ</h2>
-    <div id="tableArrivals"></div>
-  </div>
+<div class="metrics">
+
+<div class="metric-box">
+Total période
+<div id="total" class="metric-value">...</div>
+</div>
+
+<div class="metric-box">
+Moyenne journalière
+<div id="average" class="metric-value">...</div>
+</div>
+
+<div class="metric-box">
+Écart-type journalier
+<div id="stdDev" class="metric-value">...</div>
+</div>
+
+ 
+</div>
+</div>
+
+<div class="card">
+<h2 class="tooltip" data-tip="Émissions quotidiennes de CO₂e réparties selon les différents scopes (1 : émissions directes, 2 : électricité, 3 : émissions indirectes).">
+Émissions journalières par scope ⓘ
+</h2>
+<canvas id="chartDaily"></canvas>
+
+ <button class="export-btn"
+onclick="exportChartCSV('chartDaily','emissions_journalieres_scopes.csv')">
+<i class="fa fa-download"></i> Exporter
+</button>
+  
+</div>
+
+<div class="card">
+<h2 class="tooltip" data-tip="Total des émissions depuis le 1er janvier par catégorie d'émission">
+Cumul annuel par scope ⓘ
+</h2>
+<canvas id="chartCumul"></canvas>
+
+<button class="export-btn"
+onclick="exportChartCSV('chartCumul','cumul_annuel_scopes.csv')">
+<i class="fa fa-download"></i> Exporter
+</button>
+  
+</div>
+
+<div class="card">
+<h2>Cumul total des émissions depuis le 1er janvier ⓘ</h2>
+<canvas id="chartTotalCumul"></canvas>
+
+<button class="export-btn"
+onclick="exportChartCSV('chartTotalCumul','cumul_total.csv')">
+<i class="fa fa-download"></i> Exporter
+</button>
+  
+</div>
+  
+<div class="card">
+<h2>Émissions journalières par compagnie</h2>
+<canvas id="chartAirlines"></canvas>
+
+<button class="export-btn"
+onclick="exportChartCSV('chartAirlines','emissions_compagnies.csv')">
+<i class="fa fa-download"></i> Exporter
+</button>
+  
+</div>
+
+<div class="card">
+<h2 class="tooltip" data-tip="Nombre de vols effectués chaque jour par compagnie">
+Rotations journalières par compagnie ⓘ
+</h2>
+<canvas id="chartRotations"></canvas>
+
+  <button class="export-btn"
+onclick="exportChartCSV('chartRotations','rotations_compagnies.csv')">
+<i class="fa fa-download"></i> Exporter
+</button>
+  
+</div>
+
+<div class="card">
+<h2>Émissions par destination ⓘ</h2>
+
+<canvas id="chartDestination"></canvas>
+
+<button class="export-btn"
+onclick="exportChartCSV('chartDestination','emissions_destinations.csv')">
+<i class="fa fa-download"></i> Exporter
+</button>
+  
+<p style="font-size:0.85em;color:#666;margin-top:10px;">
+Les principales destinations représentant au moins 90% des émissions sont affichées.
+Les autres sont regroupées dans « Autres destinations ».
+</p>
+
+</div>
+  
+<div class="card">
+<h2 class="tooltip" data-tip="Liste détaillée des vols au départ avec distance et émissions estimées">
+Vols départ ⓘ
+</h2>
+<div id="tableDepartures"></div>
+</div>
+
+<div class="card">
+<h2 class="tooltip" data-tip="Liste détaillée des vols à l'arrivée avec distance et émissions estimées">
+Vols arrivée ⓘ
+</h2>
+<div id="tableArrivals"></div>
+</div>
 
 </div>
 
 <div class="card">
   <h2>Ressources & Partage</h2>
+  
   <p><strong>Partagez ce site :</strong></p>
-  <div class="share-links">
-    <a href="https://www.linkedining/share-offsite/?url=https://emissionscarbonebva-maker.github.io/bva-ges/
-      <i class="fab fa-linkedin"></i> Partager sur LinkedIn
-    </a>
-    <a href="https://www.facebook.com/sharer/sharer.php?u=https://emissionscarbonebva-maker.github.io/bva-ges/" target="_blank" class="share-btnager sur Facebook
-    </a>
-  </div>
+
+<div class="share-links">
+  <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://emissionscarbonebva-maker.github.io/bva-ges/" target="_blank" class="share-btn linkedin">
+    <i class="fab fa-linkedin"></i> Partager sur LinkedIn
+  </a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=https://emissionscarbonebva-maker.github.io/bva-ges/" target="_blank" class="share-btn facebook">
+    <i class="fab fa-facebook"></i> Partager sur Facebook
+  </a>
+</div>
+
   <p>
     Liens utiles :
-    <br>• https://adera-association.com/ADERA – Association pour l’environnement</a>
-    <br>• https://concertation.aeroportparisbeauvais.com/frConcertation Aéroport Paris-Beauvais</a>
-    <br>• <a href="https://www.aeroportparisbeauvais.com/professionloppement-durable/le-bulletin-de-lenvironnementBulletin de l'environnement de l'aéroport de Paris-Beauvais</a>
+    <br>• <a href="https://adera-association.com/" target="_blank">ADERA – Association pour l’environnement</a>
+    <br>• <a href="https://concertation.aeroportparisbeauvais.com/fr" target="_blank">Concertation Aéroport Paris-Beauvais</a>
+    <br>• <a href="https://www.aeroportparisbeauvais.com/professionnels/developpement-durable/le-bulletin-de-lenvironnement" target="_blank">Bulletin de l'environnement de l'aéroport de Paris-Beauvais</a>
   </p>
 </div>
 
 <div class="card" id="mentions">
-  <h2>Mentions légales</h2>
-  <p>Ce site constitue une initiative citoyenne indépendante visant à informer le public sur les émissions estimées de gaz à effet de serre liées à l’activité de l’aéroport Paris-Beauvais.</p>
-  <p>Il ne constitue pas un site officiel et n’est affilié ni à l’exploitant de l’aéroport ni aux compagnies aériennes mentionnées.</p>
-  <p>Les données présentées proviennent de sources accessibles publiquement et font l’objet d’un traitement, d’une agrégation et d’estimations propres aux auteurs du site.</p>
-  <p>Les calculs reposent sur des hypothèses méthodologiques explicitées dans la methodologie.html<strong>page méthodologie</strong></a>. Les résultats doivent être considérnés comme des estimations indicatives destinées à alimenter le débat public.</p>
-  <p>Conformément à la liberté d’expression et d’information, ce site participe au débat public sur les enjeux environnementaux locaux, notamment dans le cadre du projet d’agrandissement de l’aéroport et de la révision du PCAET du Beauvaisis.</p>
-  <p>Les informations publiées sont fournies à titre informatif. Malgré le soin apporté à leur élaboration, l’auteur ne saurait être tenu responsable d’éventuelles erreurs, omissions ou interprétations faites à partir des données présentées.</p>
-  <p>Les contenus, analyses et visualisations produits sur ce site peuvent être librement cités sous réserve de mentionner la source.</p>
+<h2>Mentions légales</h2>
+
+<p>
+Ce site constitue une initiative citoyenne indépendante visant à informer le public 
+sur les émissions estimées de gaz à effet de serre liées à l’activité de l’aéroport Paris-Beauvais.
+</p>
+
+<p>
+Il ne constitue pas un site officiel et n’est affilié ni à l’exploitant de l’aéroport 
+ni aux compagnies aériennes mentionnées.
+</p>
+
+<p>
+Les données présentées proviennent de sources accessibles publiquement et font l’objet 
+d’un traitement, d’une agrégation et d’estimations propres aux auteurs du site.
+</p>
+
+<p>
+Les calculs reposent sur des hypothèses méthodologiques explicitées dans la
+<a href="methodologie.html"><strong>page méthodologie</strong></a>.
+Les résultats doivent être considérnés comme des estimations indicatives destinées 
+à alimenter le débat public.
+</p>
+
+<p>
+Conformément à la liberté d’expression et d’information, ce site participe au débat public 
+sur les enjeux environnementaux locaux, notamment dans le cadre du projet d’agrandissement 
+de l’aéroport et de la révision du PCAET du Beauvaisis.
+</p>
+
+<p>
+Les informations publiées sont fournies à titre informatif. 
+Malgré le soin apporté à leur élaboration, l’auteur ne saurait être tenu responsable d’éventuelles erreurs, omissions ou interprétations faites à partir des données présentées.
+</p>
+
+<p>
+Les contenus, analyses et visualisations produits sur ce site peuvent être librement cités sous réserve de mentionner la source.
+</p>
+  
 </div>
   
 <footer>
-  Observatoire citoyen indépendant – Analyse des émissions de GES liées à l’activité de l’aéroport Paris-Beauvais |
-  Mentions légales |
-  Contact : <a href="mailto:emissionsa@gmail.comemissionscarbonebva@gmail.com</a> |
-  Hébergement : GitHub Pages (GitHub Inc.)
+Observatoire citoyen indépendant – Analyse des émissions de GES liées à l’activité de l’aéroport Paris-Beauvais |
+Mentions légales |
+Contact : <a href="mailto:emissionscarbonebva@gmail.com">emissionscarbonebva@gmail.com</a> |
+Hébergement : GitHub Pages (GitHub Inc.)
 </footer>
 
 <script>
 /* ===== EXPORT CSV DES GRAPHIQUES ===== */
 function exportChartCSV(chartId, filename){
-  if (typeof Chart === "undefined") { alert("Bibliothèque Chart.js non encore chargée."); return; }
   const chart = Chart.getChart(chartId);
-  if(!chart){ alert("Graphique non disponible"); return; }
+  if(!chart){
+    alert("Graphique non disponible");
+    return;
+  }
 
   const csv = [];
   const header = ["Date"];
 
-  chart.data.datasets.forEach(ds => header.push(ds.label));
+  // Utilise les libellés affichés (déjà mappés)
+  chart.data.datasets.forEach(ds => {
+    header.push(ds.label);
+  });
   csv.push(header.join(";"));
 
   chart.data.labels.forEach((label,i) => {
     const row = [label];
-    chart.data.datasets.forEach(ds => row.push(ds.data[i]));
+    chart.data.datasets.forEach(ds => {
+      row.push(ds.data[i]);
+    });
     csv.push(row.join(";"));
   });
 
@@ -727,7 +942,12 @@ function exportChartCSV(chartId, filename){
 /* ======================
    MAPPING DES LIBELLÉS
    ====================== */
+/**
+ * Table de mapping : clé CSV -> libellé affiché
+ * (enrichissable à volonté)
+ */
 const DISPLAY_LABELS = {
+  // Commun
   "date": "Date",
 
   // 1) Émissions journalières par scope — EXPORT_daily_scopes.csv
@@ -747,11 +967,11 @@ const DISPLAY_LABELS = {
 
   // 6) Émissions par destination
   "vols": "Nombre de vols (YTD)",
-
+ 
   // 7) Vols départ — EXPORT_departures_YTD.csv
   "numero_vol": "Numéro du vol",
   "compagnie": "Compagnie aérienne",
-  "type_avion": "Type d'aéronef",
+ "type_avion": "Type d'aéronef",
   "destination": "Destination",
   "distance_km": "Distance (km)",
   "emissions": "Emissions GES (t éq CO2)",
@@ -759,43 +979,14 @@ const DISPLAY_LABELS = {
   // 8) Vols arrivées — EXPORT_arrivals_YTD.csv
   "origine": "Provenance"
 };
+
+/** Retourne le libellé affiché pour une clé CSV. */
 function displayName(key) {
   if (typeof key !== "string") return key;
-  const k = key.replace(/\uFEFF/g, '').trim();
+  const k = key.replace(/\uFEFF/g, '').trim(); // protection BOM
   return DISPLAY_LABELS[k] || k;
 }
 
-/* ========== Loader robuste pour Chart.js + Zoom ========== */
-function loadScript(src) {
-  return new Promise((resolve, reject) => {
-    // Ne pas charger deux fois la même URL
-    if ([...document.scripts].some(s => s.src === src)) return resolve();
-    const s = document.createElement("script");
-    s.src = src;
-    s.onload = () => resolve();
-    s.onerror = (e) => reject(e);
-    document.head.appendChild(s);
-  });
-}
-function tryRegisterZoom() {
-  try {
-    const zoom = window['chartjs-plugin-zoom'];
-    if (zoom && window.Chart && Chart.register) { Chart.register(zoom); }
-  } catch(e) { /* no-op */ }
-}
-async function ensureChartReady() {
-  // Si Chart existe déjà (via <script> du <head>), on en profite
-  if (window.Chart) { tryRegisterZoom(); return; }
-  // Sinon on charge Chart.js puis le plugin zoom
-  await loadScript("https://cdn.jsdelivr.net/npm/chart.js@3.9.1");
-  // (l’adapter date-fns n’est pas indispensable ici, mais déjà présent en <head>)
-  if (!window['chartjs-plugin-zoom']) {
-    await loadScript("https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1");
-  }
-  tryRegisterZoom();
-}
-
-/* ========= App principale ========= */
 document.addEventListener("DOMContentLoaded", function(){
 
   function parseCSV(url, callback){
@@ -806,6 +997,7 @@ document.addEventListener("DOMContentLoaded", function(){
         const sep = rows[0].indexOf(';') !== -1 ? ';' : ',';
         const headers = rows[0].split(sep);
         const result = [];
+
         for(let i=1; i<rows.length; i++){
           const cols = rows[i].split(sep);
           const obj = {};
@@ -814,1022 +1006,1376 @@ document.addEventListener("DOMContentLoaded", function(){
           });
           result.push(obj);
         }
+
         callback(result, headers);
       });
   }
 
-  // ===== Utils périodes =====
-  function _isoWeek(d){
-    const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-    const day = t.getUTCDay() || 7;
-    t.setUTCDate(t.getUTCDate() + 4 - day);
-    const yearStart = new Date(Date.UTC(t.getUTCFullYear(), 0, 1));
-    return Math.ceil((((t - yearStart) / 86400000) + 1) / 7);
+
+/* ========= Utils Périodes & Contrôles ========= */
+
+// 0.1 Fallback ISO week si date-fns n'est pas dispo
+function _isoWeek(d){
+  const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const day = t.getUTCDay() || 7;
+  t.setUTCDate(t.getUTCDate() + 4 - day);
+  const yearStart = new Date(Date.UTC(t.getUTCFullYear(), 0, 1));
+  return Math.ceil((((t - yearStart) / 86400000) + 1) / 7);
+}
+function _isoWeekYear(d){
+  const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const day = t.getUTCDay() || 7;
+  t.setUTCDate(t.getUTCDate() + 4 - day);
+  return t.getUTCFullYear();
+}
+
+function makePeriodKey(dateStr, period) {
+  const d = new Date(dateStr);
+  if (isNaN(d)) return dateStr;
+  if (period === "day") return dateStr;
+  if (period === "week") {
+    const getW  = (window.dateFns && typeof dateFns.getISOWeek      === "function") ? dateFns.getISOWeek      : _isoWeek;
+    const getWY = (window.dateFns && typeof dateFns.getISOWeekYear  === "function") ? dateFns.getISOWeekYear  : _isoWeekYear;
+    const y = getWY(d);
+    const w = String(getW(d)).padStart(2, "0");
+    return `${y}-S${w}`;
   }
-  function _isoWeekYear(d){
-    const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-    const day = t.getUTCDay() || 7;
-    t.setUTCDate(t.getUTCDate() + 4 - day);
-    return t.getUTCFullYear();
+  if (period === "month") {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    return `${y}-${m}`;
   }
-  function makePeriodKey(dateStr, period) {
-    const d = new Date(dateStr);
-    if (isNaN(d)) return dateStr;
-    if (period === "day") return dateStr;
-    if (period === "week") {
-      const getW  = (window.dateFns && typeof dateFns.getISOWeek      === "function") ? dateFns.getISOWeek      : _isoWeek;
-      const getWY = (window.dateFns && typeof dateFns.getISOWeekYear  === "function") ? dateFns.getISOWeekYear  : _isoWeekYear;
-      const y = getWY(d);
-      const w = String(getW(d)).padStart(2, "0");
-      return `${y}-S${w}`;
-    }
-    if (period === "month") {
-      const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, "0");
-      return `${y}-${m}`;
-    }
-    if (period === "year") { return `${d.getFullYear()}`; }
-    return dateStr;
+  return dateStr;
+}
+
+
+// 0.2 – Tri des clés de période
+function sortPeriodKeys(keys, period) {
+  if (period === "day" || period === "month") {
+    // "YYYY-MM-DD" ou "YYYY-MM" triés lexicographiquement
+    return keys.sort((a,b) => a.localeCompare(b));
   }
-  function sortPeriodKeys(keys, period) {
-    if (period === "day" || period === "month" || period === "year") {
-      return keys.sort((a,b) => a.localeCompare(b));
-    }
-    if (period === "week") {
-      return keys.sort((a,b) => {
-        const [ay, aw] = a.split("-S");
-        const [by, bw] = b.split("-S");
-        if (ay !== by) return Number(ay) - Number(by);
-        return Number(aw) - Number(bw);
+  if (period === "week") {
+    // "YYYY-SWW" → trier par année puis semaine
+    return keys.sort((a,b) => {
+      const [ay, aw] = a.split("-S");
+      const [by, bw] = b.split("-S");
+      if (ay !== by) return Number(ay) - Number(by);
+      return Number(aw) - Number(bw);
+    });
+  }
+  return keys;
+}
+
+// 0.3 – Création des 3 boutons au-dessus d’un canvas
+function ensurePeriodControls(canvasId, onChange) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+
+  // éviter les doublons
+  if (canvas._periodControls) return canvas._periodControls.value;
+
+  const holder = document.createElement("div");
+  holder.className = "period-controls";
+  holder.style.display = "flex";
+  holder.style.alignItems = "center";
+  holder.style.gap = "8px";
+  holder.style.margin = "8px 0 4px 0";
+
+  const strong = document.createElement("strong");
+  strong.textContent = "Vue :";
+
+  const mkBtn = (label, value) => {
+    const b = document.createElement("button");
+    b.textContent = label;
+    b.dataset.value = value;
+    b.className = "btn-period";
+    Object.assign(b.style, {
+      padding: "6px 10px",
+      border: "1px solid #cbd5e1",
+      borderRadius: "6px",
+      background: "#f8fafc",
+      cursor: "pointer"
+    });
+    b.addEventListener("click", () => {
+      setActive(value);
+      localStorage.setItem(`agg_${canvasId}`, value);
+      onChange?.(value);
+    });
+    return b;
+  };
+
+  const btnDay = mkBtn("Par jour", "day");
+  const btnWeek = mkBtn("Par semaine", "week");
+  const btnMonth = mkBtn("Par mois", "month");
+
+  holder.appendChild(strong);
+  holder.appendChild(btnDay);
+  holder.appendChild(btnWeek);
+  holder.appendChild(btnMonth);
+
+  // Insérer avant le canvas
+  canvas.parentElement.insertBefore(holder, canvas);
+
+  function setActive(val) {
+    [btnDay, btnWeek, btnMonth].forEach(b => {
+      b.style.background = (b.dataset.value === val) ? "#e2e8f0" : "#f8fafc";
+      b.style.borderColor = (b.dataset.value === val) ? "#94a3b8" : "#cbd5e1";
+      b.style.fontWeight = (b.dataset.value === val) ? "600" : "500";
+    });
+    canvas._periodControls.value = val;
+  }
+
+  // État initial
+  canvas._periodControls = { setActive, value: "day" };
+  const saved = localStorage.getItem(`agg_${canvasId}`) || "day";
+  setActive(saved);
+
+  return saved;
+}
+
+
+  /*1 ===== Émissions journalières par scope ===== */
+  parseCSV('./data/EXPORT_daily_scopes.csv', (data,headers) => {
+    // Tri des dates (ancien → récent)
+    data.sort((a,b) => new Date(a[headers[0]]) - new Date(b[headers[0]]));
+
+    const labels = [];
+    const datasets = [];
+    const totalSeries = [];
+
+    const colors = ["#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd"];
+
+    // Création des datasets pour les 5 scopes avec libellés mappés
+    for(let i=1;i<=5;i++){
+      const csvKey = headers[i];
+      datasets.push({
+        label: displayName(csvKey), // libellé affiché
+        data: [],
+        borderWidth: 2,
+        fill: false,
+        borderColor: colors[i-1]
       });
     }
-    return keys;
+
+    let total=0;
+
+    // Boucle principale
+    data.forEach(row => {
+      const date = row[headers[0]];
+      labels.push(date);
+
+      let dayTotal=0;
+      for(let i=1;i<=5;i++){
+        const raw = row[headers[i]];
+        let v = raw ? parseFloat(raw.replace(',','.')) : 0;
+        if(isNaN(v)) v=0;
+        datasets[i-1].data.push(v);
+        dayTotal += v;
+      }
+      totalSeries.push(dayTotal);
+      total += dayTotal;
+    });
+
+    // Indicateurs
+    document.getElementById("total").innerText =
+      Math.round(total).toLocaleString('fr-FR') + " tonnes éq CO2";
+
+    const average = labels.length > 0 ? total/labels.length : 0;
+    document.getElementById("average").innerText =
+      Math.round(average).toLocaleString('fr-FR') + " tonnes éq CO2";
+
+    let variance = 0;
+    totalSeries.forEach(v => { variance += Math.pow(v - average, 2); });
+    variance = variance / totalSeries.length;
+    const stdDev = Math.sqrt(variance);
+    document.getElementById("stdDev").innerText =
+      Math.round(stdDev).toLocaleString('fr-FR') + " tonnes éq CO2";
+
+    // Série total
+    datasets.push({
+      label:"Total scopes",
+      data:totalSeries,
+      borderWidth:3,
+      fill:false,
+      borderColor:"#000000"
+    });
+
+    // ====== Contrôles & reconstruction ======
+
+let chartDailyInstance = null;
+
+function buildChartDaily(period) {
+  const dateKey   = headers[0];
+  const scopeKeys = headers.slice(1, 6); // on attend 5 scopes
+
+  // --- Agrégation par période (day / week / month) ---
+  const perScope = {};
+  scopeKeys.forEach(k => perScope[k] = {});
+  const periodsSet = new Set();
+
+  data.forEach(row => {
+    const pkey = makePeriodKey(row[dateKey], period);
+    periodsSet.add(pkey);
+    scopeKeys.forEach(k => {
+      const raw = row[k];
+      let v = raw ? parseFloat(String(raw).replace(',', '.')) : 0;
+      if (isNaN(v)) v = 0;
+      perScope[k][pkey] = (perScope[k][pkey] || 0) + v;
+    });
+  });
+
+  const labels = sortPeriodKeys(Array.from(periodsSet), period);
+  const isDay  = (period === "day");
+
+  // --- Couleurs par clé CSV (aligné sur tes teintes) ---
+  const colorMap = {
+    "scope_1_2":        "#9467bd", // Emissions directes aéroport (Scope 1&2)
+    "scope_employes":   "#d62728", // Accès employés
+    "scope_acces_coll": "#2ca02c", // Accès collectifs passagers
+    "scope_acces_ind":  "#ff7f0e", // Accès individuels passagers
+    "scope_vols":       "#1f77b4"  // Opérations aéronefs (Scope 3)
+  };
+
+  // --- Ordre imposé dans toutes les vues ---
+  const desiredOrder = [
+    "scope_1_2",
+    "scope_employes",
+    "scope_acces_coll",
+    "scope_acces_ind",
+    "scope_vols"
+  ];
+  // On garde l’ordre désiré pour les clés présentes,
+  // puis on ajoute d’éventuelles clés "surprises" à la fin.
+  const orderedKeys = desiredOrder
+    .filter(k => scopeKeys.includes(k))
+    .concat(scopeKeys.filter(k => !desiredOrder.includes(k)));
+
+  // --- Datasets ---
+  const datasets = orderedKeys.map(k => {
+    const c  = colorMap[k] || "#888888";
+    const bg = isDay ? (c + "33") : (c + "AA");  // alpha 20% (jour) / 67% (agrégé)
+    return {
+      type: isDay ? "line" : "bar",
+      label: displayName(k),
+      data: labels.map(pk => perScope[k][pk] || 0),
+      borderColor: c,
+      backgroundColor: bg,
+      borderWidth: 2,
+      fill: isDay,        // aires empilées en "jour"
+      stack: "stackS"     // même pile pour toutes les périodes
+    };
+  });
+
+  // --- (Re)création du chart ---
+  if (chartDailyInstance) chartDailyInstance.destroy();
+  chartDailyInstance = new Chart(document.getElementById("chartDaily"), {
+    type: isDay ? "line" : "bar",
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { position: 'top' },
+        zoom: {
+          pan:  { enabled: true, mode: 'x' },
+          zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }
+        },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => {
+              const v = ctx.parsed.y || 0;
+              return `${ctx.dataset.label} : ${Math.round(v).toLocaleString('fr-FR')} t éq CO₂`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: isDay ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")
+          },
+          stacked: !isDay  // barres empilées en semaine/mois
+        },
+        y: {
+          beginAtZero: true,
+          stacked: true,   // empilage vertical (aires jour & barres agrégées)
+          title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" }
+        }
+      }
+    }
+  });
+}
+
+
+
+// Installer les boutons et premier rendu
+const initDailyPeriod = ensurePeriodControls("chartDaily", buildChartDaily);
+buildChartDaily(initDailyPeriod);
+});
+
+ 
+  /*2 ===== Cumul annuel par scope ===== */
+  parseCSV('./data/EXPORT_cumul_scopes.csv', (data,headers) => {
+    if(!data || data.length === 0) return;
+
+    // Nettoyage des headers
+    headers = headers.map(h => h.replace(/\uFEFF/g,'').trim());
+
+    const dateKey = headers[0];
+    const totalKey = headers.find(h => h === "cumul_total");
+
+    // Tri chronologique
+    data.sort((a,b) => new Date(a[dateKey]) - new Date(b[dateKey]));
+
+    const labels = [];
+    const datasets = [];
+
+    // Construction des séries (hors date et cumul_total)
+    const seriesMeta = [];
+    headers.forEach(h => {
+      if(h === dateKey || h === totalKey) return;
+      const lastValue = parseFloat(data[data.length - 1][h]) || 0;
+      seriesMeta.push({
+        key: h,                 // conserve la clé CSV
+        label: displayName(h),  // libellé affiché
+        lastValue
+      });
+    });
+
+    // Tri du plus petit au plus grand
+    seriesMeta.sort((a,b) => a.lastValue - b.lastValue);
+
+    // Couleurs
+    const colors = ["#9467bd","#d62728","#2ca02c","#ff7f0e","#1f77b4"];
+
+    // Datasets
+    seriesMeta.forEach((serie,index) => {
+      datasets.push({
+        label: serie.label, // mappé
+        data: [],
+        borderWidth: 1.5,
+        fill: true,
+        backgroundColor: colors[index % colors.length] + "55",
+        borderColor: colors[index % colors.length],
+        stack: "stack1",
+        _csvKey: serie.key // garde la clé CSV pour lecture
+      });
+    });
+
+    // Données
+    data.forEach(row => {
+      labels.push(row[dateKey]);
+      datasets.forEach(ds => {
+        const key = ds._csvKey;
+        const raw = row[key];
+        let val = raw ? parseFloat(String(raw).replace(',','.').trim()) : 0;
+        if(isNaN(val)) val = 0;
+        ds.data.push(val);
+      });
+    });
+
+    // Graphique
+    
+let chartCumulInstance = null;
+
+function buildChartCumul(period) {
+  // headers déjà nettoyés ; dateKey = headers[0]
+  const dateKey  = headers[0];
+  const totalKey = headers.find(h => h === "cumul_total");
+  const scopeCols = headers.filter(h => h !== dateKey && h !== totalKey);
+
+  // 1) Index par période -> dernière ligne de la période (cumul "fin de période")
+  const periodLastRow = {}; // { pkey -> row }
+  data.forEach(row => {
+    const pkey = makePeriodKey(row[dateKey], period);
+    const current = periodLastRow[pkey];
+    if (!current || new Date(row[dateKey]) > new Date(current[dateKey])) {
+      periodLastRow[pkey] = row;
+    }
+  });
+
+  // 2) Labels triés + type selon période
+  const labels = sortPeriodKeys(Object.keys(periodLastRow), period);
+  const isDay  = (period === "day");
+
+  // 3) Palette COHÉRENTE pour les clés "cumul_*"
+  const colorMap = {
+    "cumul_scope_1_2":  "#9467bd", // Emissions directes aéroport (Scope 1&2)
+    "cumul_employes":   "#d62728", // Accès employés
+    "cumul_acces_coll": "#2ca02c", // Accès collectifs passagers
+    "cumul_acces_ind":  "#ff7f0e", // Accès individuels passagers
+    "cumul_vol":        "#1f77b4"  // Opérations aéronefs (Scope 3)
+  };
+
+  // 4) Ordre imposé dans TOUTES les vues
+  const desiredOrder = [
+    "cumul_scope_1_2",
+    "cumul_employes",
+    "cumul_acces_coll",
+    "cumul_acces_ind",
+    "cumul_vol"
+  ];
+  const orderedCols = desiredOrder
+    .filter(k => scopeCols.includes(k))
+    .concat(scopeCols.filter(k => !desiredOrder.includes(k))); // ajoute toute clé "surprise" à la fin
+
+  // 5) Datasets dans l'ordre voulu + couleurs dédiées "cumul_*"
+  const datasets = orderedCols.map(col => {
+    const c = colorMap[col] || "#888888";
+    return {
+      label: displayName(col),
+      data: labels.map(pk => {
+        const raw = periodLastRow[pk][col];
+        let v = raw ? parseFloat(String(raw).replace(',', '.').trim()) : 0;
+        return isNaN(v) ? 0 : v;
+      }),
+      borderWidth: 1.5,
+      fill: true,
+      backgroundColor: isDay ? (c + "33") : (c + "55"), // 20% (jour) / 33% (sem/mois)
+      borderColor: c,
+      stack: "stack1"
+    };
+  });
+
+  // 6) (Re)création du chart
+  if (chartCumulInstance) chartCumulInstance.destroy();
+  chartCumulInstance = new Chart(document.getElementById("chartCumul"), {
+    type: isDay ? 'line' : 'bar',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      interaction: { mode:'index', intersect:false },
+      plugins: {
+        legend: { position:'top' },
+        tooltip: {
+          callbacks: {
+            label: function(ctx){
+              const value = ctx.parsed.y || 0;
+              let total = 0;
+              ctx.chart.data.datasets.forEach(ds => { total += ds.data[ctx.dataIndex] || 0; });
+              const percent = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+              return `${ctx.dataset.label} : ${Math.round(value).toLocaleString('fr-FR')} t éq CO₂ (${percent}%)`;
+            }
+          }
+        },
+        zoom: { pan:{enabled:true, mode:'x'}, zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' } }
+      },
+      scales: {
+        x: { 
+          title: { display: true, text: (isDay ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")) },
+          stacked: !isDay          // empilé pour barres (semaine/mois)
+        },
+        y: { 
+          beginAtZero: true, 
+          stacked: !isDay,         // empilé pour barres (semaine/mois)
+          title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" }
+        }
+      }
+    }
+  });
+}
+
+const initCumulPeriod = ensurePeriodControls("chartCumul", buildChartCumul);
+buildChartCumul(initCumulPeriod);
+});
+
+ 
+   /*3 ===== CUMUL TOTAL GLOBAL ===== */
+  parseCSV('./data/EXPORT_daily_scopes.csv', (data,headers) => {
+    data.sort((a,b) => new Date(a[headers[0]]) - new Date(b[headers[0]]));
+
+    const labels = [];
+    const cumul = [];
+    let total = 0;
+
+    data.forEach(row => {
+      let dayTotal = 0;
+      for(let i=1;i<=5;i++){
+        const raw = row[headers[i]];
+        let v = raw ? parseFloat(raw.replace(',','.')) : 0;
+        if(isNaN(v)) v=0;
+        dayTotal += v;
+      }
+      total += dayTotal;
+      labels.push(row[headers[0]]);
+      cumul.push(total);
+    });
+
+    
+
+let chartTotalCumulInstance = null;
+
+function buildChartTotalCumul(period) {
+  // 1) Recalcule le cumul quotidien "perDay" (date -> cumul à fin de jour)
+  const dateKey = headers[0];
+  const perDay = []; // [{ date, value }]
+  let running = 0;
+
+  data.forEach(row => {
+    let dayTotal = 0;
+    for (let i = 1; i <= 5; i++) {
+      const raw = row[headers[i]];
+      let v = raw ? parseFloat(String(raw).replace(',', '.')) : 0;
+      if (isNaN(v)) v = 0;
+      dayTotal += v;
+    }
+    running += dayTotal;
+    perDay.push({ date: row[dateKey], value: running });
+  });
+
+  // 2) Vue JOUR = courbe
+  if (period === "day") {
+    const labels = perDay.map(d => d.date);
+    const values = perDay.map(d => d.value);
+
+    if (chartTotalCumulInstance) chartTotalCumulInstance.destroy();
+    chartTotalCumulInstance = new Chart(document.getElementById("chartTotalCumul"), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          label: "Cumul total émissions",
+          data: values,
+          borderWidth: 3,
+          fill: true,
+          backgroundColor: "rgba(31,60,136,0.2)",
+          borderColor: "#1f3c88"
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'top' },
+          zoom: { pan: {enabled: true, mode: 'x'}, zoom: { wheel: {enabled: true}, pinch: {enabled: true}, mode: 'x' } }
+        },
+        scales: {
+          x: { title: { display: true, text: "Date" } },
+          y: { beginAtZero: true, title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" } }
+        }
+      }
+    });
+    return; // ⬅ important : on sort ici
   }
 
-  /* Contrôles (période simple) pour Airlines / Rotations */
-  function ensurePeriodControls(canvasId, onChange) {
-    const canvas = document.getElementById(canvasId);
-    if (!canvas) return;
-    if (canvas._periodControls) return canvas._periodControls.value;
+  // 3) Vue SEMAINE/MOIS = barres (échantillon à la fin de période)
+  const lastByPeriod = {}; // { pkey -> { date, value } (dernier jour de la période) }
+  perDay.forEach(d => {
+    const pkey = makePeriodKey(d.date, period);
+    if (!lastByPeriod[pkey] || new Date(d.date) > new Date(lastByPeriod[pkey].date)) {
+      lastByPeriod[pkey] = d;
+    }
+  });
 
-    const holder = document.createElement("div");
-    holder.className = "period-controls";
-    holder.style.display = "flex";
-    holder.style.alignItems = "center";
-    holder.style.gap = "8px";
-    holder.style.margin = "8px 0 4px 0";
+  const labels = sortPeriodKeys(Object.keys(lastByPeriod), period);
+  const values = labels.map(pk => lastByPeriod[pk].value);
 
-    const strong = document.createElement("strong");
-    strong.textContent = "Vue :";
+  if (chartTotalCumulInstance) chartTotalCumulInstance.destroy();
+  chartTotalCumulInstance = new Chart(document.getElementById("chartTotalCumul"), {
+    type: 'bar', // barres en semaine/mois
+    data: {
+      labels,
+      datasets: [{
+        label: "Cumul total émissions",
+        data: values,
+        borderWidth: 1,
+        backgroundColor: "rgba(31,60,136,0.6)",
+        borderColor: "#1f3c88"
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'top' },
+        zoom: { pan: {enabled: true, mode: 'x'}, zoom: { wheel: {enabled: true}, pinch: {enabled: true}, mode: 'x' } }
+      },
+      scales: {
+        x: { title: { display: true, text: (period === "week" ? "Semaine (ISO)" : "Mois") } },
+        y: { beginAtZero: true, title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" } }
+      }
+    }
+  });
+}
 
-    const mkBtn = (label, value) => {
-      const b = document.createElement("button");
-      b.textContent = label;
-      b.dataset.value = value;
-      b.className = "btn-period";
-      Object.assign(b.style, {
-        padding: "6px 10px",
-        border: "1px solid #cbd5e1",
-        borderRadius: "6px",
-        background: "#f8fafc",
-        cursor: "pointer"
-      });
-      b.addEventListener("click", () => {
-        setActive(value);
-        localStorage.setItem(`agg_${canvasId}`, value);
-        onChange?.(value);
-      });
-      return b;
+
+const initTotalCumulPeriod = ensurePeriodControls("chartTotalCumul", buildChartTotalCumul);
+buildChartTotalCumul(initTotalCumulPeriod);
+});
+ 
+   
+  /*4 ===== Emissions par conmpagnie ===== */
+  parseCSV('./data/EXPORT_daily_airlines.csv', (data) => {
+    const labels = [...new Set(data.map(r => r.date))].sort();
+    const compagnies = [...new Set(data.map(r => r.compagnie))];
+    const datasets = [];
+
+    const colors = {
+      "Ryanair": "rgb(223,186,47)",
+      "Wizz Air": "rgb(225,14,73)",
+      "HiSky": "rgb(19,62,103)",
+      "SkyUp": "rgb(255,58,32)",
+      "Volotea": "rgb(0,0,0)"
     };
 
-    const btnDay = mkBtn("Par jour", "day");
-    const btnWeek = mkBtn("Par semaine", "week");
-    const btnMonth = mkBtn("Par mois", "month");
-
-    holder.appendChild(strong);
-    holder.appendChild(btnDay);
-    holder.appendChild(btnWeek);
-    holder.appendChild(btnMonth);
-
-    canvas.parentElement.insertBefore(holder, canvas);
-
-    function setActive(val) {
-      [btnDay, btnWeek, btnMonth].forEach(b => {
-        b.style.background = (b.dataset.value === val) ? "#e2e8f0" : "#f8fafc";
-        b.style.borderColor = (b.dataset.value === val) ? "#94a3b8" : "#cbd5e1";
-        b.style.fontWeight = (b.dataset.value === val) ? "600" : "500";
+    compagnies.forEach(comp => {
+      const serie = [];
+      labels.forEach(d => {
+        const row = data.find(r => r.date===d && r.compagnie===comp);
+        let value = row ? parseFloat(row.emissions) : 0;
+        if(isNaN(value)) value = 0;
+        serie.push(value);
       });
-      canvas._periodControls.value = val;
-    }
-
-    canvas._periodControls = { setActive, value: "day" };
-    const saved = localStorage.getItem(`agg_${canvasId}`) || "day";
-    setActive(saved);
-    return saved;
-  }
-
-  /* NOUVEAU : contrôles combinés période + mode (droite alignée) */
-  function ensureChartControls(canvasId, onChange) {
-    const canvas = document.getElementById(canvasId);
-    if (!canvas) return { period: "day", mode: "scope" };
-    if (canvas._controls) return canvas._controls.state;
-
-    const wrapper = document.createElement("div");
-    wrapper.style.display = "flex";
-    wrapper.style.alignItems = "center";
-    wrapper.style.justifyContent = "space-between";
-    wrapper.style.gap = "8px";
-    wrapper.style.margin = "8px 0 4px 0";
-
-    // Gauche : périodes
-    const left = document.createElement("div");
-    left.style.display = "flex"; left.style.alignItems = "center"; left.style.gap = "8px";
-    const labelLeft = document.createElement("strong");
-    labelLeft.textContent = "Vue :";
-    function mkBtn(label, value, group) {
-      const b = document.createElement("button");
-      b.textContent = label;
-      b.dataset.value = value;
-      b.className = `btn-${group}`;
-      Object.assign(b.style, {
-        padding: "6px 10px",
-        border: "1px solid #cbd5e1",
-        borderRadius: "6px",
-        background: "#f8fafc",
-        cursor: "pointer"
+      datasets.push({
+        label: comp,
+        data: serie,
+        borderWidth: 2,
+        fill: false,
+        borderColor: colors[comp] || "rgb(120,120,120)"
       });
-      return b;
-    }
-    const btnDay = mkBtn("Par jour", "day", "period");
-    const btnWeek = mkBtn("Par semaine", "week", "period");
-    const btnMonth = mkBtn("Par mois", "month", "period");
-    const btnYear = mkBtn("Sur l'année", "year", "period");
-    left.appendChild(labelLeft);
-    left.appendChild(btnDay);
-    left.appendChild(btnWeek);
-    left.appendChild(btnMonth);
-    left.appendChild(btnYear);
+    });
 
-    // Droite : mode d’affichage
-    const right = document.createElement("div");
-    right.style.display = "flex"; right.style.alignItems = "center"; right.style.gap = "8px";
-    const labelRight = document.createElement("strong");
-    labelRight.textContent = "Affichage :";
-    const btnScope = mkBtn("Résultats par scope", "scope", "mode");
-    const btnTotal = mkBtn("Résultats cumulés", "total", "mode");
-    right.appendChild(labelRight);
-    right.appendChild(btnScope);
-    right.appendChild(btnTotal);
+    
+let chartAirlinesInstance = null;
 
-    wrapper.appendChild(left);
-    wrapper.appendChild(right);
-    canvas.parentElement.insertBefore(wrapper, canvas);
+function buildChartAirlines(period, data) {
+  const labelsSet = new Set();
+  const compSet = new Set();
+  const agg = {}; // { comp -> { pkey -> sum } }
 
-    const savedPeriod = localStorage.getItem(`agg_${canvasId}`) || "day";
-    const savedMode   = localStorage.getItem(`mode_${canvasId}`) || "scope";
+  data.forEach(r => {
+    const comp = r.compagnie;
+    const pkey = makePeriodKey(r.date, period);
+    compSet.add(comp);
+    labelsSet.add(pkey);
+    if (!agg[comp]) agg[comp] = {};
+    let v = r.emissions ? parseFloat(String(r.emissions).replace(',','.')) : 0;
+    if (isNaN(v)) v = 0;
+    agg[comp][pkey] = (agg[comp][pkey] || 0) + v;
+  });
 
-    function styleActive(group, value) {
-      wrapper.querySelectorAll(`.btn-${group}`).forEach(b => {
-        const active = (b.dataset.value === value);
-        b.style.background  = active ? "#e2e8f0" : "#f8fafc";
-        b.style.borderColor = active ? "#94a3b8" : "#cbd5e1";
-        b.style.fontWeight  = active ? "600" : "500";
-      });
-    }
+  const labels = sortPeriodKeys(Array.from(labelsSet), period);
+  const compagnies = Array.from(compSet);
 
-    const state = { period: savedPeriod, mode: savedMode };
-    function setPeriod(p) { state.period = p; localStorage.setItem(`agg_${canvasId}`, p); styleActive("period", p); onChange?.(state); }
-    function setMode(m)   { state.mode = m;   localStorage.setItem(`mode_${canvasId}`, m); styleActive("mode", m);   onChange?.(state); }
+  const palette = {
+    "Ryanair": "rgb(223,186,47)",
+    "Wizz Air": "rgb(225,14,73)",
+    "HiSky": "rgb(19,62,103)",
+    "SkyUp": "rgb(255,58,32)",
+    "Volotea": "rgb(0,0,0)"
+  };
 
-    [btnDay,btnWeek,btnMonth,btnYear].forEach(b => b.addEventListener("click", () => setPeriod(b.dataset.value)));
-    [btnScope,btnTotal].forEach(b => b.addEventListener("click", () => setMode(b.dataset.value)));
+  const datasets = compagnies.map(comp => ({
+    type: (period === "day" ? "line" : "bar"),
+    label: comp,
+    data: labels.map(pk => agg[comp]?.[pk] || 0),
+    borderWidth: 2,
+    fill: false,
+    borderColor: palette[comp] || "rgb(120,120,120)",
+    backgroundColor: (palette[comp] || "rgb(120,120,120)") + (period === "day" ? "" : "AA"),
+    stack: (period === "day" ? undefined : "stackAir")
+  }));
 
-    styleActive("period", state.period);
-    styleActive("mode", state.mode);
-
-    canvas._controls = { state, setPeriod, setMode };
-    return state;
-  }
-
-  /* ====== On s'assure que Chart.js est prêt AVANT de créer les graphiques ====== */
-  ensureChartReady().then(() => {
-
-    /* =========================
-       1) ÉMISSIONS JOURNALIÈRES
-       ========================= */
-    parseCSV('./data/EXPORT_daily_scopes.csv', (data,headers) => {
-      data.sort((a,b) => new Date(a[headers[0]]) - new Date(b[headers[0]]));
-
-      const labels = [];
-      const totalSeries = [];
-      let total=0;
-
-      data.forEach(row => {
-        const date = row[headers[0]];
-        labels.push(date);
-        let dayTotal=0;
-        for(let i=1;i<=5;i++){
-          const raw = row[headers[i]];
-          let v = raw ? parseFloat(raw.replace(',','.')) : 0;
-          if(isNaN(v)) v=0;
-          dayTotal += v;
+  if (chartAirlinesInstance) chartAirlinesInstance.destroy();
+  chartAirlinesInstance = new Chart(document.getElementById("chartAirlines"),{
+    type: (period === "day" ? "line" : "bar"),
+    data:{ labels, datasets },
+    options:{
+      responsive:true,
+      interaction:{ mode:'index', intersect:false },
+      plugins:{
+        legend:{ position:'top' },
+        zoom:{ pan:{ enabled:true,mode:'x' }, zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' } },
+        tooltip:{
+          callbacks:{
+            label: function(context){
+              const value = context.parsed.y || 0;
+              return `${context.dataset.label} : ${Math.round(value).toLocaleString('fr-FR')} t éq CO2`;
+            }
+          }
         }
-        totalSeries.push(dayTotal);
-        total += dayTotal;
+      },
+      scales: {
+        x: { title: { display: true, text: (period === "day" ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")) } },
+        y: {
+          beginAtZero: true,
+          stacked: (period !== "day"),
+          title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO2)" }
+        }
+      }
+    }
+  });
+}
+
+// Installer les boutons & 1er rendu
+const airlinesPeriod = ensurePeriodControls("chartAirlines", (p) => buildChartAirlines(p, data));
+buildChartAirlines(airlinesPeriod, data);
+});
+   
+   
+  /*5 ===== Rotations par compagnie ===== */
+  parseCSV('./data/EXPORT_daily_airlines.csv', (data) => {
+    const labels = [...new Set(data.map(r => r.date))].sort();
+    const compagnies = [...new Set(data.map(r => r.compagnie))];
+    const datasets = [];
+
+    const colors = {
+      "Ryanair": "rgb(223,186,47)",
+      "Wizz Air": "rgb(225,14,73)",
+      "HiSky": "rgb(19,62,103)",
+      "SkyUp": "rgb(255,58,32)",
+      "Volotea": "rgb(0,0,0)"
+    };
+
+    compagnies.forEach(comp => {
+      const serie = [];
+      labels.forEach(d => {
+        const row = data.find(r => r.date===d && r.compagnie===comp);
+        let value = row ? parseFloat(row.rotations) : 0;
+        if(isNaN(value)) value = 0;
+        serie.push(value);
+      });
+      datasets.push({
+        label: comp,
+        data: serie,
+        borderWidth: 2,
+        fill: false,
+        borderColor: colors[comp] || "rgb(120,120,120)"
+      });
+    });
+
+    
+let chartRotationsInstance = null;
+
+function buildChartRotations(period, data) {
+  const labelsSet = new Set();
+  const compSet = new Set();
+  const agg = {}; // { comp -> { pkey -> sum } }
+
+  data.forEach(r => {
+    const comp = r.compagnie;
+    const pkey = makePeriodKey(r.date, period);
+    compSet.add(comp);
+    labelsSet.add(pkey);
+    if (!agg[comp]) agg[comp] = {};
+    let v = r.rotations ? parseFloat(String(r.rotations).replace(',','.')) : 0;
+    if (isNaN(v)) v = 0;
+    agg[comp][pkey] = (agg[comp][pkey] || 0) + v;
+  });
+
+  const labels = sortPeriodKeys(Array.from(labelsSet), period);
+  const compagnies = Array.from(compSet);
+
+  const palette = {
+    "Ryanair": "rgb(223,186,47)",
+    "Wizz Air": "rgb(225,14,73)",
+    "HiSky": "rgb(19,62,103)",
+    "SkyUp": "rgb(255,58,32)",
+    "Volotea": "rgb(0,0,0)"
+  };
+
+  const datasets = compagnies.map(comp => ({
+    type: (period === "day" ? "line" : "bar"),
+    label: comp,
+    data: labels.map(pk => agg[comp]?.[pk] || 0),
+    borderWidth: 2,
+    fill: false,
+    borderColor: palette[comp] || "rgb(120,120,120)",
+    backgroundColor: (palette[comp] || "rgb(120,120,120)") + (period === "day" ? "" : "AA"),
+    stack: (period === "day" ? undefined : "stackRot")
+  }));
+
+  if (chartRotationsInstance) chartRotationsInstance.destroy();
+  chartRotationsInstance = new Chart(document.getElementById("chartRotations"),{
+    type: (period === "day" ? "line" : "bar"),
+    data:{ labels, datasets },
+    options:{
+      responsive:true,
+      interaction:{ mode:'index', intersect:false },
+      plugins:{
+        legend:{ position:'top' },
+        zoom:{ pan:{ enabled:true,mode:'x' }, zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' } },
+        tooltip:{
+          callbacks:{
+            label: function(context){
+              const value = context.parsed.y || 0;
+              return `${context.dataset.label} : ${Math.round(value).toLocaleString('fr-FR')} rotations`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: { title: { display: true, text: (period === "day" ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")) } },
+        y: {
+          beginAtZero: true,
+          stacked: (period !== "day"),
+          title: { display: true, text: "Nombre de rotations" }
+        }
+      }
+    }
+  });
+}
+
+const rotationsPeriod = ensurePeriodControls("chartRotations", (p) => buildChartRotations(p, data));
+buildChartRotations(rotationsPeriod, data);
+});
+   
+  /* ===== EMISSIONS PAR DESTINATION (Départs + Arrivées) + tri dynamique ===== */
+parseCSV('./data/EXPORT_departures_YTD.csv', function (departures) {
+  parseCSV('./data/EXPORT_arrivals_YTD.csv', function (arrivals) {
+
+    // --- Agrégation commune départs+arrivées ---
+    const destinationMap = {}; // { [destination]: { emission:number, vols:number } }
+    let totalEmissions = 0;
+    let totalVols = 0; 
+
+    const toNum = (x) => {
+      const n = parseFloat(String(x).replace(',', '.'));
+      return isNaN(n) ? 0 : n;
+    };
+
+    function addAgg(dest, emission) {
+      const key = dest && String(dest).trim() ? String(dest).trim() : "Inconnue";
+      if (!destinationMap[key]) destinationMap[key] = { emission: 0, vols: 0 };
+      destinationMap[key].emission += emission;
+      destinationMap[key].vols += 1;         // 1 ligne = 1 vol
+      totalEmissions += emission;
+      totalVols += 1;
+    }
+
+    // Départs : colonne 'destination'
+    departures.forEach(row => addAgg(row.destination, toNum(row.emissions)));
+
+    // Arrivées : colonne 'origine'
+    arrivals.forEach(row => addAgg(row.origine, toNum(row.emissions)));
+
+    // --- UI : boutons de tri (créés dynamiquement) ---
+    (function ensureSortControls(){
+      const canvas = document.getElementById("chartDestination");
+      if (!canvas) return;
+      // container au-dessus du canvas
+      const controls = document.createElement("div");
+      controls.style.display = "flex";
+      controls.style.alignItems = "center";
+      controls.style.gap = "8px";
+      controls.style.margin = "6px 0 4px 0";
+
+      const strong = document.createElement("strong");
+      strong.textContent = "Trier par :";
+      const btnEmi = document.createElement("button");
+      const btnVols = document.createElement("button");
+      btnEmi.textContent = "Émissions";
+      btnVols.textContent = "Vols";
+
+      // style léger
+      [btnEmi, btnVols].forEach(b => {
+        b.style.padding = "6px 10px";
+        b.style.border = "1px solid #cbd5e1";
+        b.style.borderRadius = "6px";
+        b.style.background = "#f8fafc";
+        b.style.cursor = "pointer";
       });
 
-      document.getElementById("total").innerText = Math.round(total).toLocaleString('fr-FR') + " tonnes éq CO2";
-      const average = labels.length > 0 ? total/labels.length : 0;
-      document.getElementById("average").innerText = Math.round(average).toLocaleString('fr-FR') + " tonnes éq CO2";
-      let variance = 0;
-      totalSeries.forEach(v => { variance += Math.pow(v - average, 2); });
-      variance = variance / totalSeries.length;
-      const stdDev = Math.sqrt(variance);
-      document.getElementById("stdDev").innerText = Math.round(stdDev).toLocaleString('fr-FR') + " tonnes éq CO2";
+      // insertion
+      controls.appendChild(strong);
+      controls.appendChild(btnEmi);
+      controls.appendChild(btnVols);
+      canvas.parentElement.insertBefore(controls, canvas);
 
-      let chartDailyInstance = null;
+      // on stocke sur le canvas pour réutiliser plus bas
+      canvas._sortBtns = { btnEmi, btnVols };
+    })();
 
-      function buildChartDaily({ period, mode }) {
-        const dateKey   = headers[0];
-        const scopeKeys = headers.slice(1, 6);
-        const isDay  = (period === "day");
-        const isYear = (period === "year");
+    // --- État du tri + instance chart ---
+    let sortKey = "emission"; // "emission" ou "vols"
+    let chartDest = null;
 
-        const colorMap = {
-          "scope_1_2":        "#9467bd",
-          "scope_employes":   "#d62728",
-          "scope_acces_coll": "#2ca02c",
-          "scope_acces_ind":  "#ff7f0e",
-          "scope_vols":       "#1f77b4"
-        };
-        const orderedKeys = [
-          "scope_1_2","scope_employes","scope_acces_coll","scope_acces_ind","scope_vols"
-        ].filter(k => scopeKeys.includes(k)).concat(scopeKeys.filter(k => !["scope_1_2","scope_employes","scope_acces_coll","scope_acces_ind","scope_vols"].includes(k)));
+    function buildDestinationChart() {
+      // 1) Transformer en array + trier selon sortKey
+      const destinationArray = Object.keys(destinationMap).map(dest => ({
+        destination: dest,
+        emission: destinationMap[dest].emission,
+        vols: destinationMap[dest].vols
+      }));
+      destinationArray.sort((a, b) => b[sortKey] - a[sortKey]);
 
-        let chartType = isDay ? "line" : "bar";
-        let chartLabels = [];
-        let datasets = [];
+      // 2) Limiter : Top 50 OU 90% cumul d'émissions
+      const filteredDestinations = [];
+      let cumulative = 0;
+      let otherEmission = 0;
+      let otherVols = 0;
+      let otherCount = 0;
 
-        if (isYear) {
-          chartType = "bar";
-          chartLabels = ["Année en cours"];
+      destinationArray.forEach(item => {
+        if (filteredDestinations.length < 50 && (totalEmissions === 0 ? 0 : (cumulative / totalEmissions)) < 0.90) {
+          filteredDestinations.push(item);
+          cumulative += item.emission;
+        } else {
+          otherEmission += item.emission;
+          otherVols += item.vols;
+          otherCount++;
+        }
+      });
 
-          if (mode === "scope") {
-            datasets = orderedKeys.map(k => {
-              let sum = 0;
-              data.forEach(row => {
-                const raw = row[k];
-                let v = raw ? parseFloat(String(raw).replace(',','.')) : 0;
-                if (isNaN(v)) v = 0;
-                sum += v;
-              });
-              const c = colorMap[k] || "#888888";
-              return {
-                type: "bar",
-                label: displayName(k),
-                data: [sum],
-                borderColor: c,
-                backgroundColor: c + "AA",
-                borderWidth: 1.5,
-                stack: "yearStack"
-              };
-            });
-          } else {
-            let sumTotal = 0;
-            data.forEach(row => {
-              for (let i=1;i<=5;i++) {
-                const raw = row[headers[i]];
-                let v = raw ? parseFloat(String(raw).replace(',','.')) : 0;
-                if (isNaN(v)) v = 0;
-                sumTotal += v;
-              }
-            });
-            datasets = [{
+      if (otherEmission > 0 || otherVols > 0) {
+        filteredDestinations.push({
+          destination: `Autres (${otherCount} destinations)`,
+          emission: otherEmission,
+          vols: otherVols
+        });
+      }
+
+      // 3) Données pour le chart
+      const labels = filteredDestinations.map(d => d.destination);
+      const valuesEmissions = filteredDestinations.map(d => Math.round(d.emission * 10) / 10);
+      const valuesVols = filteredDestinations.map(d => d.vols);
+
+      // 4) (Re)création du chart
+      const ctx = document.getElementById("chartDestination");
+      if (chartDest) chartDest.destroy();
+
+      chartDest = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels,
+          datasets: [
+            {
               type: "bar",
-              label: "Total scopes",
-              data: [sumTotal],
-              borderWidth: 1.5,
+              label: displayName("emissions"), // "Emissions GES (t éq CO2)"
+              data: valuesEmissions,
+              yAxisID: "y",
+              backgroundColor: "rgba(31, 60, 136, 0.25)",
               borderColor: "#1f3c88",
-              backgroundColor: "rgba(31,60,136,0.6)"
-            }];
-          }
-        } else {
-          const perScope = {};
-          scopeKeys.forEach(k => perScope[k] = {});
-          const periodsSet = new Set();
-
-          data.forEach(row => {
-            const pkey = makePeriodKey(row[dateKey], period);
-            periodsSet.add(pkey);
-            scopeKeys.forEach(k => {
-              const raw = row[k];
-              let v = raw ? parseFloat(String(raw).replace(',','.')) : 0;
-              if (isNaN(v)) v = 0;
-              perScope[k][pkey] = (perScope[k][pkey] || 0) + v;
-            });
-          });
-
-          chartLabels = sortPeriodKeys(Array.from(periodsSet), period);
-
-          if (mode === "scope") {
-            datasets = orderedKeys.map(k => {
-              const c = colorMap[k] || "#888888";
-              const bg = isDay ? (c + "33") : (c + "AA");
-              return {
-                type: isDay ? "line" : "bar",
-                label: displayName(k),
-                data: chartLabels.map(pk => perScope[k][pk] || 0),
-                borderColor: c,
-                backgroundColor: bg,
-                borderWidth: 2,
-                fill: isDay,
-                stack: "stackS"
-              };
-            });
-          } else {
-            const totals = chartLabels.map(pk => {
-              let s = 0;
-              scopeKeys.forEach(k => { s += (perScope[k][pk] || 0); });
-              return s;
-            });
-            datasets = [{
-              type: isDay ? "line" : "bar",
-              label: "Total scopes",
-              data: totals,
-              borderWidth: isDay ? 3 : 1.5,
-              fill: isDay,
-              backgroundColor: isDay ? "rgba(31,60,136,0.20)" : "rgba(31,60,136,0.60)",
-              borderColor: "#1f3c88"
-            }];
-          }
-        }
-
-        if (chartDailyInstance) chartDailyInstance.destroy();
-        chartDailyInstance = new Chart(document.getElementById("chartDaily"), {
-          type: chartType,
-          data: { labels: chartLabels, datasets },
-          options: {
-            responsive: true,
-            interaction: { mode: 'index', intersect: false },
-            plugins: {
-              legend: { position: 'top' },
-              zoom: { pan: { enabled: true, mode: 'x' }, zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' } },
-              tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label} : ${Math.round((ctx.parsed.y ?? ctx.raw ?? 0)).toLocaleString('fr-FR')} t éq CO₂` } }
+              borderWidth: 1,
+              maxBarThickness: 28
             },
-            scales: {
-              x: { title: { display: true, text: (isYear ? "Année" : (isDay ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois"))) }, stacked: (mode === "scope" && !isDay) },
-              y: { beginAtZero: true, stacked: (mode === "scope"), title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" } }
+            {
+              type: "line",
+              label: "Nombre de vols (YTD)",
+              data: valuesVols,
+              yAxisID: "y1",
+              borderColor: "#d62728",
+              backgroundColor: "rgba(214, 39, 40, 0.15)",
+              borderWidth: 2,
+              pointRadius: 2,
+              tension: 0.2,
+              fill: false
             }
-          }
-        });
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: true },
+           
+tooltip: {
+  callbacks: {
+    label: function (context) {
+      const i = context.dataIndex;
+      // On accède à l’item “visible” (après top50/90%)
+      const item = filteredDestinations[i] || { emission: 0, vols: 0 };
+
+      if (context.dataset.yAxisID === "y") {
+        // === Barre Emissions ===
+        const value = item.emission || 0;
+        const percent = totalEmissions > 0 ? ((value / totalEmissions) * 100).toFixed(1) : 0;
+
+        // moyenne par vol = émissions cumulées / nb de vols
+        const avg = item.vols > 0 ? (item.emission / item.vols) : 0;
+        const avgStr = avg.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+        // on garde l’arrondi “tonnes” sur la valeur principale (comme avant)
+        const valueRounded = Math.round(value).toLocaleString('fr-FR');
+
+        // Variante A — tout sur une ligne :
+        //return `${context.dataset.label} : ${valueRounded} t éq CO₂ (${percent} %) — Moyenne/vol : ${avgStr} t éq CO₂`;
+
+        // Variante B — sur 2 lignes (si tu préfères) :
+        return [
+          `${context.dataset.label} : ${valueRounded} t éq CO₂ (${percent} %)`,
+          `Moyenne par vol : ${avgStr} t éq CO₂`
+        ];
+      } else {
+        // === Ligne Vols ===
+        const vols = item.vols || 0;
+        const percentVol = totalVols > 0 ? ((vols / totalVols) * 100).toFixed(1) : 0;
+
+        return [
+          `${context.dataset.label} : ${vols.toLocaleString('fr-FR')} vols`,
+          `Part des vols : ${percentVol} %`
+        ];
       }
+    }
+  }
+}
 
-      const controlsDaily = ensureChartControls("chartDaily", buildChartDaily);
-      buildChartDaily(controlsDaily);
-    });
-
-    /* =========================
-       2) CUMUL ANNUEL PAR SCOPE
-       ========================= */
-    parseCSV('./data/EXPORT_cumul_scopes.csv', (data,headers) => {
-      if(!data || data.length === 0) return;
-
-      headers = headers.map(h => h.replace(/\uFEFF/g,'').trim());
-      const dateKey = headers[0];
-      const totalKey = headers.find(h => h === "cumul_total");
-      data.sort((a,b) => new Date(a[dateKey]) - new Date(b[dateKey]));
-
-      let chartCumulInstance = null;
-
-      function buildChartCumul({ period, mode }) {
-        const isDay  = (period === "day");
-        const isYear = (period === "year");
-
-        const scopeCols = headers.filter(h => h !== dateKey && h !== totalKey);
-        const colorMap = {
-          "cumul_scope_1_2":  "#9467bd",
-          "cumul_employes":   "#d62728",
-          "cumul_acces_coll": "#2ca02c",
-          "cumul_acces_ind":  "#ff7f0e",
-          "cumul_vol":        "#1f77b4"
-        };
-        const desiredOrder = ["cumul_scope_1_2","cumul_employes","cumul_acces_coll","cumul_acces_ind","cumul_vol"];
-        const orderedCols = desiredOrder.filter(k => scopeCols.includes(k)).concat(scopeCols.filter(k => !desiredOrder.includes(k)));
-
-        let labels = [];
-        let datasets = [];
-        let chartType = isDay ? 'line' : 'bar';
-
-        if (isYear) {
-          const lastRow = data[data.length - 1];
-          labels = ["Année en cours"];
-          chartType = "bar";
-
-          if (mode === "scope") {
-            datasets = orderedCols.map(col => {
-              const c = colorMap[col] || "#888888";
-              const raw = lastRow[col];
-              let v = raw ? parseFloat(String(raw).replace(',', '.').trim()) : 0;
-              if (isNaN(v)) v = 0;
-              return { type: "bar", label: displayName(col), data: [v], borderWidth: 1.5, backgroundColor: c + "55", borderColor: c, stack: "stackCumulY" };
-            });
-          } else {
-            let total = 0;
-            if (totalKey && lastRow[totalKey] !== undefined) {
-              const raw = lastRow[totalKey];
-              total = raw ? parseFloat(String(raw).replace(',', '.').trim()) : 0;
-              if (isNaN(total)) total = 0;
-            } else {
-              orderedCols.forEach(col => {
-                const raw = lastRow[col];
-                let v = raw ? parseFloat(String(raw).replace(',', '.').trim()) : 0;
-                if (!isNaN(v)) total += v;
-              });
-            }
-            datasets = [{ type: "bar", label: displayName("cumul_total"), data: [total], borderWidth: 1.5, backgroundColor: "rgba(31,60,136,0.6)", borderColor: "#1f3c88" }];
-          }
-        } else {
-          const periodLastRow = {};
-          data.forEach(row => {
-            const pkey = makePeriodKey(row[dateKey], period);
-            const current = periodLastRow[pkey];
-            if (!current || new Date(row[dateKey]) > new Date(current[dateKey])) {
-              periodLastRow[pkey] = row;
-            }
-          });
-
-          labels = sortPeriodKeys(Object.keys(periodLastRow), period);
-
-          if (mode === "scope") {
-            datasets = orderedCols.map(col => {
-              const c = colorMap[col] || "#888888";
-              return {
-                type: isDay ? "line" : "bar",
-                label: displayName(col),
-                data: labels.map(pk => {
-                  const raw = periodLastRow[pk][col];
-                  let v = raw ? parseFloat(String(raw).replace(',', '.').trim()) : 0;
-                  return isNaN(v) ? 0 : v;
-                }),
-                borderWidth: 1.5,
-                fill: isDay,
-                backgroundColor: isDay ? (c + "33") : (c + "55"),
-                borderColor: c,
-                stack: "stackCumul"
-              };
-            });
-          } else {
-            const totals = labels.map(pk => {
-              let tot = 0;
-              if (totalKey && periodLastRow[pk][totalKey] !== undefined) {
-                const raw = periodLastRow[pk][totalKey];
-                tot = raw ? parseFloat(String(raw).replace(',', '.').trim()) : 0;
-                if (isNaN(tot)) tot = 0;
-              } else {
-                orderedCols.forEach(col => {
-                  const raw = periodLastRow[pk][col];
-                  let v = raw ? parseFloat(String(raw).replace(',', '.').trim()) : 0;
-                  if (!isNaN(v)) tot += v;
-                });
-              }
-              return tot;
-            });
-
-            datasets = [{
-              type: isDay ? 'line' : 'bar',
-              label: displayName("cumul_total"),
-              data: totals,
-              borderWidth: isDay ? 2 : 1.5,
-              fill: isDay,
-              backgroundColor: isDay ? "rgba(31,60,136,0.2)" : "rgba(31,60,136,0.6)",
-              borderColor: "#1f3c88"
-            }];
-          }
-        }
-
-        if (chartCumulInstance) chartCumulInstance.destroy();
-        chartCumulInstance = new Chart(document.getElementById("chartCumul"), {
-          type: chartType,
-          data: { labels, datasets },
-          options: {
-            responsive: true,
-            interaction: { mode:'index', intersect:false },
-            plugins: {
-              legend: { position:'top' },
-              tooltip: {
-                callbacks: {
-                  label: function(ctx){
-                    const value = ctx.parsed.y || ctx.raw || 0;
-                    if (mode === "scope") {
-                      let total = 0;
-                      ctx.chart.data.datasets.forEach(ds => { total += ds.data[ctx.dataIndex] || 0; });
-                      const percent = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                      return `${ctx.dataset.label} : ${Math.round(value).toLocaleString('fr-FR')} t éq CO₂ (${percent}%)`;
-                    }
-                    return `${ctx.dataset.label} : ${Math.round(value).toLocaleString('fr-FR')} t éq CO₂`;
-                  }
-                }
-              },
-              zoom: { pan:{enabled:true, mode:'x'}, zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' } }
+          },
+          scales: {
+            x: { ticks: { maxRotation: 90, minRotation: 45 } },
+            y: {
+              beginAtZero: true,
+              title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" }
             },
-            scales: {
-              x: { title: { display: true, text: (isYear ? "Année" : (isDay ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois"))) }, stacked: (mode === "scope" && !isDay) },
-              y: { beginAtZero: true, stacked: (mode === "scope" && !isDay), title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" } }
-            }
-          }
-        });
-      }
-
-      const controlsCumul = ensureChartControls("chartCumul", buildChartCumul);
-      buildChartCumul(controlsCumul);
-    });
-
-    /* ===== Emissions par compagnie ===== */
-    parseCSV('./data/EXPORT_daily_airlines.csv', (data) => {
-      let chartAirlinesInstance = null;
-
-      function buildChartAirlines(period, data) {
-        const labelsSet = new Set();
-        const compSet = new Set();
-        const agg = {};
-        data.forEach(r => {
-          const comp = r.compagnie;
-          const pkey = makePeriodKey(r.date, period);
-          compSet.add(comp);
-          labelsSet.add(pkey);
-          if (!agg[comp]) agg[comp] = {};
-          let v = r.emissions ? parseFloat(String(r.emissions).replace(',','.')) : 0;
-          if (isNaN(v)) v = 0;
-          agg[comp][pkey] = (agg[comp][pkey] || 0) + v;
-        });
-
-        const labels = sortPeriodKeys(Array.from(labelsSet), period);
-        const compagnies = Array.from(compSet);
-        const palette = { "Ryanair":"rgb(223,186,47)","Wizz Air":"rgb(225,14,73)","HiSky":"rgb(19,62,103)","SkyUp":"rgb(255,58,32)","Volotea":"rgb(0,0,0)" };
-
-        const datasets = compagnies.map(comp => ({
-          type: (period === "day" ? "line" : "bar"),
-          label: comp,
-          data: labels.map(pk => agg[comp]?.[pk] || 0),
-          borderWidth: 2,
-          fill: false,
-          borderColor: palette[comp] || "rgb(120,120,120)",
-          backgroundColor: (palette[comp] || "rgb(120,120,120)") + (period === "day" ? "" : "AA"),
-          stack: (period === "day" ? undefined : "stackAir")
-        }));
-
-        if (chartAirlinesInstance) chartAirlinesInstance.destroy();
-        chartAirlinesInstance = new Chart(document.getElementById("chartAirlines"),{
-          type: (period === "day" ? "line" : "bar"),
-          data:{ labels, datasets },
-          options:{
-            responsive:true,
-            interaction:{ mode:'index', intersect:false },
-            plugins:{
-              legend:{ position:'top' },
-              zoom:{ pan:{ enabled:true,mode:'x' }, zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' } },
-              tooltip:{ callbacks:{ label: (ctx) => `${ctx.dataset.label} : ${Math.round(ctx.parsed.y || 0).toLocaleString('fr-FR')} t éq CO2` } }
-            },
-            scales: {
-              x: { title: { display: true, text: (period === "day" ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")) } },
-              y: { beginAtZero: true, stacked: (period !== "day"), title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO2)" } }
-            }
-          }
-        });
-      }
-
-      const airlinesPeriod = ensurePeriodControls("chartAirlines", (p) => buildChartAirlines(p, data));
-      buildChartAirlines(airlinesPeriod, data);
-    });
-
-    /* ===== Rotations par compagnie ===== */
-    parseCSV('./data/EXPORT_daily_airlines.csv', (data) => {
-      let chartRotationsInstance = null;
-
-      function buildChartRotations(period, data) {
-        const labelsSet = new Set();
-        const compSet = new Set();
-        const agg = {};
-        data.forEach(r => {
-          const comp = r.compagnie;
-          const pkey = makePeriodKey(r.date, period);
-          compSet.add(comp);
-          labelsSet.add(pkey);
-          if (!agg[comp]) agg[comp] = {};
-          let v = r.rotations ? parseFloat(String(r.rotations).replace(',','.')) : 0;
-          if (isNaN(v)) v = 0;
-          agg[comp][pkey] = (agg[comp][pkey] || 0) + v;
-        });
-
-        const labels = sortPeriodKeys(Array.from(labelsSet), period);
-        const compagnies = Array.from(compSet);
-        const palette = { "Ryanair":"rgb(223,186,47)","Wizz Air":"rgb(225,14,73)","HiSky":"rgb(19,62,103)","SkyUp":"rgb(255,58,32)","Volotea":"rgb(0,0,0)" };
-
-        const datasets = compagnies.map(comp => ({
-          type: (period === "day" ? "line" : "bar"),
-          label: comp,
-          data: labels.map(pk => agg[comp]?.[pk] || 0),
-          borderWidth: 2,
-          fill: false,
-          borderColor: palette[comp] || "rgb(120,120,120)",
-          backgroundColor: (palette[comp] || "rgb(120,120,120)") + (period === "day" ? "" : "AA"),
-          stack: (period === "day" ? undefined : "stackRot")
-        }));
-
-        if (chartRotationsInstance) chartRotationsInstance.destroy();
-        chartRotationsInstance = new Chart(document.getElementById("chartRotations"),{
-          type: (period === "day" ? "line" : "bar"),
-          data:{ labels, datasets },
-          options:{
-            responsive:true,
-            interaction:{ mode:'index', intersect:false },
-            plugins:{
-              legend:{ position:'top' },
-              zoom:{ pan:{ enabled:true,mode:'x' }, zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' } },
-              tooltip:{ callbacks:{ label: (ctx) => `${ctx.dataset.label} : ${Math.round(ctx.parsed.y || 0).toLocaleString('fr-FR')} rotations` } }
-            },
-            scales: {
-              x: { title: { display: true, text: (period === "day" ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")) } },
-              y: { beginAtZero: true, stacked: (period !== "day"), title: { display: true, text: "Nombre de rotations" } }
-            }
-          }
-        });
-      }
-
-      const rotationsPeriod = ensurePeriodControls("chartRotations", (p) => buildChartRotations(p, data));
-      buildChartRotations(rotationsPeriod, data);
-    });
-
-    /* ===== EMISSIONS PAR DESTINATION (Départs + Arrivées) + tri dynamique ===== */
-    parseCSV('./data/EXPORT_departures_YTD.csv', function (departures) {
-      parseCSV('./data/EXPORT_arrivals_YTD.csv', function (arrivals) {
-
-        const destinationMap = {};
-        let totalEmissions = 0;
-        let totalVols = 0; 
-        const toNum = (x) => { const n = parseFloat(String(x).replace(',', '.')); return isNaN(n) ? 0 : n; };
-
-        function addAgg(dest, emission) {
-          const key = dest && String(dest).trim() ? String(dest).trim() : "Inconnue";
-          if (!destinationMap[key]) destinationMap[key] = { emission: 0, vols: 0 };
-          destinationMap[key].emission += emission;
-          destinationMap[key].vols += 1;
-          totalEmissions += emission;
-          totalVols += 1;
-        }
-
-        departures.forEach(row => addAgg(row.destination, toNum(row.emissions)));
-        arrivals.forEach(row => addAgg(row.origine, toNum(row.emissions)));
-
-        (function ensureSortControls(){
-          const canvas = document.getElementById("chartDestination");
-          if (!canvas) return;
-          const controls = document.createElement("div");
-          controls.style.display = "flex";
-          controls.style.alignItems = "center";
-          controls.style.gap = "8px";
-          controls.style.margin = "6px 0 4px 0";
-          const strong = document.createElement("strong");
-          strong.textContent = "Trier par :";
-          const btnEmi = document.createElement("button");
-          const btnVols = document.createElement("button");
-          btnEmi.textContent = "Émissions"; btnVols.textContent = "Vols";
-          [btnEmi, btnVols].forEach(b => {
-            b.style.padding = "6px 10px";
-            b.style.border = "1px solid #cbd5e1";
-            b.style.borderRadius = "6px";
-            b.style.background = "#f8fafc";
-            b.style.cursor = "pointer";
-          });
-          controls.appendChild(strong); controls.appendChild(btnEmi); controls.appendChild(btnVols);
-          canvas.parentElement.insertBefore(controls, canvas);
-          canvas._sortBtns = { btnEmi, btnVols };
-        })();
-
-        let sortKey = "emission";
-        let chartDest = null;
-
-        function buildDestinationChart() {
-          const destinationArray = Object.keys(destinationMap).map(dest => ({
-            destination: dest,
-            emission: destinationMap[dest].emission,
-            vols: destinationMap[dest].vols
-          }));
-          destinationArray.sort((a, b) => b[sortKey] - a[sortKey]);
-
-          const filteredDestinations = [];
-          let cumulative = 0, otherEmission = 0, otherVols = 0, otherCount = 0;
-
-          destinationArray.forEach(item => {
-            if (filteredDestinations.length < 50 && (totalEmissions === 0 ? 0 : (cumulative / totalEmissions)) < 0.90) {
-              filteredDestinations.push(item);
-              cumulative += item.emission;
-            } else {
-              otherEmission += item.emission;
-              otherVols += item.vols;
-              otherCount++;
-            }
-          });
-          if (otherEmission > 0 || otherVols > 0) {
-            filteredDestinations.push({ destination: `Autres (${otherCount} destinations)`, emission: otherEmission, vols: otherVols });
-          }
-
-          const labels = filteredDestinations.map(d => d.destination);
-          const valuesEmissions = filteredDestinations.map(d => Math.round(d.emission * 10) / 10);
-          const valuesVols = filteredDestinations.map(d => d.vols);
-
-          if (chartDest) chartDest.destroy();
-          chartDest = new Chart(document.getElementById("chartDestination"), {
-            type: "bar",
-            data: {
-              labels,
-              datasets: [
-                { type: "bar", label: displayName("emissions"), data: valuesEmissions, yAxisID: "y", backgroundColor: "rgba(31, 60, 136, 0.25)", borderColor: "#1f3c88", borderWidth: 1, maxBarThickness: 28 },
-                { type: "line", label: "Nombre de vols (YTD)", data: valuesVols, yAxisID: "y1", borderColor: "#d62728", backgroundColor: "rgba(214, 39, 40, 0.15)", borderWidth: 2, pointRadius: 2, tension: 0.2, fill: false }
-              ]
-            },
-            options: {
-              responsive: true,
-              plugins: {
-                legend: { display: true },
-                tooltip: {
-                  callbacks: {
-                    label: function (context) {
-                      const i = context.dataIndex;
-                      const item = filteredDestinations[i] || { emission: 0, vols: 0 };
-                      if (context.dataset.yAxisID === "y") {
-                        const value = item.emission || 0;
-                        const percent = totalEmissions > 0 ? ((value / totalEmissions) * 100).toFixed(1) : 0;
-                        const avg = item.vols > 0 ? (item.emission / item.vols) : 0;
-                        const avgStr = avg.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                        const valueRounded = Math.round(value).toLocaleString('fr-FR');
-                        return [`${context.dataset.label} : ${valueRounded} t éq CO₂ (${percent} %)`, `Moyenne par vol : ${avgStr} t éq CO₂`];
-                      } else {
-                        const vols = item.vols || 0;
-                        const percentVol = totalVols > 0 ? ((vols / totalVols) * 100).toFixed(1) : 0;
-                        return [`${context.dataset.label} : ${vols.toLocaleString('fr-FR')} vols`, `Part des vols : ${percentVol} %`];
-                      }
-                    }
-                  }
-                }
-              },
-              scales: {
-                x: { ticks: { maxRotation: 90, minRotation: 45 } },
-                y: { beginAtZero: true, title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" } },
-                y1: { beginAtZero: true, position: "right", grid: { drawOnChartArea: false }, title: { display: true, text: "Nombre de vols (cumul depuis le 1er janvier)" }, ticks: { stepSize: 1, callback: (v) => Number.isInteger(v) ? v : "" } }
+            y1: {
+              beginAtZero: true,
+              position: "right",
+              grid: { drawOnChartArea: false },
+              title: { display: true, text: "Nombre de vols (cumul depuis le 1er janvier)" },
+              ticks: {
+                stepSize: 1,
+                callback: (v) => Number.isInteger(v) ? v : ""
               }
             }
-          });
+          }
         }
-
-        const btns = document.getElementById("chartDestination")._sortBtns || {};
-        btns.btnEmi?.addEventListener("click", () => { sortKey = "emission"; buildDestinationChart(); });
-        btns.btnVols?.addEventListener("click", () => { sortKey = "vols"; buildDestinationChart(); });
-        buildDestinationChart();
       });
+    }
+
+    // --- Brancher les boutons et déclencher le premier rendu ---
+    const btns = document.getElementById("chartDestination")._sortBtns || {};
+    btns.btnEmi?.addEventListener("click", () => { sortKey = "emission"; buildDestinationChart(); });
+    btns.btnVols?.addEventListener("click", () => { sortKey = "vols"; buildDestinationChart(); });
+
+    buildDestinationChart(); // rendu initial (par émissions)
+  }); // arrivals
+});   // departures
+
+  /* ===== TABLE DATA PRO V7 - STABLE ===== */
+  function createTable(containerId, data){
+    if(!data || data.length === 0){
+      document.getElementById(containerId).innerHTML = "<p>Aucune donnée disponible</p>";
+      return;
+    }
+
+    const container = document.getElementById(containerId);
+    const headers = Object.keys(data[0]);
+    let activeFilters = {};
+    let sortDirection = 1;
+    let currentPage = 1;
+    const rowsPerPage = 200;
+    let filteredData = [...data];
+    let debounceTimer;
+
+    // Format
+    function formatDistance(value){
+      const n = parseFloat(String(value).replace(',','.'));
+      if(isNaN(n)) return value;
+      return Math.round(n).toLocaleString('fr-FR');
+    }
+    function formatEmission(value){
+      const n = parseFloat(String(value).replace(',','.'));
+      if(isNaN(n)) return value;
+      return n.toLocaleString('fr-FR', { minimumFractionDigits:2, maximumFractionDigits:2 });
+    }
+    function formatDateFR(value){
+      if(!value) return "";
+      const d = new Date(value);
+      if(isNaN(d)) return value;
+      const str = d.toLocaleDateString('fr-FR', { weekday:'long', day:'2-digit', month:'2-digit', year:'numeric' });
+      return str.charAt(0).toUpperCase()+str.slice(1);
+    }
+    function formatValue(header,value){
+      const lower = header.toLowerCase();
+      if(lower.includes("date")) return formatDateFR(value);
+      if(lower.includes("distance")) return formatDistance(value);
+      if(lower.includes("emission")) return formatEmission(value);
+      return value;
+    }
+
+    // Build table
+    let html = "";
+    html += '<div style="margin-bottom:10px; display:flex; justify-content:space-between;">';
+    html += '<div><strong id="'+containerId+'-count"></strong> vols affichés</div>';
+    html += '<div>';
+    html += '<button id="'+containerId+'-reset">Réinitialiser</button> ';
+    html += '<button id="'+containerId+'-export">Exporter</button>';
+    html += '</div></div>';
+
+    html += '<div class="table-wrapper">';
+    html += '<table class="data-table"><thead>';
+
+    // Header
+    html += '<tr>';
+    headers.forEach((h,i) => {
+      const label = displayName(h);
+      html += '<th class="'+(i===0?'sticky-col':'')+' filtered-header" data-header="'+h+'">';
+      html += '<div style="display:flex; justify-content:space-between; align-items:center;">';
+      html += '<span>'+label+'</span>';
+      html += '<span class="col-menu" data-col="'+h+'" style="cursor:pointer;">⋮</span>';
+      html += '</div></th>';
+    });
+    html += '</tr>';
+
+    // Filter row
+    html += '<tr>';
+    headers.forEach((h,i) => {
+      html += '<th class="'+(i===0?'sticky-col':'')+'">';
+      html += '<div style="position:relative;">';
+      html += '<input type="text" data-filter="'+h+'" placeholder="Filtrer ‘'+displayName(h)+'’..." style="width:100%">';
+      html += '<span class="clear-filter" data-clear="'+h+'" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); cursor:pointer;">✕</span>';
+      html += '</div></th>';
+    });
+    html += '</tr></thead><tbody>';
+
+    // Total row
+    html += '<tr class="total-row"></tr>';
+
+    html += '</tbody></table></div>';
+
+    html += '<div style="margin-top:10px; text-align:center;">';
+    html += '<button id="'+containerId+'-prev">◀</button> ';
+    html += '<span id="'+containerId+'-page"></span>';
+    html += ' <button id="'+containerId+'-next">▶</button>';
+    html += '</div>';
+
+    container.innerHTML = html;
+
+
+// === Export CSV du tableau (après container.innerHTML = html) ===
+const exportBtn = document.getElementById(containerId + "-export");
+if (exportBtn) {
+  exportBtn.addEventListener("click", function () {
+    // On exporte les données actuellement filtrées (visible dans la table)
+    const rows = [];
+    // En-têtes mappés
+    rows.push(headers.map(h => displayName(h)).join(";"));
+
+    // Données filtrées paginées ou complètes ? -> ici : complètes (filtrées)
+    const dataToExport = filteredData.length ? filteredData : data;
+
+    dataToExport.forEach(rowObj => {
+      const row = headers.map(h => {
+        let val = (rowObj[h] ?? "").toString();
+
+        // Remplacer les points-virgules dans les valeurs pour ne pas casser le CSV
+        val = val.replace(/;/g, ",");
+        return val;
+      });
+      rows.push(row.join(";"));
     });
 
-    /* ===== TABLE DATA PRO V7 - STABLE ===== */
-    function createTable(containerId, data){
-      if(!data || data.length === 0){
-        document.getElementById(containerId).innerHTML = "<p>Aucune donnée disponible</p>";
-        return;
-      }
-      const container = document.getElementById(containerId);
-      const headers = Object.keys(data[0]);
-      let activeFilters = {};
-      let sortDirection = 1;
-      let currentPage = 1;
-      const rowsPerPage = 200;
-      let filteredData = [...data];
-      let debounceTimer;
+    // Ajout BOM pour Excel + téléchargement
+    const csvContent = "\uFEFF" + rows.join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
 
-      function formatDistance(value){ const n = parseFloat(String(value).replace(',','.')); if(isNaN(n)) return value; return Math.round(n).toLocaleString('fr-FR'); }
-      function formatEmission(value){ const n = parseFloat(String(value).replace(',','.')); if(isNaN(n)) return value; return n.toLocaleString('fr-FR', { minimumFractionDigits:2, maximumFractionDigits:2 }); }
-      function formatDateFR(value){
-        if(!value) return "";
-        const d = new Date(value);
-        if(isNaN(d)) return value;
-        const str = d.toLocaleDateString('fr-FR', { weekday:'long', day:'2-digit', month:'2-digit', year:'numeric' });
-        return str.charAt(0).toUpperCase()+str.slice(1);
-      }
-      function formatValue(header,value){
-        const lower = header.toLowerCase();
-        if(lower.includes("date")) return formatDateFR(value);
-        if(lower.includes("distance")) return formatDistance(value);
-        if(lower.includes("emission")) return formatEmission(value);
-        return value;
-      }
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    const fileBase =
+      containerId === "tableDepartures" ? "vols_depart" :
+      containerId === "tableArrivals"  ? "vols_arrivee" : containerId;
+    a.download = fileBase + "_export.csv";
+    a.click();
+  });
+}
+   
+    const tbody = container.querySelector("tbody");
+    const totalRow = tbody.querySelector(".total-row");
 
-      let html = "";
-      html += '<div style="margin-bottom:10px; display:flex; justify-content:space-between;">';
-      html += '<div><strong id="'+containerId+'-count"></strong> vols affichés</div>';
-      html += '<div><button id="'+containerId+'-reset">Réinitialiser</button> <button id="'+containerId+'-export">Exporter</button></div></div>';
-      html += '<div class="table-wrapper"><table class="data-table"><thead>';
-      html += '<tr>';
-      headers.forEach((h,i) => {
-        const label = displayName(h);
-        html += '<th class="'+(i===0?'sticky-col':'')+' filtered-header" data-header="'+h+'">';
-        html += '<div style="display:flex; justify-content:space-between; align-items:center;">';
-        html += '<span>'+label+'</span>';
-        html += '<span class="col-menu" data-col="'+h+'" style="cursor:pointer;">⋮</span>';
-        html += '</div></th>';
-      });
-      html += '</tr>';
-      html += '<tr>';
-      headers.forEach((h,i) => {
-        html += '<th class="'+(i===0?'sticky-col':'')+'">';
-        html += '<div style="position:relative;">';
-        html += '<input type="text" data-filter="'+h+'" placeholder="Filtrer ‘'+displayName(h)+'’..." style="width:100%">';
-        html += '<span class="clear-filter" data-clear="'+h+'" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); cursor:pointer;">✕</span>';
-        html += '</div></th>';
-      });
-      html += '</tr></thead><tbody>';
-      html += '<tr class="total-row"></tr>';
-      html += '</tbody></table></div>';
-      html += '<div style="margin-top:10px; text-align:center;">';
-      html += '<button id="'+containerId+'-prev">◀</button> <span id="'+containerId+'-page"></span> <button id="'+containerId+'-next">▶</button>';
-      html += '</div>';
-      container.innerHTML = html;
+    function renderTable(){
+      tbody.querySelectorAll("tr:not(.total-row)").forEach(tr => tr.remove());
 
-      const exportBtn = document.getElementById(containerId + "-export");
-      if (exportBtn) {
-        exportBtn.addEventListener("click", function () {
-          const rows = [];
-          rows.push(headers.map(h => displayName(h)).join(";"));
-          const dataToExport = filteredData.length ? filteredData : data;
-          dataToExport.forEach(rowObj => {
-            const row = headers.map(h => (rowObj[h] ?? "").toString().replace(/;/g, ","));
-            rows.push(row.join(";"));
-          });
-          const csvContent = "\uFEFF" + rows.join("\n");
-          const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-          const a = document.createElement("a");
-          a.href = URL.createObjectURL(blob);
-          const fileBase = containerId === "tableDepartures" ? "vols_depart" : (containerId === "tableArrivals"  ? "vols_arrivee" : containerId);
-          a.download = fileBase + "_export.csv";
-          a.click();
-        });
-      }
-      const tbody = container.querySelector("tbody");
-      const totalRow = tbody.querySelector(".total-row");
+      const start = (currentPage-1)*rowsPerPage;
+      const end = start + rowsPerPage;
+      const pageData = filteredData.slice(start,end);
 
-      function renderTable(){
-        tbody.querySelectorAll("tr:not(.total-row)").forEach(tr => tr.remove());
-        const start = (currentPage-1)*rowsPerPage;
-        const end = start + rowsPerPage;
-        const pageData = filteredData.slice(start,end);
-        pageData.forEach(row => {
-          const tr = document.createElement("tr");
-          headers.forEach(h => {
-            const td = document.createElement("td");
-            if(h.toLowerCase().includes("date") || h.toLowerCase().includes("distance") || h.toLowerCase().includes("emission")) td.className="center";
-            td.innerText = formatValue(h, row[h] || "");
-            tr.appendChild(td);
-          });
-          tbody.appendChild(tr);
-        });
-        updateTotal(); updateCount(); updatePagination(); updateBadges();
-      }
-      function applyFilters(){
-        filteredData = data.filter(row =>
-          headers.every(h => {
-            if(!activeFilters[h]) return true;
-            const value = String(row[h]||"").toLowerCase();
-            return value.includes(activeFilters[h].toLowerCase());
-          })
-        );
-        currentPage = 1;
-        renderTable();
-      }
-      function updateTotal(){
-        const sourceData = (Object.keys(activeFilters).length===0) ? data : filteredData;
-        let total = 0;
-        sourceData.forEach(row => {
-          headers.forEach(h => {
-            if(h.toLowerCase().includes("emission")){
-              const n = parseFloat(String(row[h]).replace(',','.'));
-              if(!isNaN(n)) total += n;
-            }
-          });
-        });
-        totalRow.innerHTML = "";
-        headers.forEach((h,i) => {
+      pageData.forEach(row => {
+        const tr = document.createElement("tr");
+        headers.forEach(h => {
           const td = document.createElement("td");
-          if(i===0){ td.innerHTML = "<strong>TOTAL</strong>"; }
-          else if(h.toLowerCase().includes("emission")){
-            td.className = "center";
-            td.innerHTML = "<strong>"+total.toLocaleString('fr-FR', { minimumFractionDigits:2, maximumFractionDigits:2 })+"</strong>";
+          if(h.toLowerCase().includes("date") ||
+             h.toLowerCase().includes("distance") ||
+             h.toLowerCase().includes("emission")){
+            td.className="center";
           }
-          totalRow.appendChild(td);
+          td.innerText = formatValue(h, row[h] || "");
+          tr.appendChild(td);
         });
-      }
-      function updatePagination(){
-        const totalPages = Math.ceil(filteredData.length / rowsPerPage);
-        container.querySelector("#"+containerId+"-page").innerText = "Page "+currentPage+" / "+totalPages;
-        document.getElementById(containerId+"-prev").onclick = function(){ if(currentPage > 1){ currentPage--; renderTable(); } };
-        document.getElementById(containerId+"-next").onclick = function(){ if(currentPage < totalPages){ currentPage++; renderTable(); } };
-      }
-      function updateCount(){ container.querySelector("#"+containerId+"-count").innerText = filteredData.length.toLocaleString('fr-FR'); }
-      function updateBadges(){
-        container.querySelectorAll(".filtered-header").forEach(th => {
-          const header = th.getAttribute("data-header");
-          if(activeFilters[header]) th.classList.add("filtered"); else th.classList.remove("filtered");
-        });
-      }
+        tbody.appendChild(tr);
+      });
 
-      container.querySelectorAll(".col-menu").forEach(btn => {
-        btn.addEventListener("click", function(e){
-          e.stopPropagation();
-          const col = btn.getAttribute("data-col");
-          const index = headers.indexOf(col);
-          const old = document.querySelector(".column-menu");
-          if(old) old.remove();
+      updateTotal();
+      updateCount();
+      updatePagination();
+      updateBadges();
+    }
 
-          const menu = document.createElement("div");
-          menu.className="column-menu";
-          Object.assign(menu.style, { position:"fixed", background:"#fff", border:"1px solid #ccc", borderRadius:"8px", boxShadow:"0 8px 20px rgba(0,0,0,0.15)", padding:"6px 0", zIndex:"99999" });
-          const rect = btn.getBoundingClientRect();
-          menu.style.left = rect.left+"px";
-          menu.style.top  = rect.bottom+"px";
+    function applyFilters(){
+      filteredData = data.filter(row =>
+        headers.every(h => {
+          if(!activeFilters[h]) return true;
+          const value = String(row[h]||"").toLowerCase();
+          return value.includes(activeFilters[h].toLowerCase());
+        })
+      );
+      currentPage = 1;
+      renderTable();
+    }
 
-          function addItem(label, action){
-            const item=document.createElement("div");
-            item.innerText=label;
-            item.style.padding="8px 14px";
-            item.style.cursor="pointer";
-            item.addEventListener("click",function(){ action(); menu.remove(); });
-            menu.appendChild(item);
+    function updateTotal(){
+      const sourceData = (Object.keys(activeFilters).length===0) ? data : filteredData;
+      let total = 0;
+
+      sourceData.forEach(row => {
+        headers.forEach(h => {
+          if(h.toLowerCase().includes("emission")){
+            const n = parseFloat(String(row[h]).replace(',','.'));
+            if(!isNaN(n)) total += n;
           }
-          function sortColumn(){
-            filteredData.sort((a,b) => {
-              const A=a[headers[index]], B=b[headers[index]];
-              const numA=parseFloat(String(A).replace(',','.')), numB=parseFloat(String(B).replace(',','.'));
-              if(!isNaN(numA) && !isNaN(numB)) return (numA-numB)*sortDirection;
-              return String(A).localeCompare(String(B))*sortDirection;
-            });
-            renderTable();
-          }
-          addItem("Tri ascendant", function(){ sortDirection=1; sortColumn(); });
-          addItem("Tri descendant", function(){ sortDirection=-1; sortColumn(); });
-          addItem("Effacer le filtre", function(){ delete activeFilters[col]; container.querySelector('[data-filter="'+col+'"]').value=""; applyFilters(); });
-
-          document.body.appendChild(menu);
-          document.addEventListener("click", function(){ menu.remove(); }, {once:true});
         });
       });
 
-      container.querySelectorAll("[data-filter]").forEach(input => {
-        input.addEventListener("input", function(){
-          clearTimeout(debounceTimer);
-          debounceTimer = setTimeout(function(){
-            const col=input.getAttribute("data-filter");
-            activeFilters[col]=input.value.trim();
-            if(!activeFilters[col]) delete activeFilters[col];
-            applyFilters();
-          },300);
-        });
+      totalRow.innerHTML = "";
+      headers.forEach((h,i) => {
+        const td = document.createElement("td");
+        if(i===0){
+          td.innerHTML = "<strong>TOTAL</strong>";
+        } else if(h.toLowerCase().includes("emission")){
+          td.className = "center";
+          td.innerHTML = "<strong>"+total.toLocaleString('fr-FR', { minimumFractionDigits:2, maximumFractionDigits:2 })+"</strong>";
+        }
+        totalRow.appendChild(td);
       });
-      container.querySelectorAll(".clear-filter").forEach(btn => {
-        btn.addEventListener("click", function(e){
-          e.stopPropagation();
-          const col = btn.getAttribute("data-clear");
-          const input = container.querySelector('[data-filter="'+col+'"]');
-          input.value="";
+    }
+
+    function updatePagination(){
+      const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+      container.querySelector("#"+containerId+"-page").innerText = "Page "+currentPage+" / "+totalPages;
+
+      document.getElementById(containerId+"-prev").onclick = function(){
+        if(currentPage > 1){ currentPage--; renderTable(); }
+      };
+      document.getElementById(containerId+"-next").onclick = function(){
+        if(currentPage < totalPages){ currentPage++; renderTable(); }
+      };
+    }
+
+    function updateCount(){
+      container.querySelector("#"+containerId+"-count").innerText = filteredData.length.toLocaleString('fr-FR');
+    }
+
+    function updateBadges(){
+      container.querySelectorAll(".filtered-header").forEach(th => {
+        const header = th.getAttribute("data-header");
+        if(activeFilters[header]) th.classList.add("filtered"); else th.classList.remove("filtered");
+      });
+    }
+
+    // Menu colonne
+    container.querySelectorAll(".col-menu").forEach(btn => {
+      btn.addEventListener("click", function(e){
+        e.stopPropagation();
+
+        const col = btn.getAttribute("data-col");
+        const index = headers.indexOf(col);
+
+        const old = document.querySelector(".column-menu");
+        if(old) old.remove();
+
+        const menu = document.createElement("div");
+        menu.className="column-menu";
+        menu.style.position="fixed";
+        menu.style.background="#fff";
+        menu.style.border="1px solid #ccc";
+        menu.style.borderRadius="8px";
+        menu.style.boxShadow="0 8px 20px rgba(0,0,0,0.15)";
+        menu.style.padding="6px 0";
+        menu.style.zIndex="99999";
+
+        const rect = btn.getBoundingClientRect();
+        menu.style.left = rect.left+"px";
+        menu.style.top  = rect.bottom+"px";
+
+        function addItem(label, action){
+          const item=document.createElement("div");
+          item.innerText=label;
+          item.style.padding="8px 14px";
+          item.style.cursor="pointer";
+          item.addEventListener("click",function(){ action(); menu.remove(); });
+          menu.appendChild(item);
+        }
+
+        addItem("Tri ascendant", function(){ sortDirection=1; sortColumn(index); });
+        addItem("Tri descendant", function(){ sortDirection=-1; sortColumn(index); });
+        addItem("Effacer le filtre", function(){
           delete activeFilters[col];
-          clearTimeout(debounceTimer);
+          container.querySelector('[data-filter="'+col+'"]').value="";
           applyFilters();
         });
+
+        document.body.appendChild(menu);
+        document.addEventListener("click", function(){ menu.remove(); }, {once:true});
       });
-      document.getElementById(containerId+"-reset").addEventListener("click",function(){
-        activeFilters={};
-        container.querySelectorAll("[data-filter]").forEach(i => i.value="");
-        const dateIndex = headers.findIndex(h => h.toLowerCase().includes("date"));
-        if(dateIndex!==-1){
-          data.sort((a,b) => new Date(b[headers[dateIndex]]) - new Date(a[headers[dateIndex]]));
-        }
-        filteredData=[...data];
-        currentPage=1;
-        renderTable();
+    });
+
+    function sortColumn(index){
+      filteredData.sort((a,b) => {
+        const A=a[headers[index]];
+        const B=b[headers[index]];
+        const numA=parseFloat(String(A).replace(',','.'));
+        const numB=parseFloat(String(B).replace(',','.'));
+        if(!isNaN(numA) && !isNaN(numB)) return (numA-numB)*sortDirection;
+        return String(A).localeCompare(String(B))*sortDirection;
       });
       renderTable();
     }
 
-    const style = document.createElement("style");
-    style.innerHTML = `.filtered { background:#e6f2ff !important; position:relative; }
-    .filtered::after{ content:""; width:8px; height:8px; background:#007bff; border-radius:50%; position:absolute; top:6px; right:6px; }`;
-    document.head.appendChild(style);
-
-    parseCSV('./data/EXPORT_departures_YTD.csv', function(data){
-      createTable("tableDepartures", data);
+    // Inputs filtres (debounce)
+    container.querySelectorAll("[data-filter]").forEach(input => {
+      input.addEventListener("input", function(){
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(function(){
+          const col=input.getAttribute("data-filter");
+          activeFilters[col]=input.value.trim();
+          if(!activeFilters[col]) delete activeFilters[col];
+          applyFilters();
+        },300);
+      });
     });
-    parseCSV('./data/EXPORT_arrivals_YTD.csv', function(data){
-      createTable("tableArrivals", data);
+
+    // Clear filtre
+    container.querySelectorAll(".clear-filter").forEach(btn => {
+      btn.addEventListener("click", function(e){
+        e.stopPropagation();
+        const col = btn.getAttribute("data-clear");
+        const input = container.querySelector('[data-filter="'+col+'"]');
+        input.value="";
+        delete activeFilters[col];
+        clearTimeout(debounceTimer);
+        applyFilters();
+      });
     });
 
-  }).catch(err => {
-    console.error("Erreur de chargement Chart.js :", err);
-    alert("Impossible de charger Chart.js. Vérifiez votre connexion réseau ou le CDN.");
+    // Reset
+    document.getElementById(containerId+"-reset").addEventListener("click",function(){
+      activeFilters={};
+      container.querySelectorAll("[data-filter]").forEach(i => i.value="");
+      const dateIndex = headers.findIndex(h => h.toLowerCase().includes("date"));
+      if(dateIndex!==-1){
+        data.sort((a,b) => new Date(b[headers[dateIndex]]) - new Date(a[headers[dateIndex]]));
+      }
+      filteredData=[...data];
+      currentPage=1;
+      renderTable();
+    });
+
+    // Init
+    renderTable();
+  }
+
+  // Badge CSS
+  const style = document.createElement("style");
+  style.innerHTML = `
+  .filtered { background:#e6f2ff !important; position:relative; }
+  .filtered::after{ content:""; width:8px; height:8px; background:#007bff; border-radius:50%; position:absolute; top:6px; right:6px; }
+  `;
+  document.head.appendChild(style);
+
+  // Tables
+  parseCSV('./data/EXPORT_departures_YTD.csv', function(data){
+    createTable("tableDepartures", data);
+  });
+  parseCSV('./data/EXPORT_arrivals_YTD.csv', function(data){
+    createTable("tableArrivals", data);
   });
 
 }); // DOMContentLoaded
@@ -1837,42 +2383,98 @@ document.addEventListener("DOMContentLoaded", function(){
 console.log("SCRIPT OK");
 </script>
 
+
 <script>
-// ===== Date de mise à jour =====
+
 fetch("data/EXPORT_update_time.csv")
 .then(response => response.text())
 .then(text => {
-  const lines = text.trim().split(/\r?\n/);
-  const data = lines[1]?.split(",") || [];
-  const date = (data[0]||"").trim();
-  const time = (data[1]||"").trim();
-  const d = new Date(date + "T" + time);
-  if(!isNaN(d)){
-    const formatted = d.toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"}) +
-      " à " + d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
-    document.getElementById("update-date").innerHTML = "dernière mise à jour le " + formatted;
-  } else {
-    document.getElementById("update-date").innerHTML = "date de mise à jour indisponible";
-  }
-})
-.catch(() => { document.getElementById("update-date").innerHTML = "date de mise à jour indisponible"; });
 
-// ===== Menu latéral retractable =====
+const lines = text.trim().split(/\r?\n/);
+const data = lines[1].split(",");
+
+const date = data[0].trim();
+const time = data[1].trim();
+
+const d = new Date(date + "T" + time);
+
+if(!isNaN(d)){
+
+const formatted =
+d.toLocaleDateString("fr-FR",{
+day:"numeric",
+month:"long",
+year:"numeric"
+})
++
+" à "
++
+d.toLocaleTimeString("fr-FR",{
+hour:"2-digit",
+minute:"2-digit"
+});
+
+document.getElementById("update-date").innerHTML =
+"dernière mise à jour le " + formatted;
+
+}
+else{
+
+document.getElementById("update-date").innerHTML =
+"date de mise à jour indisponible";
+
+}
+
+})
+.catch(() => {
+
+document.getElementById("update-date").innerHTML =
+"date de mise à jour indisponible";
+
+});
+
+//menu retractable//
+  
 const sidebar = document.getElementById("sidebar");
 const toggle = document.getElementById("toggleSidebar");
-if(localStorage.getItem("sidebarCollapsed") === "true"){ sidebar.classList.add("collapsed"); }
+
+/* restauration état */
+
+if(localStorage.getItem("sidebarCollapsed") === "true"){
+sidebar.classList.add("collapsed");
+}
+
+/* clic bouton */
+
 toggle.addEventListener("click", function(){
-  sidebar.classList.toggle("collapsed");
-  localStorage.setItem("sidebarCollapsed", sidebar.classList.contains("collapsed"));
+
+sidebar.classList.toggle("collapsed");
+
+localStorage.setItem(
+"sidebarCollapsed",
+sidebar.classList.contains("collapsed")
+);
+
 });
 
 /* MENU ACTIF AUTOMATIQUE */
+
 let currentPage = window.location.pathname.split("/").pop();
-if(currentPage === ""){ currentPage = "index.html"; }
+
+if(currentPage === ""){
+currentPage = "index.html";
+}
+
 document.querySelectorAll(".menu a").forEach(link => {
-  const linkPage = link.getAttribute("href");
-  if(linkPage === currentPage){ link.classList.add("active"); }
+
+const linkPage = link.getAttribute("href");
+
+if(linkPage === currentPage){
+link.classList.add("active");
+}
+
 });
+ 
 </script>
 
 </body>
