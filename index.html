@@ -1,8 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
 <meta charset="UTF-8">
-
 <title>Émissions carbone Aéroport Paris-Beauvais (BVA) – Analyse indépendante</title>
 
 <!-- ===== SEO ===== -->
@@ -20,15 +19,12 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-https://cdn.jsdelivr.net/npm/chart.js@3.9.1</script>
-https://cdn.jsdelivr.net/npm/date-fns@2.30.0/dist/date-fns.min.js</script>
-https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2</script>
-https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1</script>
-https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css
+<!-- ===== LIBS (CDN) ===== -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-bIo6GfX8qkXWb8GJg2s2d4N8VJv4+qS1t1KkD7R2mR0hHkH3zJbYqS8pF0kQ1zc7W9I6VZr5/4wF4oZqvXcZs://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2</script>
+<script src="https://cdn.jsdelivr.net/npm/chartm@1.2.1</script>
 
-<style>
-body{
-  margin:0; font-family:Arial, sans-serif; display:flex; background:#f5f6fa;
+<!-- ===== Favicon ===== -->
+<link rel="icon" type="image/png" href="Favicon/favicon.png"rial, sans-serif; display:flex; background:#f5f6fa;
 }
 
 /* SIDEBAR */
@@ -166,20 +162,16 @@ h3{ color:#444; font-size:1.2em; margin-top:20px; }
   "author": { "@type": "Organization", "name": "Analyse indépendante BVA" }
 }
 </script>
-
-<!-- Favicon PNG (et pensez à ajouter un /favicon.ico à la racine si vous voulez supprimer le 404 automatique du navigateur) -->
-Favicon/favicon.png
 </head>
 
 <body>
 
 <!-- SIDEBAR -->
 <div class="sidebar" id="sidebar">
-  <div class="logo">logo-bva.png</div>
-  <button id="toggleSidebar" class="toggle-btn"><i class="fa-solid fa-angle-left"></i></button>
+  <div class="logo"><img src="logo-bva.png"utton id="toggleSidebar" class="toggle-btn"><i class="fa-solid fa-angle-left"></i></button>
   <nav class="menu">
     index.html<span class="icon">🏠</span><span class="text">Accueil</span></a>
-    methodologie.html<span class="icon">📘</span><span class="text">Méthodologie</span></a>
+    <a href="methodologie.html" data-title="Méthodologielass="text">Méthodologie</span></a>
   </nav>
 </div>
 
@@ -196,14 +188,14 @@ Favicon/favicon.png
       <p>L’aéroport de Paris-Beauvais se situe dans l’Oise et constitue
         le principal aéroport low-cost du nord de l’Île-de-France, et le 9ème aéroport Français en terme de trafic passagers.</p>
       <p>Sont incluses :
-        <br>• Les émissions directes du de l'aéroports : chauffage, consommation d'électricité, consommation de carburant pour les engins de pistes, ... (scope 1 & 2)
+        <br>• Les émissions directes du de l'aéroports : chauffage, consommation d'électricité, consommation de carburant pour les engins de pistes, ... (scope 1 &amp; 2)
         <br>• Les émissions liées aux transports terrestres des employés pour accéder à l'aéroport (Scope 3)
         <br>• Les émissions liées au transports terrestres collectifs des passagers pour accéder à l'aéroport (Scope 3)
-        <br>• Les émissions liées au transports terrestres individuels des passagers pour accéder à l'aéroport (Scope 3)
+        <br>• Les émissions liées aux transports terrestres individuels des passagers pour accéder à l'aéroport (Scope 3)
         <br>• Les émissions liées aux opérations des aéronefs : APU, roulage, décollage/atterrisage, vol demi-croisère, ainsi que la production et l'approvisionnement en carburant d'aviation et l'amortissement des aéronefs (Scope 3)</p>
       <p>Les émissions de gaz à effet de serre sont exprimées en tonnes équivalent dioxyde de carbone (t éq CO₂).</p>
       <p><strong>Données :</strong> <span id="update-date">chargement...</span></p>
-      <p><br>La methodologie.html<strong>méthodologie détaillée de calcul des émissions</strong></a> est disponible sur une page dédiée.</p>
+      <p><br>La <a hreflogie.html<strong>méthodologie détaillée de calcul des émissions</strong></a> est disponible sur une page dédiée.</p>
     </div>
 
     <div class="card">
@@ -287,13 +279,14 @@ Favicon/favicon.png
     <h2>Ressources &amp; Partage</h2>
     <p><strong>Partagez ce site :</strong></p>
     <div class="share-links">
-      <atps://www.linkedin.com/sharing/share-offsite/?url=https://emissionscarbonebva-maker.github.io/bva-ges/<i class="fab fa-linkedin"></i> Partager sur LinkedIn</a>
-      https://www.facebook.com/sharer/sharer.php?u=https://emissionscarbonebva-maker.github.io/bva-ges/<i class="fab fa-facebook"></i> Partager sur Facebook</a>
+      <a class="share-btn linkedin" target="_blank" rel="noopener"
+         href="https://www.linkedin.com/sharing/share-offsite/?url=https://emissionscarbonebva-maker.github<a class="share-btn facebook" target="_blank" rel="noopener"
+         href="https://www.facebook/<i class="fab fa-facebook"></i> Partager sur Facebook</a>
     </div>
     <p>Liens utiles :
-      <br>• https://adera-association.com/ADERA – Association pour l’environnement</a>
+      <br>• <ttps://adera-association.com/ADERA – Association pour l’environnement</a>
       <br>• https://concertation.aeroportparisbeauvais.com/frConcertation Aéroport Paris-Beauvais</a>
-      <br>• https://www.aeroportparisbeauvais.com/professionnels/developpement-durable/le-bulletin-de-lenvironnementBulletin de l'environnement de l'aéroport de Paris-Beauvais</a>
+      <br>• <a href="https://www.aeroportparisbeauvais.com/professionnels/developpement-durable/le-bulletin-de-lenntBulletin de l'environnement de l'aéroport de Paris-Beauvais</a>
     </p>
   </div>
 
@@ -306,7 +299,7 @@ Favicon/favicon.png
     <p>Les données présentées proviennent de sources accessibles publiquement et font l’objet 
       d’un traitement, d’une agrégation et d’estimations propres aux auteurs du site.</p>
     <p>Les calculs reposent sur des hypothèses méthodologiques explicitées dans la
-      methodologie.html<strong>page méthodologie</strong></a>. Les résultats doivent être considérnés comme des estimations indicatives destinées 
+      <a hreflogie.html<strong>page méthodologie</strong></a>. Les résultats doivent être considérés comme des estimations indicatives destinées 
       à alimenter le débat public.</p>
     <p>Conformément à la liberté d’expression et d’information, ce site participe au débat public 
       sur les enjeux environnementaux locaux, notamment dans le cadre du projet d’agrandissement 
@@ -319,7 +312,7 @@ Favicon/favicon.png
   <footer>
     Observatoire citoyen indépendant – Analyse des émissions de GES liées à l’activité de l’aéroport Paris-Beauvais |
     Mentions légales |
-    Contact : mailto:emissionscarbonebva@gmail.comemissionscarbonebva@gmail.com</a> |
+    Contact : <a href="mailto:emissionscarbonebva@gmail.comcarbonebva@gmail.com</a> |
     Hébergement : GitHub Pages (GitHub Inc.)
   </footer>
 </div> <!-- /main -->
@@ -1096,13 +1089,13 @@ document.addEventListener("DOMContentLoaded", function(){
           boxShadow:"0 8px 20px rgba(0,0,0,0.15)",padding:"6px 0",zIndex:"99999"});
         const rect=btn.getBoundingClientRect(); menu.style.left=rect.left+"px"; menu.style.top=rect.bottom+"px";
         function addItem(label, action){ const item=document.createElement("div"); item.innerText=label; item.style.padding="8px 14px"; item.style.cursor="pointer";
-          item.addEventListener("click", ()=>{ action(); menu.remove(); }); menu.appendChild(item); }
+          item.addEventListener("click", () =>{ action(); menu.remove(); }); menu.appendChild(item); }
         addItem("Tri ascendant", ()=>{ sortDirection=1; sortColumn(index); });
         addItem("Tri descendant", ()=>{ sortDirection=-1; sortColumn(index); });
         addItem("Effacer le filtre", ()=>{
           delete activeFilters[col]; container.querySelector('[data-filter="'+col+'"]').value=""; applyFilters();
         });
-        document.body.appendChild(menu); document.addEventListener("click", ()=> menu.remove(), {once:true});
+        document.body.appendChild(menu); document.addEventListener("click", () => menu.remove(), {once:true});
       });
     });
 
@@ -1123,17 +1116,18 @@ document.addEventListener("DOMContentLoaded", function(){
         delete activeFilters[col]; clearTimeout(debounceTimer); applyFilters();
       });
     });
+
     document.getElementById(containerId+"-reset").addEventListener("click", () => {
-  activeFilters = {};
-  container.querySelectorAll("[data-filter]").forEach((i) => { i.value = ""; });
-  const dateIndex = headers.findIndex((h) => h.toLowerCase().includes("date"));
-  if (dateIndex !== -1) {
-    data.sort((a, b) => new Date(b[headers[dateIndex]]) - new Date(a[headers[dateIndex]]));
-  }
-  filteredData = [...data];
-  currentPage = 1;
-  renderTable();
-});
+      activeFilters = {};
+      container.querySelectorAll("[data-filter]").forEach((i) => { i.value = ""; });
+      const dateIndex = headers.findIndex((h) => h.toLowerCase().includes("date"));
+      if (dateIndex !== -1) {
+        data.sort((a, b) => new Date(b[headers[dateIndex]]) - new Date(a[headers[dateIndex]]));
+      }
+      filteredData = [...data];
+      currentPage = 1;
+      renderTable();
+    });
 
     const exportBtn = document.getElementById(containerId+"-export");
     if (exportBtn) {
@@ -1169,9 +1163,10 @@ fetch("data/EXPORT_update_time.csv")
 .then(response => response.text())
 .then(text => {
   const lines = text.trim().split(/\r?\n/);
+  if (lines.length < 2) throw new Error('update file incomplete');
   const data = lines[1].split(",");
-  const date = data[0].trim();
-  const time = data[1].trim();
+  const date = (data[0]||"").trim();
+  const time = (data[1]||"").trim();
   const d = new Date(date + "T" + time);
   const el = document.getElementById("update-date");
   if(!el) return;
@@ -1191,10 +1186,12 @@ fetch("data/EXPORT_update_time.csv")
 const sidebar = document.getElementById("sidebar");
 const toggle = document.getElementById("toggleSidebar");
 if(localStorage.getItem("sidebarCollapsed") === "true"){ sidebar.classList.add("collapsed"); }
-toggle.addEventListener("click", function(){
-  sidebar.classList.toggle("collapsed");
-  localStorage.setItem("sidebarCollapsed", sidebar.classList.contains("collapsed"));
-});
+if (toggle) {
+  toggle.addEventListener("click", function(){
+    sidebar.classList.toggle("collapsed");
+    localStorage.setItem("sidebarCollapsed", sidebar.classList.contains("collapsed"));
+  });
+}
 // MENU ACTIF AUTOMATIQUE
 let currentPage = window.location.pathname.split("/").pop();
 if(currentPage === ""){ currentPage = "index.html"; }
