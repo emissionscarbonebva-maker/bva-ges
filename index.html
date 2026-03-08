@@ -1402,6 +1402,7 @@ parseCSV('./data/EXPORT_departures_YTD.csv', function (departures) {
     // --- Agrégation commune départs+arrivées ---
     const destinationMap = {}; // { [destination]: { emission:number, vols:number } }
     let totalEmissions = 0;
+    let totalVols = 0; 
 
     const toNum = (x) => {
       const n = parseFloat(String(x).replace(',', '.'));
@@ -1414,6 +1415,7 @@ parseCSV('./data/EXPORT_departures_YTD.csv', function (departures) {
       destinationMap[key].emission += emission;
       destinationMap[key].vols += 1;         // 1 ligne = 1 vol
       totalEmissions += emission;
+      totalVols += 1;
     }
 
     // Départs : colonne 'destination'
@@ -1540,19 +1542,45 @@ parseCSV('./data/EXPORT_departures_YTD.csv', function (departures) {
           responsive: true,
           plugins: {
             legend: { display: true },
-            tooltip: {
-              callbacks: {
-                label: function (context) {
-                  const val = context.parsed.y;
-                  if (context.dataset.yAxisID === "y") {
-                    const percent = totalEmissions > 0 ? ((val / totalEmissions) * 100).toFixed(1) : 0;
-                    return `${context.dataset.label} : ${val.toLocaleString('fr-FR')} t éq CO₂ (${percent} %)`;
-                  } else {
-                    return `${context.dataset.label} : ${val.toLocaleString('fr-FR')} vols`;
-                  }
-                }
-              }
-            }
+           
+tooltip: {
+  callbacks: {
+    label: function (context) {
+      const i = context.dataIndex;
+      // On accède à l’item “visible” (après top50/90%)
+      const item = filteredDestinations[i] || { emission: 0, vols: 0 };
+
+      if (context.dataset.yAxisID === "y") {
+        // === Barre Emissions ===
+        const value = item.emission || 0;
+        const percent = totalEmissions > 0 ? ((value / totalEmissions) * 100).toFixed(1) : 0;
+
+        // moyenne par vol = émissions cumulées / nb de vols
+        const avg = item.vols > 0 ? (item.emission / item.vols) : 0;
+        const avgStr = avg.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+        // on garde l’arrondi “tonnes” sur la valeur principale (comme avant)
+        const valueRounded = Math.round(value).toLocaleString('fr-FR');
+
+        // Variante A — tout sur une ligne :
+        //return `${context.dataset.label} : ${valueRounded} t éq CO₂ (${percent} %) — Moyenne/vol : ${avgStr} t éq CO₂`;
+
+        // Variante B — sur 2 lignes (si tu préfères) :
+        return [
+           `${context.dataset.label} : ${valueRounded} t éq CO₂ (${percent} %)`,
+           `Moyenne par vol : ${avgStr} t éq CO₂`
+         ].join('\n');
+      } else {
+        // === Ligne Vols ===
+        const vols = item.vols || 0;
+        const percentVol = totalVols > 0 ? ((vols / totalVols) * 100).toFixed(1) : 0;
+
+        return `${context.dataset.label} : ${vols.toLocaleString('fr-FR')} vols (${percentVol} %)`;
+      }
+    }
+  }
+}
+
           },
           scales: {
             x: { ticks: { maxRotation: 90, minRotation: 45 } },
