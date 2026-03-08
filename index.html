@@ -872,7 +872,7 @@ ni aux compagnies aériennes mentionnées.
 
 <p>
 Les données présentées proviennent de sources accessibles publiquement et font l’objet 
-d’un traitement, d’une agrégation et d’estimations propres à l’auteur du site.
+d’un traitement, d’une agrégation et d’estimations propres aux auteurs du site.
 </p>
 
 <p>
@@ -1010,16 +1010,33 @@ document.addEventListener("DOMContentLoaded", function(){
       });
   }
 
+
 /* ========= Utils Périodes & Contrôles ========= */
 
-// 0.1 – Génère une clé de période
+// 0.1 Fallback ISO week si date-fns n'est pas dispo
+function _isoWeek(d){
+  const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const day = t.getUTCDay() || 7;
+  t.setUTCDate(t.getUTCDate() + 4 - day);
+  const yearStart = new Date(Date.UTC(t.getUTCFullYear(), 0, 1));
+  return Math.ceil((((t - yearStart) / 86400000) + 1) / 7);
+}
+function _isoWeekYear(d){
+  const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const day = t.getUTCDay() || 7;
+  t.setUTCDate(t.getUTCDate() + 4 - day);
+  return t.getUTCFullYear();
+}
+
 function makePeriodKey(dateStr, period) {
   const d = new Date(dateStr);
   if (isNaN(d)) return dateStr;
   if (period === "day") return dateStr;
   if (period === "week") {
-    const y = dateFns.getISOWeekYear(d);
-    const w = String(dateFns.getISOWeek(d)).padStart(2, "0");
+    const getW  = (window.dateFns && typeof dateFns.getISOWeek      === "function") ? dateFns.getISOWeek      : _isoWeek;
+    const getWY = (window.dateFns && typeof dateFns.getISOWeekYear  === "function") ? dateFns.getISOWeekYear  : _isoWeekYear;
+    const y = getWY(d);
+    const w = String(getW(d)).padStart(2, "0");
     return `${y}-S${w}`;
   }
   if (period === "month") {
@@ -1029,6 +1046,7 @@ function makePeriodKey(dateStr, period) {
   }
   return dateStr;
 }
+
 
 // 0.2 – Tri des clés de période
 function sortPeriodKeys(keys, period) {
@@ -1186,15 +1204,12 @@ function ensurePeriodControls(canvasId, onChange) {
 let chartDailyInstance = null;
 
 function buildChartDaily(period) {
-  // 1) Préparer agrégation par période
-  // headers: [date, s1, s2, s3, s4, s5]
-  const dateKey = headers[0];
+  const dateKey  = headers[0];
+  const scopeKeys = headers.slice(1, 6); // 5 scopes
 
-  // Série par scope : { periodKey -> valeur }
-  const scopeKeys = headers.slice(1, 6);
+  // Agrégation par période
   const perScope = {};
   scopeKeys.forEach(k => perScope[k] = {});
-
   const periodsSet = new Set();
 
   data.forEach(row => {
@@ -1209,54 +1224,54 @@ function buildChartDaily(period) {
   });
 
   const labels = sortPeriodKeys(Array.from(periodsSet), period);
+  const isDay = (period === "day");
 
-  // 2) Construire datasets (mêmes couleurs/labels que ton code)
   const colors = ["#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd"];
   const datasets = scopeKeys.map((k, i) => ({
-    type: (period === "day") ? "line" : "bar",
+    type: isDay ? "line" : "bar",
     label: displayName(k),
     data: labels.map(pk => perScope[k][pk] || 0),
-    borderWidth: 2,
-    fill: false,
     borderColor: colors[i],
-    backgroundColor: colors[i] + (period === "day" ? "" : "55")
+    backgroundColor: isDay ? colors[i] + "33" : colors[i] + "AA",
+    borderWidth: 2,
+    fill: isDay,                 // aires empilées en JOUR
+    stack: isDay ? "stackS" : "stackS" // même pile (utile pour barres)
   }));
 
-  // 3) Série totale (somme scopes)
-  const totalSeries = labels.map((_, idx) =>
-    scopeKeys.reduce((sum, k) => sum + (datasets[scopeKeys.indexOf(k)].data[idx] || 0), 0)
-  );
-  datasets.push({
-    type: "line",
-    label: "Total scopes",
-    data: totalSeries,
-    borderWidth: 3,
-    fill: false,
-    borderColor: "#000000"
-  });
-
-  // 4) (Re)créer le chart
   if (chartDailyInstance) chartDailyInstance.destroy();
   chartDailyInstance = new Chart(document.getElementById("chartDaily"), {
-    type: (period === "day") ? "line" : "bar",
+    type: isDay ? "line" : "bar",
     data: { labels, datasets },
     options: {
       responsive: true,
       interaction: { mode:'index', intersect:false },
       plugins: {
         legend: { position: 'top' },
-        zoom: {
-          pan: { enabled: true, mode: 'x' },
-          zoom: { wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' }
+        zoom: { pan: {enabled:true, mode:'x'}, zoom: {wheel:{enabled:true}, pinch:{enabled:true}, mode:'x'} },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => {
+              const v = ctx.parsed.y || 0;
+              return `${ctx.dataset.label} : ${Math.round(v).toLocaleString('fr-FR')} t éq CO₂`;
+            }
+          }
         }
       },
       scales: {
-        x: { title: { display: true, text: (period === "day" ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")) } },
-        y: { beginAtZero: true, title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO2)" } }
+        x: { 
+          title: { display: true, text: (isDay ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")) },
+          stacked: !isDay         // empilage horizontal pour barres
+        },
+        y: { 
+          beginAtZero: true,
+          stacked: true,          // empilage vertical (jour ET barres)
+          title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" }
+        }
       }
     }
   });
 }
+
 
 // Installer les boutons et premier rendu
 const initDailyPeriod = ensurePeriodControls("chartDaily", buildChartDaily);
@@ -1360,39 +1375,44 @@ function buildChartCumul(period) {
     stack: "stack1"
   }));
 
-  if (chartCumulInstance) chartCumulInstance.destroy();
-  chartCumulInstance = new Chart(document.getElementById("chartCumul"), {
-    type: 'line',
-    data: { labels, datasets },
-    options: {
-      responsive: true,
-      interaction: { mode:'index', intersect:false },
-      plugins: {
-        legend: { position:'top' },
-        tooltip: {
-          callbacks: {
-            label: function(ctx){
-              const value = ctx.parsed.y || 0;
-              let total = 0;
-              ctx.chart.data.datasets.forEach(ds => {
-                total += ds.data[ctx.dataIndex] || 0;
-              });
-              const percent = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-              return `${ctx.dataset.label} : ${Math.round(value).toLocaleString('fr-FR')} t éq CO2 (${percent}%)`;
-            }
+  
+const isDay = (period === "day");
+
+if (chartCumulInstance) chartCumulInstance.destroy();
+chartCumulInstance = new Chart(document.getElementById("chartCumul"), {
+  type: isDay ? 'line' : 'bar',
+  data: { labels, datasets },
+  options: {
+    responsive: true,
+    interaction: { mode:'index', intersect:false },
+    plugins: {
+      legend: { position:'top' },
+      tooltip: {
+        callbacks: {
+          label: function(ctx){
+            const value = ctx.parsed.y || 0;
+            let total = 0;
+            ctx.chart.data.datasets.forEach(ds => { total += ds.data[ctx.dataIndex] || 0; });
+            const percent = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+            return `${ctx.dataset.label} : ${Math.round(value).toLocaleString('fr-FR')} t éq CO₂ (${percent}%)`;
           }
-        },
-        zoom: {
-          pan: { enabled:true, mode:'x' },
-          zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' }
         }
       },
-      scales: {
-        x: { title: { display: true, text: (period === "day" ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")) } },
-        y: { beginAtZero: true, stacked: true, title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO2)" } }
+      zoom: { pan:{enabled:true, mode:'x'}, zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' } }
+    },
+    scales: {
+      x: { 
+        title: { display: true, text: (isDay ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")) },
+        stacked: !isDay          // empilé pour barres
+      },
+      y: { 
+        beginAtZero: true, 
+        stacked: !isDay,         // empilé pour barres
+        title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" }
       }
     }
-  });
+  }
+});
 }
 
 const initCumulPeriod = ensurePeriodControls("chartCumul", buildChartCumul);
@@ -1443,43 +1463,66 @@ function buildChartTotalCumul(period) {
   });
 
   // agrégation
-  if (period !== "day") {
-    const lastByPeriod = {};
-    perDay.forEach(d => {
-      const pkey = makePeriodKey(d.date, period);
-      if (!lastByPeriod[pkey] || new Date(d.date) > new Date(lastByPeriod[pkey].date)) {
-        lastByPeriod[pkey] = d;
-      }
-    });
-    const labels = sortPeriodKeys(Object.keys(lastByPeriod), period);
-    const values = labels.map(pk => lastByPeriod[pk].value);
-
-    if (chartTotalCumulInstance) chartTotalCumulInstance.destroy();
-    chartTotalCumulInstance = new Chart(document.getElementById("chartTotalCumul"), {
-      type: 'line',
-      data: {
-        labels,
-        datasets: [{
-          label: "Cumul total émissions",
-          data: values,
-          borderWidth: 3,
-          fill: true,
-          backgroundColor: "rgba(31,60,136,0.2)",
-          borderColor: "#1f3c88"
-        }]
+  
+if (period !== "day") {
+  // ... (labels, values déjà calculés)
+  if (chartTotalCumulInstance) chartTotalCumulInstance.destroy();
+  chartTotalCumulInstance = new Chart(document.getElementById("chartTotalCumul"), {
+    type: 'bar',  // <-- barres en période agrégée
+    data: {
+      labels,
+      datasets: [{
+        label: "Cumul total émissions",
+        data: values,
+        borderWidth: 1,
+        backgroundColor: "rgba(31,60,136,0.6)",
+        borderColor: "#1f3c88"
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend:{ position:'top' },
+        zoom:{ pan:{enabled:true,mode:'x'}, zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' } }
       },
-      options: {
-        responsive: true,
-        plugins: {
-          legend:{ position:'top' },
-          zoom:{ pan:{enabled:true,mode:'x'}, zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' } }
-        },
-        scales: {
-          x: { title: { display: true, text: (period === "week" ? "Semaine (ISO)" : "Mois") } },
-          y: { beginAtZero: true, title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO2)" } }
-        }
+      scales: {
+        x: { title: { display: true, text: (period === "week" ? "Semaine (ISO)" : "Mois") } },
+        y: { beginAtZero: true, title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" } }
       }
-    });
+    }
+  });
+
+} else {
+  // ------ Vue jour ------
+  // ... (labels/values déjà calculés)
+  if (chartTotalCumulInstance) chartTotalCumulInstance.destroy();
+  chartTotalCumulInstance = new Chart(document.getElementById("chartTotalCumul"),{
+    type:'line',
+    data:{
+      labels,
+      datasets:[{
+        label:"Cumul total émissions",
+        data:values,
+        borderWidth:3,
+        fill:true,
+        backgroundColor:"rgba(31,60,136,0.2)",
+        borderColor:"#1f3c88"
+      }]
+    },
+    options:{
+      responsive:true,
+      plugins:{
+        legend:{ position:'top' },
+        zoom:{ pan:{enabled:true,mode:'x'}, zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' } }
+      },
+      scales: {
+        x: { title: { display: true, text: "Date" } },
+        y: { beginAtZero: true, title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" } }
+      }
+    }
+  });
+}
+
 
   } else {
     // vue Jour (comme avant)
