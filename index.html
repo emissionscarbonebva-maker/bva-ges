@@ -896,7 +896,15 @@ Hébergement : GitHub Pages (GitHub Inc.)
 </footer>
 
 <script>
-/* ===== EXPORT CSV DES GRAPHIQUES ===== */
+
+ // Convertit "rgb(r,g,b)" -> "rgba(r,g,b,a)" (alpha entre 0 et 1)
+function toRGBA(rgb, a = 1) {
+  if (typeof rgb !== 'string') return rgb;
+  if (!rgb.startsWith('rgb(')) return rgb;      // si c'est déjà une autre couleur, on laisse tel quel
+  return rgb.replace('rgb(', 'rgba(').replace(')', `, ${a})`);
+}
+ 
+ /* ===== EXPORT CSV DES GRAPHIQUES ===== */
 function exportChartCSV(chartId, filename){
   const chart = Chart.getChart(chartId);
   if(!chart){
@@ -1606,10 +1614,13 @@ parseCSV('./data/EXPORT_daily_airlines.csv', (dataRaw) => {
       label: comp,
       data: labels.map(pk => agg[comp]?.[pk] || 0),
       borderWidth: 2,
-      fill: false,
+      fill: false,    
       borderColor: palette[comp] || "rgb(120,120,120)",
-      backgroundColor: (palette[comp] || "rgb(120,120,120)") + (period === "day" ? "" : "AA"),
-      stack: (period === "day" ? undefined : "stackAir")
+     // plein en barres (semaine/mois), léger voile en "jour" si tu veux (line chart)
+     backgroundColor: (period === "day")
+            ? toRGBA(palette[comp] || "rgb(120,120,120)", 0.25) // optionnel en "jour"
+            : toRGBA(palette[comp] || "rgb(120,120,120)", 0.85), // barres bien remplies
+     stack: (period === "day" ? undefined : "stackAir")
     }));
 
    // --- Empilement : plus grand en haut, sans toucher à la légende ---
@@ -1812,7 +1823,9 @@ parseCSV('./data/EXPORT_daily_airlines.csv', (data) => {
       borderWidth: 2,
       fill: false,
       borderColor: palette[comp] || "rgb(120,120,120)",
-      backgroundColor: (palette[comp] || "rgb(120,120,120)") + (period === "day" ? "" : "AA"),
+      backgroundColor: (period === "day")
+             ? toRGBA(palette[comp] || "rgb(120,120,120)", 0.25)
+             : toRGBA(palette[comp] || "rgb(120,120,120)", 0.85),
       stack: (period === "day" ? undefined : "stackRot")
     }));
 
