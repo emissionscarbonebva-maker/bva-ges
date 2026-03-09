@@ -1641,12 +1641,42 @@ if (period !== "day") {
       options: {
         responsive: true,
         interaction: { mode: 'index', intersect: false },
-        plugins: {
-          legend: { position: 'top' },
-          zoom: {
-            pan:  { enabled: true, mode: 'x' },
-            zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }
-          },
+        
+plugins: {
+  legend: {
+    position: 'top',
+    labels: {
+      // 1) Méthode simple (si dispo dans ta v3.9) : fonction de tri
+      sort: (a, b) => {
+        const order = { "Ryanair":0, "Wizz Air":1, "HiSky":2, "SkyUp":3, "Volotea":4, "Autres":5 };
+        const ia = (a?.text in order) ? order[a.text] : 999;
+        const ib = (b?.text in order) ? order[b.text] : 999;
+        if (ia !== ib) return ia - ib;
+        // à défaut, ordre alpha pour les "inconnus"
+        return String(a.text).localeCompare(String(b.text));
+      },
+
+      // 2) (Optionnel – ceinture et bretelles) :
+      //    Si jamais labels.sort n'est pas pris en compte dans ton build,
+      //    on surchage le générateur et on trie le résultat par la même règle.
+      generateLabels: (chart) => {
+        const base = Chart.defaults.plugins.legend.labels.generateLabels(chart);
+        const order = { "Ryanair":0, "Wizz Air":1, "HiSky":2, "SkyUp":3, "Volotea":4, "Autres":5 };
+        base.sort((a, b) => {
+          const ia = (a?.text in order) ? order[a.text] : 999;
+          const ib = (b?.text in order) ? order[b.text] : 999;
+          if (ia !== ib) return ia - ib;
+          return String(a.text).localeCompare(String(b.text));
+        });
+        return base;
+      }
+    }
+  },
+  zoom: {
+    pan:  { enabled: true, mode: 'x' },
+    zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }
+  },
+
           tooltip: {
             // Tri décroissant par valeur
             itemSort: (a, b) => {
@@ -1836,12 +1866,32 @@ if (period !== "day") {
       options: {
         responsive: true,
         interaction: { mode: 'index', intersect: false },
-        plugins: {
-          legend: { position: 'top' },
-          zoom: {
-            pan:  { enabled: true, mode: 'x' },
-            zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }
-          },
+        
+plugins: {
+  legend: {
+    position: 'top',
+    labels: {
+      sort: (a, b) => {
+        const order = { "Ryanair":0, "Wizz Air":1, "HiSky":2, "SkyUp":3, "Volotea":4, "Autres":5 };
+        const ia = (a?.text in order) ? order[a.text] : 999;
+        const ib = (b?.text in order) ? order[b.text] : 999;
+        if (ia !== ib) return ia - ib;
+        return String(a.text).localeCompare(String(b.text));
+      },
+      generateLabels: (chart) => {
+        const base = Chart.defaults.plugins.legend.labels.generateLabels(chart);
+        const order = { "Ryanair":0, "Wizz Air":1, "HiSky":2, "SkyUp":3, "Volotea":4, "Autres":5 };
+        base.sort((a, b) => {
+          const ia = (a?.text in order) ? order[a.text] : 999;
+          const ib = (b?.text in order) ? order[b.text] : 999;
+          if (ia !== ib) return ia - ib;
+          return String(a.text).localeCompare(String(b.text));
+        });
+        return base;
+      }
+    }
+  },
+
           tooltip: {
             // 🔽 Affiche d’abord les valeurs les plus élevées
             itemSort: (a, b) => {
