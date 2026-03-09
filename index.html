@@ -1632,17 +1632,7 @@ if (period !== "day") {
     ds.order = sum; // plus petit order dessiné d'abord (en bas), plus grand en dernier (en haut)
   });
 }
-   
-    // --- Réordonner l'empilement en vues semaine/mois : plus grand en haut ---
-if (period !== "day") {
-  datasets.sort((a, b) => {
-    const sa = (Array.isArray(a.data) ? a.data.reduce((s, v) => s + (Number(v) || 0), 0) : 0);
-    const sb = (Array.isArray(b.data) ? b.data.reduce((s, v) => s + (Number(v) || 0), 0) : 0);
-    // plus petit d'abord (bas), plus grand en dernier (haut)
-    return sa - sb;
-  });
-}
-   
+  
     // 4) (Re)création du graphique
     if (chartAirlinesInstance) chartAirlinesInstance.destroy();
     chartAirlinesInstance = new Chart(document.getElementById("chartAirlines"),{
@@ -1836,16 +1826,6 @@ if (period !== "day") {
       ? ds.data.reduce((s, v) => s + (Number(v) || 0), 0)
       : 0;
     ds.order = sum;
-  });
-}
-   
-    // --- Réordonner l'empilement en vues semaine/mois : plus grand en haut ---
-if (period !== "day") {
-  datasets.sort((a, b) => {
-    const sa = (Array.isArray(a.data) ? a.data.reduce((s, v) => s + (Number(v) || 0), 0) : 0);
-    const sb = (Array.isArray(b.data) ? b.data.reduce((s, v) => s + (Number(v) || 0), 0) : 0);
-    // plus petit d'abord (bas), plus grand en dernier (haut)
-    return sa - sb;
   });
 }
    
