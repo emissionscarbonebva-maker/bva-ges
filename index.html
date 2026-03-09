@@ -1303,7 +1303,7 @@ function buildChartDaily(period) {
       const pct = totalAtIndex > 0 ? (v / totalAtIndex) * 100 : 0;
       const pctStr = pct.toLocaleString('fr-FR', { maximumFractionDigits: 1 });
 
-      return `${ctx.dataset.label} : ${Math.round(v).toLocaleString('fr-FR')} t éq CO₂ ; soit ${pctStr} %`;
+      return `${ctx.dataset.label} : ${Math.round(v).toLocaleString('fr-FR')} t éq CO₂  ;  soit ${pctStr} %`;
     },
     footer: (items) => {
       if (!items?.length) return '';
@@ -1487,20 +1487,54 @@ function buildChartCumul(period) {
       responsive: true,
       interaction: { mode:'index', intersect:false },
       plugins: {
-        legend: { position:'top' },
-        tooltip: {
-          callbacks: {
-            label: function(ctx){
-              const value = ctx.parsed.y || 0;
-              let total = 0;
-              ctx.chart.data.datasets.forEach(ds => { total += ds.data[ctx.dataIndex] || 0; });
-              const percent = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-              return `${ctx.dataset.label} : ${Math.round(value).toLocaleString('fr-FR')} t éq CO₂ (${percent}%)`;
-            }
+  legend: { position:'top' },
+  tooltip: {
+    callbacks: {
+      label: (ctx) => {
+        const v = ctx.parsed.y ?? 0;
+        const idx = ctx.dataIndex;
+        const stackKey = ctx.dataset.stack; // "stack1"
+        const datasets = ctx.chart.data.datasets || [];
+
+        let totalAtIndex = 0;
+        datasets.forEach(ds => {
+          if (ds && ds.stack === stackKey && Array.isArray(ds.data)) {
+            const rawVal = ds.data[idx];
+            const num = (typeof rawVal === 'number')
+              ? rawVal
+              : (rawVal && typeof rawVal.y === 'number' ? rawVal.y : 0);
+            if (!isNaN(num)) totalAtIndex += num;
           }
-        },
-        zoom: { pan:{enabled:true, mode:'x'}, zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' } }
+        });
+
+        const pct = totalAtIndex > 0 ? (v / totalAtIndex) * 100 : 0;
+        const pctStr = pct.toLocaleString('fr-FR', { maximumFractionDigits: 1 });
+
+        return `${ctx.dataset.label} : ${Math.round(v).toLocaleString('fr-FR')} t éq CO₂ ; soit ${pctStr} %`;
       },
+      footer: (items) => {
+        if (!items?.length) return '';
+        const idx = items[0].dataIndex;
+        const stackKey = items[0].dataset.stack; // "stack1"
+        const datasets = items[0].chart.data.datasets || [];
+
+        let totalAtIndex = 0;
+        datasets.forEach(ds => {
+          if (ds && ds.stack === stackKey && Array.isArray(ds.data)) {
+            const rawVal = ds.data[idx];
+            const num = (typeof rawVal === 'number')
+              ? rawVal
+              : (rawVal && typeof rawVal.y === 'number' ? rawVal.y : 0);
+            if (!isNaN(num)) totalAtIndex += num;
+          }
+        });
+
+        return `Total : ${Math.round(totalAtIndex).toLocaleString('fr-FR')} t éq CO₂`;
+      }
+    }
+  },
+  zoom: { pan:{enabled:true, mode:'x'}, zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' } }
+}
       scales: {
         x: { 
           title: { display: true, text: (isDay ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")) },
