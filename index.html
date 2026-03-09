@@ -1611,6 +1611,17 @@ parseCSV('./data/EXPORT_daily_airlines.csv', (dataRaw) => {
       backgroundColor: (palette[comp] || "rgb(120,120,120)") + (period === "day" ? "" : "AA"),
       stack: (period === "day" ? undefined : "stackAir")
     }));
+
+   // --- Empilement : plus grand en haut, sans toucher à la légende ---
+if (period !== "day") {
+  datasets.forEach(ds => {
+    const sum = Array.isArray(ds.data)
+      ? ds.data.reduce((s, v) => s + (Number(v) || 0), 0)
+      : 0;
+    ds.order = sum; // plus petit order dessiné d'abord (en bas), plus grand en dernier (en haut)
+  });
+}
+   
     // --- Réordonner l'empilement en vues semaine/mois : plus grand en haut ---
 if (period !== "day") {
   datasets.sort((a, b) => {
@@ -1804,6 +1815,17 @@ parseCSV('./data/EXPORT_daily_airlines.csv', (data) => {
       backgroundColor: (palette[comp] || "rgb(120,120,120)") + (period === "day" ? "" : "AA"),
       stack: (period === "day" ? undefined : "stackRot")
     }));
+
+   // --- Empilement : plus grand en haut, sans toucher à la légende ---
+if (period !== "day") {
+  datasets.forEach(ds => {
+    const sum = Array.isArray(ds.data)
+      ? ds.data.reduce((s, v) => s + (Number(v) || 0), 0)
+      : 0;
+    ds.order = sum;
+  });
+}
+   
     // --- Réordonner l'empilement en vues semaine/mois : plus grand en haut ---
 if (period !== "day") {
   datasets.sort((a, b) => {
