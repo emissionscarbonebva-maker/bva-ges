@@ -1552,11 +1552,6 @@ buildChartCumul(initCumulPeriod);
 });
 
   
-const c = Chart.getChart('chartAirlines');
-console.log('labels', c?.data?.labels?.length, c?.data?.labels?.slice(0,5));
-console.log('datasets', c?.data?.datasets?.length, c?.data?.datasets?.map(d=>d.label));
-
- 
 
 /*3 ===== Emissions par compagnie ===== */
 parseCSV('./data/EXPORT_daily_airlines.csv', (dataRaw) => {
