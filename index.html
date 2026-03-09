@@ -1611,7 +1611,16 @@ parseCSV('./data/EXPORT_daily_airlines.csv', (dataRaw) => {
       backgroundColor: (palette[comp] || "rgb(120,120,120)") + (period === "day" ? "" : "AA"),
       stack: (period === "day" ? undefined : "stackAir")
     }));
-
+    // --- Réordonner l'empilement en vues semaine/mois : plus grand en haut ---
+if (period !== "day") {
+  datasets.sort((a, b) => {
+    const sa = (Array.isArray(a.data) ? a.data.reduce((s, v) => s + (Number(v) || 0), 0) : 0);
+    const sb = (Array.isArray(b.data) ? b.data.reduce((s, v) => s + (Number(v) || 0), 0) : 0);
+    // plus petit d'abord (bas), plus grand en dernier (haut)
+    return sa - sb;
+  });
+}
+   
     // 4) (Re)création du graphique
     if (chartAirlinesInstance) chartAirlinesInstance.destroy();
     chartAirlinesInstance = new Chart(document.getElementById("chartAirlines"),{
@@ -1795,7 +1804,16 @@ parseCSV('./data/EXPORT_daily_airlines.csv', (data) => {
       backgroundColor: (palette[comp] || "rgb(120,120,120)") + (period === "day" ? "" : "AA"),
       stack: (period === "day" ? undefined : "stackRot")
     }));
-
+    // --- Réordonner l'empilement en vues semaine/mois : plus grand en haut ---
+if (period !== "day") {
+  datasets.sort((a, b) => {
+    const sa = (Array.isArray(a.data) ? a.data.reduce((s, v) => s + (Number(v) || 0), 0) : 0);
+    const sb = (Array.isArray(b.data) ? b.data.reduce((s, v) => s + (Number(v) || 0), 0) : 0);
+    // plus petit d'abord (bas), plus grand en dernier (haut)
+    return sa - sb;
+  });
+}
+   
     if (chartRotationsInstance) chartRotationsInstance.destroy();
     chartRotationsInstance = new Chart(document.getElementById("chartRotations"),{
       type: (period === "day" ? "line" : "bar"),
