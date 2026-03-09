@@ -1323,9 +1323,27 @@ function buildChartDaily(period) {
       });
 
       return `Total : ${Math.round(totalAtIndex).toLocaleString('fr-FR')} t éq CO₂`;
+   
+}
+      }
+    }
+  },
+  scales: {
+    x: {
+      title: {
+        display: true,
+        text: isDay ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")
+      },
+      stacked: !isDay // barres empilées en semaine/mois
+    },
+    y: {
+      beginAtZero: true,
+      stacked: true,   // empilage vertical (aires jour & barres agrégées)
+      title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" }
     }
   }
 }
+
        
   });
 }
