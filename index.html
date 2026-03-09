@@ -1552,51 +1552,23 @@ buildChartCumul(initCumulPeriod);
 });
 
   
-/*3 ===== Emissions par conmpagnie ===== */
+/*3 ===== Emissions par compagnie ===== */
 parseCSV('./data/EXPORT_daily_airlines.csv', (data) => {
-  const labels = [...new Set(data.map(r => r.date))].sort();
-  const compagnies = [...new Set(data.map(r => r.compagnie))];
-  const datasets = [];
-
-  // Palette de prévisualisation (ce bloc d'init n'alimente pas le chart final mais on garde la cohérence)
-  const colors = {
-    "Ryanair":  "rgb(223,186,47)",
-    "Wizz Air": "rgb(225,14,73)",
-    "HiSky":    "rgb(19,62,103)",
-    "SkyUp":    "rgb(255,58,32)",
-    "Volotea":  "rgb(0,0,0)",
-    "Autres":   "rgb(127,127,127)" // 👈 nouvelle série
-  };
-
-  compagnies.forEach(comp => {
-    const serie = [];
-    labels.forEach(d => {
-      const row = data.find(r => r.date === d && r.compagnie === comp);
-      let value = row ? parseFloat(row.emissions) : 0;
-      if (isNaN(value)) value = 0;
-      serie.push(value);
-    });
-    datasets.push({
-      label: comp,
-      data: serie,
-      borderWidth: 2,
-      fill: false,
-      borderColor: colors[comp] || "rgb(120,120,120)"
-    });
-  });
 
   let chartAirlinesInstance = null;
 
   function buildChartAirlines(period, data) {
-    const labelsSet = new Set();
-    const compSet = new Set();
-    const agg = {}; // { comp -> { pkey -> sum } }
+    // ——— Agrégation ———
+    const labelsSet = new Set();     // périodes (day/week/month)
+    const compSet   = new Set();     // compagnies présentes
+    const agg = {};                  // { compagnie -> { pkey -> somme } }
 
     data.forEach(r => {
-      const comp = r.compagnie;
+      const comp = String(r.compagnie ?? "").trim();
       const pkey = makePeriodKey(r.date, period);
       compSet.add(comp);
       labelsSet.add(pkey);
+
       if (!agg[comp]) agg[comp] = {};
       let v = r.emissions ? parseFloat(String(r.emissions).replace(',', '.')) : 0;
       if (isNaN(v)) v = 0;
@@ -1605,45 +1577,52 @@ parseCSV('./data/EXPORT_daily_airlines.csv', (data) => {
 
     const labels = sortPeriodKeys(Array.from(labelsSet), period);
 
-    // --- Palette étendue + ordre de légende contrôlé ---
+    // ——— Palette + ordre contrôlé ———
     const palette = {
       "Ryanair":  "rgb(223,186,47)",
       "Wizz Air": "rgb(225,14,73)",
       "HiSky":    "rgb(19,62,103)",
       "SkyUp":    "rgb(255,58,32)",
       "Volotea":  "rgb(0,0,0)",
-      "Autres":   "rgb(127,127,127)" // 👈
+      "Autres":   "rgb(127,127,127)"
     };
-
     const desiredOrder = ["Ryanair","Wizz Air","HiSky","SkyUp","Volotea","Autres"];
-    const compagniesAll = Array.from(compSet);
-    const compagniesOrdered = desiredOrder
+    const allComps     = Array.from(compSet);
+
+    const orderedComps = desiredOrder
       .filter(c => compSet.has(c))
-      .concat(compagniesAll.filter(c => !desiredOrder.includes(c)).sort());
+      .concat(allComps.filter(c => !desiredOrder.includes(c)).sort());
 
-    const datasets = compagniesOrdered.map(comp => ({
-      type: (period === "day" ? "line" : "bar"),
-      label: comp,
-      data: labels.map(pk => agg[comp]?.[pk] || 0),
-      borderWidth: 2,
-      fill: false,
-      borderColor: palette[comp] || "rgb(120,120,120)",
-      backgroundColor: (palette[comp] || "rgb(120,120,120)") + (period === "day" ? "" : "AA"),
-      stack: (period === "day" ? undefined : "stackAir")
-    }));
+    // ——— Séries (rename pour éviter tout conflit avec d'autres 'datasets') ———
+    const series = orderedComps.map(comp => {
+      const c = palette[comp] || "rgb(120,120,120)";
+      return {
+        type: (period === "day" ? "line" : "bar"),
+        label: comp,
+        data: labels.map(pk => agg[comp]?.[pk] || 0),
+        borderWidth: 2,
+        fill: false,
+        borderColor: c,
+        backgroundColor: c + (period === "day" ? "" : "AA"),
+        stack: (period === "day" ? undefined : "stackAir")
+      };
+    });
 
+    // ——— (Re)création du chart ———
     if (chartAirlinesInstance) chartAirlinesInstance.destroy();
-    chartAirlinesInstance = new Chart(document.getElementById("chartAirlines"),{
+    chartAirlinesInstance = new Chart(document.getElementById("chartAirlines"), {
       type: (period === "day" ? "line" : "bar"),
-      data:{ labels, datasets },
+      data: { labels, datasets: series },
       options:{
         responsive:true,
+        normalized: true,   // lisse les flottants
+        parsing: false,     // on donne déjà des y numériques
         interaction:{ mode:'index', intersect:false },
         plugins:{
           legend:{ position:'top' },
           zoom:{ pan:{ enabled:true,mode:'x' }, zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' } },
           tooltip: {
-            // 🔽 Plus élevé en haut, plus faible en bas
+            // Tri décroissant (plus grand en haut)
             itemSort: (a, b) => {
               const va = (a.parsed && typeof a.parsed.y === 'number') ? a.parsed.y : 0;
               const vb = (b.parsed && typeof b.parsed.y === 'number') ? b.parsed.y : 0;
@@ -1654,12 +1633,12 @@ parseCSV('./data/EXPORT_daily_airlines.csv', (data) => {
               label: (ctx) => {
                 const v = ctx.parsed.y ?? 0;
                 const idx = ctx.dataIndex;
-                const stackKey = ctx.dataset.stack; // "stackAir" en barres
-                const datasets = ctx.chart.data.datasets || [];
+                const stackKey = ctx.dataset.stack; // "stackAir" en barres, undefined en "day"
+                const dsArr = ctx.chart.data.datasets || [];
 
                 let totalAtIndex = 0;
-                datasets.forEach(ds => {
-                  if (ds && ds.stack === stackKey && Array.isArray(ds.data)) {
+                dsArr.forEach(ds => {
+                  if (stackKey ? (ds.stack === stackKey) : true) {
                     const rawVal = ds.data[idx];
                     const num = (typeof rawVal === 'number')
                       ? rawVal
@@ -1677,11 +1656,11 @@ parseCSV('./data/EXPORT_daily_airlines.csv', (data) => {
                 if (!items?.length) return '';
                 const idx = items[0].dataIndex;
                 const stackKey = items[0].dataset.stack;
-                const datasets = items[0].chart.data.datasets || [];
+                const dsArr = items[0].chart.data.datasets || [];
 
                 let totalAtIndex = 0;
-                datasets.forEach(ds => {
-                  if (ds && ds.stack === stackKey && Array.isArray(ds.data)) {
+                dsArr.forEach(ds => {
+                  if (stackKey ? (ds.stack === stackKey) : true) {
                     const rawVal = ds.data[idx];
                     const num = (typeof rawVal === 'number')
                       ? rawVal
