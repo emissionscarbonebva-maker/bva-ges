@@ -1782,30 +1782,90 @@ function buildChartRotations(period, data) {
   chartRotationsInstance = new Chart(document.getElementById("chartRotations"),{
     type: (period === "day" ? "line" : "bar"),
     data:{ labels, datasets },
-    options:{
-      responsive:true,
-      interaction:{ mode:'index', intersect:false },
-      plugins:{
-        legend:{ position:'top' },
-        zoom:{ pan:{ enabled:true,mode:'x' }, zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' } },
-        tooltip:{
-          callbacks:{
-            label: function(context){
-              const value = context.parsed.y || 0;
-              return `${context.dataset.label} : ${Math.round(value).toLocaleString('fr-FR')} rotations`;
-            }
-          }
-        }
+    options: {
+  responsive: true,
+  interaction: { mode: 'index', intersect: false },
+  plugins: {
+    legend: { position: 'top' },
+    zoom: {
+      pan:  { enabled: true, mode: 'x' },
+      zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }
+    },
+    tooltip: {
+      // 🔽 Affiche d’abord les valeurs les plus élevées
+      itemSort: (a, b) => {
+        const va = (a.parsed && typeof a.parsed.y === 'number') ? a.parsed.y : 0;
+        const vb = (b.parsed && typeof b.parsed.y === 'number') ? b.parsed.y : 0;
+        if (vb === va) return 0;
+        return vb - va;
       },
-      scales: {
-        x: { title: { display: true, text: (period === "day" ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")) } },
-        y: {
-          beginAtZero: true,
-          stacked: (period !== "day"),
-          title: { display: true, text: "Nombre de rotations" }
+      callbacks: {
+        label: (ctx) => {
+          const v = ctx.parsed.y ?? 0;
+          const idx = ctx.dataIndex;
+          const stackKey = ctx.dataset.stack; // undefined en 'day', 'stackRot' en semaine/mois
+          const datasets = ctx.chart.data.datasets || [];
+
+          let totalAtIndex = 0;
+          datasets.forEach(ds => {
+            if (!Array.isArray(ds.data)) return;
+
+            // En vue jour (stack undefined) -> somme de toutes les compagnies
+            // En semaine/mois (stack "stackRot") -> somme de la même pile
+            const sameScope = stackKey ? (ds.stack === stackKey) : true;
+            if (!sameScope) return;
+
+            const rawVal = ds.data[idx];
+            const num = (typeof rawVal === 'number')
+              ? rawVal
+              : (rawVal && typeof rawVal.y === 'number' ? rawVal.y : 0);
+            if (!isNaN(num)) totalAtIndex += num;
+          });
+
+          const pct = totalAtIndex > 0 ? (v / totalAtIndex) * 100 : 0;
+          const pctStr = pct.toLocaleString('fr-FR', { maximumFractionDigits: 1 });
+
+          return `${ctx.dataset.label} : ${Math.round(v).toLocaleString('fr-FR')} rotations ; soit ${pctStr} %`;
+        },
+        footer: (items) => {
+          if (!items?.length) return '';
+          const idx = items[0].dataIndex;
+          const stackKey = items[0].dataset.stack; // undefined en 'day', 'stackRot' en semaine/mois
+          const datasets = items[0].chart.data.datasets || [];
+
+          let totalAtIndex = 0;
+          datasets.forEach(ds => {
+            if (!Array.isArray(ds.data)) return;
+
+            const sameScope = stackKey ? (ds.stack === stackKey) : true;
+            if (!sameScope) return;
+
+            const rawVal = ds.data[idx];
+            const num = (typeof rawVal === 'number')
+              ? rawVal
+              : (rawVal && typeof rawVal.y === 'number' ? rawVal.y : 0);
+            if (!isNaN(num)) totalAtIndex += num;
+          });
+
+          return `Total : ${Math.round(totalAtIndex).toLocaleString('fr-FR')} rotations`;
         }
       }
     }
+  },
+  scales: {
+    x: {
+      title: {
+        display: true,
+        text: (period === "day" ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois"))
+      }
+    },
+    y: {
+      beginAtZero: true,
+      stacked: (period !== "day"), // empilé en semaine/mois
+      title: { display: true, text: "Nombre de rotations" }
+    }
+  }
+}
   });
 }
 
