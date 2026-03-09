@@ -1555,49 +1555,28 @@ buildChartCumul(initCumulPeriod);
 const c = Chart.getChart('chartAirlines');
 console.log('labels', c?.data?.labels?.length, c?.data?.labels?.slice(0,5));
 console.log('datasets', c?.data?.datasets?.length, c?.data?.datasets?.map(d=>d.label));
-   
+
+ 
 
 /*3 ===== Emissions par compagnie ===== */
-parseCSV('./data/EXPORT_daily_airlines.csv', (data) => {
-  const labels = [...new Set(data.map(r => r.date))].sort();
-  const compagnies = [...new Set(data.map(r => r.compagnie))];
-  const datasets = [];
-
-  // Palette de prévisualisation (cohérente avec le chart final)
-  const colors = {
-    "Ryanair":  "rgb(223,186,47)",
-    "Wizz Air": "rgb(225,14,73)",
-    "HiSky":    "rgb(19,62,103)",
-    "SkyUp":    "rgb(255,58,32)",
-    "Volotea":  "rgb(0,0,0)",
-    "Autres":   "rgb(127,127,127)" // 👈 nouvelle série
-  };
-
-  // (Section "aperçu" identique au bloc Rotations — pas utilisée par le chart final,
-  //  mais on la laisse pour rester 1:1 avec le pattern qui marche)
-  compagnies.forEach(comp => {
-    const serie = [];
-    labels.forEach(d => {
-      const row = data.find(r => r.date === d && r.compagnie === comp);
-      let value = row ? parseFloat(row.emissions) : 0;
-      if (isNaN(value)) value = 0;
-      serie.push(value);
-    });
-    datasets.push({
-      label: comp,
-      data: serie,
-      borderWidth: 2,
-      fill: false,
-      borderColor: colors[comp] || "rgb(120,120,120)"
-    });
-  });
+parseCSV('./data/EXPORT_daily_airlines.csv', (dataRaw) => {
+  // 0) Normalisation des données en entrée (robuste)
+  const data = dataRaw.map(r => ({
+    date: r.date,
+    compagnie: String(r.compagnie ?? '').trim(),
+    emissions: (() => {
+      const n = parseFloat(String(r.emissions ?? 0).replace(',', '.'));
+      return isNaN(n) ? 0 : n;
+    })()
+  }));
 
   let chartAirlinesInstance = null;
 
   function buildChartAirlines(period, data) {
+    // 1) Agrégation par (compagnie, période)
     const labelsSet = new Set();
     const compSet = new Set();
-    const agg = {}; // { comp -> { pkey -> sum } }
+    const agg = {}; // { compagnie -> { pkey -> somme } }
 
     data.forEach(r => {
       const comp = r.compagnie;
@@ -1605,21 +1584,19 @@ parseCSV('./data/EXPORT_daily_airlines.csv', (data) => {
       compSet.add(comp);
       labelsSet.add(pkey);
       if (!agg[comp]) agg[comp] = {};
-      let v = r.emissions ? parseFloat(String(r.emissions).replace(',', '.')) : 0;
-      if (isNaN(v)) v = 0;
-      agg[comp][pkey] = (agg[comp][pkey] || 0) + v;
+      agg[comp][pkey] = (agg[comp][pkey] || 0) + r.emissions;
     });
 
     const labels = sortPeriodKeys(Array.from(labelsSet), period);
 
-    // --- Palette étendue + ordre de légende contrôlé ---
+    // 2) Palette + ordre contrôlé (même logique que "Rotations")
     const palette = {
       "Ryanair":  "rgb(223,186,47)",
       "Wizz Air": "rgb(225,14,73)",
       "HiSky":    "rgb(19,62,103)",
       "SkyUp":    "rgb(255,58,32)",
       "Volotea":  "rgb(0,0,0)",
-      "Autres":   "rgb(127,127,127)" // 👈
+      "Autres":   "rgb(127,127,127)"
     };
 
     const desiredOrder = ["Ryanair","Wizz Air","HiSky","SkyUp","Volotea","Autres"];
@@ -1628,6 +1605,7 @@ parseCSV('./data/EXPORT_daily_airlines.csv', (data) => {
       .filter(c => compSet.has(c))
       .concat(compagniesAll.filter(c => !desiredOrder.includes(c)).sort());
 
+    // 3) Séries (copie conforme du pattern Rotations)
     const datasets = compagniesOrdered.map(comp => ({
       type: (period === "day" ? "line" : "bar"),
       label: comp,
@@ -1639,6 +1617,7 @@ parseCSV('./data/EXPORT_daily_airlines.csv', (data) => {
       stack: (period === "day" ? undefined : "stackAir")
     }));
 
+    // 4) (Re)création du chart
     if (chartAirlinesInstance) chartAirlinesInstance.destroy();
     chartAirlinesInstance = new Chart(document.getElementById("chartAirlines"),{
       type: (period === "day" ? "line" : "bar"),
@@ -1653,7 +1632,7 @@ parseCSV('./data/EXPORT_daily_airlines.csv', (data) => {
             zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }
           },
           tooltip: {
-            // 🔽 Affiche d’abord les valeurs les plus élevées
+            // Tri décroissant (valeur la + élevée en haut)
             itemSort: (a, b) => {
               const va = (a.parsed && typeof a.parsed.y === 'number') ? a.parsed.y : 0;
               const vb = (b.parsed && typeof b.parsed.y === 'number') ? b.parsed.y : 0;
@@ -1664,18 +1643,16 @@ parseCSV('./data/EXPORT_daily_airlines.csv', (data) => {
               label: (ctx) => {
                 const v = ctx.parsed.y ?? 0;
                 const idx = ctx.dataIndex;
-                const stackKey = ctx.dataset.stack; // "stackAir" en barres
-                const datasets = ctx.chart.data.datasets || [];
+                const stackKey = ctx.dataset.stack; // "stackAir" en barres ; undefined en "day"
+                const ds = ctx.chart.data.datasets || [];
 
                 let totalAtIndex = 0;
-                datasets.forEach(ds => {
-                  if (!Array.isArray(ds.data)) return;
-                  // En vue jour (stack undefined) -> somme de toutes les compagnies
-                  // En semaine/mois (stack "stackAir") -> somme de la même pile
-                  const sameScope = stackKey ? (ds.stack === stackKey) : true;
-                  if (!sameScope) return;
+                ds.forEach(dset => {
+                  // En jour: on somme tout ; en semaine/mois: on somme la pile "stackAir"
+                  const sameScope = stackKey ? (dset.stack === stackKey) : true;
+                  if (!sameScope || !Array.isArray(dset.data)) return;
 
-                  const rawVal = ds.data[idx];
+                  const rawVal = dset.data[idx];
                   const num = (typeof rawVal === 'number')
                     ? rawVal
                     : (rawVal && typeof rawVal.y === 'number' ? rawVal.y : 0);
@@ -1691,15 +1668,14 @@ parseCSV('./data/EXPORT_daily_airlines.csv', (data) => {
                 if (!items?.length) return '';
                 const idx = items[0].dataIndex;
                 const stackKey = items[0].dataset.stack;
-                const datasets = items[0].chart.data.datasets || [];
+                const ds = items[0].chart.data.datasets || [];
 
                 let totalAtIndex = 0;
-                datasets.forEach(ds => {
-                  if (!Array.isArray(ds.data)) return;
-                  const sameScope = stackKey ? (ds.stack === stackKey) : true;
-                  if (!sameScope) return;
+                ds.forEach(dset => {
+                  const sameScope = stackKey ? (dset.stack === stackKey) : true;
+                  if (!sameScope || !Array.isArray(dset.data)) return;
 
-                  const rawVal = ds.data[idx];
+                  const rawVal = dset.data[idx];
                   const num = (typeof rawVal === 'number')
                     ? rawVal
                     : (rawVal && typeof rawVal.y === 'number' ? rawVal.y : 0);
@@ -1728,6 +1704,7 @@ parseCSV('./data/EXPORT_daily_airlines.csv', (data) => {
     });
   }
 
+  // 5) Boutons & 1er rendu (identique à Rotations)
   const airlinesPeriod = ensurePeriodControls("chartAirlines", (p) => buildChartAirlines(p, data));
   buildChartAirlines(airlinesPeriod, data);
 });
