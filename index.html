@@ -1554,130 +1554,8 @@ const initCumulPeriod = ensurePeriodControls("chartCumul", buildChartCumul);
 buildChartCumul(initCumulPeriod);
 });
 
- 
-   /*3 ===== CUMUL TOTAL GLOBAL ===== */
-  parseCSV('./data/EXPORT_daily_scopes.csv', (data,headers) => {
-    data.sort((a,b) => new Date(a[headers[0]]) - new Date(b[headers[0]]));
-
-    const labels = [];
-    const cumul = [];
-    let total = 0;
-
-    data.forEach(row => {
-      let dayTotal = 0;
-      for(let i=1;i<=5;i++){
-        const raw = row[headers[i]];
-        let v = raw ? parseFloat(raw.replace(',','.')) : 0;
-        if(isNaN(v)) v=0;
-        dayTotal += v;
-      }
-      total += dayTotal;
-      labels.push(row[headers[0]]);
-      cumul.push(total);
-    });
-
-    
-
-let chartTotalCumulInstance = null;
-
-function buildChartTotalCumul(period) {
-  // 1) Recalcule le cumul quotidien "perDay" (date -> cumul à fin de jour)
-  const dateKey = headers[0];
-  const perDay = []; // [{ date, value }]
-  let running = 0;
-
-  data.forEach(row => {
-    let dayTotal = 0;
-    for (let i = 1; i <= 5; i++) {
-      const raw = row[headers[i]];
-      let v = raw ? parseFloat(String(raw).replace(',', '.')) : 0;
-      if (isNaN(v)) v = 0;
-      dayTotal += v;
-    }
-    running += dayTotal;
-    perDay.push({ date: row[dateKey], value: running });
-  });
-
-  // 2) Vue JOUR = courbe
-  if (period === "day") {
-    const labels = perDay.map(d => d.date);
-    const values = perDay.map(d => d.value);
-
-    if (chartTotalCumulInstance) chartTotalCumulInstance.destroy();
-    chartTotalCumulInstance = new Chart(document.getElementById("chartTotalCumul"), {
-      type: 'line',
-      data: {
-        labels,
-        datasets: [{
-          label: "Cumul total émissions",
-          data: values,
-          borderWidth: 3,
-          fill: true,
-          backgroundColor: "rgba(31,60,136,0.2)",
-          borderColor: "#1f3c88"
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { position: 'top' },
-          zoom: { pan: {enabled: true, mode: 'x'}, zoom: { wheel: {enabled: true}, pinch: {enabled: true}, mode: 'x' } }
-        },
-        scales: {
-          x: { title: { display: true, text: "Date" } },
-          y: { beginAtZero: true, title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" } }
-        }
-      }
-    });
-    return; // ⬅ important : on sort ici
-  }
-
-  // 3) Vue SEMAINE/MOIS = barres (échantillon à la fin de période)
-  const lastByPeriod = {}; // { pkey -> { date, value } (dernier jour de la période) }
-  perDay.forEach(d => {
-    const pkey = makePeriodKey(d.date, period);
-    if (!lastByPeriod[pkey] || new Date(d.date) > new Date(lastByPeriod[pkey].date)) {
-      lastByPeriod[pkey] = d;
-    }
-  });
-
-  const labels = sortPeriodKeys(Object.keys(lastByPeriod), period);
-  const values = labels.map(pk => lastByPeriod[pk].value);
-
-  if (chartTotalCumulInstance) chartTotalCumulInstance.destroy();
-  chartTotalCumulInstance = new Chart(document.getElementById("chartTotalCumul"), {
-    type: 'bar', // barres en semaine/mois
-    data: {
-      labels,
-      datasets: [{
-        label: "Cumul total émissions",
-        data: values,
-        borderWidth: 1,
-        backgroundColor: "rgba(31,60,136,0.6)",
-        borderColor: "#1f3c88"
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { position: 'top' },
-        zoom: { pan: {enabled: true, mode: 'x'}, zoom: { wheel: {enabled: true}, pinch: {enabled: true}, mode: 'x' } }
-      },
-      scales: {
-        x: { title: { display: true, text: (period === "week" ? "Semaine (ISO)" : "Mois") } },
-        y: { beginAtZero: true, title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" } }
-      }
-    }
-  });
-}
-
-
-const initTotalCumulPeriod = ensurePeriodControls("chartTotalCumul", buildChartTotalCumul);
-buildChartTotalCumul(initTotalCumulPeriod);
-});
- 
-   
-  /*4 ===== Emissions par conmpagnie ===== */
+  
+  /*3 ===== Emissions par conmpagnie ===== */
   parseCSV('./data/EXPORT_daily_airlines.csv', (data) => {
     const labels = [...new Set(data.map(r => r.date))].sort();
     const compagnies = [...new Set(data.map(r => r.compagnie))];
@@ -1893,7 +1771,7 @@ const rotationsPeriod = ensurePeriodControls("chartRotations", (p) => buildChart
 buildChartRotations(rotationsPeriod, data);
 });
    
-  /* ===== EMISSIONS PAR DESTINATION (Départs + Arrivées) + tri dynamique ===== */
+  /*4 ===== EMISSIONS PAR DESTINATION (Départs + Arrivées) + tri dynamique ===== */
 parseCSV('./data/EXPORT_departures_YTD.csv', function (departures) {
   parseCSV('./data/EXPORT_arrivals_YTD.csv', function (arrivals) {
 
@@ -2113,7 +1991,7 @@ tooltip: {
   }); // arrivals
 });   // departures
 
-  /* ===== TABLE DATA PRO V7 - STABLE ===== */
+  /*5 & 6 ===== TABLE DATA PRO V7 - STABLE ===== */
   function createTable(containerId, data){
     if(!data || data.length === 0){
       document.getElementById(containerId).innerHTML = "<p>Aucune donnée disponible</p>";
