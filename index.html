@@ -1629,62 +1629,71 @@ function buildChartAirlines(period, data) {
     type: (period === "day" ? "line" : "bar"),
     data:{ labels, datasets },
     options:{
-      responsive:true,
-      interaction:{ mode:'index', intersect:false },
-      plugins:{
-        legend:{ position:'top' },
-        zoom:{ pan:{ enabled:true,mode:'x' }, zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' } },
-        tooltip: {
-  // 🔽 Plus élevé en haut, plus faible en bas
-  itemSort: (a, b) => {
-    const va = (a.parsed && typeof a.parsed.y === 'number') ? a.parsed.y : 0;
-    const vb = (b.parsed && typeof b.parsed.y === 'number') ? b.parsed.y : 0;
-    if (vb === va) return 0;   // ordre stable si égalité
-    return vb - va;            // tri décroissant
+  responsive:true,
+  interaction:{ mode:'index', intersect:false },
+  plugins:{
+    legend:{ position:'top' },
+    zoom:{ pan:{ enabled:true,mode:'x' }, zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' } },
+    tooltip: {
+      // 🔽 Plus élevé en haut, plus faible en bas (si tu veux garder ce tri ici)
+      itemSort: (a, b) => {
+        const va = (a.parsed && typeof a.parsed.y === 'number') ? a.parsed.y : 0;
+        const vb = (b.parsed && typeof b.parsed.y === 'number') ? b.parsed.y : 0;
+        if (vb === va) return 0;
+        return vb - va;
+      },
+      callbacks: {
+        label: (ctx) => {
+          const v = ctx.parsed.y ?? 0;
+          const idx = ctx.dataIndex;
+          const stackKey = ctx.dataset.stack; // "stackAir" en barres
+          const datasets = ctx.chart.data.datasets || [];
+
+          let totalAtIndex = 0;
+          datasets.forEach(ds => {
+            if (ds && ds.stack === stackKey && Array.isArray(ds.data)) {
+              const rawVal = ds.data[idx];
+              const num = (typeof rawVal === 'number')
+                ? rawVal
+                : (rawVal && typeof rawVal.y === 'number' ? rawVal.y : 0);
+              if (!isNaN(num)) totalAtIndex += num;
+            }
+          });
+
+          const pct = totalAtIndex > 0 ? (v / totalAtIndex) * 100 : 0;
+          const pctStr = pct.toLocaleString('fr-FR', { maximumFractionDigits: 1 });
+
+          // Si tu préfères garder l'ancien format “sans %” pour Airlines, remets simplement la ligne d'origine.
+          return `${ctx.dataset.label} : ${Math.round(v).toLocaleString('fr-FR')} t éq CO₂ ; soit ${pctStr} %`;
+        },
+        footer: (items) => {
+          if (!items?.length) return '';
+          const idx = items[0].dataIndex;
+          const stackKey = items[0].dataset.stack;
+          const datasets = items[0].chart.data.datasets || [];
+
+          let totalAtIndex = 0;
+          datasets.forEach(ds => {
+            if (ds && ds.stack === stackKey && Array.isArray(ds.data)) {
+              const rawVal = ds.data[idx];
+              const num = (typeof rawVal === 'number')
+                ? rawVal
+                : (rawVal && typeof rawVal.y === 'number' ? rawVal.y : 0);
+              if (!isNaN(num)) totalAtIndex += num;
+            }
+          });
+
+          return `Total : ${Math.round(totalAtIndex).toLocaleString('fr-FR')} t éq CO₂`;
+        }
+      }
+    }
   },
-
-  // ✅ Tes callbacks (même format que tu utilises déjà)
-  callbacks: {
-    label: (ctx) => {
-      const v = ctx.parsed.y ?? 0;
-      const idx = ctx.dataIndex;
-      const stackKey = ctx.dataset.stack; // "stackS"
-      const datasets = ctx.chart.data.datasets || [];
-
-      let totalAtIndex = 0;
-      datasets.forEach(ds => {
-        if (ds && ds.stack === stackKey && Array.isArray(ds.data)) {
-          const rawVal = ds.data[idx];
-          const num = (typeof rawVal === 'number')
-            ? rawVal
-            : (rawVal && typeof rawVal.y === 'number' ? rawVal.y : 0);
-          if (!isNaN(num)) totalAtIndex += num;
-        }
-      });
-
-      const pct = totalAtIndex > 0 ? (v / totalAtIndex) * 100 : 0;
-      const pctStr = pct.toLocaleString('fr-FR', { maximumFractionDigits: 1 });
-
-      return `${ctx.dataset.label} : ${Math.round(v).toLocaleString('fr-FR')} t éq CO₂ ; soit ${pctStr} %`;
-    },
-    footer: (items) => {
-      if (!items?.length) return '';
-      const idx = items[0].dataIndex;
-      const stackKey = items[0].dataset.stack; // "stackS"
-      const datasets = items[0].chart.data.datasets || [];
-
-      let totalAtIndex = 0;
-      datasets.forEach(ds => {
-        if (ds && ds.stack === stackKey && Array.isArray(ds.data)) {
-          const rawVal = ds.data[idx];
-          const num = (typeof rawVal === 'number')
-            ? rawVal
-            : (rawVal && typeof rawVal.y === 'number' ? rawVal.y : 0);
-          if (!isNaN(num)) totalAtIndex += num;
-        }
-      });
-
-      return `Total : ${Math.round(totalAtIndex).toLocaleString('fr-FR')} t éq CO₂`;
+  scales: {
+    x: { title: { display: true, text: (period === "day" ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")) } },
+    y: {
+      beginAtZero: true,
+      stacked: (period !== "day"),
+      title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" }
     }
   }
 }
