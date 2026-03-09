@@ -1558,10 +1558,10 @@ parseCSV('./data/EXPORT_daily_airlines.csv', (data) => {
   let chartAirlinesInstance = null;
 
   function buildChartAirlines(period, data) {
-    // ——— Agrégation ———
-    const labelsSet = new Set();     // périodes (day/week/month)
-    const compSet   = new Set();     // compagnies présentes
-    const agg = {};                  // { compagnie -> { pkey -> somme } }
+    // 1) Agrégation
+    const labelsSet = new Set();      // périodes (day/week/month)
+    const compSet   = new Set();      // compagnies présentes
+    const agg = {};                   // { compagnie -> { pkey -> somme } }
 
     data.forEach(r => {
       const comp = String(r.compagnie ?? "").trim();
@@ -1577,7 +1577,7 @@ parseCSV('./data/EXPORT_daily_airlines.csv', (data) => {
 
     const labels = sortPeriodKeys(Array.from(labelsSet), period);
 
-    // ——— Palette + ordre contrôlé ———
+    // 2) Palette + ordre contrôlé (inclut 'Autres')
     const palette = {
       "Ryanair":  "rgb(223,186,47)",
       "Wizz Air": "rgb(225,14,73)",
@@ -1588,14 +1588,15 @@ parseCSV('./data/EXPORT_daily_airlines.csv', (data) => {
     };
     const desiredOrder = ["Ryanair","Wizz Air","HiSky","SkyUp","Volotea","Autres"];
     const allComps     = Array.from(compSet);
-
     const orderedComps = desiredOrder
       .filter(c => compSet.has(c))
       .concat(allComps.filter(c => !desiredOrder.includes(c)).sort());
 
-    // ——— Séries (rename pour éviter tout conflit avec d'autres 'datasets') ———
+    // 3) Séries (on évite le nom 'datasets' pour écarter tout conflit)
     const series = orderedComps.map(comp => {
       const c = palette[comp] || "rgb(120,120,120)";
+      // ⚠️ couleur de barre valide : on utilise rgba() plutôt que 'rgb(...) + AA'
+      const bg = (period === "day") ? c : c.replace('rgb(', 'rgba(').replace(')', ', 0.67)');
       return {
         type: (period === "day" ? "line" : "bar"),
         label: comp,
@@ -1603,26 +1604,36 @@ parseCSV('./data/EXPORT_daily_airlines.csv', (data) => {
         borderWidth: 2,
         fill: false,
         borderColor: c,
-        backgroundColor: c + (period === "day" ? "" : "AA"),
+        backgroundColor: bg,
         stack: (period === "day" ? undefined : "stackAir")
       };
     });
 
-    // ——— (Re)création du chart ———
+    // 3bis) Petit debug : on log le 1er point
+    if (labels.length) {
+      const pk0 = labels[0];
+      const snapshot = {};
+      orderedComps.forEach(c => snapshot[c] = agg[c]?.[pk0] || 0);
+      snapshot._TOTAL = Object.values(snapshot).reduce((a,b)=>a+b,0);
+      console.table({ [pk0]: snapshot });
+    } else {
+      console.warn("[Airlines] Aucun label agrégé (labelsSet vide). Vérifie r.date et makePeriodKey.");
+    }
+
+    // 4) (Re)création du chart
     if (chartAirlinesInstance) chartAirlinesInstance.destroy();
     chartAirlinesInstance = new Chart(document.getElementById("chartAirlines"), {
       type: (period === "day" ? "line" : "bar"),
       data: { labels, datasets: series },
       options:{
         responsive:true,
-        normalized: true,   // lisse les flottants
-        parsing: false,     // on donne déjà des y numériques
+        normalized:true,
+        parsing:false,                // on donne déjà des nombres
         interaction:{ mode:'index', intersect:false },
         plugins:{
           legend:{ position:'top' },
           zoom:{ pan:{ enabled:true,mode:'x' }, zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' } },
           tooltip: {
-            // Tri décroissant (plus grand en haut)
             itemSort: (a, b) => {
               const va = (a.parsed && typeof a.parsed.y === 'number') ? a.parsed.y : 0;
               const vb = (b.parsed && typeof b.parsed.y === 'number') ? b.parsed.y : 0;
@@ -1686,7 +1697,7 @@ parseCSV('./data/EXPORT_daily_airlines.csv', (data) => {
     });
   }
 
-  // Installer les boutons & 1er rendu
+  // Boutons & 1er rendu
   const airlinesPeriod = ensurePeriodControls("chartAirlines", (p) => buildChartAirlines(p, data));
   buildChartAirlines(airlinesPeriod, data);
 });
