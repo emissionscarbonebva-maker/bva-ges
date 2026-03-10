@@ -20,521 +20,198 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
-<script src="https://cdn.jsdelivr.net/npm/date-fns@2.30.0/dist/date-fns.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1ript src="https://cdn.jsdelivr.net/npm/date-fns@2.30.0/dist/date-fns.min.jsps://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2</script>
+https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1</script>
+https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css
 
 <style>
-
 body{
-margin:0;
-font-family:Arial, sans-serif;
-display:flex;
-background:#f5f6fa;
+  margin:0;
+  font-family:Arial, sans-serif;
+  display:flex;
+  background:#f5f6fa;
 }
 
 /* SIDEBAR */
-
 .sidebar{
-width:240px;
-background:#162d63;
-color:white;
-height:100vh;
-position:sticky;
-top:0;
-padding:20px 10px;
-box-sizing:border-box;
-transition:width 0.25s;
-overflow:visible;
-flex-shrink:0;
-z-index:1000;
+  width:240px;
+  background:#162d63;
+  color:white;
+  height:100vh;
+  position:sticky;
+  top:0;
+  padding:20px 10px;
+  box-sizing:border-box;
+  transition:width 0.25s;
+  overflow:visible;
+  flex-shrink:0;
+  z-index:1000;
 }
  
 /* Mode réduit */
-
-.sidebar.collapsed{
-width:100px;
-}
-
-.sidebar.collapsed .text{
-display:none;
-}
-
-.sidebar.collapsed .menu a{
-justify-content:center;
-}
-
-.toggle-btn i{
-transition:transform 0.3s ease;
-}
-
+.sidebar.collapsed{ width:100px; }
+.sidebar.collapsed .text{ display:none; }
+.sidebar.collapsed .menu a{ justify-content:center; }
+.toggle-btn i{ transition:transform 0.3s ease; }
 /* rotation quand menu réduit */
+.sidebar.collapsed .toggle-btn i{ transform:rotate(180deg); }
 
-.sidebar.collapsed .toggle-btn i{
-transform:rotate(180deg);
-}
-  
 /* TOOLTIP SIDEBAR mode réduit */
-
-.sidebar.collapsed .menu a{
-position:relative;
-}
-
+.sidebar.collapsed .menu a{ position:relative; }
 .sidebar.collapsed .menu a:hover::after{
-content:attr(data-title);
-position:absolute;
-left:90px;
-top:50%;
-transform:translateY(-50%);
-background:#162d63;
-color:white;
-padding:6px 10px;
-border-radius:6px;
-white-space:nowrap;
-font-size:14px;
-z-index:9999;
-box-shadow:0 4px 12px rgba(0,0,0,0.2);
+  content:attr(data-title);
+  position:absolute;
+  left:90px;
+  top:50%;
+  transform:translateY(-50%);
+  background:#162d63;
+  color:white;
+  padding:6px 10px;
+  border-radius:6px;
+  white-space:nowrap;
+  font-size:14px;
+  z-index:9999;
+  box-shadow:0 4px 12px rgba(0,0,0,0.2);
 }
- 
- 
-.sidebar.collapsed .menu a::after{
-opacity:0;
-transition:opacity 0.15s ease;
-}
-
-.sidebar.collapsed .menu a:hover::after{
-opacity:1;
-}
+.sidebar.collapsed .menu a::after{ opacity:0; transition:opacity 0.15s ease; }
+.sidebar.collapsed .menu a:hover::after{ opacity:1; }
   
 /* Logo */
-
-.logo{
-text-align:center;
-margin-bottom:20px;
-}
-
-.logo img{
-max-width:140px;
-transition:all 0.3s;
-}
-
+.logo{ text-align:center; margin-bottom:20px; }
+.logo img{ max-width:140px; transition:all 0.3s; }
 /* logo réduit */
-
-.sidebar.collapsed .logo img{
-max-width:50px;
-}
+.sidebar.collapsed .logo img{ max-width:50px; }
 
 /* bouton */
-
 .toggle-btn{
-background:none;
-border:none;
-color:white;
-font-size:20px;
-cursor:pointer;
-margin-bottom:20px;
+  background:none; border:none; color:white; font-size:20px; cursor:pointer; margin-bottom:20px;
 }
 
 /* menu */
-
 .menu a{
-display:flex;
-align-items:center;
-gap:10px;
-color:white;
-text-decoration:none;
-padding:10px;
-border-radius:6px;
-position:relative;
+  display:flex; align-items:center; gap:10px; color:white; text-decoration:none; padding:10px; border-radius:6px; position:relative;
 }
- 
-.menu a:hover{
-background:#1f3c88;
-}
- 
-.icon{
-font-size:18px;
-width:30px;
-text-align:center;
-}
+.menu a:hover{ background:#1f3c88; }
+.icon{ font-size:18px; width:30px; text-align:center; }
+.menu a.active{ background:#2e55c7; box-shadow:inset 4px 0 0 #ffffff; font-weight:600; }
 
-.menu a.active{
-background:#2e55c7;
-box-shadow:inset 4px 0 0 #ffffff;
-font-weight:600;
-}
- 
 /* MENU */
-
-.menu-section{
-margin-bottom:10px;
-}
-
-.menu-title{
-cursor:pointer;
-padding:10px;
-font-weight:bold;
-background:#1f3c88;
-border-radius:4px;
-}
-
-.menu-items{
-display:none;
-padding-left:10px;
-}
-
-.menu-items a{
-display:block;
-color:white;
-text-decoration:none;
-padding:6px 0;
-font-size:14px;
-}
-
-.menu-items a:hover{
-opacity:0.8;
-}
+.menu-section{ margin-bottom:10px; }
+.menu-title{ cursor:pointer; padding:10px; font-weight:bold; background:#1f3c88; border-radius:4px; }
+.menu-items{ display:none; padding-left:10px; }
+.menu-items a{ display:block; color:white; text-decoration:none; padding:6px 0; font-size:14px; }
+.menu-items a:hover{ opacity:0.8; }
 
 /* MAIN */
-
-.main{
-flex:1 1 auto;
-padding:40px;
-min-width:0;
-}
+.main{ flex:1 1 auto; padding:40px; min-width:0; }
 
 /* HEADER */
-
-header{
-background:#1f3c88;
-color:white;
-padding:25px;
-margin-bottom:30px;
-}
-
-header h1{
-color:white;
-margin:0;
-}
-
-h1{
-margin:0;
-color:#162d63;
-}
+header{ background:#1f3c88; color:white; padding:25px; margin-bottom:30px; }
+header h1{ color:white; margin:0; }
+h1{ margin:0; color:#162d63; }
 
 /* SECTIONS */
-
-section{
-margin-bottom:60px;
-scroll-margin-top:80px;
-}
+section{ margin-bottom:60px; scroll-margin-top:80px; }
 
 /* GRAPH */
-
-.chart-container{
-max-width:700px;
-}
+.chart-container{ max-width:700px; }
 
 /* ===== CARDS ===== */
-
 .card{
-background:white;
-padding:28px;
-border-radius:10px;
-box-shadow:0 4px 14px rgba(0,0,0,0.08);
-margin-bottom:35px;
-border-left:6px solid #1f3c88;
-transition:transform 0.15s ease;
+  background:white;
+  padding:28px;
+  border-radius:10px;
+  box-shadow:0 4px 14px rgba(0,0,0,0.08);
+  margin-bottom:35px;
+  border-left:6px solid #1f3c88;
+  transition:transform 0.15s ease;
 }
-
-.card:hover{
-transform:translateY(-2px);
-}
-
-.card table{
-width:100%;
-border-collapse:collapse;
-margin-top:15px;
-font-size:14px;
-}
-
+.card:hover{ transform:translateY(-2px); }
+.card table{ width:100%; border-collapse:collapse; margin-top:15px; font-size:14px; }
 .card th,
-.card td{
-padding:10px;
-border-bottom:1px solid #ddd;
-text-align:left;
-}
-
-.card th{
-background:#f3f5f8;
-font-weight:600;
-}
-
-.card table tr:hover{
-background:#f8fafc;
-}
+.card td{ padding:10px; border-bottom:1px solid #ddd; text-align:left; }
+.card th{ background:#f3f5f8; font-weight:600; }
+.card table tr:hover{ background:#f8fafc; }
   
 .metrics { display:flex; gap:20px; flex-wrap:wrap;}
-
 .metric-box { flex:1; min-width:220px; background:#eef2f7; padding:20px; border-radius:10px;}
-
 .metric-value { font-size:1.8em; font-weight:bold; margin-top:8px;}
-
 canvas { margin-top:20px;}
-
 footer { text-align:center; padding:30px; font-size:0.9em; color:#666;}
-
 h2{
-color:#1f3c88;
-margin-top:0;
-margin-bottom:15px;
-font-size:1.6em;
-border-bottom:2px solid #e6e9ef;
-padding-bottom:6px;
+  color:#1f3c88;
+  margin-top:0;
+  margin-bottom:15px;
+  font-size:1.6em;
+  border-bottom:2px solid #e6e9ef;
+  padding-bottom:6px;
 }
-
 h3{
-color:#444;
-font-size:1.2em;
-margin-top:20px;
+  color:#444;
+  font-size:1.2em;
+  margin-top:20px;
 }
   
 /* ================= SHARE BUTTONS ================= */
-
-.share-links {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.share-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 500;
-  color: white;
-  width: fit-content;
-  transition: 0.2s;
-}
-
-.share-btn i {
-  font-size: 18px;
-}
-
-.linkedin {
-  background-color: #0077b5;
-}
-
-.facebook {
-  background-color: #1877f2;
-}
-
-.share-btn:hover {
-  opacity: 0.85;
-}
+.share-links { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+.share-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 8px; text-decoration: none; font-weight: 500; color: white; width: fit-content; transition: 0.2s; }
+.share-btn i { font-size: 18px; }
+.linkedin { background-color: #0077b5; }
+.facebook { background-color: #1877f2; }
+.share-btn:hover { opacity: 0.85; }
 
 /* ================= TABLE PRO STYLE ================= */
-
-.table-wrapper{
-    max-height:600px;
-    overflow:auto;
-    border:1px solid #ccc;
-    border-radius:8px;
-}
-
+.table-wrapper{ max-height:600px; overflow:auto; border:1px solid #ccc; border-radius:8px; }
 /* table base */
-
-.data-table{
-    width:100%;
-    border-collapse:collapse;
-    font-size:14px;
-}
-
-.data-table th,
-.data-table td{
-padding:12px;
-border-bottom:1px solid #e6e6e6;
-text-align:left;
-}
-
-.data-table th{
-background:#f1f4f8;
-font-weight:600;
-}
-
-.data-table tr:hover{
-background:#f8fafc;
-}
+.data-table{ width:100%; border-collapse:collapse; font-size:14px; }
+.data-table th, .data-table td{ padding:12px; border-bottom:1px solid #e6e6e6; text-align:left; }
+.data-table th{ background:#f1f4f8; font-weight:600; }
+.data-table tr:hover{ background:#f8fafc; }
   
 /* headers */
-
 .data-table thead th{
-    position:sticky;
-    top:0;
-    background:#eef2f6;
-    text-align:center;
-    cursor:pointer;
-    z-index:5;
-    box-shadow:0 2px 10px rgba(0,0,0,0.15);
+  position:sticky; top:0; background:#eef2f6; text-align:center; cursor:pointer; z-index:5; box-shadow:0 2px 10px rgba(0,0,0,0.15);
 }
   
 /* cells */
-
-.data-table th,
-.data-table td{
-    padding:8px 10px;
-    border-bottom:1px solid #e5e5e5;
-}
+.data-table th, .data-table td{ padding:8px 10px; border-bottom:1px solid #e5e5e5; }
 
 /* zebra rows */
-
-.data-table tbody tr:nth-child(even){
-    background:#fafafa;
-}
-
+.data-table tbody tr:nth-child(even){ background:#fafafa; }
 /* hover row */
-
-.data-table tbody tr:hover{
-    background:#eef6ff;
-}
-
+.data-table tbody tr:hover{ background:#eef6ff; }
 /* centered columns */
-
-.center{
-    text-align:center;
-}
-
+.center{ text-align:center; }
 /* sticky first column */
-
-.sticky-col{
-    position:sticky;
-    left:0;
-    background:white;
-    z-index:4;
-}
-
+.sticky-col{ position:sticky; left:0; background:white; z-index:4; }
 /* total row */
-
-.total-row{
-    position:sticky;
-    top:52px;
-    background:#f6faff;
-    font-weight:bold;
-    z-index:3;
-}
-
-.total-row td{
-    font-weight:bold;
-}
-
+.total-row{ position:sticky; top:52px; background:#f6faff; font-weight:bold; z-index:3; }
+.total-row td{ font-weight:bold; }
 /* clear filter cross */
-
-.clear-filter{
-    position:absolute;
-    right:6px;
-    top:50%;
-    transform:translateY(-50%);
-    cursor:pointer;
-    font-size:12px;
-    color:#888;
-}
-
-.clear-filter:hover{
-    color:red;
-}
+.clear-filter{ position:absolute; right:6px; top:50%; transform:translateY(-50%); cursor:pointer; font-size:12px; color:#888; }
+.clear-filter:hover{ color:red; }
 
 /* ================= DARK MODE ================= */
-
-.dark-mode .data-table{
-    background:#1e1e1e;
-    color:white;
-}
-
-.dark-mode .data-table thead th{
-    background:#2c2c2c;
-}
-
-.dark-mode .sticky-col{
-    background:#2c2c2c;
-}
-
-.dark-mode .data-table tbody tr:nth-child(even){
-    background:#252525;
-}
-
-.dark-mode .data-table tbody tr:hover{
-    background:#333;
-}
-
-.dark-mode .total-row{
-    background:#2a2a2a;
-}
+.dark-mode .data-table{ background:#1e1e1e; color:white; }
+.dark-mode .data-table thead th{ background:#2c2c2c; }
+.dark-mode .sticky-col{ background:#2c2c2c; }
+.dark-mode .data-table tbody tr:nth-child(even){ background:#252525; }
+.dark-mode .data-table tbody tr:hover{ background:#333; }
+.dark-mode .total-row{ background:#2a2aa; }
 
 /* ===== INFO BOX ===== */
-
-.info-box{
-background:#eef5ff;
-border-left:5px solid #1f3c88;
-padding:18px 22px;
-border-radius:10px;
-margin-bottom:30px;
-}
-
-.info-box h3{
-margin-top:0;
-font-size:1.2em;
-}
-
-.info-grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:15px;
-margin-top:12px;
-}
-
-.info-item{
-background:white;
-padding:12px 14px;
-border-radius:8px;
-box-shadow:0 2px 6px rgba(0,0,0,0.05);
-font-size:0.9em;
-}
+.info-box{ background:#eef5ff; border-left:5px solid #1f3c88; padding:18px 22px; border-radius:10px; margin-bottom:30px; }
+.info-box h3{ margin-top:0; font-size:1.2em; }
+.info-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:15px; margin-top:12px; }
+.info-item{ background:white; padding:12px 14px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.05); font-size:0.9em; }
 
 /* ===== TOOLTIP ===== */
-
-.tooltip{
-position:relative;
-display:inline-block;
-cursor:help;
-margin-left:6px;
-}
-
+.tooltip{ position:relative; display:inline-block; cursor:help; margin-left:6px; }
 .tooltip-icon{
-display:inline-flex;
-align-items:center;
-justify-content:center;
-width:16px;
-height:16px;
-font-size:11px;
-border-radius:50%;
-background:#1f3c88;
-color:white;
-font-weight:bold;
+  display:inline-flex; align-items:center; justify-content:center; width:16px; height:16px; font-size:11px; border-radius:50%;
+  background:#1f3c88; color:white; font-weight:bold;
 }
-
-/* ===== TOOLTIPS ===== */
-
-.tooltip {
-  position: relative;
-  cursor: help;
-}
-
+.tooltip { position: relative; cursor: help; }
 .tooltip::after {
   content: attr(data-tip);
   position: absolute;
@@ -551,68 +228,40 @@ font-weight:bold;
   transform: translateY(4px);
   transition: 0.2s;
 }
+.tooltip:hover::after { opacity: 1; transform: translateY(0); }
 
-.tooltip:hover::after {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-  /* =================  BOUTON EXPORT ================= */
-  
-.export-btn{
-margin-top:15px;
-padding:8px 14px;
-border:none;
-background:#1f3c88;
-color:white;
-border-radius:6px;
-cursor:pointer;
-font-size:0.9em;
-}
-
-.export-btn:hover{
-opacity:0.9;
-}
-
+/* =================  BOUTON EXPORT ================= */
+.export-btn{ margin-top:15px; padding:8px 14px; border:none; background:#1f3c88; color:white; border-radius:6px; cursor:pointer; font-size:0.9em; }
+.export-btn:hover{ opacity:0.9; }
 
 /* === NARROW CONTENT: limiter la largeur des cartes avec graphes & tableaux === */
-
-/* 1) Variable de largeur max pour le contenu étroit */
-:root {
-  --narrow-max: 1050px; /* ajuste ici : 720, 900, 1100… */
-}
-
-/* 2) Cartes qui contiennent : canvas (Chart.js) ou wrapper de tableau */
+:root { --narrow-max: 1050px; }
 .main .card:has(canvas),
 .main .card:has(.table-wrapper),
 .main .card:has(#tableDepartures),
 .main .card:has(#tableArrivals) {
-  width: 100%;
-  max-width: var(--narrow-max);
-  margin-inline: auto; /* centre horizontalement */
+  width: 100%; max-width: var(--narrow-max); margin-inline: auto;
 }
+.main .card canvas { display: block; max-width: 100%; height: auto; }
+.table-wrapper { max-width: 100%; overflow: auto; }
+.chart-container { width: 100%; max-width: 100%; margin-inline: auto; }
 
-/* 3) Sécurité : les canvas ne dépassent pas */
-.main .card canvas {
-  display: block;
-  max-width: 100%;
-  height: auto;
+/* ===== Ajouts pour KPIs (fusion + alignement) ===== */
+.kpis-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 16px;
 }
+.metric-header { display:flex; justify-content:space-between; align-items:flex-end; gap:12px; }
+.metric-title { font-weight:600; line-height:1.2; }
+.metric-body { margin-top:8px; }
+.mini-legend { font-size:0.9em; margin-top:6px; color:#555; }
 
-/* 4) La zone scrollable des tableaux reste fluide */
-.table-wrapper {
-  max-width: 100%;
-  overflow: auto;
-}
+/* Hôte du graphique fusionné */
+.chart-host { position:relative; width:100%; height:340px; }
+#kpiScope12 { width:100% !important; height:100% !important; }
+.kpi-explain { margin-top:8px; font-size:0.95rem; color:#333; }
 
-/* (Optionnel) Si tu utilises .chart-container, neutralise sa limite fixe */
-.chart-container {
-  width: 100%;
-  max-width: 100%;        /* au lieu de 700px si tu veux laisser la carte piloter la largeur */
-  margin-inline: auto;
-}
-
- 
 </style>
 
 <script type="application/ld+json">
@@ -630,281 +279,263 @@ opacity:0.9;
 }
 </script>
 
-<link rel="icon" type="image/png" href="Favicon/favicon.png">  
+Favicon/favicon.png  
 </head>
 
 <body>
 
 <!-- SIDEBAR -->
-
 <div class="sidebar" id="sidebar">
+  <div class="logo">
+    logo-bva.png
+  </div>
 
-<div class="logo">
-<img src="logo-bva.png">
-</div>
+  <button id="toggleSidebar" class="toggle-btn">
+    <i class="fa-solid fa-angle-left"></i>
+  </button>
 
-<button id="toggleSidebar" class="toggle-btn">
-<i class="fa-solid fa-angle-left"></i>
-</button>
+  <nav class="menu">
+    <a href="index.html" data-title="Accueilspan>
+      <span class="text">Accueil</span>
+    </a>
 
-<nav class="menu">
-
-<a href="index.html" data-title="Accueil">
-<span class="icon">🏠</span>
-<span class="text">Accueil</span>
-</a>
-
-<a href="methodologie.html" data-title="Méthodologie">
-<span class="icon">📘</span>
-<span class="text">Méthodologie</span>
-</a>
-
-</nav>
-
+    methodologie.html
+      <span class="icon">📘</span>
+      <span class="text">Méthodologie</span>
+    </a>
+  </nav>
 </div>
 
 <!-- MAIN -->
-
 <div class="main">
+  <header>
+    <h1>Observatoire des émissions de gaz à effet de serre de l'aéroport de Paris-Beauvais</h1>
+  </header>
 
-<header>
+  <div class="container">
 
-<h1>Observatoire des émissions de gaz à effet de serre de l'aéroport de Paris-Beauvais</h1>
+    <!-- ✅ Ajout d'un ID pour servir de référence de taille -->
+    <div class="card" id="containerAnalyse2026">
+      <h2>Analyse des émissions en 2026</h2>
 
-</header>
+      <p>
+        Ce site présente une analyse indépendante des émissions de gaz à effet de serre
+        de l’aéroport de Paris-Beauvais (BVA) pour l'année 2026. Les données sont issues de sources publiques
+        et retraitées afin de présenter une vision journalière et cumulée des émissions.
+      </p>
 
+      <p>
+        L’aéroport de Paris-Beauvais se situe dans l’Oise et constitue
+        le principal aéroport low-cost du nord de l’Île-de-France, et le 9ème aéroport Français en terme de trafic passagers.
+      </p>
 
-<div class="container">
+      <p>
+        Sont incluses :
+        <br>• Les émissions directes du de l'aéroports : chauffage, consommation d'électricité, consommation de carburant pour les engins de pistes, ... (scope 1 &amp; 2)
+        <br>• Les émissions liées aux transports terrestres des employés pour accéder à l'aéroport (Scope 3)
+        <br>• Les émissions liées au transports terrestres collectifs des passagers pour accéder à l'aéroport (Scope 3)
+        <br>• Les émissions liées au transports terrestres individuels des passagers pour accéder à l'aéroport (Scope 3)
+        <br>• Les émissions liées aux opérations des aéronefs : APU, roulage, décollage/atterrisage, vol demi-croisère, ainsi que la production et l'approvisionnement en carburant d'aviatione et l'amortissement des aéronefs (Scope 3)
+      </p>
 
-<div class="card">
-<h2>Analyse des émissions en 2026</h2>
+      <p>
+        Les émissions de gaz à effet de serre sont exprimées en tonnes équivalent dioxyde de carbone (t éq CO₂).
+      </p>
 
-<p>
-Ce site présente une analyse indépendante des émissions de gaz à effet de serre
-de l’aéroport de Paris-Beauvais (BVA) pour l'année 2026. Les données sont issues de sources publiques
-et retraitées afin de présenter une vision journalière et cumulée des émissions.
-</p>
-
-<p>
-L’aéroport de Paris-Beauvais se situe dans l’Oise et constitue
-le principal aéroport low-cost du nord de l’Île-de-France, et le 9ème aéroport Français en terme de trafic passagers.
-</p>
-
-<p>
-Sont incluses :
-<br>• Les émissions directes du de l'aéroports : chauffage, consommation d'électricité, consommation de carburant pour les engins de pistes, ... (scope 1 & 2)
-<br>• Les émissions liées aux transports terrestres des employés pour accéder à l'aéroport (Scope 3)
-<br>• Les émissions liées au transports terrestres collectifs des passagers pour accéder à l'aéroport (Scope 3)
-<br>• Les émissions liées au transports terrestres individuels des passagers pour accéder à l'aéroport (Scope 3)
-<br>• Les émissions liées aux opérations des aéronefs : APU, roulage, décollage/atterrisage, vol demi-croisère, ainsi que la production et l'approvisionnement en carburant d'aviatione et l'amortissement des aéronefs (Scope 3)
-</p>
-
-  <p>
-    Les émissions de gaz à effet de serre sont exprimées en tonnes équivalent dioxyde de carbone (t éq CO₂).
-  </p>
-
-<p>
-<strong>Données :</strong>
-<span id="update-date">chargement...</span>
-</p>
+      <p>
+        <strong>Données :</strong>
+        <span id="update-date">chargement...</span>
+      </p>
+      
+      <p>
+        <br>
+        La methodologie.html<strong>méthodologie détaillée de calcul des émissions</strong></a>
+        est disponible sur une page dédiée.
+      </p>
+    </div>
   
-  <p>
-  <br>
-La <a href="methodologie.html"><strong>méthodologie détaillée de calcul des émissions</strong></a>
-est disponible sur une page dédiée.
-</p>
+    <!-- Container KPI qui s'aligne sur la taille du container "Analyse des émissions en 2026" -->
+    <div id="containerKPIs" class="card" data-match-size="#containerAnalyse2026">
+      <h2>Indicateurs clés</h2>
 
-</div>
-  
-<div class="card">
-  <h2>Indicateurs clés</h2>
+      <div class="metrics kpis-grid">
+        <!-- KPI 1 : cumul, ruban 100% -->
+        <div class="metric-box">
+          <div class="metric-header">
+            <div class="metric-title">Émissions totales (cumul le plus récent)</div>
+            <div id="kpiTotal" class="metric-value">…</div>
+          </div>
 
-  <div class="metrics">
-    <div class="metric-box" style="flex:1; min-width:320px;">
-      <div style="display:flex; justify-content:space-between; align-items:flex-end;">
-        <div>
-          <div style="font-weight:600;">Émissions totales (année la plus récente)</div>
-          <div id="kpiTotal" class="metric-value">…</div>
+          <div class="metric-body">
+            <canvas id="kpiBreakdown" height="60"></canvas>
+            <div id="kpiBreakdownLegend" class="mini-legend"></div>
+          </div>
+        </div>
+
+        <!-- KPI 2+3 fusion : histogramme groupé S1&2 vs Aéronefs -->
+        <div class="metric-box">
+          <div class="metric-title">S1&amp;2 vs Aéronefs — 2010, 2015, puis 2016→2024</div>
+
+          <!-- Hôte de chart pour un remplissage fluide -->
+          <div class="chart-host">
+            <canvas id="kpiScope12"></canvas>
+          </div>
+
+          <!-- Ligne explicative calculée / insérée par le JS -->
+          <div id="kpiS12AeroExplain" class="kpi-explain"></div>
         </div>
       </div>
-      <div style="margin-top:8px;">
-        <canvas id="kpiBreakdown" height="60"></canvas>
-        <div id="kpiBreakdownLegend" style="font-size:0.9em; margin-top:6px; color:#555;"></div>
-      </div>
     </div>
 
-    <div class="metric-box" style="flex:1; min-width:420px;">
-      <div style="font-weight:600;">Scope 1 &amp; 2 – Évolution 2017→2024</div>
-      <canvas id="kpiScope12" height="120"></canvas>
+    <div class="card">
+      <h2 class="tooltip" data-tip="Émissions quotidiennes de CO₂e réparties selon les différents scopes (1 : émissions directes, 2 : électricité, 3 : émissions indirectes).">
+        Émissions journalières par scope ⓘ
+      </h2>
+      <canvas id="chartDaily"></canvas>
+
+      <button class="export-btn" onclick="exportChartCSV('chartDaily','emissions_journalieres_scopes.csv')">
+        <i class="fa fa-download"></i> Exporter
+      </button>
     </div>
 
-    <div class="metric-box" style="flex:1; min-width:420px;">
-      <div style="font-weight:600;">Aéronefs – 2010, puis 2015→2024</div>
-      <canvas id="kpiAircraft" height="120"></canvas>
+    <div class="card">
+      <h2 class="tooltip" data-tip="Total des émissions depuis le 1er janvier par catégorie d'émission">
+        Cumul annuel par scope ⓘ
+      </h2>
+      <canvas id="chartCumul"></canvas>
+
+      <button class="export-btn" onclick="exportChartCSV('chartCumul','cumul_annuel_scopes.csv')">
+        <i class="fa fa-download"></i> Exporter
+      </button>
     </div>
+  
+    <div class="card">
+      <h2>Émissions journalières par compagnie</h2>
+      <canvas id="chartAirlines"></canvas>
+
+      <button class="export-btn" onclick="exportChartCSV('chartAirlines','emissions_compagnies.csv')">
+        <i class="fa fa-download"></i> Exporter
+      </button>
+    </div>
+
+    <div class="card">
+      <h2 class="tooltip" data-tip="Nombre de vols effectués chaque jour par compagnie">
+        Rotations journalières par compagnie ⓘ
+      </h2>
+      <canvas id="chartRotations"></canvas>
+
+      <button class="export-btn" onclick="exportChartCSV('chartRotations','rotations_compagnies.csv')">
+        <i class="fa fa-download"></i> Exporter
+      </button>
+    </div>
+
+    <div class="card">
+      <h2>Émissions par destination ⓘ</h2>
+
+      <canvas id="chartDestination"></canvas>
+
+      <button class="export-btn" onclick="exportChartCSV('chartDestination','emissions_destinations.csv')">
+        <i class="fa fa-download"></i> Exporter
+      </button>
+  
+      <p style="font-size:0.85em;color:#666;margin-top:10px;">
+        Les principales destinations représentant au moins 90% des émissions sont affichées.
+        Les autres sont regroupées dans « Autres destinations ».
+      </p>
+    </div>
+  
+    <div class="card">
+      <h2 class="tooltip" data-tip="Liste détaillée des vols au départ avec distance et émissions estimées">
+        Vols départ ⓘ
+      </h2>
+      <div id="tableDepartures"></div>
+    </div>
+
+    <div class="card">
+      <h2 class="tooltip" data-tip="Liste détaillée des vols à l'arrivée avec distance et émissions estimées">
+        Vols arrivée ⓘ
+      </h2>
+      <div id="tableArrivals"></div>
+    </div>
+
   </div>
-</div>
 
-<div class="card">
-<h2 class="tooltip" data-tip="Émissions quotidiennes de CO₂e réparties selon les différents scopes (1 : émissions directes, 2 : électricité, 3 : émissions indirectes).">
-Émissions journalières par scope ⓘ
-</h2>
-<canvas id="chartDaily"></canvas>
+  <div class="card">
+    <h2>Ressources &amp; Partage</h2>
+    <p><strong>Partagez ce site :</strong></p>
 
- <button class="export-btn"
-onclick="exportChartCSV('chartDaily','emissions_journalieres_scopes.csv')">
-<i class="fa fa-download"></i> Exporter
-</button>
+    <div class="share-links">
+      https://www.linkedin.com/sharing/share-offsite/?url=https://emissionscarbonebva-maker.github.io/bva-ges/
+        <i class="fab fa-linkedin"></i> Partager sur LinkedIn
+      </a>
+
+      <a href="https://www.facebook.com/sharer/sharer.php?u=https://emissionscarbonebva-maker.github.io/bva-ges/" target="fab fa-facebook"></i> Partager sur Facebook
+      </a>
+    </div>
+
+    <p>
+      Liens utiles :
+      <br>• https://adera-association.com/ADERA – Association pour l’environnement</a>
+      <br>• https://concertation.aeroportparisbeauvais.com/frConcertation Aéroport Paris-Beauvais</a>
+      <br>• <a href="https://www.aeroportparisbeauvais.com/prols/developpement-durable/le-bulletin-de-lenvironnementBulletin de l'environnement de l'aéroport de Paris-Beauvais</a>
+    </p>
+  </div>
+
+  <div class="card" id="mentions">
+    <h2>Mentions légales</h2>
+
+    <p>
+      Ce site constitue une initiative citoyenne indépendante visant à informer le public 
+      sur les émissions estimées de gaz à effet de serre liées à l’activité de l’aéroport Paris-Beauvais.
+    </p>
+
+    <p>
+      Il ne constitue pas un site officiel et n’est affilié ni à l’exploitant de l’aéroport 
+      ni aux compagnies aériennes mentionnées.
+    </p>
+
+    <p>
+      Les données présentées proviennent de sources accessibles publiquement et font l’objet 
+      d’un traitement, d’une agrégation et d’estimations propres aux auteurs du site.
+    </p>
+
+    <p>
+      Les calculs reposent sur des hypothèses méthodologiques explicitées dans la
+      methodologie.html<strong>page méthodologie</strong></a>.
+      Les résultats doivent être considérnés comme des estimations indicatives destinées 
+      à alimenter le débat public.
+    </p>
+
+    <p>
+      Conformément à la liberté d’expression et d’information, ce site participe au débat public 
+      sur les enjeux environnementaux locaux, notamment dans le cadre du projet d’agrandissement 
+      de l’aéroport et de la révision du PCAET du Beauvaisis.
+    </p>
+
+    <p>
+      Les informations publiées sont fournies à titre informatif. 
+      Malgré le soin apporté à leur élaboration, l’auteur ne saurait être tenu responsable d’éventuelles erreurs, omissions ou interprétations faites à partir des données présentées.
+    </p>
+
+    <p>
+      Les contenus, analyses et visualisations produits sur ce site peuvent être librement cités sous réserve de mentionner la source.
+    </p>
+  </div>
   
+  <footer>
+    Observatoire citoyen indépendant – Analyse des émissions de GES liées à l’activité de l’aéroport Paris-Beauvais |
+    Mentions légales |
+    Contact : <ailto:emissionscarbonebva@gmail.comemissionscarbonebva@gmail.com</a> |
+    Hébergement : GitHub Pages (GitHub Inc.)
+  </footer>
 </div>
 
-<div class="card">
-<h2 class="tooltip" data-tip="Total des émissions depuis le 1er janvier par catégorie d'émission">
-Cumul annuel par scope ⓘ
-</h2>
-<canvas id="chartCumul"></canvas>
-
-<button class="export-btn"
-onclick="exportChartCSV('chartCumul','cumul_annuel_scopes.csv')">
-<i class="fa fa-download"></i> Exporter
-</button>
-  
-</div>
-  
-<div class="card">
-<h2>Émissions journalières par compagnie</h2>
-<canvas id="chartAirlines"></canvas>
-
-<button class="export-btn"
-onclick="exportChartCSV('chartAirlines','emissions_compagnies.csv')">
-<i class="fa fa-download"></i> Exporter
-</button>
-  
-</div>
-
-<div class="card">
-<h2 class="tooltip" data-tip="Nombre de vols effectués chaque jour par compagnie">
-Rotations journalières par compagnie ⓘ
-</h2>
-<canvas id="chartRotations"></canvas>
-
-  <button class="export-btn"
-onclick="exportChartCSV('chartRotations','rotations_compagnies.csv')">
-<i class="fa fa-download"></i> Exporter
-</button>
-  
-</div>
-
-<div class="card">
-<h2>Émissions par destination ⓘ</h2>
-
-<canvas id="chartDestination"></canvas>
-
-<button class="export-btn"
-onclick="exportChartCSV('chartDestination','emissions_destinations.csv')">
-<i class="fa fa-download"></i> Exporter
-</button>
-  
-<p style="font-size:0.85em;color:#666;margin-top:10px;">
-Les principales destinations représentant au moins 90% des émissions sont affichées.
-Les autres sont regroupées dans « Autres destinations ».
-</p>
-
-</div>
-  
-<div class="card">
-<h2 class="tooltip" data-tip="Liste détaillée des vols au départ avec distance et émissions estimées">
-Vols départ ⓘ
-</h2>
-<div id="tableDepartures"></div>
-</div>
-
-<div class="card">
-<h2 class="tooltip" data-tip="Liste détaillée des vols à l'arrivée avec distance et émissions estimées">
-Vols arrivée ⓘ
-</h2>
-<div id="tableArrivals"></div>
-</div>
-
-</div>
-
-<div class="card">
-  <h2>Ressources & Partage</h2>
-  
-  <p><strong>Partagez ce site :</strong></p>
-
-<div class="share-links">
-  <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://emissionscarbonebva-maker.github.io/bva-ges/" target="_blank" class="share-btn linkedin">
-    <i class="fab fa-linkedin"></i> Partager sur LinkedIn
-  </a>
-
-  <a href="https://www.facebook.com/sharer/sharer.php?u=https://emissionscarbonebva-maker.github.io/bva-ges/" target="_blank" class="share-btn facebook">
-    <i class="fab fa-facebook"></i> Partager sur Facebook
-  </a>
-</div>
-
-  <p>
-    Liens utiles :
-    <br>• <a href="https://adera-association.com/" target="_blank">ADERA – Association pour l’environnement</a>
-    <br>• <a href="https://concertation.aeroportparisbeauvais.com/fr" target="_blank">Concertation Aéroport Paris-Beauvais</a>
-    <br>• <a href="https://www.aeroportparisbeauvais.com/professionnels/developpement-durable/le-bulletin-de-lenvironnement" target="_blank">Bulletin de l'environnement de l'aéroport de Paris-Beauvais</a>
-  </p>
-</div>
-
-<div class="card" id="mentions">
-<h2>Mentions légales</h2>
-
-<p>
-Ce site constitue une initiative citoyenne indépendante visant à informer le public 
-sur les émissions estimées de gaz à effet de serre liées à l’activité de l’aéroport Paris-Beauvais.
-</p>
-
-<p>
-Il ne constitue pas un site officiel et n’est affilié ni à l’exploitant de l’aéroport 
-ni aux compagnies aériennes mentionnées.
-</p>
-
-<p>
-Les données présentées proviennent de sources accessibles publiquement et font l’objet 
-d’un traitement, d’une agrégation et d’estimations propres aux auteurs du site.
-</p>
-
-<p>
-Les calculs reposent sur des hypothèses méthodologiques explicitées dans la
-<a href="methodologie.html"><strong>page méthodologie</strong></a>.
-Les résultats doivent être considérnés comme des estimations indicatives destinées 
-à alimenter le débat public.
-</p>
-
-<p>
-Conformément à la liberté d’expression et d’information, ce site participe au débat public 
-sur les enjeux environnementaux locaux, notamment dans le cadre du projet d’agrandissement 
-de l’aéroport et de la révision du PCAET du Beauvaisis.
-</p>
-
-<p>
-Les informations publiées sont fournies à titre informatif. 
-Malgré le soin apporté à leur élaboration, l’auteur ne saurait être tenu responsable d’éventuelles erreurs, omissions ou interprétations faites à partir des données présentées.
-</p>
-
-<p>
-Les contenus, analyses et visualisations produits sur ce site peuvent être librement cités sous réserve de mentionner la source.
-</p>
-  
-</div>
-  
-<footer>
-Observatoire citoyen indépendant – Analyse des émissions de GES liées à l’activité de l’aéroport Paris-Beauvais |
-Mentions légales |
-Contact : <a href="mailto:emissionscarbonebva@gmail.com">emissionscarbonebva@gmail.com</a> |
-Hébergement : GitHub Pages (GitHub Inc.)
-</footer>
-
+<!-- ========== JS GLOBALS (helpers) ========== -->
 <script>
 // Convertit "rgb(r,g,b)" -> "rgba(r,g,b,a)" (alpha entre 0 et 1)
 function toRGBA(rgb, a = 1) {
   if (typeof rgb !== 'string') return rgb;
-  if (!rgb.startsWith('rgb(')) return rgb;      // si c'est déjà une autre couleur, on laisse tel quel
+  if (!rgb.startsWith('rgb(')) return rgb;
   return rgb.replace('rgb(', 'rgba(').replace(')', `, ${a})`);
 }
 
@@ -918,18 +549,12 @@ function exportChartCSV(chartId, filename){
 
   const csv = [];
   const header = ["Date"];
-
-  // Utilise les libellés affichés (déjà mappés)
-  chart.data.datasets.forEach(ds => {
-    header.push(ds.label);
-  });
+  chart.data.datasets.forEach(ds => { header.push(ds.label); });
   csv.push(header.join(";"));
 
   chart.data.labels.forEach((label,i) => {
     const row = [label];
-    chart.data.datasets.forEach(ds => {
-      row.push(ds.data[i]);
-    });
+    chart.data.datasets.forEach(ds => { row.push(ds.data[i]); });
     csv.push(row.join(";"));
   });
 
@@ -943,10 +568,6 @@ function exportChartCSV(chartId, filename){
 /* ======================
    MAPPING DES LIBELLÉS
    ====================== */
-/**
- * Table de mapping : clé CSV -> libellé affiché
- * (enrichissable à volonté)
- */
 const DISPLAY_LABELS = {
   // Commun
   "date": "Date",
@@ -956,14 +577,14 @@ const DISPLAY_LABELS = {
   "scope_acces_ind": "Accès terrestre individuels passagers (Scope 3)",
   "scope_acces_coll": "Accès terrestre collectifs passagers (Scope 3)",
   "scope_employes": "Accès employés (Scope 3)",
-  "scope_1_2": "Emissions directes aéroport BVA (Scope 1 & 2)",
+  "scope_1_2": "Emissions directes aéroport BVA (Scope 1 &amp; 2)",
 
   // 2) Cumul annuel par scope — EXPORT_cumul_scopes.csv
   "cumul_vol": "Opérations aéronefs (Scope 3)",
   "cumul_acces_ind": "Accès terrestre individuels passagers (Scope 3)",
   "cumul_acces_coll": "Accès terrestre collectifs passagers (Scope 3)",
   "cumul_employes": "Accès employés (Scope 3)",
-  "cumul_scope_1_2": "Emissions directes aéroport BVA (Scope 1 & 2)",
+  "cumul_scope_1_2": "Emissions directes aéroport BVA (Scope 1 &amp; 2)",
   "cumul_total": "Cumul total",
 
   // 6) Émissions par destination
@@ -984,34 +605,35 @@ const DISPLAY_LABELS = {
 /** Retourne le libellé affiché pour une clé CSV. */
 function displayName(key) {
   if (typeof key !== "string") return key;
-  const k = key.replace(/\uFEFF/g, '').trim(); // protection BOM
+  const k = key.replace(/\uFEFF/g, '').trim();
   return DISPLAY_LABELS[k] || k;
 }
 
+/* ====== parseCSV en global (accessible à tout le code) ====== */
+function parseCSV(url, callback){
+  fetch(url)
+    .then(r => r.text())
+    .then(data => {
+      const rows = data.split('\n').filter(r => r.trim() !== '');
+      const sep = rows[0].indexOf(';') !== -1 ? ';' : ',';
+      const headers = rows[0].split(sep);
+      const result = [];
+      for(let i=1; i<rows.length; i++){
+        const cols = rows[i].split(sep);
+        const obj = {};
+        headers.forEach((h, index) => {
+          obj[h.trim()] = cols[index] ? cols[index].trim() : "";
+        });
+        result.push(obj);
+      }
+      callback(result, headers);
+    });
+}
+</script>
+
+<!-- ========== JS PRINCIPAL (construction des graphiques) ========== -->
+<script>
 document.addEventListener("DOMContentLoaded", function(){
-
-  function parseCSV(url, callback){
-    fetch(url)
-      .then(r => r.text())
-      .then(data => {
-        const rows = data.split('\n').filter(r => r.trim() !== '');
-        const sep = rows[0].indexOf(';') !== -1 ? ';' : ',';
-        const headers = rows[0].split(sep);
-        const result = [];
-
-        for(let i=1; i<rows.length; i++){
-          const cols = rows[i].split(sep);
-          const obj = {};
-          headers.forEach((h, index) => {
-            obj[h.trim()] = cols[index] ? cols[index].trim() : "";
-          });
-          result.push(obj);
-        }
-
-        callback(result, headers);
-      });
-  }
-
 
   /* ========= Utils Périodes & Contrôles ========= */
 
@@ -1052,11 +674,9 @@ document.addEventListener("DOMContentLoaded", function(){
   // 0.2 – Tri des clés de période
   function sortPeriodKeys(keys, period) {
     if (period === "day" || period === "month") {
-      // "YYYY-MM-DD" ou "YYYY-MM" triés lexicographiquement
       return keys.sort((a,b) => a.localeCompare(b));
     }
     if (period === "week") {
-      // "YYYY-SWW" → trier par année puis semaine
       return keys.sort((a,b) => {
         const [ay, aw] = a.split("-S");
         const [by, bw] = b.split("-S");
@@ -1071,8 +691,6 @@ document.addEventListener("DOMContentLoaded", function(){
   function ensurePeriodControls(canvasId, onChange) {
     const canvas = document.getElementById(canvasId);
     if (!canvas) return;
-
-    // éviter les doublons
     if (canvas._periodControls) return canvas._periodControls.value;
 
     const holder = document.createElement("div");
@@ -1114,7 +732,6 @@ document.addEventListener("DOMContentLoaded", function(){
     holder.appendChild(btnWeek);
     holder.appendChild(btnMonth);
 
-    // Insérer avant le canvas
     canvas.parentElement.insertBefore(holder, canvas);
 
     function setActive(val) {
@@ -1126,1262 +743,1105 @@ document.addEventListener("DOMContentLoaded", function(){
       canvas._periodControls.value = val;
     }
 
-    // État initial
     canvas._periodControls = { setActive, value: "day" };
     const saved = localStorage.getItem(`agg_${canvasId}`) || "day";
     setActive(saved);
-
     return saved;
   }
 
   /* ======================================================
-     === KPIs "Indicateurs clés" (source: EXPORT_yearly_total.csv) ===
-     - KPI 1 : Total + ruban 100% Aéronefs / S1&2 / Autres
-     - KPI 2 : S1&2 2017→2024 (barres) + % vs 2017 (ligne)
-     - KPI 3 : Aéronefs 2010 & 2015→2024 (courbe)
+     === KPIs MAJ ===
+     KPI 1 : bascule sur EXPORT_cumul_scopes.csv (ligne la + récente)
+              - Aéronefs = cumul_vols
+              - Scope 1 & 2 = cumul_scope_1_2
+              - Autres = cumul_acces_ind + cumul_acces_coll + cumul_employes
+              - Affiche cumul_total en valeur absolue + ruban 100%
+     KPI 2+3 fusion : Histogramme groupé (2010, 2015, 2016→2024)
+              - S1&2 vs Aéronefs à même échelle
+              - Valeurs visibles sur les barres
+              - Ligne explicative en dessous (XX / YY / ZZ)
      ====================================================== */
 
-  // Helpers numériques robustes pour ce CSV annuel
+  /* ---------- Helpers numériques robustes ---------- */
   function _toNumberS12(x){
-    // ex: "1,019" pour 1019 (virgule = séparateur de milliers)
     if (x === null || x === undefined || x === '') return 0;
     const s = String(x).replace(/\s/g,'').replace(/,/g,'');
     const n = parseFloat(s);
     return isNaN(n) ? 0 : n;
   }
   function _toNumberAero(x){
-    // ex: "233296.476" (point décimal)
     if (x === null || x === undefined || x === '') return 0;
     const s = String(x).replace(/\s/g,'').replace(',', '.');
     const n = parseFloat(s);
     return isNaN(n) ? 0 : n;
   }
+  function _toNumberSmart(x){
+    if (x === null || x === undefined || x === '') return 0;
+    let s = String(x).trim();
+    if (/^\d{1,3}(,\d{3})+(\.\d+)?$/.test(s)) s = s.replace(/,/g, '');
+    else if (/^\d{1,3}(\.\d{3})+(,\d+)?$/.test(s)) s = s.replace(/\./g, '').replace(',', '.');
+    else {
+      if (s.includes(',') && !s.includes('.')) s = s.replace(',', '.');
+      s = s.replace(/,/g, '');
+    }
+    const n = parseFloat(s);
+    return isNaN(n) ? 0 : n;
+  }
+  function formatTonsFR(n){ return Math.round(n).toLocaleString('fr-FR'); }
 
+  /* ---------- Plugin Chart.js pour afficher les valeurs au-dessus des barres ---------- */
+  const valueLabelsPlugin = {
+    id: 'valueLabelsPlugin',
+    afterDatasetsDraw(chart, args, pluginOptions) {
+      const { ctx } = chart;
+      ctx.save();
+      ctx.font = (pluginOptions && pluginOptions.font) || '11px Arial';
+      ctx.fillStyle = (pluginOptions && pluginOptions.color) || '#222';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+
+      chart.data.datasets.forEach((dataset, datasetIndex) => {
+        const meta = chart.getDatasetMeta(datasetIndex);
+        if (!meta || meta.hidden) return;
+        if (dataset.type && dataset.type !== 'bar') return;
+        meta.data.forEach((element, index) => {
+          const val = dataset.data[index];
+          if (val === null || val === undefined || isNaN(val)) return;
+          const { x, y } = element.getProps(['x', 'y'], true);
+          if (Math.abs(val) > 0) ctx.fillText(formatTonsFR(val), x, y - 3);
+        });
+      });
+      ctx.restore();
+    }
+  };
+
+  /* ---------- KPI 2+3 fusionné : S1&2 vs Aéronefs (EXPORT_yearly_total.csv) ---------- */
   parseCSV('./data/EXPORT_yearly_total.csv', (rows, rawHeaders) => {
-    // Normalisation entêtes
     const headers = (rawHeaders || []).map(h => String(h).trim());
     const K_YEAR  = headers.find(h => h.toLowerCase().includes('année')) || headers[0];
     const K_S12   = headers.find(h => h.toLowerCase().includes('emissions_scope_1_2'));
     const K_AERO  = headers.find(h => h.toLowerCase().includes('emissions_aeronefs'));
-    const K_AUTRES = headers.find(h => h.toLowerCase().includes('emissions_autres')); // optionnel
 
-    // Tableau annuel nettoyé
     const yearly = rows.map(r => {
       const year = Number(String(r[K_YEAR]).replace(/[^\d]/g,''));
       const s12  = _toNumberS12(r[K_S12]);
       const aero = _toNumberAero(r[K_AERO]);
-      const oth  = K_AUTRES ? _toNumberAero(r[K_AUTRES]) : 0;
-      return { year, s12, aero, oth, ok: (s12 + aero + oth) > 0 };
+      return { year, s12, aero, ok: (s12 + aero) > 0 };
     }).filter(r => r.year).sort((a,b) => a.year - b.year);
 
-    /* === KPI 1 : Émissions totales (année la plus récente) + ruban 100% === */
-    (function renderKPI1(){
-      const elTotal = document.getElementById('kpiTotal');
-      const elLegend = document.getElementById('kpiBreakdownLegend');
-      const cv = document.getElementById('kpiBreakdown');
-
-      if (!elTotal || !elLegend || !cv) return; // éléments non présents dans le DOM
-
-      let last = null;
-      for (let i = yearly.length - 1; i >= 0; i--) { if (yearly[i].ok) { last = yearly[i]; break; } }
-
-      if (!last) {
-        elTotal.innerText = 'données indisponibles';
-        elLegend.innerText = '';
-        const ctx = cv.getContext('2d'); ctx.clearRect(0,0,cv.width,cv.height);
-        return;
+    (function renderKPI_S12_vs_Aero_Grouped(){
+      const canvas = document.getElementById('kpiScope12');
+      const canvasOld = document.getElementById('kpiAircraft');
+      if (!canvas) return;
+      if (canvasOld) {
+        const ctxOld = canvasOld.getContext('2d');
+        ctxOld && ctxOld.clearRect(0, 0, canvasOld.width, canvasOld.height);
+        canvasOld.style.display = 'none';
       }
 
-      const total = last.s12 + last.aero + last.oth;
-      elTotal.innerText = Math.round(total).toLocaleString('fr-FR') + " t éq CO₂ ("+ last.year +")";
+      const years = [2010, 2015, ...Array.from({length:(2024-2016+1)}, (_,i) => 2016+i)];
+      const map = new Map(yearly.map(r => [r.year, r]));
+      const valsS12  = years.map(y => (map.get(y)?.s12 ?? 0));
+      const valsAero = years.map(y => (map.get(y)?.aero ?? 0));
 
-      const labelsKPI = ["Aéronefs", "Scope 1 & 2", (K_AUTRES ? "Autres" : "Autres (n.d.)")];
-      const valuesKPI = [last.aero, last.s12, last.oth];
-      const colors = {
-        aero:  "rgb(31, 120, 180)",
-        s12:   "rgb(148, 103, 189)",
-        autres:"rgb(255, 127, 14)"
-      };
+      if (window._kpiS12AeroGrouped) window._kpiS12AeroGrouped.destroy();
 
-      if (window._kpiBreakdownChart) window._kpiBreakdownChart.destroy();
-      window._kpiBreakdownChart = new Chart(cv.getContext('2d'), {
-        type: "bar",
+      window._kpiS12AeroGrouped = new Chart(canvas.getContext('2d'), {
+        type: 'bar',
         data: {
-          labels: [""],
+          labels: years,
           datasets: [
-            { label: labelsKPI[0], data: [valuesKPI[0]], backgroundColor: toRGBA(colors.aero,   0.85), stack:"kpi" },
-            { label: labelsKPI[1], data: [valuesKPI[1]], backgroundColor: toRGBA(colors.s12,    0.85), stack:"kpi" },
-            { label: labelsKPI[2], data: [valuesKPI[2]], backgroundColor: toRGBA(colors.autres, 0.85), stack:"kpi" }
+            {
+              label: 'Scope 1 & 2 (t éq CO₂)',
+              data: valsS12,
+              backgroundColor: toRGBA('#9467bd', 0.70),
+              borderColor: '#9467bd',
+              borderWidth: 1
+            },
+            {
+              label: 'Aéronefs (t éq CO₂)',
+              data: valsAero,
+              backgroundColor: toRGBA('#1f78b4', 0.70),
+              borderColor: '#1f78b4',
+              borderWidth: 1
+            }
           ]
         },
         options: {
-          indexAxis: "y",
           responsive: true,
+          maintainAspectRatio: false,
           plugins: {
-            legend: { display: false },
+            legend: { position: 'top' },
             tooltip: {
               callbacks: {
                 label: (ctx) => {
-                  const v = ctx.parsed.x ?? 0;
-                  const pct = total > 0 ? (v/total)*100 : 0;
-                  return `${ctx.dataset.label} : ${Math.round(v).toLocaleString('fr-FR')} t — ${pct.toFixed(1)} %`;
+                  const v = ctx.raw ?? 0;
+                  return `${ctx.dataset.label} : ${formatTonsFR(v)} t éq CO₂`;
                 }
               }
             }
           },
           scales: {
-            x: { stacked: true, display: false, max: total },
-            y: { stacked: true, display: false }
+            x: { stacked: false, ticks: { autoSkip: false, maxRotation: 0 } },
+            y: { beginAtZero: true, title: { display: true, text: 't éq CO₂' } }
           }
-        }
+        },
+        plugins: [valueLabelsPlugin]
       });
 
-      // mini‑légende
-      const pA = total>0 ? (last.aero/total*100).toFixed(1) : "0.0";
-      const pS = total>0 ? (last.s12 /total*100).toFixed(1) : "0.0";
-      const pO = total>0 ? (last.oth /total*100).toFixed(1) : "0.0";
-      elLegend.innerHTML =
-        `<span style="color:${colors.aero}">■</span> Aéronefs ${pA}% &nbsp;&nbsp;`+
-        `<span style="color:${colors.s12}">■</span> Scope 1 &amp; 2 ${pS}% &nbsp;&nbsp;`+
-        `<span style="color:${colors.autres}">■</span> ${K_AUTRES ? 'Autres' : 'Autres (n.d.)'} ${pO}%`;
-    })();
+      // Calculs pour la phrase explicative
+      const y2017 = map.get(2017);
+      const y2024 = map.get(2024);
+      const total2017 = (y2017 ? (y2017.s12 + y2017.aero) : null);
+      const total2024 = (y2024 ? (y2024.s12 + y2024.aero) : null);
 
-    /* === KPI 2 : S1&2 – Évolution 2017→2024 === */
-    (function renderKPI2(){
-      const canvas = document.getElementById('kpiScope12');
-      if (!canvas) return;
-
-      const series = yearly.filter(r => r.year >= 2017 && r.year <= 2024 && r.s12 > 0);
-      if (!series.length) {
-        const ctx = canvas.getContext('2d'); ctx.font = '14px Arial'; ctx.fillStyle = '#666';
-        ctx.fillText('Données S1&2 2017→2024 indisponibles', 10, 20);
-        return;
+      let YY = null, ZZ = null;
+      if (total2017 && total2017 > 0 && total2024 !== null) {
+        YY = ((total2024 / total2017) - 1) * 100;
+      }
+      if (y2017 && y2017.s12 > 0 && y2024) {
+        ZZ = ((y2024.s12 / y2017.s12) - 1) * 100;
       }
 
-      const years = series.map(r => r.year);
-      const vals  = series.map(r => r.s12);
-      const baseYear = years[0];
-      const baseVal  = vals[0] || 1;
-      const pctVsBase = vals.map(v => baseVal>0 ? ((v/baseVal)-1)*100 : 0);
+      let explain = document.getElementById('kpiS12AeroExplain');
+      if (!explain) {
+        explain = document.createElement('div');
+        explain.id = 'kpiS12AeroExplain';
+        explain.style.marginTop = '8px';
+        explain.style.fontSize = '0.95rem';
+        explain.style.color = '#333';
+        canvas.parentElement?.appendChild(explain);
+      }
 
-      if (window._kpiScope12) window._kpiScope12.destroy();
-      window._kpiScope12 = new Chart(canvas.getContext('2d'), {
-        data: {
-          labels: years,
-          datasets: [
-            {
-              type:'bar',
-              label:'Scope 1 & 2 (t éq CO₂)',
-              data: vals,
-              backgroundColor: toRGBA('#9467bd', 0.70),
-              borderColor:'#9467bd',
-              borderWidth:1,
-              yAxisID:'y'
+      const XX = (typeof window._kpi1_shareS12 === 'number') ? window._kpi1_shareS12 : null;
+      const textePart = (XX !== null)
+        ? `représentent seulement ${XX.toFixed(1)}% des émissions de l'aéroport`
+        : `représentent une part limitée des émissions de l'aéroport`;
+
+      const texteYY = (YY === null)
+        ? `les émissions totales (S1&2 + aéronefs) entre 2017 et 2024 sont « n.d. » faute de données complètes`
+        : `les émissions ont ${YY >= 0 ? 'augmenté' : 'diminué'} de ${Math.abs(YY).toFixed(1)}% entre 2017 et 2024`;
+
+      let texteZZ;
+      if (ZZ === null) {
+        texteZZ = `la variation des scopes 1 & 2 est « n.d. » faute de données complètes`;
+      } else if (ZZ < 0) {
+        texteZZ = `la réduction de ${Math.abs(ZZ).toFixed(1)}% sur les scopes 1 & 2, bien que réelle, n'a aucune influence`;
+      } else if (ZZ > 0) {
+        texteZZ = `l’augmentation de ${Math.abs(ZZ).toFixed(1)}% sur les scopes 1 & 2 n'a aucune influence`;
+      } else {
+        texteZZ = `la stabilité des scopes 1 & 2 n'a aucune influence`;
+      }
+
+      explain.innerText =
+        `Les émissions de GES des scopes 1 & 2 sur lesquels reposent les actions de décarbonation ` +
+        `de l'accréditation ACA 4 ${textePart} dès lors que l'on intègre dans le périmètre d'analyse ` +
+        `les transports (aériens et routiers). Enfin, sur ce même périmètre, on peut voir que ${texteYY}, ` +
+        `${texteZZ}.`;
+    })();
+
+    // KPI 1 basé sur EXPORT_cumul_scopes.csv — on le charge ici pour avoir XX% avant la phrase si possible
+    parseCSV('./data/EXPORT_cumul_scopes.csv', (rowsCumul, rawHeadersCumul) => {
+      (function renderKPI1_fromCumul(){
+        const elTotal  = document.getElementById('kpiTotal');
+        const elLegend = document.getElementById('kpiBreakdownLegend');
+        const cv       = document.getElementById('kpiBreakdown');
+        if (!elTotal || !elLegend || !cv) return;
+
+        const headers = (rawHeadersCumul || []).map(h => String(h).trim());
+        const K_TOT   = headers.find(h => h.toLowerCase().includes('cumul_total'));
+        const K_VOL   = headers.find(h => h.toLowerCase().includes('cumul_vols'));
+        const K_S12   = headers.find(h => h.toLowerCase().includes('cumul_scope_1_2'));
+        const K_ACI   = headers.find(h => h.toLowerCase().includes('cumul_acces_ind'));
+        const K_ACC   = headers.find(h => h.toLowerCase().includes('cumul_acces_coll'));
+        const K_EMP   = headers.find(h => h.toLowerCase().includes('cumul_employes'));
+
+        let last = null;
+        for (let i = 0; i < rowsCumul.length; i++) {
+          const r = rowsCumul[i];
+          const tot = _toNumberSmart(r[K_TOT]);
+          const vols = _toNumberSmart(r[K_VOL]);
+          const s12  = _toNumberSmart(r[K_S12]);
+          const aind = _toNumberSmart(r[K_ACI]);
+          const acol = _toNumberSmart(r[K_ACC]);
+          const emp  = _toNumberSmart(r[K_EMP]);
+          const oth  = aind + acol + emp;
+          if ((tot + vols + s12 + oth) > 0) { last = { tot, vols, s12, oth }; break; }
+        }
+
+        if (!last) {
+          elTotal.innerText = 'données indisponibles';
+          elLegend.innerText = '';
+          const ctx = cv.getContext('2d'); ctx.clearRect(0,0,cv.width,cv.height);
+          return;
+        }
+
+        const total = last.tot;
+        const valuesKPI = [last.vols, last.s12, last.oth];
+        const labelsKPI = ["Aéronefs", "Scope 1 & 2", "Autres"];
+        const colors = {
+          aero:  "rgb(31, 120, 180)",
+          s12:   "rgb(148, 103, 189)",
+          autres:"rgb(255, 127, 14)"
+        };
+
+        elTotal.innerText = formatTonsFR(total) + " t éq CO₂ (cumul)";
+
+        if (window._kpiBreakdownChart) window._kpiBreakdownChart.destroy();
+        window._kpiBreakdownChart = new Chart(cv.getContext('2d'), {
+          type: "bar",
+          data: {
+            labels: [""],
+            datasets: [
+              { label: labelsKPI[0], data: [valuesKPI[0]], backgroundColor: toRGBA(colors.aero,   0.85), stack:"kpi" },
+              { label: labelsKPI[1], data: [valuesKPI[1]], backgroundColor: toRGBA(colors.s12,    0.85), stack:"kpi" },
+              { label: labelsKPI[2], data: [valuesKPI[2]], backgroundColor: toRGBA(colors.autres, 0.85), stack:"kpi" }
+            ]
+          },
+          options: {
+            indexAxis: "y",
+            responsive: true,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: (ctx) => {
+                    const v = ctx.parsed.x ?? 0;
+                    const pct = total > 0 ? (v/total)*100 : 0;
+                    return `${ctx.dataset.label} : ${formatTonsFR(v)} t — ${pct.toFixed(1)} %`;
+                  }
+                }
+              }
             },
-            {
-              type:'line',
-              label:`Écart vs ${baseYear} (%)`,
-              data: pctVsBase,
-              borderColor:'#555',
-              pointRadius:2,
-              tension:0.2,
-              fill:false,
-              yAxisID:'y1'
+            scales: {
+              x: { stacked: true, display: false, max: total },
+              y: { stacked: true, display: false }
             }
-          ]
-        },
-        options:{
-          responsive:true,
-          plugins:{ legend:{ position:'top' } },
-          scales:{
-            y:  { beginAtZero:true, title:{ display:true, text:'t éq CO₂' } },
-            y1: { position:'right', grid:{ drawOnChartArea:false }, title:{ display:true, text:'% vs '+baseYear } }
           }
-        }
-      });
-    })();
+        });
 
-    /* === KPI 3 : Aéronefs – 2010, puis 2015→2024 === */
-    (function renderKPI3(){
-      const canvas = document.getElementById('kpiAircraft');
-      if (!canvas) return;
+        const pA = total>0 ? (last.vols/total*100).toFixed(1) : "0.0";
+        const pS = total>0 ? (last.s12 /total*100).toFixed(1) : "0.0";
+        const pO = total>0 ? (last.oth /total*100).toFixed(1) : "0.0";
+        window._kpi1_shareS12 = total>0 ? (last.s12/total*100) : null;
 
-      const series = yearly.filter(r =>
-        (r.year === 2010 && r.aero>0) || (r.year >= 2015 && r.year <= 2024 && r.aero>0)
-      );
-      if (!series.length) {
-        const ctx = canvas.getContext('2d'); ctx.font = '14px Arial'; ctx.fillStyle = '#666';
-        ctx.fillText('Données aéronefs 2010 / 2015→2024 indisponibles', 10, 20);
-        return;
-      }
-
-      const years = series.map(r => r.year);
-      const vals  = series.map(r => r.aero);
-
-      if (window._kpiAircraft) window._kpiAircraft.destroy();
-      window._kpiAircraft = new Chart(canvas.getContext('2d'), {
-        type: 'line',
-        data: {
-          labels: years,
-          datasets: [{
-            label: 'Aéronefs (t éq CO₂)',
-            data: vals,
-            borderColor:'#1f78b4',
-            backgroundColor: toRGBA('#1f78b4',0.15),
-            borderWidth:2,
-            pointRadius: years.map(y => (y===2010 || y===2015) ? 5 : 2),
-            tension:0.15,
-            fill:true
-          }]
-        },
-        options:{
-          responsive:true,
-          plugins:{ legend:{ position:'top' } },
-          scales:{
-            y: { beginAtZero:true, title:{ display:true, text:'t éq CO₂' } }
-          }
-        }
-      });
-    })();
+        elLegend.innerHTML =
+          `<span style="color:${colors.aero}">■</span> Aéronefs ${pA}% &nbsp;&nbsp;`+
+          `<span style="color:${colors.s12}">■</span> Scope 1 &amp; 2 ${pS}% &nbsp;&nbsp;`+
+          `<span style="color:${colors.autres}">■</span> Autres ${pO}%`;
+      })();
+    });
   });
 
-
-  /*1 ===== Émissions journalières par scope ===== */
+  /* ====== 1. Émissions journalières par scope ====== */
   parseCSV('./data/EXPORT_daily_scopes.csv', (data,headers) => {
-    // Tri des dates (ancien → récent)
     data.sort((a,b) => new Date(a[headers[0]]) - new Date(b[headers[0]]));
 
-    const labels = [];
-    const datasets = [];
-    const totalSeries = [];
+    let chartDailyInstance = null;
 
-    const colors = ["#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd"];
+    function buildChartDaily(period) {
+      const dateKey   = headers[0];
+      const scopeKeys = headers.slice(1, 6);
 
-    // Création des datasets pour les 5 scopes avec libellés mappés
-    for(let i=1;i<=5;i++){
-      const csvKey = headers[i];
-      datasets.push({
-        label: displayName(csvKey), // libellé affiché
-        data: [],
-        borderWidth: 2,
-        fill: false,
-        borderColor: colors[i-1]
+      const perScope = {};
+      scopeKeys.forEach(k => perScope[k] = {});
+      const periodsSet = new Set();
+
+      data.forEach(row => {
+        const pkey = makePeriodKey(row[dateKey], period);
+        periodsSet.add(pkey);
+        scopeKeys.forEach(k => {
+          const raw = row[k];
+          let v = raw ? parseFloat(String(raw).replace(',', '.')) : 0;
+          if (isNaN(v)) v = 0;
+          perScope[k][pkey] = (perScope[k][pkey] || 0) + v;
+        });
+      });
+
+      const labels = sortPeriodKeys(Array.from(periodsSet), period);
+      const isDay  = (period === "day");
+
+      const colorMap = {
+        "scope_1_2":        "#9467bd",
+        "scope_employes":   "#d62728",
+        "scope_acces_coll": "#2ca02c",
+        "scope_acces_ind":  "#ff7f0e",
+        "scope_vols":       "#1f77b4"
+      };
+
+      const desiredOrder = [
+        "scope_1_2",
+        "scope_employes",
+        "scope_acces_coll",
+        "scope_acces_ind",
+        "scope_vols"
+      ];
+      const orderedKeys = desiredOrder
+        .filter(k => scopeKeys.includes(k))
+        .concat(scopeKeys.filter(k => !desiredOrder.includes(k)));
+
+      const datasets = orderedKeys.map(k => {
+        const c  = colorMap[k] || "#888888";
+        const bg = isDay ? (c + "33") : (c + "AA");
+        return {
+          type: isDay ? "line" : "bar",
+          label: displayName(k),
+          data: labels.map(pk => perScope[k][pk] || 0),
+          borderColor: c,
+          backgroundColor: bg,
+          borderWidth: 2,
+          fill: isDay,
+          stack: "stackS"
+        };
+      });
+
+      if (chartDailyInstance) chartDailyInstance.destroy();
+      chartDailyInstance = new Chart(document.getElementById("chartDaily"), {
+        type: isDay ? "line" : "bar",
+        data: { labels, datasets },
+        options: {
+          responsive: true,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: { position: 'top' },
+            zoom: {
+              pan:  { enabled: true, mode: 'x' },
+              zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }
+            },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => {
+                  const v = ctx.parsed.y ?? 0;
+                  const idx = ctx.dataIndex;
+                  const stackKey = ctx.dataset.stack;
+                  const datasets = ctx.chart.data.datasets || [];
+
+                  let totalAtIndex = 0;
+                  datasets.forEach(ds => {
+                    if (ds && ds.stack === stackKey && Array.isArray(ds.data)) {
+                      const rawVal = ds.data[idx];
+                      const num = (typeof rawVal === 'number')
+                        ? rawVal
+                        : (rawVal && typeof rawVal.y === 'number' ? rawVal.y : 0);
+                      if (!isNaN(num)) totalAtIndex += num;
+                    }
+                  });
+
+                  const pct = totalAtIndex > 0 ? (v / totalAtIndex) * 100 : 0;
+                  const pctStr = pct.toLocaleString('fr-FR', { maximumFractionDigits: 1 });
+
+                  return `${ctx.dataset.label} : ${Math.round(v).toLocaleString('fr-FR')} t éq CO₂ ; soit ${pctStr} %`;
+                },
+                footer: (items) => {
+                  if (!items?.length) return '';
+                  const idx = items[0].dataIndex;
+                  const stackKey = items[0].dataset.stack;
+                  const datasets = items[0].chart.data.datasets || [];
+
+                  let totalAtIndex = 0;
+                  datasets.forEach(ds => {
+                    if (ds && ds.stack === stackKey && Array.isArray(ds.data)) {
+                      const rawVal = ds.data[idx];
+                      const num = (typeof rawVal === 'number')
+                        ? rawVal
+                        : (rawVal && typeof rawVal.y === 'number' ? rawVal.y : 0);
+                      if (!isNaN(num)) totalAtIndex += num;
+                    }
+                  });
+
+                  return `Total : ${Math.round(totalAtIndex).toLocaleString('fr-FR')} t éq CO₂`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              title: { display: true, text: isDay ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois") },
+              stacked: !isDay
+            },
+            y: {
+              beginAtZero: true,
+              stacked: true,
+              title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" }
+            }
+          }
+        }
       });
     }
 
-    let total=0;
-
-    // Boucle principale
-    data.forEach(row => {
-      const date = row[headers[0]];
-      labels.push(date);
-
-      let dayTotal=0;
-      for(let i=1;i<=5;i++){
-        const raw = row[headers[i]];
-        let v = raw ? parseFloat(raw.replace(',','.')) : 0;
-        if(isNaN(v)) v=0;
-        datasets[i-1].data.push(v);
-        dayTotal += v;
-      }
-      totalSeries.push(dayTotal);
-      total += dayTotal;
-    });
-
-    // Série total
-    datasets.push({
-      label:"Total scopes",
-      data:totalSeries,
-      borderWidth:3,
-      fill:false,
-      borderColor:"#000000"
-    });
-
-    // ====== Contrôles & reconstruction ======
-
-let chartDailyInstance = null;
-
-function buildChartDaily(period) {
-  const dateKey   = headers[0];
-  const scopeKeys = headers.slice(1, 6); // on attend 5 scopes
-
-  // --- Agrégation par période (day / week / month) ---
-  const perScope = {};
-  scopeKeys.forEach(k => perScope[k] = {});
-  const periodsSet = new Set();
-
-  data.forEach(row => {
-    const pkey = makePeriodKey(row[dateKey], period);
-    periodsSet.add(pkey);
-    scopeKeys.forEach(k => {
-      const raw = row[k];
-      let v = raw ? parseFloat(String(raw).replace(',', '.')) : 0;
-      if (isNaN(v)) v = 0;
-      perScope[k][pkey] = (perScope[k][pkey] || 0) + v;
-    });
+    const initDailyPeriod = ensurePeriodControls("chartDaily", buildChartDaily);
+    buildChartDaily(initDailyPeriod);
   });
 
-  const labels = sortPeriodKeys(Array.from(periodsSet), period);
-  const isDay  = (period === "day");
-
-  // --- Couleurs par clé CSV (aligné sur tes teintes) ---
-  const colorMap = {
-    "scope_1_2":        "#9467bd", // Emissions directes aéroport (Scope 1&2)
-    "scope_employes":   "#d62728", // Accès employés
-    "scope_acces_coll": "#2ca02c", // Accès collectifs passagers
-    "scope_acces_ind":  "#ff7f0e", // Accès individuels passagers
-    "scope_vols":       "#1f77b4"  // Opérations aéronefs (Scope 3)
-  };
-
-  // --- Ordre imposé dans toutes les vues ---
-  const desiredOrder = [
-    "scope_1_2",
-    "scope_employes",
-    "scope_acces_coll",
-    "scope_acces_ind",
-    "scope_vols"
-  ];
-  // On garde l’ordre désiré pour les clés présentes,
-  // puis on ajoute d’éventuelles clés "surprises" à la fin.
-  const orderedKeys = desiredOrder
-    .filter(k => scopeKeys.includes(k))
-    .concat(scopeKeys.filter(k => !desiredOrder.includes(k)));
-
-  // --- Datasets ---
-  const datasets = orderedKeys.map(k => {
-    const c  = colorMap[k] || "#888888";
-    const bg = isDay ? (c + "33") : (c + "AA");  // alpha 20% (jour) / 67% (agrégé)
-    return {
-      type: isDay ? "line" : "bar",
-      label: displayName(k),
-      data: labels.map(pk => perScope[k][pk] || 0),
-      borderColor: c,
-      backgroundColor: bg,
-      borderWidth: 2,
-      fill: isDay,        // aires empilées en "jour"
-      stack: "stackS"     // même pile pour toutes les périodes
-    };
-  });
-
-  // --- (Re)création du chart ---
-  if (chartDailyInstance) chartDailyInstance.destroy();
-  chartDailyInstance = new Chart(document.getElementById("chartDaily"), {
-    type: isDay ? "line" : "bar",
-    data: { labels, datasets },
-    options: {
-  responsive: true,
-  interaction: { mode: 'index', intersect: false },
-  plugins: {
-    legend: { position: 'top' },
-    zoom: {
-      pan:  { enabled: true, mode: 'x' },
-      zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }
-    },
-    tooltip: {
-      callbacks: {
-        label: (ctx) => {
-          const v = ctx.parsed.y ?? 0;
-          const idx = ctx.dataIndex;
-          const stackKey = ctx.dataset.stack;
-          const datasets = ctx.chart.data.datasets || [];
-
-          let totalAtIndex = 0;
-          datasets.forEach(ds => {
-            if (ds && ds.stack === stackKey && Array.isArray(ds.data)) {
-              const rawVal = ds.data[idx];
-              const num = (typeof rawVal === 'number')
-                ? rawVal
-                : (rawVal && typeof rawVal.y === 'number' ? rawVal.y : 0);
-              if (!isNaN(num)) totalAtIndex += num;
-            }
-          });
-
-          const pct = totalAtIndex > 0 ? (v / totalAtIndex) * 100 : 0;
-          const pctStr = pct.toLocaleString('fr-FR', { maximumFractionDigits: 1 });
-
-          return `${ctx.dataset.label} : ${Math.round(v).toLocaleString('fr-FR')} t éq CO₂ ; soit ${pctStr} %`;
-        },
-        footer: (items) => {
-          if (!items?.length) return '';
-          const idx = items[0].dataIndex;
-          const stackKey = items[0].dataset.stack;
-          const datasets = items[0].chart.data.datasets || [];
-
-          let totalAtIndex = 0;
-          datasets.forEach(ds => {
-            if (ds && ds.stack === stackKey && Array.isArray(ds.data)) {
-              const rawVal = ds.data[idx];
-              const num = (typeof rawVal === 'number')
-                ? rawVal
-                : (rawVal && typeof rawVal.y === 'number' ? rawVal.y : 0);
-              if (!isNaN(num)) totalAtIndex += num;
-            }
-          });
-
-          return `Total : ${Math.round(totalAtIndex).toLocaleString('fr-FR')} t éq CO₂`;
-        }
-      }
-    }
-  },
-  scales: {
-    x: {
-      title: {
-        display: true,
-        text: isDay ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")
-      },
-      stacked: !isDay  // barres empilées en semaine/mois
-    },
-    y: {
-      beginAtZero: true,
-      stacked: true,   // empilage vertical (aires jour & barres agrégées)
-      title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" }
-    }
-  }
-}
-});
-}
-
-
-// Installer les boutons et premier rendu
-const initDailyPeriod = ensurePeriodControls("chartDaily", buildChartDaily);
-buildChartDaily(initDailyPeriod);
-});
-
- 
-  /*2 ===== Cumul annuel par scope ===== */
+  /* ====== 2. Cumul annuel par scope ====== */
   parseCSV('./data/EXPORT_cumul_scopes.csv', (data,headers) => {
     if(!data || data.length === 0) return;
 
-    // Nettoyage des headers
     headers = headers.map(h => h.replace(/\uFEFF/g,'').trim());
 
-    const dateKey = headers[0];
-    const totalKey = headers.find(h => h === "cumul_total");
+    let chartCumulInstance = null;
 
-    // Tri chronologique
-    data.sort((a,b) => new Date(a[dateKey]) - new Date(b[dateKey]));
+    function buildChartCumul(period) {
+      const dateKey  = headers[0];
+      const totalKey = headers.find(h => h === "cumul_total");
+      const scopeCols = headers.filter(h => h !== dateKey && h !== totalKey);
 
-    const labels = [];
-    const datasets = [];
-
-    // Construction des séries (hors date et cumul_total)
-    const seriesMeta = [];
-    headers.forEach(h => {
-      if(h === dateKey || h === totalKey) return;
-      const lastValue = parseFloat(data[data.length - 1][h]) || 0;
-      seriesMeta.push({
-        key: h,                 // conserve la clé CSV
-        label: displayName(h),  // libellé affiché
-        lastValue
-      });
-    });
-
-    // Tri du plus petit au plus grand
-    seriesMeta.sort((a,b) => a.lastValue - b.lastValue);
-
-    // Couleurs
-    const colors = ["#9467bd","#d62728","#2ca02c","#ff7f0e","#1f77b4"];
-
-    // Datasets
-    seriesMeta.forEach((serie,index) => {
-      datasets.push({
-        label: serie.label, // mappé
-        data: [],
-        borderWidth: 1.5,
-        fill: true,
-        backgroundColor: colors[index % colors.length] + "55",
-        borderColor: colors[index % colors.length],
-        stack: "stack1",
-        _csvKey: serie.key // garde la clé CSV pour lecture
-      });
-    });
-
-    // Données
-    data.forEach(row => {
-      labels.push(row[dateKey]);
-      datasets.forEach(ds => {
-        const key = ds._csvKey;
-        const raw = row[key];
-        let val = raw ? parseFloat(String(raw).replace(',','.').trim()) : 0;
-        if(isNaN(val)) val = 0;
-        ds.data.push(val);
-      });
-    });
-
-    // Graphique
-    
-let chartCumulInstance = null;
-
-function buildChartCumul(period) {
-  // headers déjà nettoyés ; dateKey = headers[0]
-  const dateKey  = headers[0];
-  const totalKey = headers.find(h => h === "cumul_total");
-  const scopeCols = headers.filter(h => h !== dateKey && h !== totalKey);
-
-  // 1) Index par période -> dernière ligne de la période (cumul "fin de période")
-  const periodLastRow = {}; // { pkey -> row }
-  data.forEach(row => {
-    const pkey = makePeriodKey(row[dateKey], period);
-    const current = periodLastRow[pkey];
-    if (!current || new Date(row[dateKey]) > new Date(current[dateKey])) {
-      periodLastRow[pkey] = row;
-    }
-  });
-
-  // 2) Labels triés + type selon période
-  const labels = sortPeriodKeys(Object.keys(periodLastRow), period);
-  const isDay  = (period === "day");
-
-  // 3) Palette COHÉRENTE pour les clés "cumul_*"
-  const colorMap = {
-    "cumul_scope_1_2":  "#9467bd", // Emissions directes aéroport (Scope 1&2)
-    "cumul_employes":   "#d62728", // Accès employés
-    "cumul_acces_coll": "#2ca02c", // Accès collectifs passagers
-    "cumul_acces_ind":  "#ff7f0e", // Accès individuels passagers
-    "cumul_vol":        "#1f77b4"  // Opérations aéronefs (Scope 3)
-  };
-
-  // 4) Ordre imposé dans TOUTES les vues
-  const desiredOrder = [
-    "cumul_scope_1_2",
-    "cumul_employes",
-    "cumul_acces_coll",
-    "cumul_acces_ind",
-    "cumul_vol"
-  ];
-  const orderedCols = desiredOrder
-    .filter(k => scopeCols.includes(k))
-    .concat(scopeCols.filter(k => !desiredOrder.includes(k))); // ajoute toute clé "surprise" à la fin
-
-  // 5) Datasets dans l'ordre voulu + couleurs dédiées "cumul_*"
-  const datasets = orderedCols.map(col => {
-    const c = colorMap[col] || "#888888";
-    return {
-      label: displayName(col),
-      data: labels.map(pk => {
-        const raw = periodLastRow[pk][col];
-        let v = raw ? parseFloat(String(raw).replace(',', '.').trim()) : 0;
-        return isNaN(v) ? 0 : v;
-      }),
-      borderWidth: 1.5,
-      fill: true,
-      backgroundColor: isDay ? (c + "33") : (c + "55"), // 20% (jour) / 33% (sem/mois)
-      borderColor: c,
-      stack: "stack1"
-    };
-  });
-
-  // 6) (Re)création du chart
-  if (chartCumulInstance) chartCumulInstance.destroy();
-  chartCumulInstance = new Chart(document.getElementById("chartCumul"), {
-    type: isDay ? 'line' : 'bar',
-    data: { labels, datasets },
-    options: {
-      responsive: true,
-      interaction: { mode:'index', intersect:false },
-      plugins: {
-  legend: { position:'top' },
-  tooltip: {
-  // 🔽 Tri décroissant des valeurs (plus élevé en haut)
-  itemSort: (a, b) => {
-    const va = (a.parsed && typeof a.parsed.y === 'number') ? a.parsed.y : 0;
-    const vb = (b.parsed && typeof b.parsed.y === 'number') ? b.parsed.y : 0;
-    if (vb === va) return 0;   // préserve l'ordre d'origine en cas d'égalité
-    return vb - va;            // décroissant : plus grand d'abord
-  },
-
-  // ✅ Tes callbacks existants (même format que l'autre graph)
-  callbacks: {
-    label: (ctx) => {
-      const v = ctx.parsed.y ?? 0;
-      const idx = ctx.dataIndex;
-      const stackKey = ctx.dataset.stack; // "stack1"
-      const datasets = ctx.chart.data.datasets || [];
-
-      let totalAtIndex = 0;
-      datasets.forEach(ds => {
-        if (ds && ds.stack === stackKey && Array.isArray(ds.data)) {
-          const rawVal = ds.data[idx];
-          const num = (typeof rawVal === 'number')
-            ? rawVal
-            : (rawVal && typeof rawVal.y === 'number' ? rawVal.y : 0);
-          if (!isNaN(num)) totalAtIndex += num;
+      const periodLastRow = {};
+      data.forEach(row => {
+        const pkey = makePeriodKey(row[dateKey], period);
+        const current = periodLastRow[pkey];
+        if (!current || new Date(row[dateKey]) > new Date(current[dateKey])) {
+          periodLastRow[pkey] = row;
         }
       });
 
-      const pct = totalAtIndex > 0 ? (v / totalAtIndex) * 100 : 0;
-      const pctStr = pct.toLocaleString('fr-FR', { maximumFractionDigits: 1 });
+      const labels = sortPeriodKeys(Object.keys(periodLastRow), period);
+      const isDay  = (period === "day");
 
-      return `${ctx.dataset.label} : ${Math.round(v).toLocaleString('fr-FR')} t éq CO₂ ; soit ${pctStr} %`;
-    },
-    footer: (items) => {
-      if (!items?.length) return '';
-      const idx = items[0].dataIndex;
-      const stackKey = items[0].dataset.stack; // "stack1"
-      const datasets = items[0].chart.data.datasets || [];
+      const colorMap = {
+        "cumul_scope_1_2":  "#9467bd",
+        "cumul_employes":   "#d62728",
+        "cumul_acces_coll": "#2ca02c",
+        "cumul_acces_ind":  "#ff7f0e",
+        "cumul_vol":        "#1f77b4"
+      };
 
-      let totalAtIndex = 0;
-      datasets.forEach(ds => {
-        if (ds && ds.stack === stackKey && Array.isArray(ds.data)) {
-          const rawVal = ds.data[idx];
-          const num = (typeof rawVal === 'number')
-            ? rawVal
-            : (rawVal && typeof rawVal.y === 'number' ? rawVal.y : 0);
-          if (!isNaN(num)) totalAtIndex += num;
-        }
+      const desiredOrder = [
+        "cumul_scope_1_2",
+        "cumul_employes",
+        "cumul_acces_coll",
+        "cumul_acces_ind",
+        "cumul_vol"
+      ];
+      const orderedCols = desiredOrder
+        .filter(k => scopeCols.includes(k))
+        .concat(scopeCols.filter(k => !desiredOrder.includes(k)));
+
+      const datasets = orderedCols.map(col => {
+        const c = colorMap[col] || "#888888";
+        return {
+          label: displayName(col),
+          data: labels.map(pk => {
+            const raw = periodLastRow[pk][col];
+            let v = raw ? parseFloat(String(raw).replace(',', '.').trim()) : 0;
+            return isNaN(v) ? 0 : v;
+          }),
+          borderWidth: 1.5,
+          fill: true,
+          backgroundColor: isDay ? (c + "33") : (c + "55"),
+          borderColor: c,
+          stack: "stack1"
+        };
       });
 
-      return `Total : ${Math.round(totalAtIndex).toLocaleString('fr-FR')} t éq CO₂`;
-    }
-  }
-},
-  zoom: { pan:{enabled:true, mode:'x'}, zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' } }
-},
-      scales: {
-        x: { 
-          title: { display: true, text: (isDay ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")) },
-          stacked: !isDay          // empilé pour barres (semaine/mois)
-        },
-        y: { 
-          beginAtZero: true, 
-          stacked: !isDay,         // empilé pour barres (semaine/mois)
-          title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" }
-        }
-      }
-    }
-  });
-}
-
-const initCumulPeriod = ensurePeriodControls("chartCumul", buildChartCumul);
-buildChartCumul(initCumulPeriod);
-});
-
- 
-
-/*3 ===== Emissions par compagnie ===== */
-parseCSV('./data/EXPORT_daily_airlines.csv', (dataRaw) => {
-  // 0) Normalisation robuste des lignes CSV
-  const data = dataRaw.map(r => ({
-    date: r.date,
-    compagnie: String(r.compagnie ?? '').trim(),
-    emissions: (() => {
-      const n = parseFloat(String(r.emissions ?? 0).replace(',', '.'));
-      return isNaN(n) ? 0 : n;
-    })()
-  }));
-
-  let chartAirlinesInstance = null;
-
-  function buildChartAirlines(period, data) {
-    // 1) Agrégation par (compagnie, période)
-    const labelsSet = new Set();
-    const compSet   = new Set();
-    const agg = {}; // { compagnie -> { pkey -> somme } }
-
-    data.forEach(r => {
-      const comp = r.compagnie;
-      const pkey = makePeriodKey(r.date, period);
-      compSet.add(comp);
-      labelsSet.add(pkey);
-      if (!agg[comp]) agg[comp] = {};
-      agg[comp][pkey] = (agg[comp][pkey] || 0) + r.emissions;
-    });
-
-    const labels = sortPeriodKeys(Array.from(labelsSet), period);
-
-    // 2) Palette + ordre contrôlé (identique à Rotations)
-    const palette = {
-      "Ryanair":  "rgb(223,186,47)",
-      "Wizz Air": "rgb(225,14,73)",
-      "HiSky":    "rgb(19,62,103)",
-      "SkyUp":    "rgb(255,58,32)",
-      "Volotea":  "rgb(0,0,0)",
-      "Autres":   "rgb(127,127,127)"
-    };
-
-    const desiredOrder = ["Ryanair","Wizz Air","HiSky","SkyUp","Volotea","Autres"];
-    const compagniesAll = Array.from(compSet);
-    const compagniesOrdered = desiredOrder
-      .filter(c => compSet.has(c))
-      .concat(compagniesAll.filter(c => !desiredOrder.includes(c)).sort());
-
-    // 3) Datasets (copie conforme du pattern Rotations)
-    const datasets = compagniesOrdered.map(comp => ({
-      type: (period === "day" ? "line" : "bar"),
-      label: comp,
-      data: labels.map(pk => agg[comp]?.[pk] || 0),
-      borderWidth: 2,
-      fill: false,    
-      borderColor: palette[comp] || "rgb(120,120,120)",
-     // plein en barres (semaine/mois), léger voile en "jour" si tu veux (line chart)
-     backgroundColor: (period === "day")
-            ? toRGBA(palette[comp] || "rgb(120,120,120)", 0.25) // optionnel en "jour"
-            : toRGBA(palette[comp] || "rgb(120,120,120)", 0.85), // barres bien remplies
-     stack: (period === "day" ? undefined : "stackAir")
-    }));
-
-   // --- Empilement : plus grand en haut, sans toucher à la légende ---
-if (period !== "day") {
-  datasets.forEach(ds => {
-    const sum = Array.isArray(ds.data)
-      ? ds.data.reduce((s, v) => s + (Number(v) || 0), 0)
-      : 0;
-    ds.order = sum; // plus petit order dessiné d'abord (en bas), plus grand en dernier (en haut)
-  });
-}
-  
-    // 4) (Re)création du graphique
-    if (chartAirlinesInstance) chartAirlinesInstance.destroy();
-    chartAirlinesInstance = new Chart(document.getElementById("chartAirlines"),{
-      type: (period === "day" ? "line" : "bar"),
-      data:{ labels, datasets },
-      options: {
-        responsive: true,
-        interaction: { mode: 'index', intersect: false },
-        
-plugins: {
-  legend: {
-    position: 'top',
-    labels: {
-      // 1) Méthode simple (si dispo dans ta v3.9) : fonction de tri
-      sort: (a, b) => {
-        const order = { "Ryanair":0, "Wizz Air":1, "HiSky":2, "SkyUp":3, "Volotea":4, "Autres":5 };
-        const ia = (a?.text in order) ? order[a.text] : 999;
-        const ib = (b?.text in order) ? order[b.text] : 999;
-        if (ia !== ib) return ia - ib;
-        // à défaut, ordre alpha pour les "inconnus"
-        return String(a.text).localeCompare(String(b.text));
-      },
-
-      // 2) (Optionnel – ceinture et bretelles) :
-      //    Si jamais labels.sort n'est pas pris en compte dans ton build,
-      //    on surchage le générateur et on trie le résultat par la même règle.
-      generateLabels: (chart) => {
-        const base = Chart.defaults.plugins.legend.labels.generateLabels(chart);
-        const order = { "Ryanair":0, "Wizz Air":1, "HiSky":2, "SkyUp":3, "Volotea":4, "Autres":5 };
-        base.sort((a, b) => {
-          const ia = (a?.text in order) ? order[a.text] : 999;
-          const ib = (b?.text in order) ? order[b.text] : 999;
-          if (ia !== ib) return ia - ib;
-          return String(a.text).localeCompare(String(b.text));
-        });
-        return base;
-      }
-    }
-  },
-  zoom: {
-    pan:  { enabled: true, mode: 'x' },
-    zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }
-  },
-
-          tooltip: {
-            // Tri décroissant par valeur
-            itemSort: (a, b) => {
-              const va = (a.parsed && typeof a.parsed.y === 'number') ? a.parsed.y : 0;
-              const vb = (b.parsed && typeof b.parsed.y === 'number') ? b.parsed.y : 0;
-              if (vb === va) return 0;
-              return vb - va;
-            },
-            callbacks: {
-              label: (ctx) => {
-                const v = ctx.parsed.y ?? 0;
-                const idx = ctx.dataIndex;
-                const stackKey = ctx.dataset.stack; // undefined en "day", "stackAir" en sem/mois
-                const ds = ctx.chart.data.datasets || [];
-
-                let totalAtIndex = 0;
-                ds.forEach(dset => {
-                  const sameScope = stackKey ? (dset.stack === stackKey) : true;
-                  if (!sameScope || !Array.isArray(dset.data)) return;
-
-                  const rawVal = dset.data[idx];
-                  const num = (typeof rawVal === 'number')
-                    ? rawVal
-                    : (rawVal && typeof rawVal.y === 'number' ? rawVal.y : 0);
-                  if (!isNaN(num)) totalAtIndex += num;
-                });
-
-                const pct = totalAtIndex > 0 ? (v / totalAtIndex) * 100 : 0;
-                const pctStr = pct.toLocaleString('fr-FR', { maximumFractionDigits: 1 });
-
-                return `${ctx.dataset.label} : ${Math.round(v).toLocaleString('fr-FR')} t éq CO₂ ; soit ${pctStr} %`;
-              },
-              footer: (items) => {
-                if (!items?.length) return '';
-                const idx = items[0].dataIndex;
-                const stackKey = items[0].dataset.stack;
-                const ds = items[0].chart.data.datasets || [];
-
-                let totalAtIndex = 0;
-                ds.forEach(dset => {
-                  const sameScope = stackKey ? (dset.stack === stackKey) : true;
-                  if (!sameScope || !Array.isArray(dset.data)) return;
-
-                  const rawVal = dset.data[idx];
-                  const num = (typeof rawVal === 'number')
-                    ? rawVal
-                    : (rawVal && typeof rawVal.y === 'number' ? rawVal.y : 0);
-                  if (!isNaN(num)) totalAtIndex += num;
-                });
-
-                return `Total : ${Math.round(totalAtIndex).toLocaleString('fr-FR')} t éq CO₂`;
-              }
-            }
-          }
-        },
-        scales: {
-          x: {
-            title: {
-              display: true,
-              text: (period === "day" ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois"))
-            }
-          },
-          y: {
-            beginAtZero: true,
-            stacked: (period !== "day"),
-            title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" }
-          }
-        }
-      }
-    });
- }     
-
-  // 5) Boutons & 1er rendu (identique à Rotations)
-  const airlinesPeriod = ensurePeriodControls("chartAirlines", (p) => buildChartAirlines(p, data));
-  buildChartAirlines(airlinesPeriod, data);
-});
-
- 
- 
- /*4 ===== Rotations par compagnie ===== */
-parseCSV('./data/EXPORT_daily_airlines.csv', (data) => {
-  const labels = [...new Set(data.map(r => r.date))].sort();
-  const compagnies = [...new Set(data.map(r => r.compagnie))];
-  const datasets = [];
-
-  // Palette de prévisualisation (cohérente avec le chart final)
-  const colors = {
-    "Ryanair":  "rgb(223,186,47)",
-    "Wizz Air": "rgb(225,14,73)",
-    "HiSky":    "rgb(19,62,103)",
-    "SkyUp":    "rgb(255,58,32)",
-    "Volotea":  "rgb(0,0,0)",
-    "Autres":   "rgb(127,127,127)" // 👈 nouvelle série
-  };
-
-  compagnies.forEach(comp => {
-    const serie = [];
-    labels.forEach(d => {
-      const row = data.find(r => r.date === d && r.compagnie === comp);
-      let value = row ? parseFloat(row.rotations) : 0;
-      if (isNaN(value)) value = 0;
-      serie.push(value);
-    });
-    datasets.push({
-      label: comp,
-      data: serie,
-      borderWidth: 2,
-      fill: false,
-      borderColor: colors[comp] || "rgb(120,120,120)"
-    });
-  });
-
-  let chartRotationsInstance = null;
-
-  function buildChartRotations(period, data) {
-    const labelsSet = new Set();
-    const compSet = new Set();
-    const agg = {}; // { comp -> { pkey -> sum } }
-
-    data.forEach(r => {
-      const comp = r.compagnie;
-      const pkey = makePeriodKey(r.date, period);
-      compSet.add(comp);
-      labelsSet.add(pkey);
-      if (!agg[comp]) agg[comp] = {};
-      let v = r.rotations ? parseFloat(String(r.rotations).replace(',', '.')) : 0;
-      if (isNaN(v)) v = 0;
-      agg[comp][pkey] = (agg[comp][pkey] || 0) + v;
-    });
-
-    const labels = sortPeriodKeys(Array.from(labelsSet), period);
-
-    // --- Palette étendue + ordre de légende contrôlé ---
-    const palette = {
-      "Ryanair":  "rgb(223,186,47)",
-      "Wizz Air": "rgb(225,14,73)",
-      "HiSky":    "rgb(19,62,103)",
-      "SkyUp":    "rgb(255,58,32)",
-      "Volotea":  "rgb(0,0,0)",
-      "Autres":   "rgb(127,127,127)" // 👈
-    };
-
-    const desiredOrder = ["Ryanair","Wizz Air","HiSky","SkyUp","Volotea","Autres"];
-    const compagniesAll = Array.from(compSet);
-    const compagniesOrdered = desiredOrder
-      .filter(c => compSet.has(c))
-      .concat(compagniesAll.filter(c => !desiredOrder.includes(c)).sort());
-
-    const datasets = compagniesOrdered.map(comp => ({
-      type: (period === "day" ? "line" : "bar"),
-      label: comp,
-      data: labels.map(pk => agg[comp]?.[pk] || 0),
-      borderWidth: 2,
-      fill: false,
-      borderColor: palette[comp] || "rgb(120,120,120)",
-      backgroundColor: (period === "day")
-             ? toRGBA(palette[comp] || "rgb(120,120,120)", 0.25)
-             : toRGBA(palette[comp] || "rgb(120,120,120)", 0.85),
-      stack: (period === "day" ? undefined : "stackRot")
-    }));
-
-   // --- Empilement : plus grand en haut, sans toucher à la légende ---
-if (period !== "day") {
-  datasets.forEach(ds => {
-    const sum = Array.isArray(ds.data)
-      ? ds.data.reduce((s, v) => s + (Number(v) || 0), 0)
-      : 0;
-    ds.order = sum;
-  });
-}
-   
-    if (chartRotationsInstance) chartRotationsInstance.destroy();
-    chartRotationsInstance = new Chart(document.getElementById("chartRotations"),{
-      type: (period === "day" ? "line" : "bar"),
-      data:{ labels, datasets },
-      options: {
-        responsive: true,
-        interaction: { mode: 'index', intersect: false },
-        
-plugins: {
-  legend: {
-    position: 'top',
-    labels: {
-      sort: (a, b) => {
-        const order = { "Ryanair":0, "Wizz Air":1, "HiSky":2, "SkyUp":3, "Volotea":4, "Autres":5 };
-        const ia = (a?.text in order) ? order[a.text] : 999;
-        const ib = (b?.text in order) ? order[b.text] : 999;
-        if (ia !== ib) return ia - ib;
-        return String(a.text).localeCompare(String(b.text));
-      },
-      generateLabels: (chart) => {
-        const base = Chart.defaults.plugins.legend.labels.generateLabels(chart);
-        const order = { "Ryanair":0, "Wizz Air":1, "HiSky":2, "SkyUp":3, "Volotea":4, "Autres":5 };
-        base.sort((a, b) => {
-          const ia = (a?.text in order) ? order[a.text] : 999;
-          const ib = (b?.text in order) ? order[b.text] : 999;
-          if (ia !== ib) return ia - ib;
-          return String(a.text).localeCompare(String(b.text));
-        });
-        return base;
-      }
-    }
-  },
-
-          tooltip: {
-            // 🔽 Affiche d’abord les valeurs les plus élevées
-            itemSort: (a, b) => {
-              const va = (a.parsed && typeof a.parsed.y === 'number') ? a.parsed.y : 0;
-              const vb = (b.parsed && typeof b.parsed.y === 'number') ? b.parsed.y : 0;
-              if (vb === va) return 0;
-              return vb - va;
-            },
-            callbacks: {
-              label: (ctx) => {
-                const v = ctx.parsed.y ?? 0;
-                const idx = ctx.dataIndex;
-                const stackKey = ctx.dataset.stack; // undefined en 'day', 'stackRot' en semaine/mois
-                const datasets = ctx.chart.data.datasets || [];
-
-                let totalAtIndex = 0;
-                datasets.forEach(ds => {
-                  if (!Array.isArray(ds.data)) return;
-
-                  // En vue jour (stack undefined) -> somme de toutes les compagnies
-                  // En semaine/mois (stack "stackRot") -> somme de la même pile
-                  const sameScope = stackKey ? (ds.stack === stackKey) : true;
-                  if (!sameScope) return;
-
-                  const rawVal = ds.data[idx];
-                  const num = (typeof rawVal === 'number')
-                    ? rawVal
-                    : (rawVal && typeof rawVal.y === 'number' ? rawVal.y : 0);
-                  if (!isNaN(num)) totalAtIndex += num;
-                });
-
-                const pct = totalAtIndex > 0 ? (v / totalAtIndex) * 100 : 0;
-                const pctStr = pct.toLocaleString('fr-FR', { maximumFractionDigits: 1 });
-
-                return `${ctx.dataset.label} : ${Math.round(v).toLocaleString('fr-FR')} rotations ; soit ${pctStr} %`;
-              },
-              footer: (items) => {
-                if (!items?.length) return '';
-                const idx = items[0].dataIndex;
-                const stackKey = items[0].dataset.stack; // undefined en 'day', 'stackRot' en semaine/mois
-                const datasets = items[0].chart.data.datasets || [];
-
-                let totalAtIndex = 0;
-                datasets.forEach(ds => {
-                  if (!Array.isArray(ds.data)) return;
-
-                  const sameScope = stackKey ? (ds.stack === stackKey) : true;
-                  if (!sameScope) return;
-
-                  const rawVal = ds.data[idx];
-                  const num = (typeof rawVal === 'number')
-                    ? rawVal
-                    : (rawVal && typeof rawVal.y === 'number' ? rawVal.y : 0);
-                  if (!isNaN(num)) totalAtIndex += num;
-                });
-
-                return `Total : ${Math.round(totalAtIndex).toLocaleString('fr-FR')} rotations`;
-              }
-            }
-          }
-        },
-        scales: {
-          x: {
-            title: {
-              display: true,
-              text: (period === "day" ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois"))
-            }
-          },
-          y: {
-            beginAtZero: true,
-            stacked: (period !== "day"), // empilé en semaine/mois
-            title: { display: true, text: "Nombre de rotations" }
-          }
-        }
-      }
-    });
-  }
-
-  const rotationsPeriod = ensurePeriodControls("chartRotations", (p) => buildChartRotations(p, data));
-  buildChartRotations(rotationsPeriod, data);
-});
-
-   
-  /*5 ===== EMISSIONS PAR DESTINATION (Départs + Arrivées) + tri dynamique ===== */
-parseCSV('./data/EXPORT_departures_YTD.csv', function (departures) {
-  parseCSV('./data/EXPORT_arrivals_YTD.csv', function (arrivals) {
-
-    // --- Agrégation commune départs+arrivées ---
-    const destinationMap = {}; // { [destination]: { emission:number, vols:number } }
-    let totalEmissions = 0;
-    let totalVols = 0; 
-
-    const toNum = (x) => {
-      const n = parseFloat(String(x).replace(',', '.'));
-      return isNaN(n) ? 0 : n;
-    };
-
-    function addAgg(dest, emission) {
-      const key = dest && String(dest).trim() ? String(dest).trim() : "Inconnue";
-      if (!destinationMap[key]) destinationMap[key] = { emission: 0, vols: 0 };
-      destinationMap[key].emission += emission;
-      destinationMap[key].vols += 1;         // 1 ligne = 1 vol
-      totalEmissions += emission;
-      totalVols += 1;
-    }
-
-    // Départs : colonne 'destination'
-    departures.forEach(row => addAgg(row.destination, toNum(row.emissions)));
-
-    // Arrivées : colonne 'origine'
-    arrivals.forEach(row => addAgg(row.origine, toNum(row.emissions)));
-
-    // --- UI : boutons de tri (créés dynamiquement) ---
-    (function ensureSortControls(){
-      const canvas = document.getElementById("chartDestination");
-      if (!canvas) return;
-      // container au-dessus du canvas
-      const controls = document.createElement("div");
-      controls.style.display = "flex";
-      controls.style.alignItems = "center";
-      controls.style.gap = "8px";
-      controls.style.margin = "6px 0 4px 0";
-
-      const strong = document.createElement("strong");
-      strong.textContent = "Trier par :";
-      const btnEmi = document.createElement("button");
-      const btnVols = document.createElement("button");
-      btnEmi.textContent = "Émissions";
-      btnVols.textContent = "Vols";
-
-      // style léger
-      [btnEmi, btnVols].forEach(b => {
-        b.style.padding = "6px 10px";
-        b.style.border = "1px solid #cbd5e1";
-        b.style.borderRadius = "6px";
-        b.style.background = "#f8fafc";
-        b.style.cursor = "pointer";
-      });
-
-      // insertion
-      controls.appendChild(strong);
-      controls.appendChild(btnEmi);
-      controls.appendChild(btnVols);
-      canvas.parentElement.insertBefore(controls, canvas);
-
-      // on stocke sur le canvas pour réutiliser plus bas
-      canvas._sortBtns = { btnEmi, btnVols };
-    })();
-
-    // --- État du tri + instance chart ---
-    let sortKey = "emission"; // "emission" ou "vols"
-    let chartDest = null;
-
-    function buildDestinationChart() {
-      // 1) Transformer en array + trier selon sortKey
-      const destinationArray = Object.keys(destinationMap).map(dest => ({
-        destination: dest,
-        emission: destinationMap[dest].emission,
-        vols: destinationMap[dest].vols
-      }));
-      destinationArray.sort((a, b) => b[sortKey] - a[sortKey]);
-
-      // 2) Limiter : Top 50 OU 90% cumul d'émissions
-      const filteredDestinations = [];
-      let cumulative = 0;
-      let otherEmission = 0;
-      let otherVols = 0;
-      let otherCount = 0;
-
-      destinationArray.forEach(item => {
-        if (filteredDestinations.length < 50 && (totalEmissions === 0 ? 0 : (cumulative / totalEmissions)) < 0.90) {
-          filteredDestinations.push(item);
-          cumulative += item.emission;
-        } else {
-          otherEmission += item.emission;
-          otherVols += item.vols;
-          otherCount++;
-        }
-      });
-
-      if (otherEmission > 0 || otherVols > 0) {
-        filteredDestinations.push({
-          destination: `Autres (${otherCount} destinations)`,
-          emission: otherEmission,
-          vols: otherVols
-        });
-      }
-
-      // 3) Données pour le chart
-      const labels = filteredDestinations.map(d => d.destination);
-      const valuesEmissions = filteredDestinations.map(d => Math.round(d.emission * 10) / 10);
-      const valuesVols = filteredDestinations.map(d => d.vols);
-
-      // 4) (Re)création du chart
-      const ctx = document.getElementById("chartDestination");
-      if (chartDest) chartDest.destroy();
-
-      chartDest = new Chart(ctx, {
-        type: "bar",
-        data: {
-          labels,
-          datasets: [
-            {
-              type: "bar",
-              label: displayName("emissions"), // "Emissions GES (t éq CO2)"
-              data: valuesEmissions,
-              yAxisID: "y",
-              backgroundColor: "rgba(31, 60, 136, 0.25)",
-              borderColor: "#1f3c88",
-              borderWidth: 1,
-              maxBarThickness: 28
-            },
-            {
-              type: "line",
-              label: "Nombre de vols (YTD)",
-              data: valuesVols,
-              yAxisID: "y1",
-              borderColor: "#d62728",
-              backgroundColor: "rgba(214, 39, 40, 0.15)",
-              borderWidth: 2,
-              pointRadius: 2,
-              tension: 0.2,
-              fill: false
-            }
-          ]
-        },
+      if (chartCumulInstance) chartCumulInstance.destroy();
+      chartCumulInstance = new Chart(document.getElementById("chartCumul"), {
+        type: isDay ? 'line' : 'bar',
+        data: { labels, datasets },
         options: {
           responsive: true,
+          interaction: { mode:'index', intersect:false },
           plugins: {
-            legend: { display: true },
-           
-tooltip: {
-  callbacks: {
-    label: function (context) {
-      const i = context.dataIndex;
-      // On accède à l’item “visible” (après top50/90%)
-      const item = filteredDestinations[i] || { emission: 0, vols: 0 };
+            legend: { position:'top' },
+            tooltip: {
+              itemSort: (a, b) => {
+                const va = (a.parsed && typeof a.parsed.y === 'number') ? a.parsed.y : 0;
+                const vb = (b.parsed && typeof b.parsed.y === 'number') ? b.parsed.y : 0;
+                if (vb === va) return 0;
+                return vb - va;
+              },
+              callbacks: {
+                label: (ctx) => {
+                  const v = ctx.parsed.y ?? 0;
+                  const idx = ctx.dataIndex;
+                  const stackKey = ctx.dataset.stack;
+                  const datasets = ctx.chart.data.datasets || [];
 
-      if (context.dataset.yAxisID === "y") {
-        // === Barre Emissions ===
-        const value = item.emission || 0;
-        const percent = totalEmissions > 0 ? ((value / totalEmissions) * 100).toFixed(1) : 0;
+                  let totalAtIndex = 0;
+                  datasets.forEach(ds => {
+                    if (ds && ds.stack === stackKey && Array.isArray(ds.data)) {
+                      const rawVal = ds.data[idx];
+                      const num = (typeof rawVal === 'number')
+                        ? rawVal
+                        : (rawVal && typeof rawVal.y === 'number' ? rawVal.y : 0);
+                      if (!isNaN(num)) totalAtIndex += num;
+                    }
+                  });
 
-        // moyenne par vol = émissions cumulées / nb de vols
-        const avg = item.vols > 0 ? (item.emission / item.vols) : 0;
-        const avgStr = avg.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                  const pct = totalAtIndex > 0 ? (v / totalAtIndex) * 100 : 0;
+                  const pctStr = pct.toLocaleString('fr-FR', { maximumFractionDigits: 1 });
 
-        // on garde l’arrondi “tonnes” sur la valeur principale (comme avant)
-        const valueRounded = Math.round(value).toLocaleString('fr-FR');
+                  return `${ctx.dataset.label} : ${Math.round(v).toLocaleString('fr-FR')} t éq CO₂ ; soit ${pctStr} %`;
+                },
+                footer: (items) => {
+                  if (!items?.length) return '';
+                  const idx = items[0].dataIndex;
+                  const stackKey = items[0].dataset.stack;
+                  const datasets = items[0].chart.data.datasets || [];
 
-        // Variante A — tout sur une ligne :
-        //return `${context.dataset.label} : ${valueRounded} t éq CO₂ (${percent} %) — Moyenne/vol : ${avgStr} t éq CO₂`;
+                  let totalAtIndex = 0;
+                  datasets.forEach(ds => {
+                    if (ds && ds.stack === stackKey && Array.isArray(ds.data)) {
+                      const rawVal = ds.data[idx];
+                      const num = (typeof rawVal === 'number')
+                        ? rawVal
+                        : (rawVal && typeof rawVal.y === 'number' ? rawVal.y : 0);
+                      if (!isNaN(num)) totalAtIndex += num;
+                    }
+                  });
 
-        // Variante B — sur 2 lignes (si tu préfères) :
-        return [
-          `${context.dataset.label} : ${valueRounded} t éq CO₂ (${percent} %)`,
-          `Moyenne par vol : ${avgStr} t éq CO₂`
-        ];
-      } else {
-        // === Ligne Vols ===
-        const vols = item.vols || 0;
-        const percentVol = totalVols > 0 ? ((vols / totalVols) * 100).toFixed(1) : 0;
-
-        return [
-          `${context.dataset.label} : ${vols.toLocaleString('fr-FR')} vols`,
-          `Part des vols : ${percentVol} %`
-        ];
-      }
-    }
-  }
-}
-
+                  return `Total : ${Math.round(totalAtIndex).toLocaleString('fr-FR')} t éq CO₂`;
+                }
+              }
+            },
+            zoom: { pan:{enabled:true, mode:'x'}, zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' } }
           },
           scales: {
-            x: { ticks: { maxRotation: 90, minRotation: 45 } },
+            x: { title: { display: true, text: (isDay ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")) }, stacked: !isDay },
+            y: { beginAtZero: true, stacked: !isDay, title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" } }
+          }
+        }
+      });
+    }
+
+    const initCumulPeriod = ensurePeriodControls("chartCumul", buildChartCumul);
+    buildChartCumul(initCumulPeriod);
+  });
+
+  /* ====== 3. Émissions par compagnie ====== */
+  parseCSV('./data/EXPORT_daily_airlines.csv', (dataRaw) => {
+    const data = dataRaw.map(r => ({
+      date: r.date,
+      compagnie: String(r.compagnie ?? '').trim(),
+      emissions: (() => {
+        const n = parseFloat(String(r.emissions ?? 0).replace(',', '.'));
+        return isNaN(n) ? 0 : n;
+      })()
+    }));
+
+    let chartAirlinesInstance = null;
+
+    function buildChartAirlines(period, data) {
+      const labelsSet = new Set();
+      const compSet   = new Set();
+      const agg = {};
+
+      data.forEach(r => {
+        const comp = r.compagnie;
+        const pkey = makePeriodKey(r.date, period);
+        compSet.add(comp);
+        labelsSet.add(pkey);
+        if (!agg[comp]) agg[comp] = {};
+        agg[comp][pkey] = (agg[comp][pkey] || 0) + r.emissions;
+      });
+
+      const labels = sortPeriodKeys(Array.from(labelsSet), period);
+
+      const palette = {
+        "Ryanair":  "rgb(223,186,47)",
+        "Wizz Air": "rgb(225,14,73)",
+        "HiSky":    "rgb(19,62,103)",
+        "SkyUp":    "rgb(255,58,32)",
+        "Volotea":  "rgb(0,0,0)",
+        "Autres":   "rgb(127,127,127)"
+      };
+
+      const desiredOrder = ["Ryanair","Wizz Air","HiSky","SkyUp","Volotea","Autres"];
+      const compagniesAll = Array.from(compSet);
+      const compagniesOrdered = desiredOrder
+        .filter(c => compSet.has(c))
+        .concat(compagniesAll.filter(c => !desiredOrder.includes(c)).sort());
+
+      const datasets = compagniesOrdered.map(comp => ({
+        type: (period === "day" ? "line" : "bar"),
+        label: comp,
+        data: labels.map(pk => agg[comp]?.[pk] || 0),
+        borderWidth: 2,
+        fill: false,    
+        borderColor: palette[comp] || "rgb(120,120,120)",
+        backgroundColor: (period === "day")
+              ? toRGBA(palette[comp] || "rgb(120,120,120)", 0.25)
+              : toRGBA(palette[comp] || "rgb(120,120,120)", 0.85),
+        stack: (period === "day" ? undefined : "stackAir")
+      }));
+
+      if (period !== "day") {
+        datasets.forEach(ds => {
+          const sum = Array.isArray(ds.data)
+            ? ds.data.reduce((s, v) => s + (Number(v) || 0), 0)
+            : 0;
+          ds.order = sum;
+        });
+      }
+  
+      if (chartAirlinesInstance) chartAirlinesInstance.destroy();
+      chartAirlinesInstance = new Chart(document.getElementById("chartAirlines"),{
+        type: (period === "day" ? "line" : "bar"),
+        data:{ labels, datasets },
+        options: {
+          responsive: true,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: {
+                sort: (a, b) => {
+                  const order = { "Ryanair":0, "Wizz Air":1, "HiSky":2, "SkyUp":3, "Volotea":4, "Autres":5 };
+                  const ia = (a?.text in order) ? order[a.text] : 999;
+                  const ib = (b?.text in order) ? order[b.text] : 999;
+                  if (ia !== ib) return ia - ib;
+                  return String(a.text).localeCompare(String(b.text));
+                },
+                generateLabels: (chart) => {
+                  const base = Chart.defaults.plugins.legend.labels.generateLabels(chart);
+                  const order = { "Ryanair":0, "Wizz Air":1, "HiSky":2, "SkyUp":3, "Volotea":4, "Autres":5 };
+                  base.sort((a, b) => {
+                    const ia = (a?.text in order) ? order[a.text] : 999;
+                    const ib = (b?.text in order) ? order[b.text] : 999;
+                    if (ia !== ib) return ia - ib;
+                    return String(a.text).localeCompare(String(b.text));
+                  });
+                  return base;
+                }
+              }
+            },
+            zoom: {
+              pan:  { enabled: true, mode: 'x' },
+              zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }
+            },
+            tooltip: {
+              itemSort: (a, b) => {
+                const va = (a.parsed && typeof a.parsed.y === 'number') ? a.parsed.y : 0;
+                const vb = (b.parsed && typeof b.parsed.y === 'number') ? b.parsed.y : 0;
+                if (vb === va) return 0;
+                return vb - va;
+              },
+              callbacks: {
+                label: (ctx) => {
+                  const v = ctx.parsed.y ?? 0;
+                  const idx = ctx.dataIndex;
+                  const stackKey = ctx.dataset.stack;
+                  const ds = ctx.chart.data.datasets || [];
+
+                  let totalAtIndex = 0;
+                  ds.forEach(dset => {
+                    const sameScope = stackKey ? (dset.stack === stackKey) : true;
+                    if (!sameScope || !Array.isArray(dset.data)) return;
+
+                    const rawVal = dset.data[idx];
+                    const num = (typeof rawVal === 'number')
+                      ? rawVal
+                      : (rawVal && typeof rawVal.y === 'number' ? rawVal.y : 0);
+                    if (!isNaN(num)) totalAtIndex += num;
+                  });
+
+                  const pct = totalAtIndex > 0 ? (v / totalAtIndex) * 100 : 0;
+                  const pctStr = pct.toLocaleString('fr-FR', { maximumFractionDigits: 1 });
+
+                  return `${ctx.dataset.label} : ${Math.round(v).toLocaleString('fr-FR')} t éq CO₂ ; soit ${pctStr} %`;
+                },
+                footer: (items) => {
+                  if (!items?.length) return '';
+                  const idx = items[0].dataIndex;
+                  const stackKey = items[0].dataset.stack;
+                  const ds = items[0].chart.data.datasets || [];
+
+                  let totalAtIndex = 0;
+                  ds.forEach(dset => {
+                    const sameScope = stackKey ? (dset.stack === stackKey) : true;
+                    if (!sameScope || !Array.isArray(dset.data)) return;
+
+                    const rawVal = dset.data[idx];
+                    const num = (typeof rawVal === 'number')
+                      ? rawVal
+                      : (rawVal && typeof rawVal.y === 'number' ? rawVal.y : 0);
+                    if (!isNaN(num)) totalAtIndex += num;
+                  });
+
+                  return `Total : ${Math.round(totalAtIndex).toLocaleString('fr-FR')} t éq CO₂`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: (period === "day" ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois"))
+              }
+            },
             y: {
               beginAtZero: true,
+              stacked: (period !== "day"),
               title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" }
-            },
-            y1: {
-              beginAtZero: true,
-              position: "right",
-              grid: { drawOnChartArea: false },
-              title: { display: true, text: "Nombre de vols (cumul depuis le 1er janvier)" },
-              ticks: {
-                stepSize: 1,
-                callback: (v) => Number.isInteger(v) ? v : ""
+            }
+          }
+        }
+      });
+    }     
+
+    const airlinesPeriod = ensurePeriodControls("chartAirlines", (p) => buildChartAirlines(p, data));
+    buildChartAirlines(airlinesPeriod, data);
+  });
+
+  /* ====== 4. Rotations par compagnie ====== */
+  parseCSV('./data/EXPORT_daily_airlines.csv', (data) => {
+    let chartRotationsInstance = null;
+
+    function buildChartRotations(period, data) {
+      const labelsSet = new Set();
+      const compSet = new Set();
+      const agg = {};
+
+      data.forEach(r => {
+        const comp = r.compagnie;
+        const pkey = makePeriodKey(r.date, period);
+        compSet.add(comp);
+        labelsSet.add(pkey);
+        if (!agg[comp]) agg[comp] = {};
+        let v = r.rotations ? parseFloat(String(r.rotations).replace(',', '.')) : 0;
+        if (isNaN(v)) v = 0;
+        agg[comp][pkey] = (agg[comp][pkey] || 0) + v;
+      });
+
+      const labels = sortPeriodKeys(Array.from(labelsSet), period);
+
+      const palette = {
+        "Ryanair":  "rgb(223,186,47)",
+        "Wizz Air": "rgb(225,14,73)",
+        "HiSky":    "rgb(19,62,103)",
+        "SkyUp":    "rgb(255,58,32)",
+        "Volotea":  "rgb(0,0,0)",
+        "Autres":   "rgb(127,127,127)"
+      };
+
+      const desiredOrder = ["Ryanair","Wizz Air","HiSky","SkyUp","Volotea","Autres"];
+      const compagniesAll = Array.from(compSet);
+      const compagniesOrdered = desiredOrder
+        .filter(c => compSet.has(c))
+        .concat(compagniesAll.filter(c => !desiredOrder.includes(c)).sort());
+
+      const datasets = compagniesOrdered.map(comp => ({
+        type: (period === "day" ? "line" : "bar"),
+        label: comp,
+        data: labels.map(pk => agg[comp]?.[pk] || 0),
+        borderWidth: 2,
+        fill: false,
+        borderColor: palette[comp] || "rgb(120,120,120)",
+        backgroundColor: (period === "day")
+               ? toRGBA(palette[comp] || "rgb(120,120,120)", 0.25)
+               : toRGBA(palette[comp] || "rgb(120,120,120)", 0.85),
+        stack: (period === "day" ? undefined : "stackRot")
+      }));
+
+      if (period !== "day") {
+        datasets.forEach(ds => {
+          const sum = Array.isArray(ds.data)
+            ? ds.data.reduce((s, v) => s + (Number(v) || 0), 0)
+            : 0;
+          ds.order = sum;
+        });
+      }
+   
+      if (chartRotationsInstance) chartRotationsInstance.destroy();
+      chartRotationsInstance = new Chart(document.getElementById("chartRotations"),{
+        type: (period === "day" ? "line" : "bar"),
+        data:{ labels, datasets },
+        options: {
+          responsive: true,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: {
+                sort: (a, b) => {
+                  const order = { "Ryanair":0, "Wizz Air":1, "HiSky":2, "SkyUp":3, "Volotea":4, "Autres":5 };
+                  const ia = (a?.text in order) ? order[a.text] : 999;
+                  const ib = (b?.text in order) ? order[b.text] : 999;
+                  if (ia !== ib) return ia - ib;
+                  return String(a.text).localeCompare(String(b.text));
+                },
+                generateLabels: (chart) => {
+                  const base = Chart.defaults.plugins.legend.labels.generateLabels(chart);
+                  const order = { "Ryanair":0, "Wizz Air":1, "HiSky":2, "SkyUp":3, "Volotea":4, "Autres":5 };
+                  base.sort((a, b) => {
+                    const ia = (a?.text in order) ? order[a.text] : 999;
+                    const ib = (b?.text in order) ? order[b.text] : 999;
+                    if (ia !== ib) return ia - ib;
+                    return String(a.text).localeCompare(String(b.text));
+                  });
+                  return base;
+                }
               }
+            },
+            tooltip: {
+              itemSort: (a, b) => {
+                const va = (a.parsed && typeof a.parsed.y === 'number') ? a.parsed.y : 0;
+                const vb = (b.parsed && typeof b.parsed.y === 'number') ? b.parsed.y : 0;
+                if (vb === va) return 0;
+                return vb - va;
+              },
+              callbacks: {
+                label: (ctx) => {
+                  const v = ctx.parsed.y ?? 0;
+                  const idx = ctx.dataIndex;
+                  const stackKey = ctx.dataset.stack;
+                  const datasets = ctx.chart.data.datasets || [];
+
+                  let totalAtIndex = 0;
+                  datasets.forEach(ds => {
+                    if (!Array.isArray(ds.data)) return;
+                    const sameScope = stackKey ? (ds.stack === stackKey) : true;
+                    if (!sameScope) return;
+
+                    const rawVal = ds.data[idx];
+                    const num = (typeof rawVal === 'number')
+                      ? rawVal
+                      : (rawVal && typeof rawVal.y === 'number' ? rawVal.y : 0);
+                    if (!isNaN(num)) totalAtIndex += num;
+                  });
+
+                  const pct = totalAtIndex > 0 ? (v / totalAtIndex) * 100 : 0;
+                  const pctStr = pct.toLocaleString('fr-FR', { maximumFractionDigits: 1 });
+
+                  return `${ctx.dataset.label} : ${Math.round(v).toLocaleString('fr-FR')} rotations ; soit ${pctStr} %`;
+                },
+                footer: (items) => {
+                  if (!items?.length) return '';
+                  const idx = items[0].dataIndex;
+                  const stackKey = items[0].dataset.stack;
+                  const datasets = items[0].chart.data.datasets || [];
+
+                  let totalAtIndex = 0;
+                  datasets.forEach(ds => {
+                    if (!Array.isArray(ds.data)) return;
+                    const sameScope = stackKey ? (ds.stack === stackKey) : true;
+                    if (!sameScope) return;
+
+                    const rawVal = ds.data[idx];
+                    const num = (typeof rawVal === 'number')
+                      ? rawVal
+                      : (rawVal && typeof rawVal.y === 'number' ? rawVal.y : 0);
+                    if (!isNaN(num)) totalAtIndex += num;
+                  });
+
+                  return `Total : ${Math.round(totalAtIndex).toLocaleString('fr-FR')} rotations`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: (period === "day" ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois"))
+              }
+            },
+            y: {
+              beginAtZero: true,
+              stacked: (period !== "day"),
+              title: { display: true, text: "Nombre de rotations" }
             }
           }
         }
       });
     }
 
-    // --- Brancher les boutons et déclencher le premier rendu ---
-    const btns = document.getElementById("chartDestination")._sortBtns || {};
-    btns.btnEmi?.addEventListener("click", () => { sortKey = "emission"; buildDestinationChart(); });
-    btns.btnVols?.addEventListener("click", () => { sortKey = "vols"; buildDestinationChart(); });
+    const rotationsPeriod = ensurePeriodControls("chartRotations", (p) => buildChartRotations(p, data));
+    buildChartRotations(rotationsPeriod, data);
+  });
 
-    buildDestinationChart(); // rendu initial (par émissions)
-  }); // arrivals
-});   // departures
+  /* ====== 5. Emissions par destination (Départs + Arrivées) ====== */
+  parseCSV('./data/EXPORT_departures_YTD.csv', function (departures) {
+    parseCSV('./data/EXPORT_arrivals_YTD.csv', function (arrivals) {
 
-  /*6 & 7 ===== TABLE DATA PRO V7 - STABLE ===== */
+      const destinationMap = {};
+      let totalEmissions = 0;
+      let totalVols = 0; 
+
+      const toNum = (x) => {
+        const n = parseFloat(String(x).replace(',', '.'));
+        return isNaN(n) ? 0 : n;
+      };
+
+      function addAgg(dest, emission) {
+        const key = dest && String(dest).trim() ? String(dest).trim() : "Inconnue";
+        if (!destinationMap[key]) destinationMap[key] = { emission: 0, vols: 0 };
+        destinationMap[key].emission += emission;
+        destinationMap[key].vols += 1;
+        totalEmissions += emission;
+        totalVols += 1;
+      }
+
+      departures.forEach(row => addAgg(row.destination, toNum(row.emissions)));
+      arrivals.forEach(row => addAgg(row.origine, toNum(row.emissions)));
+
+      (function ensureSortControls(){
+        const canvas = document.getElementById("chartDestination");
+        if (!canvas) return;
+        const controls = document.createElement("div");
+        controls.style.display = "flex";
+        controls.style.alignItems = "center";
+        controls.style.gap = "8px";
+        controls.style.margin = "6px 0 4px 0";
+
+        const strong = document.createElement("strong");
+        strong.textContent = "Trier par :";
+        const btnEmi = document.createElement("button");
+        const btnVols = document.createElement("button");
+        btnEmi.textContent = "Émissions";
+        btnVols.textContent = "Vols";
+
+        [btnEmi, btnVols].forEach(b => {
+          b.style.padding = "6px 10px";
+          b.style.border = "1px solid #cbd5e1";
+          b.style.borderRadius = "6px";
+          b.style.background = "#f8fafc";
+          b.style.cursor = "pointer";
+        });
+
+        controls.appendChild(strong);
+        controls.appendChild(btnEmi);
+        controls.appendChild(btnVols);
+        canvas.parentElement.insertBefore(controls, canvas);
+
+        canvas._sortBtns = { btnEmi, btnVols };
+      })();
+
+      let sortKey = "emission";
+      let chartDest = null;
+
+      function buildDestinationChart() {
+        const destinationArray = Object.keys(destinationMap).map(dest => ({
+          destination: dest,
+          emission: destinationMap[dest].emission,
+          vols: destinationMap[dest].vols
+        }));
+        destinationArray.sort((a, b) => b[sortKey] - a[sortKey]);
+
+        const filteredDestinations = [];
+        let cumulative = 0;
+        let otherEmission = 0;
+        let otherVols = 0;
+        let otherCount = 0;
+
+        destinationArray.forEach(item => {
+          if (filteredDestinations.length < 50 && (totalEmissions === 0 ? 0 : (cumulative / totalEmissions)) < 0.90) {
+            filteredDestinations.push(item);
+            cumulative += item.emission;
+          } else {
+            otherEmission += item.emission;
+            otherVols += item.vols;
+            otherCount++;
+          }
+        });
+
+        if (otherEmission > 0 || otherVols > 0) {
+          filteredDestinations.push({
+            destination: `Autres (${otherCount} destinations)`,
+            emission: otherEmission,
+            vols: otherVols
+          });
+        }
+
+        const labels = filteredDestinations.map(d => d.destination);
+        const valuesEmissions = filteredDestinations.map(d => Math.round(d.emission * 10) / 10);
+        const valuesVols = filteredDestinations.map(d => d.vols);
+
+        const ctx = document.getElementById("chartDestination");
+        if (chartDest) chartDest.destroy();
+
+        chartDest = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels,
+            datasets: [
+              {
+                type: "bar",
+                label: displayName("emissions"),
+                data: valuesEmissions,
+                yAxisID: "y",
+                backgroundColor: "rgba(31, 60, 136, 0.25)",
+                borderColor: "#1f3c88",
+                borderWidth: 1,
+                maxBarThickness: 28
+              },
+              {
+                type: "line",
+                label: "Nombre de vols (YTD)",
+                data: valuesVols,
+                yAxisID: "y1",
+                borderColor: "#d62728",
+                backgroundColor: "rgba(214, 39, 40, 0.15)",
+                borderWidth: 2,
+                pointRadius: 2,
+                tension: 0.2,
+                fill: false
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { display: true },
+              tooltip: {
+                callbacks: {
+                  label: function (context) {
+                    const i = context.dataIndex;
+                    const item = filteredDestinations[i] || { emission: 0, vols: 0 };
+
+                    if (context.dataset.yAxisID === "y") {
+                      const value = item.emission || 0;
+                      const percent = totalEmissions > 0 ? ((value / totalEmissions) * 100).toFixed(1) : 0;
+                      const avg = item.vols > 0 ? (item.emission / item.vols) : 0;
+                      const avgStr = avg.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                      const valueRounded = Math.round(value).toLocaleString('fr-FR');
+                      return [
+                        `${context.dataset.label} : ${valueRounded} t éq CO₂ (${percent} %)`,
+                        `Moyenne par vol : ${avgStr} t éq CO₂`
+                      ];
+                    } else {
+                      const vols = item.vols || 0;
+                      const percentVol = totalVols > 0 ? ((vols / totalVols) * 100).toFixed(1) : 0;
+                      return [
+                        `${context.dataset.label} : ${vols.toLocaleString('fr-FR')} vols`,
+                        `Part des vols : ${percentVol} %`
+                      ];
+                    }
+                  }
+                }
+              }
+            },
+            scales: {
+              x: { ticks: { maxRotation: 90, minRotation: 45 } },
+              y: {
+                beginAtZero: true,
+                title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" }
+              },
+              y1: {
+                beginAtZero: true,
+                position: "right",
+                grid: { drawOnChartArea: false },
+                title: { display: true, text: "Nombre de vols (cumul depuis le 1er janvier)" },
+                ticks: {
+                  stepSize: 1,
+                  callback: (v) => Number.isInteger(v) ? v : ""
+                }
+              }
+            }
+          }
+        });
+      }
+
+      const btns = document.getElementById("chartDestination")._sortBtns || {};
+      btns.btnEmi?.addEventListener("click", () => { sortKey = "emission"; buildDestinationChart(); });
+      btns.btnVols?.addEventListener("click", () => { sortKey = "vols"; buildDestinationChart(); });
+
+      buildDestinationChart();
+    }); // arrivals
+  });   // departures
+
+  /* ====== 6 & 7. TABLE DATA PRO ====== */
   function createTable(containerId, data){
     if(!data || data.length === 0){
       document.getElementById(containerId).innerHTML = "<p>Aucune donnée disponible</p>";
@@ -2397,7 +1857,6 @@ tooltip: {
     let filteredData = [...data];
     let debounceTimer;
 
-    // Format
     function formatDistance(value){
       const n = parseFloat(String(value).replace(',','.'));
       if(isNaN(n)) return value;
@@ -2423,7 +1882,6 @@ tooltip: {
       return value;
     }
 
-    // Build table
     let html = "";
     html += '<div style="margin-bottom:10px; display:flex; justify-content:space-between;">';
     html += '<div><strong id="'+containerId+'-count"></strong> vols affichés</div>';
@@ -2435,7 +1893,6 @@ tooltip: {
     html += '<div class="table-wrapper">';
     html += '<table class="data-table"><thead>';
 
-    // Header
     html += '<tr>';
     headers.forEach((h,i) => {
       const label = displayName(h);
@@ -2447,7 +1904,6 @@ tooltip: {
     });
     html += '</tr>';
 
-    // Filter row
     html += '<tr>';
     headers.forEach((h,i) => {
       html += '<th class="'+(i===0?'sticky-col':'')+'">';
@@ -2458,9 +1914,7 @@ tooltip: {
     });
     html += '</tr></thead><tbody>';
 
-    // Total row
     html += '<tr class="total-row"></tr>';
-
     html += '</tbody></table></div>';
 
     html += '<div style="margin-top:10px; text-align:center;">';
@@ -2471,43 +1925,32 @@ tooltip: {
 
     container.innerHTML = html;
 
-
-// === Export CSV du tableau (après container.innerHTML = html) ===
-const exportBtn = document.getElementById(containerId + "-export");
-if (exportBtn) {
-  exportBtn.addEventListener("click", function () {
-    // On exporte les données actuellement filtrées (visible dans la table)
-    const rows = [];
-    // En-têtes mappés
-    rows.push(headers.map(h => displayName(h)).join(";"));
-
-    // Données filtrées paginées ou complètes ? -> ici : complètes (filtrées)
-    const dataToExport = filteredData.length ? filteredData : data;
-
-    dataToExport.forEach(rowObj => {
-      const row = headers.map(h => {
-        let val = (rowObj[h] ?? "").toString();
-
-        // Remplacer les points-virgules dans les valeurs pour ne pas casser le CSV
-        val = val.replace(/;/g, ",");
-        return val;
+    // Export CSV table
+    const exportBtn = document.getElementById(containerId + "-export");
+    if (exportBtn) {
+      exportBtn.addEventListener("click", function () {
+        const rows = [];
+        rows.push(headers.map(h => displayName(h)).join(";"));
+        const dataToExport = filteredData.length ? filteredData : data;
+        dataToExport.forEach(rowObj => {
+          const row = headers.map(h => {
+            let val = (rowObj[h] ?? "").toString();
+            val = val.replace(/;/g, ",");
+            return val;
+          });
+          rows.push(row.join(";"));
+        });
+        const csvContent = "\uFEFF" + rows.join("\n");
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        const fileBase =
+          containerId === "tableDepartures" ? "vols_depart" :
+          containerId === "tableArrivals"  ? "vols_arrivee" : containerId;
+        a.download = fileBase + "_export.csv";
+        a.click();
       });
-      rows.push(row.join(";"));
-    });
-
-    // Ajout BOM pour Excel + téléchargement
-    const csvContent = "\uFEFF" + rows.join("\n");
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    const fileBase =
-      containerId === "tableDepartures" ? "vols_depart" :
-      containerId === "tableArrivals"  ? "vols_arrivee" : containerId;
-    a.download = fileBase + "_export.csv";
-    a.click();
-  });
-}
+    }
    
     const tbody = container.querySelector("tbody");
     const totalRow = tbody.querySelector(".total-row");
@@ -2601,7 +2044,6 @@ if (exportBtn) {
       });
     }
 
-    // Menu colonne
     container.querySelectorAll(".col-menu").forEach(btn => {
       btn.addEventListener("click", function(e){
         e.stopPropagation();
@@ -2660,7 +2102,6 @@ if (exportBtn) {
       renderTable();
     }
 
-    // Inputs filtres (debounce)
     container.querySelectorAll("[data-filter]").forEach(input => {
       input.addEventListener("input", function(){
         clearTimeout(debounceTimer);
@@ -2673,7 +2114,6 @@ if (exportBtn) {
       });
     });
 
-    // Clear filtre
     container.querySelectorAll(".clear-filter").forEach(btn => {
       btn.addEventListener("click", function(e){
         e.stopPropagation();
@@ -2686,7 +2126,6 @@ if (exportBtn) {
       });
     });
 
-    // Reset
     document.getElementById(containerId+"-reset").addEventListener("click",function(){
       activeFilters={};
       container.querySelectorAll("[data-filter]").forEach(i => i.value="");
@@ -2699,11 +2138,9 @@ if (exportBtn) {
       renderTable();
     });
 
-    // Init
     renderTable();
   }
 
-  // Badge CSS
   const style = document.createElement("style");
   style.innerHTML = `
   .filtered { background:#e6f2ff !important; position:relative; }
@@ -2711,7 +2148,6 @@ if (exportBtn) {
   `;
   document.head.appendChild(style);
 
-  // Tables
   parseCSV('./data/EXPORT_departures_YTD.csv', function(data){
     createTable("tableDepartures", data);
   });
@@ -2720,102 +2156,91 @@ if (exportBtn) {
   });
 
 }); // DOMContentLoaded
-
-console.log("SCRIPT OK");
 </script>
 
-
+<!-- ========== JS : Mise à jour "dernière mise à jour" + sidebar + alignement containers ========== -->
 <script>
-
+// Date de mise à jour
 fetch("data/EXPORT_update_time.csv")
 .then(response => response.text())
 .then(text => {
-
-const lines = text.trim().split(/\r?\n/);
-const data = lines[1].split(",");
-
-const date = data[0].trim();
-const time = data[1].trim();
-
-const d = new Date(date + "T" + time);
-
-if(!isNaN(d)){
-
-const formatted =
-d.toLocaleDateString("fr-FR",{
-day:"numeric",
-month:"long",
-year:"numeric"
-})
-+
-" à "
-+
-d.toLocaleTimeString("fr-FR",{
-hour:"2-digit",
-minute:"2-digit"
-});
-
-document.getElementById("update-date").innerHTML =
-"dernière mise à jour le " + formatted;
-
-}
-else{
-
-document.getElementById("update-date").innerHTML =
-"date de mise à jour indisponible";
-
-}
-
+  const lines = text.trim().split(/\r?\n/);
+  const data = lines[1].split(",");
+  const date = data[0].trim();
+  const time = data[1].trim();
+  const d = new Date(date + "T" + time);
+  if(!isNaN(d)){
+    const formatted =
+      d.toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"}) +
+      " à " +
+      d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+    document.getElementById("update-date").innerHTML = "dernière mise à jour le " + formatted;
+  } else {
+    document.getElementById("update-date").innerHTML = "date de mise à jour indisponible";
+  }
 })
 .catch(() => {
-
-document.getElementById("update-date").innerHTML =
-"date de mise à jour indisponible";
-
+  document.getElementById("update-date").innerHTML = "date de mise à jour indisponible";
 });
 
-//menu retractable//
-  
+// Menu rétractable
 const sidebar = document.getElementById("sidebar");
 const toggle = document.getElementById("toggleSidebar");
-
-/* restauration état */
-
-if(localStorage.getItem("sidebarCollapsed") === "true"){
-sidebar.classList.add("collapsed");
-}
-
-/* clic bouton */
-
+if(localStorage.getItem("sidebarCollapsed") === "true"){ sidebar.classList.add("collapsed"); }
 toggle.addEventListener("click", function(){
-
-sidebar.classList.toggle("collapsed");
-
-localStorage.setItem(
-"sidebarCollapsed",
-sidebar.classList.contains("collapsed")
-);
-
+  sidebar.classList.toggle("collapsed");
+  localStorage.setItem("sidebarCollapsed", sidebar.classList.contains("collapsed"));
 });
 
-/* MENU ACTIF AUTOMATIQUE */
-
+// MENU ACTIF
 let currentPage = window.location.pathname.split("/").pop();
-
-if(currentPage === ""){
-currentPage = "index.html";
-}
-
+if(currentPage === "") currentPage = "index.html";
 document.querySelectorAll(".menu a").forEach(link => {
-
-const linkPage = link.getAttribute("href");
-
-if(linkPage === currentPage){
-link.classList.add("active");
-}
-
+  const linkPage = link.getAttribute("href");
+  if(linkPage === currentPage){ link.classList.add("active"); }
 });
- 
+
+/* === Alignement de taille : container KPIs = container Analyse 2026 === */
+function matchContainerSizeOnce() {
+  const target = document.querySelector('[data-match-size]');
+  if (!target) return;
+
+  const refSelector = target.getAttribute('data-match-size');
+  if (!refSelector) return;
+
+  const ref = document.querySelector(refSelector);
+  if (!ref) return;
+
+  const rect = ref.getBoundingClientRect();
+
+  // Calque la width/height sur la carte de référence
+  target.style.width  = rect.width + 'px';
+  target.style.height = rect.height + 'px';
+
+  // Ajuste la chart-host pour occuper le maximum d'espace vertical restant
+  const chartHost = target.querySelector('.chart-host');
+  if (chartHost) {
+    const headers = Array.from(target.querySelectorAll('.metric-title,.metric-header'));
+    const headerHeights = headers.reduce((sum, el) => sum + el.getBoundingClientRect().height, 0);
+    const paddings = parseFloat(getComputedStyle(target).paddingTop || '0')
+                   + parseFloat(getComputedStyle(target).paddingBottom || '0');
+    const available = rect.height - headerHeights - paddings - 40;
+    if (available > 220) {
+      chartHost.style.height = available + 'px';
+    }
+  }
+
+  if (window._kpiS12AeroGrouped && typeof window._kpiS12AeroGrouped.resize === 'function') {
+    window._kpiS12AeroGrouped.resize();
+  }
+}
+window.addEventListener('load', matchContainerSizeOnce);
+window.addEventListener('resize', () => {
+  clearTimeout(window.__matchKPITimer);
+  window.__matchKPITimer = setTimeout(matchContainerSizeOnce, 120);
+});
+
+console.log("SCRIPT OK");
 </script>
 
 </body>
