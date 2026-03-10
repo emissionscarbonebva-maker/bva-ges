@@ -821,7 +821,124 @@ document.addEventListener("DOMContentLoaded", function(){
     }
   };
 
-  /* ---------- KPI 2+3 fusionné : S1&2 vs Aéronefs (EXPORT_yearly_total.csv) ---------- */
+      
+KPI 1 basé sur EXPORT_cumul_scopes.csv — on lit désormais la 2e ligne (index 1)
+parseCSV('./data/EXPORT_cumul_scopes.csv', (rowsCumul, rawHeadersCumul) => {
+  (function renderKPI1_fromCumul() {
+    const elTotal  = document.getElementById('kpiTotal');
+    const elLegend = document.getElementById('kpiBreakdownLegend');
+    const cv       = document.getElementById('kpiBreakdown');
+    if (!elTotal || !elLegend || !cv) return;
+
+    // Normalisation et recherche robuste des clés colonnes
+    const headers = (rawHeadersCumul || []).map(h => String(h).trim());
+    const findHeader = (re) => headers.find(h => re.test(h));
+
+    const K_TOT = findHeader(/cumul_total/i);
+    // Accepte "cumul_vol" ou "cumul_vols"
+    const K_VOL = findHeader(/cumul_vols?/i);
+    const K_S12 = findHeader(/cumul_scope_1_2/i);
+    const K_ACI = findHeader(/cumul_acces_ind/i);
+    const K_ACC = findHeader(/cumul_acces_coll/i);
+    const K_EMP = findHeader(/cumul_employes/i);
+
+    // On force l'utilisation de la 2e ligne du CSV (index 1)
+    const rowIndex = 1;
+
+    // Garde-fous
+    if (!rowsCumul || rowsCumul.length <= rowIndex || !K_TOT || !K_VOL || !K_S12 || !K_ACI || !K_ACC || !K_EMP) {
+      elTotal.innerText = 'données indisponibles';
+      elLegend.innerText = '';
+      const ctx = cv.getContext('2d'); ctx.clearRect(0, 0, cv.width, cv.height);
+      return;
+    }
+
+    const r = rowsCumul[rowIndex] || {};
+
+    // Extraction des valeurs (ligne 2)
+    const tot = _toNumberSmart(r[K_TOT]);
+    const vols = _toNumberSmart(r[K_VOL]);
+    const s12  = _toNumberSmart(r[K_S12]);
+    const aind = _toNumberSmart(r[K_ACI]);
+    const acol = _toNumberSmart(r[K_ACC]);
+    const emp  = _toNumberSmart(r[K_EMP]);
+    const oth  = aind + acol + emp;
+
+    // Si valeurs non valides, on évite d'afficher des NaN
+    const invalid = [tot, vols, s12, oth].some(v => !isFinite(v));
+    if (invalid || (tot + vols + s12 + oth) <= 0) {
+      elTotal.innerText = 'données indisponibles';
+      elLegend.innerText = '';
+      const ctx = cv.getContext('2d'); ctx.clearRect(0, 0, cv.width, cv.height);
+      return;
+    }
+
+    // 1) Valeur au-dessus du graphique
+    const total = tot;
+    elTotal.innerText = `${formatTonsFR(total)} t éq CO₂ (cumul)`;
+
+    // 2) Histogramme empilé horizontal (en dessous)
+    const valuesKPI = [vols, s12, oth];
+    const labelsKPI = [
+      "Aéronefs",
+      "Location based (scopes 1 & 2)",
+      "Autres émissions"
+    ];
+
+    const colors = {
+      aero:   "rgb(31, 120, 180)",   // bleu
+      s12:    "rgb(148, 103, 189)",  // violet
+      autres: "rgb(255, 127, 14)"    // orange
+    };
+
+    if (window._kpiBreakdownChart) window._kpiBreakdownChart.destroy();
+    window._kpiBreakdownChart = new Chart(cv.getContext('2d'), {
+      type: "bar",
+      data: {
+        labels: [""],
+        datasets: [
+          { label: labelsKPI[0], data: [valuesKPI[0]], backgroundColor: toRGBA(colors.aero,   0.85), stack: "kpi" },
+          { label: labelsKPI[1], data: [valuesKPI[1]], backgroundColor: toRGBA(colors.s12,    0.85), stack: "kpi" },
+          { label: labelsKPI[2], data: [valuesKPI[2]], backgroundColor: toRGBA(colors.autres, 0.85), stack: "kpi" }
+        ]
+      },
+      options: {
+        indexAxis: "y",               // horizontal
+        responsive: true,
+        plugins: {
+          legend: { display: false }, // légende personnalisée en dessous
+          tooltip: {
+            callbacks: {
+              label: (ctx) => {
+                const v = ctx.parsed.x ?? 0;
+                const pct = total > 0 ? (v / total) * 100 : 0;
+                return `${ctx.dataset.label} : ${formatTonsFR(v)} t — ${pct.toFixed(1)} %`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: { stacked: true, display: false, max: total },
+          y: { stacked: true, display: false }
+        }
+      }
+    });
+
+    // Légende texte en dessous + pourcentages
+    const pA = total > 0 ? (vols / total * 100).toFixed(1) : "0.0";
+    const pS = total > 0 ? (s12  / total * 100).toFixed(1) : "0.0";
+    const pO = total > 0 ? (oth  / total * 100).toFixed(1) : "0.0";
+    window._kpi1_shareS12 = total > 0 ? (s12 / total * 100) : null;
+
+    elLegend.innerHTML =
+      `<span style="color:${colors.aero}">■</span> Aéronefs ${pA}%&nbsp;&nbsp;` +
+      `<span style="color:${colors.s12}">■</span> Location based (scopes 1 &amp; 2) ${pS}%&nbsp;&nbsp;` +
+      `<span style="color:${colors.autres}">■</span> Autres émissions ${pO}%`;
+  })();
+});
+
+
+/* ---------- KPI 2+3 fusionné : S1&2 vs Aéronefs (EXPORT_yearly_total.csv) ---------- */
   parseCSV('./data/EXPORT_yearly_total.csv', (rows, rawHeaders) => {
     const headers = (rawHeaders || []).map(h => String(h).trim());
     const K_YEAR  = headers.find(h => h.toLowerCase().includes('année')) || headers[0];
@@ -945,100 +1062,7 @@ document.addEventListener("DOMContentLoaded", function(){
         `les transports (aériens et routiers). Enfin, sur ce même périmètre, on peut voir que ${texteYY}, ` +
         `${texteZZ}.`;
     })();
-
-    // KPI 1 basé sur EXPORT_cumul_scopes.csv — on le charge ici pour avoir XX% avant la phrase si possible
-    parseCSV('./data/EXPORT_cumul_scopes.csv', (rowsCumul, rawHeadersCumul) => {
-      (function renderKPI1_fromCumul(){
-        const elTotal  = document.getElementById('kpiTotal');
-        const elLegend = document.getElementById('kpiBreakdownLegend');
-        const cv       = document.getElementById('kpiBreakdown');
-        if (!elTotal || !elLegend || !cv) return;
-
-        const headers = (rawHeadersCumul || []).map(h => String(h).trim());
-        const K_TOT   = headers.find(h => h.toLowerCase().includes('cumul_total'));
-        const K_VOL   = headers.find(h => h.toLowerCase().includes('cumul_vols'));
-        const K_S12   = headers.find(h => h.toLowerCase().includes('cumul_scope_1_2'));
-        const K_ACI   = headers.find(h => h.toLowerCase().includes('cumul_acces_ind'));
-        const K_ACC   = headers.find(h => h.toLowerCase().includes('cumul_acces_coll'));
-        const K_EMP   = headers.find(h => h.toLowerCase().includes('cumul_employes'));
-
-        let last = null;
-        for (let i = 0; i < rowsCumul.length; i++) {
-          const r = rowsCumul[i];
-          const tot = _toNumberSmart(r[K_TOT]);
-          const vols = _toNumberSmart(r[K_VOL]);
-          const s12  = _toNumberSmart(r[K_S12]);
-          const aind = _toNumberSmart(r[K_ACI]);
-          const acol = _toNumberSmart(r[K_ACC]);
-          const emp  = _toNumberSmart(r[K_EMP]);
-          const oth  = aind + acol + emp;
-          if ((tot + vols + s12 + oth) > 0) { last = { tot, vols, s12, oth }; break; }
-        }
-
-        if (!last) {
-          elTotal.innerText = 'données indisponibles';
-          elLegend.innerText = '';
-          const ctx = cv.getContext('2d'); ctx.clearRect(0,0,cv.width,cv.height);
-          return;
-        }
-
-        const total = last.tot;
-        const valuesKPI = [last.vols, last.s12, last.oth];
-        const labelsKPI = ["Aéronefs", "Scope 1 & 2", "Autres"];
-        const colors = {
-          aero:  "rgb(31, 120, 180)",
-          s12:   "rgb(148, 103, 189)",
-          autres:"rgb(255, 127, 14)"
-        };
-
-        elTotal.innerText = formatTonsFR(total) + " t éq CO₂ (cumul)";
-
-        if (window._kpiBreakdownChart) window._kpiBreakdownChart.destroy();
-        window._kpiBreakdownChart = new Chart(cv.getContext('2d'), {
-          type: "bar",
-          data: {
-            labels: [""],
-            datasets: [
-              { label: labelsKPI[0], data: [valuesKPI[0]], backgroundColor: toRGBA(colors.aero,   0.85), stack:"kpi" },
-              { label: labelsKPI[1], data: [valuesKPI[1]], backgroundColor: toRGBA(colors.s12,    0.85), stack:"kpi" },
-              { label: labelsKPI[2], data: [valuesKPI[2]], backgroundColor: toRGBA(colors.autres, 0.85), stack:"kpi" }
-            ]
-          },
-          options: {
-            indexAxis: "y",
-            responsive: true,
-            plugins: {
-              legend: { display: false },
-              tooltip: {
-                callbacks: {
-                  label: (ctx) => {
-                    const v = ctx.parsed.x ?? 0;
-                    const pct = total > 0 ? (v/total)*100 : 0;
-                    return `${ctx.dataset.label} : ${formatTonsFR(v)} t — ${pct.toFixed(1)} %`;
-                  }
-                }
-              }
-            },
-            scales: {
-              x: { stacked: true, display: false, max: total },
-              y: { stacked: true, display: false }
-            }
-          }
-        });
-
-        const pA = total>0 ? (last.vols/total*100).toFixed(1) : "0.0";
-        const pS = total>0 ? (last.s12 /total*100).toFixed(1) : "0.0";
-        const pO = total>0 ? (last.oth /total*100).toFixed(1) : "0.0";
-        window._kpi1_shareS12 = total>0 ? (last.s12/total*100) : null;
-
-        elLegend.innerHTML =
-          `<span style="color:${colors.aero}">■</span> Aéronefs ${pA}% &nbsp;&nbsp;`+
-          `<span style="color:${colors.s12}">■</span> Scope 1 &amp; 2 ${pS}% &nbsp;&nbsp;`+
-          `<span style="color:${colors.autres}">■</span> Autres ${pO}%`;
-      })();
-    });
-  });
-
+ 
   /* ====== 1. Émissions journalières par scope ====== */
   parseCSV('./data/EXPORT_daily_scopes.csv', (data,headers) => {
     data.sort((a,b) => new Date(a[headers[0]]) - new Date(b[headers[0]]));
