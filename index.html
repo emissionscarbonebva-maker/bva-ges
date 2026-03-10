@@ -20,15 +20,21 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- ===== Librairies externes (réparées) ===== -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
 <script src="https://cdn.jsdelivr.net/npm/date-fns@2.30.0/dist/date-fns.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
+
 <style>
- 
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  display:flex;
+  background:#f5f6fa;
+}
+
 /* SIDEBAR */
 .sidebar{
   width:240px;
@@ -194,8 +200,7 @@ h3{
 .dark-mode .sticky-col{ background:#2c2c2c; }
 .dark-mode .data-table tbody tr:nth-child(even){ background:#252525; }
 .dark-mode .data-table tbody tr:hover{ background:#333; }
-/* FIX : typo couleur (hex) */
-.dark-mode .total-row{ background:#2a2a2a; }
+.dark-mode .total-row{ background:#2a2aa; }
 
 /* ===== INFO BOX ===== */
 .info-box{ background:#eef5ff; border-left:5px solid #1f3c88; padding:18px 22px; border-radius:10px; margin-bottom:30px; }
@@ -277,20 +282,16 @@ h3{
 }
 </script>
 
-
-<link rel="icon" type="image/png" href="Favicon/favicon.png">  
+Favicon/favicon.png  
 </head>
 
 <body>
 
 <!-- SIDEBAR -->
-
 <div class="sidebar" id="sidebar">
-
-<div class="logo">
-<img src="logo-bva.png">
-</div>
-
+  <div class="logo">
+    logo-bva.png
+  </div>
 
   <button id="toggleSidebar" class="toggle-btn">
     <i class="fa-solid fa-angle-left"></i>
@@ -317,7 +318,7 @@ h3{
 
   <div class="container">
 
-    <!-- ✅ Carte de référence (taille) -->
+    <!-- ✅ Ajout d'un ID pour servir de référence de taille -->
     <div class="card" id="containerAnalyse2026">
       <h2>Analyse des émissions en 2026</h2>
 
@@ -338,7 +339,7 @@ h3{
         <br>• Les émissions liées aux transports terrestres des employés pour accéder à l'aéroport (Scope 3)
         <br>• Les émissions liées au transports terrestres collectifs des passagers pour accéder à l'aéroport (Scope 3)
         <br>• Les émissions liées au transports terrestres individuels des passagers pour accéder à l'aéroport (Scope 3)
-        <br>• Les émissions liées aux opérations des aéronefs : APU, roulage, décollage/atterrisage, vol demi-croisière, ainsi que la production et l'approvisionnement en carburant d'aviation et l'amortissement des aéronefs (Scope 3)
+        <br>• Les émissions liées aux opérations des aéronefs : APU, roulage, décollage/atterrisage, vol demi-croisère, ainsi que la production et l'approvisionnement en carburant d'aviatione et l'amortissement des aéronefs (Scope 3)
       </p>
 
       <p>
@@ -352,12 +353,12 @@ h3{
       
       <p>
         <br>
-       La <a href="methodologie.html"><strong>méthodologie détaillée de calcul des émissions</strong></a>
-       est disponible sur une page dédiée.
-        </p>
+        La methodologie.html<strong>méthodologie détaillée de calcul des émissions</strong></a>
+        est disponible sur une page dédiée.
+      </p>
     </div>
   
-    <!-- Container KPI aligné sur la carte ci-dessus -->
+    <!-- Container KPI qui s'aligne sur la taille du container "Analyse des émissions en 2026" -->
     <div id="containerKPIs" class="card" data-match-size="#containerAnalyse2026">
       <h2>Indicateurs clés</h2>
 
@@ -379,12 +380,12 @@ h3{
         <div class="metric-box">
           <div class="metric-title">S1&amp;2 vs Aéronefs — 2010, 2015, puis 2016→2024</div>
 
-          <!-- Hôte du graph -->
+          <!-- Hôte de chart pour un remplissage fluide -->
           <div class="chart-host">
             <canvas id="kpiScope12"></canvas>
           </div>
 
-          <!-- Ligne explicative -->
+          <!-- Ligne explicative calculée / insérée par le JS -->
           <div id="kpiS12AeroExplain" class="kpi-explain"></div>
         </div>
       </div>
@@ -468,19 +469,20 @@ h3{
     <p><strong>Partagez ce site :</strong></p>
 
     <div class="share-links">
-      <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://emissionscarbonebva-maker.github.io/bva-ges/" target="_blank" classin"></i> Partager sur LinkedIn
+      https://www.linkedin.com/sharing/share-offsite/?url=https://emissionscarbonebva-maker.github.io/bva-ges/
+        <i class="fab fa-linkedin"></i> Partager sur LinkedIn
       </a>
 
-      <a href="https://www.facebook.com/sharer/sharer.php?u=https://emissionscarbonebvathub.io/bva-ges/
+      https://www.facebook.com/sharer/sharer.php?u=https://emissionscarbonebva-maker.github.io/bva-ges/
         <i class="fab fa-facebook"></i> Partager sur Facebook
       </a>
     </div>
 
     <p>
       Liens utiles :
-      <br>• <a href/adera-association.com/ADERA – Association pour l’environnement</a>
-      <br>• <a href="https://concertation.aeroportparisbeauvais.com/fr" target="_blank" rel="noopener
-      <br>• <a href="https://www.aeroportparisbeauvais.com/professionnels/developpement-durable/le-bulletvironnementBulletin de l'environnement de l'aéroport de Paris-Beauvais</a>
+      <br>• https://adera-association.com/ADERA – Association pour l’environnement</a>
+      <br>• https://concertation.aeroportparisbeauvais.com/frConcertation Aéroport Paris-Beauvais</a>
+      <br>• https://www.aeroportparisbeauvais.com/professionnels/developpement-durable/le-bulletin-de-lenvironnementBulletin de l'environnement de l'aéroport de Paris-Beauvais</a>
     </p>
   </div>
 
@@ -505,7 +507,7 @@ h3{
     <p>
       Les calculs reposent sur des hypothèses méthodologiques explicitées dans la
       methodologie.html<strong>page méthodologie</strong></a>.
-      Les résultats doivent être considérés comme des estimations indicatives destinées 
+      Les résultats doivent être considérnés comme des estimations indicatives destinées 
       à alimenter le débat public.
     </p>
 
@@ -528,43 +530,18 @@ h3{
   <footer>
     Observatoire citoyen indépendant – Analyse des émissions de GES liées à l’activité de l’aéroport Paris-Beauvais |
     Mentions légales |
-    Contact : <a> href="mailtoscarbonebva@gmail.comemissionscarbonebva@gmail.com</a> |
+    Contact : mailto:emissionscarbonebva@gmail.comemissionscarbonebva@gmail.com</a> |
     Hébergement : GitHub Pages (GitHub Inc.)
   </footer>
 </div>
 
 <!-- ========== JS GLOBALS (helpers) ========== -->
 <script>
-// Enregistrement du plugin zoom si nécessaire (Chart.js v3)
-try {
-  if (window.Chart && window['chartjs-plugin-zoom'] && Chart.register) {
-    Chart.register(window['chartjs-plugin-zoom']);
-  }
-} catch(e){ /* ignore */ }
-
-// Convertit hex (#rrggbb / #rgb) et "rgb(r,g,b)" -> "rgba(r,g,b,a)"
-function toRGBA(color, a = 1) {
-  if (typeof color !== 'string') return color;
-  const c = color.trim();
-  if (c.startsWith('rgb(')) {
-    return c.replace('rgb(', 'rgba(').replace(')', `, ${a})`);
-  }
-  if (c.startsWith('#')) {
-    let r, g, b;
-    if (c.length === 7) {
-      r = parseInt(c.slice(1,3), 16);
-      g = parseInt(c.slice(3,5), 16);
-      b = parseInt(c.slice(5,7), 16);
-    } else if (c.length === 4) {
-      r = parseInt(c[1] + c[1], 16);
-      g = parseInt(c[2] + c[2], 16);
-      b = parseInt(c[3] + c[3], 16);
-    } else {
-      return color;
-    }
-    return `rgba(${r}, ${g}, ${b}, ${a})`;
-  }
-  return color;
+// Convertit "rgb(r,g,b)" -> "rgba(r,g,b,a)" (alpha entre 0 et 1)
+function toRGBA(rgb, a = 1) {
+  if (typeof rgb !== 'string') return rgb;
+  if (!rgb.startsWith('rgb(')) return rgb;
+  return rgb.replace('rgb(', 'rgba(').replace(')', `, ${a})`);
 }
 
 /* ===== EXPORT CSV DES GRAPHIQUES ===== */
@@ -609,7 +586,6 @@ const DISPLAY_LABELS = {
 
   // 2) Cumul annuel par scope — EXPORT_cumul_scopes.csv
   "cumul_vol": "Opérations aéronefs (Scope 3)",
-  "cumul_vols": "Opérations aéronefs (Scope 3)",
   "cumul_acces_ind": "Accès terrestre individuels passagers (Scope 3)",
   "cumul_acces_coll": "Accès terrestre collectifs passagers (Scope 3)",
   "cumul_employes": "Accès employés (Scope 3)",
@@ -779,18 +755,19 @@ document.addEventListener("DOMContentLoaded", function(){
   }
 
   /* ======================================================
-     === KPIs (MAJ)
-     KPI 1 : EXPORT_cumul_scopes.csv (ligne la + récente)
-              - Aéronefs = cumul_vols (ou cumul_vol)
-              - S1&2 = cumul_scope_1_2
+     === KPIs MAJ ===
+     KPI 1 : bascule sur EXPORT_cumul_scopes.csv (ligne la + récente)
+              - Aéronefs = cumul_vols
+              - Scope 1 & 2 = cumul_scope_1_2
               - Autres = cumul_acces_ind + cumul_acces_coll + cumul_employes
-              - Affiche cumul_total + ruban 100%
+              - Affiche cumul_total en valeur absolue + ruban 100%
      KPI 2+3 fusion : Histogramme groupé (2010, 2015, 2016→2024)
-              - S1&2 vs Aéronefs, valeurs visibles
-              - Phrase explicative (XX / YY / ZZ) centralisée
+              - S1&2 vs Aéronefs à même échelle
+              - Valeurs visibles sur les barres
+              - Ligne explicative en dessous (XX / YY / ZZ)
      ====================================================== */
 
-  /* ---------- Helpers numériques ---------- */
+  /* ---------- Helpers numériques robustes ---------- */
   function _toNumberS12(x){
     if (x === null || x === undefined || x === '') return 0;
     const s = String(x).replace(/\s/g,'').replace(/,/g,'');
@@ -817,7 +794,7 @@ document.addEventListener("DOMContentLoaded", function(){
   }
   function formatTonsFR(n){ return Math.round(n).toLocaleString('fr-FR'); }
 
-  /* ---------- Plugin valeurs au-dessus des barres ---------- */
+  /* ---------- Plugin Chart.js pour afficher les valeurs au-dessus des barres ---------- */
   const valueLabelsPlugin = {
     id: 'valueLabelsPlugin',
     afterDatasetsDraw(chart, args, pluginOptions) {
@@ -843,42 +820,7 @@ document.addEventListener("DOMContentLoaded", function(){
     }
   };
 
-  // === Rendu centralisé de la phrase explicative (XX/YY/ZZ) ===
-  function _renderKPIExplain(){
-    const el = document.getElementById('kpiS12AeroExplain');
-    if (!el) return;
-
-    const XX = (typeof window._kpi1_shareS12 === 'number') ? window._kpi1_shareS12 : null;
-    const YY = window._kpiExplain?.YY ?? null;
-    const ZZ = window._kpiExplain?.ZZ ?? null;
-
-    const textePart = (XX !== null)
-      ? `représentent seulement ${XX.toFixed(1)}% des émissions de l'aéroport`
-      : `représentent une part limitée des émissions de l'aéroport`;
-
-    const texteYY = (YY === null)
-      ? `les émissions totales (S1&2 + aéronefs) entre 2017 et 2024 sont « n.d. » faute de données complètes`
-      : `les émissions ont ${YY >= 0 ? 'augmenté' : 'diminué'} de ${Math.abs(YY).toFixed(1)}% entre 2017 et 2024`;
-
-    let texteZZ;
-    if (ZZ === null) {
-      texteZZ = `la variation des scopes 1 & 2 est « n.d. » faute de données complètes`;
-    } else if (ZZ < 0) {
-      texteZZ = `la réduction de ${Math.abs(ZZ).toFixed(1)}% sur les scopes 1 & 2, bien que réelle, n'a aucune influence`;
-    } else if (ZZ > 0) {
-      texteZZ = `l’augmentation de ${Math.abs(ZZ).toFixed(1)}% sur les scopes 1 & 2 n'a aucune influence`;
-    } else {
-      texteZZ = `la stabilité des scopes 1 & 2 n'a aucune influence`;
-    }
-
-    el.innerText =
-      `Les émissions de GES des scopes 1 & 2 sur lesquels reposent les actions de décarbonation ` +
-      `de l'accréditation ACA 4 ${textePart} dès lors que l'on intègre dans le périmètre d'analyse ` +
-      `les transports (aériens et routiers). Enfin, sur ce même périmètre, on peut voir que ${texteYY}, ` +
-      `${texteZZ}.`;
-  }
-
-  /* ---------- KPI 2+3 fusionné : S1&2 vs Aéronefs ---------- */
+  /* ---------- KPI 2+3 fusionné : S1&2 vs Aéronefs (EXPORT_yearly_total.csv) ---------- */
   parseCSV('./data/EXPORT_yearly_total.csv', (rows, rawHeaders) => {
     const headers = (rawHeaders || []).map(h => String(h).trim());
     const K_YEAR  = headers.find(h => h.toLowerCase().includes('année')) || headers[0];
@@ -894,7 +836,13 @@ document.addEventListener("DOMContentLoaded", function(){
 
     (function renderKPI_S12_vs_Aero_Grouped(){
       const canvas = document.getElementById('kpiScope12');
+      const canvasOld = document.getElementById('kpiAircraft');
       if (!canvas) return;
+      if (canvasOld) {
+        const ctxOld = canvasOld.getContext('2d');
+        ctxOld && ctxOld.clearRect(0, 0, canvasOld.width, canvasOld.height);
+        canvasOld.style.display = 'none';
+      }
 
       const years = [2010, 2015, ...Array.from({length:(2024-2016+1)}, (_,i) => 2016+i)];
       const map = new Map(yearly.map(r => [r.year, r]));
@@ -946,7 +894,7 @@ document.addEventListener("DOMContentLoaded", function(){
         plugins: [valueLabelsPlugin]
       });
 
-      // Calculs YY / ZZ
+      // Calculs pour la phrase explicative
       const y2017 = map.get(2017);
       const y2024 = map.get(2024);
       const total2017 = (y2017 ? (y2017.s12 + y2017.aero) : null);
@@ -960,12 +908,44 @@ document.addEventListener("DOMContentLoaded", function(){
         ZZ = ((y2024.s12 / y2017.s12) - 1) * 100;
       }
 
-      // Mémorise & rend la phrase
-      window._kpiExplain = { YY, ZZ };
-      _renderKPIExplain();
+      let explain = document.getElementById('kpiS12AeroExplain');
+      if (!explain) {
+        explain = document.createElement('div');
+        explain.id = 'kpiS12AeroExplain';
+        explain.style.marginTop = '8px';
+        explain.style.fontSize = '0.95rem';
+        explain.style.color = '#333';
+        canvas.parentElement?.appendChild(explain);
+      }
+
+      const XX = (typeof window._kpi1_shareS12 === 'number') ? window._kpi1_shareS12 : null;
+      const textePart = (XX !== null)
+        ? `représentent seulement ${XX.toFixed(1)}% des émissions de l'aéroport`
+        : `représentent une part limitée des émissions de l'aéroport`;
+
+      const texteYY = (YY === null)
+        ? `les émissions totales (S1&2 + aéronefs) entre 2017 et 2024 sont « n.d. » faute de données complètes`
+        : `les émissions ont ${YY >= 0 ? 'augmenté' : 'diminué'} de ${Math.abs(YY).toFixed(1)}% entre 2017 et 2024`;
+
+      let texteZZ;
+      if (ZZ === null) {
+        texteZZ = `la variation des scopes 1 & 2 est « n.d. » faute de données complètes`;
+      } else if (ZZ < 0) {
+        texteZZ = `la réduction de ${Math.abs(ZZ).toFixed(1)}% sur les scopes 1 & 2, bien que réelle, n'a aucune influence`;
+      } else if (ZZ > 0) {
+        texteZZ = `l’augmentation de ${Math.abs(ZZ).toFixed(1)}% sur les scopes 1 & 2 n'a aucune influence`;
+      } else {
+        texteZZ = `la stabilité des scopes 1 & 2 n'a aucune influence`;
+      }
+
+      explain.innerText =
+        `Les émissions de GES des scopes 1 & 2 sur lesquels reposent les actions de décarbonation ` +
+        `de l'accréditation ACA 4 ${textePart} dès lors que l'on intègre dans le périmètre d'analyse ` +
+        `les transports (aériens et routiers). Enfin, sur ce même périmètre, on peut voir que ${texteYY}, ` +
+        `${texteZZ}.`;
     })();
 
-    // ---------- KPI 1 : cumul (EXPORT_cumul_scopes.csv) ----------
+    // KPI 1 basé sur EXPORT_cumul_scopes.csv — on le charge ici pour avoir XX% avant la phrase si possible
     parseCSV('./data/EXPORT_cumul_scopes.csv', (rowsCumul, rawHeadersCumul) => {
       (function renderKPI1_fromCumul(){
         const elTotal  = document.getElementById('kpiTotal');
@@ -975,8 +955,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
         const headers = (rawHeadersCumul || []).map(h => String(h).trim());
         const K_TOT   = headers.find(h => h.toLowerCase().includes('cumul_total'));
-        // tolère cumul_vols et cumul_vol
-        const K_VOL   = headers.find(h => { const k=h.toLowerCase(); return k.includes('cumul_vols') || k.includes('cumul_vol'); });
+        const K_VOL   = headers.find(h => h.toLowerCase().includes('cumul_vols'));
         const K_S12   = headers.find(h => h.toLowerCase().includes('cumul_scope_1_2'));
         const K_ACI   = headers.find(h => h.toLowerCase().includes('cumul_acces_ind'));
         const K_ACC   = headers.find(h => h.toLowerCase().includes('cumul_acces_coll'));
@@ -1055,12 +1034,9 @@ document.addEventListener("DOMContentLoaded", function(){
           `<span style="color:${colors.aero}">■</span> Aéronefs ${pA}% &nbsp;&nbsp;`+
           `<span style="color:${colors.s12}">■</span> Scope 1 &amp; 2 ${pS}% &nbsp;&nbsp;`+
           `<span style="color:${colors.autres}">■</span> Autres ${pO}%`;
-
-        // (Re)rend la phrase avec XX%
-        _renderKPIExplain();
       })();
-    }); // parseCSV cumul
-  }); // parseCSV yearly
+    });
+  });
 
   /* ====== 1. Émissions journalières par scope ====== */
   parseCSV('./data/EXPORT_daily_scopes.csv', (data,headers) => {
@@ -1111,7 +1087,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
       const datasets = orderedKeys.map(k => {
         const c  = colorMap[k] || "#888888";
-        const bg = isDay ? toRGBA(c, 0.2) : toRGBA(c, 0.67);
+        const bg = isDay ? (c + "33") : (c + "AA");
         return {
           type: isDay ? "line" : "bar",
           label: displayName(k),
@@ -1232,8 +1208,7 @@ document.addEventListener("DOMContentLoaded", function(){
         "cumul_employes":   "#d62728",
         "cumul_acces_coll": "#2ca02c",
         "cumul_acces_ind":  "#ff7f0e",
-        "cumul_vol":        "#1f77b4",
-        "cumul_vols":       "#1f77b4"
+        "cumul_vol":        "#1f77b4"
       };
 
       const desiredOrder = [
@@ -1241,8 +1216,7 @@ document.addEventListener("DOMContentLoaded", function(){
         "cumul_employes",
         "cumul_acces_coll",
         "cumul_acces_ind",
-        "cumul_vol",
-        "cumul_vols"
+        "cumul_vol"
       ];
       const orderedCols = desiredOrder
         .filter(k => scopeCols.includes(k))
@@ -1259,7 +1233,7 @@ document.addEventListener("DOMContentLoaded", function(){
           }),
           borderWidth: 1.5,
           fill: true,
-          backgroundColor: isDay ? toRGBA(c, 0.2) : toRGBA(c, 0.33),
+          backgroundColor: isDay ? (c + "33") : (c + "55"),
           borderColor: c,
           stack: "stack1"
         };
