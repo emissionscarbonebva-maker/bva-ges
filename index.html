@@ -717,27 +717,32 @@ est disponible sur une page dédiée.
 </div>
   
 <div class="card">
-<h2>Indicateurs clés</h2>
+  <h2>Indicateurs clés</h2>
 
-<div class="metrics">
+  <div class="metrics">
+    <div class="metric-box" style="flex:1; min-width:320px;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+        <div>
+          <div style="font-weight:600;">Émissions totales (année la plus récente)</div>
+          <div id="kpiTotal" class="metric-value">…</div>
+        </div>
+      </div>
+      <div style="margin-top:8px;">
+        <canvas id="kpiBreakdown" height="60"></canvas>
+        <div id="kpiBreakdownLegend" style="font-size:0.9em; margin-top:6px; color:#555;"></div>
+      </div>
+    </div>
 
-<div class="metric-box">
-Total période
-<div id="total" class="metric-value">...</div>
-</div>
+    <div class="metric-box" style="flex:1; min-width:420px;">
+      <div style="font-weight:600;">Scope 1 &amp; 2 – Évolution 2017→2024</div>
+      <canvas id="kpiScope12" height="120"></canvas>
+    </div>
 
-<div class="metric-box">
-Moyenne journalière
-<div id="average" class="metric-value">...</div>
-</div>
-
-<div class="metric-box">
-Écart-type journalier
-<div id="stdDev" class="metric-value">...</div>
-</div>
-
- 
-</div>
+    <div class="metric-box" style="flex:1; min-width:420px;">
+      <div style="font-weight:600;">Aéronefs – 2010, puis 2015→2024</div>
+      <canvas id="kpiAircraft" height="120"></canvas>
+    </div>
+  </div>
 </div>
 
 <div class="card">
@@ -896,15 +901,15 @@ Hébergement : GitHub Pages (GitHub Inc.)
 </footer>
 
 <script>
-
- // Convertit "rgb(r,g,b)" -> "rgba(r,g,b,a)" (alpha entre 0 et 1)
+<script>
+// Convertit "rgb(r,g,b)" -> "rgba(r,g,b,a)" (alpha entre 0 et 1)
 function toRGBA(rgb, a = 1) {
   if (typeof rgb !== 'string') return rgb;
   if (!rgb.startsWith('rgb(')) return rgb;      // si c'est déjà une autre couleur, on laisse tel quel
   return rgb.replace('rgb(', 'rgba(').replace(')', `, ${a})`);
 }
- 
- /* ===== EXPORT CSV DES GRAPHIQUES ===== */
+
+/* ===== EXPORT CSV DES GRAPHIQUES ===== */
 function exportChartCSV(chartId, filename){
   const chart = Chart.getChart(chartId);
   if(!chart){
@@ -964,11 +969,11 @@ const DISPLAY_LABELS = {
 
   // 6) Émissions par destination
   "vols": "Nombre de vols (YTD)",
- 
+
   // 7) Vols départ — EXPORT_departures_YTD.csv
   "numero_vol": "Numéro du vol",
   "compagnie": "Compagnie aérienne",
- "type_avion": "Type d'aéronef",
+  "type_avion": "Type d'aéronef",
   "destination": "Destination",
   "distance_km": "Distance (km)",
   "emissions": "Emissions GES (t éq CO2)",
@@ -1009,127 +1014,341 @@ document.addEventListener("DOMContentLoaded", function(){
   }
 
 
-/* ========= Utils Périodes & Contrôles ========= */
+  /* ========= Utils Périodes & Contrôles ========= */
 
-// 0.1 Fallback ISO week si date-fns n'est pas dispo
-function _isoWeek(d){
-  const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-  const day = t.getUTCDay() || 7;
-  t.setUTCDate(t.getUTCDate() + 4 - day);
-  const yearStart = new Date(Date.UTC(t.getUTCFullYear(), 0, 1));
-  return Math.ceil((((t - yearStart) / 86400000) + 1) / 7);
-}
-function _isoWeekYear(d){
-  const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-  const day = t.getUTCDay() || 7;
-  t.setUTCDate(t.getUTCDate() + 4 - day);
-  return t.getUTCFullYear();
-}
-
-function makePeriodKey(dateStr, period) {
-  const d = new Date(dateStr);
-  if (isNaN(d)) return dateStr;
-  if (period === "day") return dateStr;
-  if (period === "week") {
-    const getW  = (window.dateFns && typeof dateFns.getISOWeek      === "function") ? dateFns.getISOWeek      : _isoWeek;
-    const getWY = (window.dateFns && typeof dateFns.getISOWeekYear  === "function") ? dateFns.getISOWeekYear  : _isoWeekYear;
-    const y = getWY(d);
-    const w = String(getW(d)).padStart(2, "0");
-    return `${y}-S${w}`;
+  // 0.1 Fallback ISO week si date-fns n'est pas dispo
+  function _isoWeek(d){
+    const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    const day = t.getUTCDay() || 7;
+    t.setUTCDate(t.getUTCDate() + 4 - day);
+    const yearStart = new Date(Date.UTC(t.getUTCFullYear(), 0, 1));
+    return Math.ceil((((t - yearStart) / 86400000) + 1) / 7);
   }
-  if (period === "month") {
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, "0");
-    return `${y}-${m}`;
-  }
-  return dateStr;
-}
-
-
-// 0.2 – Tri des clés de période
-function sortPeriodKeys(keys, period) {
-  if (period === "day" || period === "month") {
-    // "YYYY-MM-DD" ou "YYYY-MM" triés lexicographiquement
-    return keys.sort((a,b) => a.localeCompare(b));
-  }
-  if (period === "week") {
-    // "YYYY-SWW" → trier par année puis semaine
-    return keys.sort((a,b) => {
-      const [ay, aw] = a.split("-S");
-      const [by, bw] = b.split("-S");
-      if (ay !== by) return Number(ay) - Number(by);
-      return Number(aw) - Number(bw);
-    });
-  }
-  return keys;
-}
-
-// 0.3 – Création des 3 boutons au-dessus d’un canvas
-function ensurePeriodControls(canvasId, onChange) {
-  const canvas = document.getElementById(canvasId);
-  if (!canvas) return;
-
-  // éviter les doublons
-  if (canvas._periodControls) return canvas._periodControls.value;
-
-  const holder = document.createElement("div");
-  holder.className = "period-controls";
-  holder.style.display = "flex";
-  holder.style.alignItems = "center";
-  holder.style.gap = "8px";
-  holder.style.margin = "8px 0 4px 0";
-
-  const strong = document.createElement("strong");
-  strong.textContent = "Vue :";
-
-  const mkBtn = (label, value) => {
-    const b = document.createElement("button");
-    b.textContent = label;
-    b.dataset.value = value;
-    b.className = "btn-period";
-    Object.assign(b.style, {
-      padding: "6px 10px",
-      border: "1px solid #cbd5e1",
-      borderRadius: "6px",
-      background: "#f8fafc",
-      cursor: "pointer"
-    });
-    b.addEventListener("click", () => {
-      setActive(value);
-      localStorage.setItem(`agg_${canvasId}`, value);
-      onChange?.(value);
-    });
-    return b;
-  };
-
-  const btnDay = mkBtn("Par jour", "day");
-  const btnWeek = mkBtn("Par semaine", "week");
-  const btnMonth = mkBtn("Par mois", "month");
-
-  holder.appendChild(strong);
-  holder.appendChild(btnDay);
-  holder.appendChild(btnWeek);
-  holder.appendChild(btnMonth);
-
-  // Insérer avant le canvas
-  canvas.parentElement.insertBefore(holder, canvas);
-
-  function setActive(val) {
-    [btnDay, btnWeek, btnMonth].forEach(b => {
-      b.style.background = (b.dataset.value === val) ? "#e2e8f0" : "#f8fafc";
-      b.style.borderColor = (b.dataset.value === val) ? "#94a3b8" : "#cbd5e1";
-      b.style.fontWeight = (b.dataset.value === val) ? "600" : "500";
-    });
-    canvas._periodControls.value = val;
+  function _isoWeekYear(d){
+    const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    const day = t.getUTCDay() || 7;
+    t.setUTCDate(t.getUTCDate() + 4 - day);
+    return t.getUTCFullYear();
   }
 
-  // État initial
-  canvas._periodControls = { setActive, value: "day" };
-  const saved = localStorage.getItem(`agg_${canvasId}`) || "day";
-  setActive(saved);
+  function makePeriodKey(dateStr, period) {
+    const d = new Date(dateStr);
+    if (isNaN(d)) return dateStr;
+    if (period === "day") return dateStr;
+    if (period === "week") {
+      const getW  = (window.dateFns && typeof dateFns.getISOWeek      === "function") ? dateFns.getISOWeek      : _isoWeek;
+      const getWY = (window.dateFns && typeof dateFns.getISOWeekYear  === "function") ? dateFns.getISOWeekYear  : _isoWeekYear;
+      const y = getWY(d);
+      const w = String(getW(d)).padStart(2, "0");
+      return `${y}-S${w}`;
+    }
+    if (period === "month") {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      return `${y}-${m}`;
+    }
+    return dateStr;
+  }
 
-  return saved;
-}
+  // 0.2 – Tri des clés de période
+  function sortPeriodKeys(keys, period) {
+    if (period === "day" || period === "month") {
+      // "YYYY-MM-DD" ou "YYYY-MM" triés lexicographiquement
+      return keys.sort((a,b) => a.localeCompare(b));
+    }
+    if (period === "week") {
+      // "YYYY-SWW" → trier par année puis semaine
+      return keys.sort((a,b) => {
+        const [ay, aw] = a.split("-S");
+        const [by, bw] = b.split("-S");
+        if (ay !== by) return Number(ay) - Number(by);
+        return Number(aw) - Number(bw);
+      });
+    }
+    return keys;
+  }
+
+  // 0.3 – Création des 3 boutons au-dessus d’un canvas
+  function ensurePeriodControls(canvasId, onChange) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+
+    // éviter les doublons
+    if (canvas._periodControls) return canvas._periodControls.value;
+
+    const holder = document.createElement("div");
+    holder.className = "period-controls";
+    holder.style.display = "flex";
+    holder.style.alignItems = "center";
+    holder.style.gap = "8px";
+    holder.style.margin = "8px 0 4px 0";
+
+    const strong = document.createElement("strong");
+    strong.textContent = "Vue :";
+
+    const mkBtn = (label, value) => {
+      const b = document.createElement("button");
+      b.textContent = label;
+      b.dataset.value = value;
+      b.className = "btn-period";
+      Object.assign(b.style, {
+        padding: "6px 10px",
+        border: "1px solid #cbd5e1",
+        borderRadius: "6px",
+        background: "#f8fafc",
+        cursor: "pointer"
+      });
+      b.addEventListener("click", () => {
+        setActive(value);
+        localStorage.setItem(`agg_${canvasId}`, value);
+        onChange?.(value);
+      });
+      return b;
+    };
+
+    const btnDay = mkBtn("Par jour", "day");
+    const btnWeek = mkBtn("Par semaine", "week");
+    const btnMonth = mkBtn("Par mois", "month");
+
+    holder.appendChild(strong);
+    holder.appendChild(btnDay);
+    holder.appendChild(btnWeek);
+    holder.appendChild(btnMonth);
+
+    // Insérer avant le canvas
+    canvas.parentElement.insertBefore(holder, canvas);
+
+    function setActive(val) {
+      [btnDay, btnWeek, btnMonth].forEach(b => {
+        b.style.background = (b.dataset.value === val) ? "#e2e8f0" : "#f8fafc";
+        b.style.borderColor = (b.dataset.value === val) ? "#94a3b8" : "#cbd5e1";
+        b.style.fontWeight = (b.dataset.value === val) ? "600" : "500";
+      });
+      canvas._periodControls.value = val;
+    }
+
+    // État initial
+    canvas._periodControls = { setActive, value: "day" };
+    const saved = localStorage.getItem(`agg_${canvasId}`) || "day";
+    setActive(saved);
+
+    return saved;
+  }
+
+  /* ======================================================
+     === KPIs "Indicateurs clés" (source: EXPORT_yearly_total.csv) ===
+     - KPI 1 : Total + ruban 100% Aéronefs / S1&2 / Autres
+     - KPI 2 : S1&2 2017→2024 (barres) + % vs 2017 (ligne)
+     - KPI 3 : Aéronefs 2010 & 2015→2024 (courbe)
+     ====================================================== */
+
+  // Helpers numériques robustes pour ce CSV annuel
+  function _toNumberS12(x){
+    // ex: "1,019" pour 1019 (virgule = séparateur de milliers)
+    if (x === null || x === undefined || x === '') return 0;
+    const s = String(x).replace(/\s/g,'').replace(/,/g,'');
+    const n = parseFloat(s);
+    return isNaN(n) ? 0 : n;
+  }
+  function _toNumberAero(x){
+    // ex: "233296.476" (point décimal)
+    if (x === null || x === undefined || x === '') return 0;
+    const s = String(x).replace(/\s/g,'').replace(',', '.');
+    const n = parseFloat(s);
+    return isNaN(n) ? 0 : n;
+  }
+
+  parseCSV('./data/EXPORT_yearly_total.csv', (rows, rawHeaders) => {
+    // Normalisation entêtes
+    const headers = (rawHeaders || []).map(h => String(h).trim());
+    const K_YEAR  = headers.find(h => h.toLowerCase().includes('année')) || headers[0];
+    const K_S12   = headers.find(h => h.toLowerCase().includes('emissions_scope_1_2'));
+    const K_AERO  = headers.find(h => h.toLowerCase().includes('emissions_aeronefs'));
+    const K_AUTRES = headers.find(h => h.toLowerCase().includes('emissions_autres')); // optionnel
+
+    // Tableau annuel nettoyé
+    const yearly = rows.map(r => {
+      const year = Number(String(r[K_YEAR]).replace(/[^\d]/g,''));
+      const s12  = _toNumberS12(r[K_S12]);
+      const aero = _toNumberAero(r[K_AERO]);
+      const oth  = K_AUTRES ? _toNumberAero(r[K_AUTRES]) : 0;
+      return { year, s12, aero, oth, ok: (s12 + aero + oth) > 0 };
+    }).filter(r => r.year).sort((a,b) => a.year - b.year);
+
+    /* === KPI 1 : Émissions totales (année la plus récente) + ruban 100% === */
+    (function renderKPI1(){
+      const elTotal = document.getElementById('kpiTotal');
+      const elLegend = document.getElementById('kpiBreakdownLegend');
+      const cv = document.getElementById('kpiBreakdown');
+
+      if (!elTotal || !elLegend || !cv) return; // éléments non présents dans le DOM
+
+      let last = null;
+      for (let i = yearly.length - 1; i >= 0; i--) { if (yearly[i].ok) { last = yearly[i]; break; } }
+
+      if (!last) {
+        elTotal.innerText = 'données indisponibles';
+        elLegend.innerText = '';
+        const ctx = cv.getContext('2d'); ctx.clearRect(0,0,cv.width,cv.height);
+        return;
+      }
+
+      const total = last.s12 + last.aero + last.oth;
+      elTotal.innerText = Math.round(total).toLocaleString('fr-FR') + " t éq CO₂ ("+ last.year +")";
+
+      const labelsKPI = ["Aéronefs", "Scope 1 & 2", (K_AUTRES ? "Autres" : "Autres (n.d.)")];
+      const valuesKPI = [last.aero, last.s12, last.oth];
+      const colors = {
+        aero:  "rgb(31, 120, 180)",
+        s12:   "rgb(148, 103, 189)",
+        autres:"rgb(255, 127, 14)"
+      };
+
+      if (window._kpiBreakdownChart) window._kpiBreakdownChart.destroy();
+      window._kpiBreakdownChart = new Chart(cv.getContext('2d'), {
+        type: "bar",
+        data: {
+          labels: [""],
+          datasets: [
+            { label: labelsKPI[0], data: [valuesKPI[0]], backgroundColor: toRGBA(colors.aero,   0.85), stack:"kpi" },
+            { label: labelsKPI[1], data: [valuesKPI[1]], backgroundColor: toRGBA(colors.s12,    0.85), stack:"kpi" },
+            { label: labelsKPI[2], data: [valuesKPI[2]], backgroundColor: toRGBA(colors.autres, 0.85), stack:"kpi" }
+          ]
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => {
+                  const v = ctx.parsed.x ?? 0;
+                  const pct = total > 0 ? (v/total)*100 : 0;
+                  return `${ctx.dataset.label} : ${Math.round(v).toLocaleString('fr-FR')} t — ${pct.toFixed(1)} %`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: { stacked: true, display: false, max: total },
+            y: { stacked: true, display: false }
+          }
+        }
+      });
+
+      // mini‑légende
+      const pA = total>0 ? (last.aero/total*100).toFixed(1) : "0.0";
+      const pS = total>0 ? (last.s12 /total*100).toFixed(1) : "0.0";
+      const pO = total>0 ? (last.oth /total*100).toFixed(1) : "0.0";
+      elLegend.innerHTML =
+        `<span style="color:${colors.aero}">■</span> Aéronefs ${pA}% &nbsp;&nbsp;`+
+        `<span style="color:${colors.s12}">■</span> Scope 1 &amp; 2 ${pS}% &nbsp;&nbsp;`+
+        `<span style="color:${colors.autres}">■</span> ${K_AUTRES ? 'Autres' : 'Autres (n.d.)'} ${pO}%`;
+    })();
+
+    /* === KPI 2 : S1&2 – Évolution 2017→2024 === */
+    (function renderKPI2(){
+      const canvas = document.getElementById('kpiScope12');
+      if (!canvas) return;
+
+      const series = yearly.filter(r => r.year >= 2017 && r.year <= 2024 && r.s12 > 0);
+      if (!series.length) {
+        const ctx = canvas.getContext('2d'); ctx.font = '14px Arial'; ctx.fillStyle = '#666';
+        ctx.fillText('Données S1&2 2017→2024 indisponibles', 10, 20);
+        return;
+      }
+
+      const years = series.map(r => r.year);
+      const vals  = series.map(r => r.s12);
+      const baseYear = years[0];
+      const baseVal  = vals[0] || 1;
+      const pctVsBase = vals.map(v => baseVal>0 ? ((v/baseVal)-1)*100 : 0);
+
+      if (window._kpiScope12) window._kpiScope12.destroy();
+      window._kpiScope12 = new Chart(canvas.getContext('2d'), {
+        data: {
+          labels: years,
+          datasets: [
+            {
+              type:'bar',
+              label:'Scope 1 & 2 (t éq CO₂)',
+              data: vals,
+              backgroundColor: toRGBA('#9467bd', 0.70),
+              borderColor:'#9467bd',
+              borderWidth:1,
+              yAxisID:'y'
+            },
+            {
+              type:'line',
+              label:`Écart vs ${baseYear} (%)`,
+              data: pctVsBase,
+              borderColor:'#555',
+              pointRadius:2,
+              tension:0.2,
+              fill:false,
+              yAxisID:'y1'
+            }
+          ]
+        },
+        options:{
+          responsive:true,
+          plugins:{ legend:{ position:'top' } },
+          scales:{
+            y:  { beginAtZero:true, title:{ display:true, text:'t éq CO₂' } },
+            y1: { position:'right', grid:{ drawOnChartArea:false }, title:{ display:true, text:'% vs '+baseYear } }
+          }
+        }
+      });
+    })();
+
+    /* === KPI 3 : Aéronefs – 2010, puis 2015→2024 === */
+    (function renderKPI3(){
+      const canvas = document.getElementById('kpiAircraft');
+      if (!canvas) return;
+
+      const series = yearly.filter(r =>
+        (r.year === 2010 && r.aero>0) || (r.year >= 2015 && r.year <= 2024 && r.aero>0)
+      );
+      if (!series.length) {
+        const ctx = canvas.getContext('2d'); ctx.font = '14px Arial'; ctx.fillStyle = '#666';
+        ctx.fillText('Données aéronefs 2010 / 2015→2024 indisponibles', 10, 20);
+        return;
+      }
+
+      const years = series.map(r => r.year);
+      const vals  = series.map(r => r.aero);
+
+      if (window._kpiAircraft) window._kpiAircraft.destroy();
+      window._kpiAircraft = new Chart(canvas.getContext('2d'), {
+        type: 'line',
+        data: {
+          labels: years,
+          datasets: [{
+            label: 'Aéronefs (t éq CO₂)',
+            data: vals,
+            borderColor:'#1f78b4',
+            backgroundColor: toRGBA('#1f78b4',0.15),
+            borderWidth:2,
+            pointRadius: years.map(y => (y===2010 || y===2015) ? 5 : 2),
+            tension:0.15,
+            fill:true
+          }]
+        },
+        options:{
+          responsive:true,
+          plugins:{ legend:{ position:'top' } },
+          scales:{
+            y: { beginAtZero:true, title:{ display:true, text:'t éq CO₂' } }
+          }
+        }
+      });
+    })();
+  });
+
+}); // DOMContentLoaded
+ 
+</script>
 
 
   /*1 ===== Émissions journalières par scope ===== */
