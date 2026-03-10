@@ -1774,7 +1774,7 @@ const initCumulPeriod = ensurePeriodControls("chartCumul", buildChartCumul);
 buildChartCumul(initCumulPeriod);
 });
 
-  
+ 
 
 /*3 ===== Emissions par compagnie ===== */
 parseCSV('./data/EXPORT_daily_airlines.csv', (dataRaw) => {
@@ -1962,18 +1962,7 @@ plugins: {
         }
       }
     });
- }
-   
-    // 🔎 Debug (à laisser TEMPORAIREMENT)
-    const c = Chart.getChart('chartAirlines');
-    console.log('[Airlines] labels:', c?.data?.labels?.length, c?.data?.labels?.slice(0,5));
-    console.log('[Airlines] datasets:', c?.data?.datasets?.length, c?.data?.datasets?.map(d=>d.label));
-    if (c?.data?.labels?.length) {
-      const idx0 = 0;
-      const snap = {};
-      c.data.datasets.forEach(d => { snap[d.label] = d.data[idx0]; });
-      console.log('[Airlines] 1er point (par compagnie):', snap);
-    }
+ }     
   }
 
   // 5) Boutons & 1er rendu (identique à Rotations)
