@@ -1388,21 +1388,6 @@ document.addEventListener("DOMContentLoaded", function(){
       total += dayTotal;
     });
 
-    // Indicateurs
-    document.getElementById("total").innerText =
-      Math.round(total).toLocaleString('fr-FR') + " tonnes éq CO2";
-
-    const average = labels.length > 0 ? total/labels.length : 0;
-    document.getElementById("average").innerText =
-      Math.round(average).toLocaleString('fr-FR') + " tonnes éq CO2";
-
-    let variance = 0;
-    totalSeries.forEach(v => { variance += Math.pow(v - average, 2); });
-    variance = variance / totalSeries.length;
-    const stdDev = Math.sqrt(variance);
-    document.getElementById("stdDev").innerText =
-      Math.round(stdDev).toLocaleString('fr-FR') + " tonnes éq CO2";
-
     // Série total
     datasets.push({
       label:"Total scopes",
