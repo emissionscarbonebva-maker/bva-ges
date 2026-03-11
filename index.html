@@ -453,14 +453,16 @@ max-width: none;
         Les émissions de gaz à effet de serre sont exprimées en tonnes équivalent dioxyde de carbone (t éq CO₂).
       </p>
 
-      <p>
-        <strong>Données :</strong>
-        <span id="update-date">chargement...</span>
-      </p>
-      
+           
       <p>
       La méthodologie détaillée de calcul des émissions est disponible sur la <a href="https://emissionscarbonebva-maker.github.io/bva-ges/methodologie.html">page dédiée</a>.
       </p>
+
+     <p>
+        <strong>Données :</strong>
+        <span id="update-date">chargement...</span>
+      </p>
+     
     </div>
   
     <!-- Container KPI mis en pleine largeur via la classe utilitaire -->
@@ -474,7 +476,14 @@ max-width: none;
     <!-- KPI 1 : histogramme horizontal (colonne gauche, ligne 1) -->
     <div class="metric-box kpi1-chart">
       <div class="metric-header">
-        <div class="metric-title">Émissions totales (cumul le plus récent)</div>
+       
+<div class="metric-header">
+  <div class="metric-title">
+    Emissions totales <span id="kpi1-year">2026</span> au <span id="kpi1-date-ddmois">11 mars</span>
+  </div>
+  <div id="kpiTotal" class="metric-value">…</div>
+</div>
+
         <div id="kpiTotal" class="metric-value">…</div>
       </div>
 
@@ -956,6 +965,30 @@ parseCSV('./data/EXPORT_cumul_scopes.csv', (rowsCumul, rawHeadersCumul) => {
     const headers = (rawHeadersCumul || []).map(h => String(h).trim());
     const findHeader = (re) => headers.find(h => re.test(h));
 
+    
+const dateKey = headers[0]; // la 1ère colonne est la date dans ce CSV
+
+  function parseISODate(str) {
+    if (!str) return null;
+    const m = String(str).match(/^(\d{4})-(\d{2})-(\d{2})/); // ex: 2026-03-11
+    if (m) return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    const d = new Date(str);
+    return isNaN(d) ? null : d;
+  }
+
+  if (rowsCumul && rowsCumul.length > 0 && dateKey) {
+    const d = parseISODate(rowsCumul[0][dateKey]);
+    if (d) {
+      const ddMois = d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' }); // ex: "11 mars"
+      const annee  = d.getFullYear(); // ex: 2026 (si tu veux forcer 2026, remplace par 2026)
+      const titleEl = document.querySelector('#containerKPIs .kpi1-chart .metric-title');
+      if (titleEl) {
+        titleEl.textContent = `Emissions totales ${annee} au ${ddMois}`;
+      }
+    }
+  }
+
+   
     const K_TOT = findHeader(/cumul_total/i);
     // Accepte "cumul_vol" ou "cumul_vols"
     const K_VOL = findHeader(/cumul_vols?/i);
