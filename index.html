@@ -239,12 +239,15 @@ h3{
 .export-btn:hover{ opacity:0.9; }
 
 /* === NARROW CONTENT: limiter la largeur des cartes avec graphes & tableaux === */
-:root { --narrow-max: 1050px; }
-.main .card:has(canvas),
-.main .card:has(.table-wrapper),
-.main .card:has(#tableDepartures),
-.main .card:has(#tableArrivals) {
-  width: 100%; max-width: var(--narrow-max); margin-inline: auto;
+
+/* Limitation des cartes contenant des canvas — sauf KPIs */
+.main .card:has(canvas):not(#containerKPIs),
+.main .card:has(.table-wrapper):not(#containerKPIs),
+.main .card:has(#tableDepartures):not(#containerKPIs),
+.main .card:has(#tableArrivals):not(#containerKPIs) {
+  width: 100%;
+  max-width: var(--narrow-max);
+  margin-inline: auto;
 }
 
 /* Ajustement utile : s'assurer que les canvas s'affichent proprement dans les cartes */
@@ -272,7 +275,7 @@ h3{
 #kpiScope12 { width:100% !important; height:100% !important; }
 .kpi-explain { margin-top:8px; font-size:0.95rem; color:#333; }
 
-}
+/*}*/
 </style>
 
 <script type="application/ld+json">
