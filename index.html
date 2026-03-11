@@ -360,6 +360,50 @@ h3{
   #containerKPIs .kpi1-text { grid-column:1; grid-row:2; }
   #containerKPIs .kpi2-chart{ grid-column:1; grid-row:3; align-self:auto; }
 }
+
+/* === KPI texte : même look que les graphes + justification === */
+#containerKPIs .kpi1-text{
+  /* la classe .metric-box fournit déjà background, padding, radius */
+  display: flex;                 /* pour coller le contenu en bas */
+  flex-direction: column;
+  justify-content: flex-end;     /* alignement bas = même base que KPI2 */
+  margin: 0;
+  /* Justification & césures propres */
+  text-align: justify;
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
+  overflow-wrap: anywhere;       /* évite les débordements sur mots très longs/URLs */
+  line-height: 1.45;
+}
+
+/* Nettoyage des marges internes pour coller visuellement en bas */
+#containerKPIs .kpi1-text .kpi-explain{
+  margin: 0;                     /* pas d’espace inutile en bas */
+}
+
+/* Option : si tu veux une teinte différente du fond texte (au lieu de #eef2f7) */
+#containerKPIs .kpi1-text{
+  /* décommente si besoin */
+  /* background: #F7F9FC; */
+}
+
+/* (rappel) KPI2 doit respirer verticalement */
+#containerKPIs .kpi2-chart .chart-host{
+  flex: 1 1 auto;
+  min-height: 360px;             /* ajuste à 420px si tu veux un bloc plus “massif” */
+}
+
+/* Responsive inchangé : empilement propre sur mobile */
+@media (max-width: 900px){
+  #containerKPIs .kpis-grid{
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+  }
+  #containerKPIs .kpi1-chart{ grid-column:1; grid-row:1; }
+  #containerKPIs .kpi1-text { grid-column:1; grid-row:2; }
+  #containerKPIs .kpi2-chart{ grid-column:1; grid-row:3; align-self:auto; }
+}
  
 </style>
 
@@ -481,9 +525,9 @@ h3{
 
     <!-- TEXTE (ce qui était sous KPI2) => passe sous KPI1 (colonne gauche, ligne 2) -->
     <div class="kpi1-text">
-      <!-- Laisser cet ID : le JS l’actualise déjà -->
+      <div class="metric-box kpi1-text">
       <div id="kpiS12AeroExplain" class="kpi-explain"></div>
-    </div>
+   </div>
 
     <!-- KPI 2 : histogramme vertical (colonne droite, s'étend sur 2 lignes) -->
     <div class="metric-box kpi2-chart">
