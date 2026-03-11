@@ -272,10 +272,6 @@ h3{
 #kpiScope12 { width:100% !important; height:100% !important; }
 .kpi-explain { margin-top:8px; font-size:0.95rem; color:#333; }
 
-/* === Option 2 : classe utilitaire pour forcer la pleine largeur === */
-.card.full-width {
-  max-width: none !important;   /* lève la contrainte 1050px */
-  margin-inline: 0 !important;  /* supprime le centrage auto */
 }
 </style>
 
@@ -373,7 +369,7 @@ h3{
     </div>
   
     <!-- Container KPI mis en pleine largeur via la classe utilitaire -->
-    <div id="containerKPIs" class="card full-width" data-match-size="#containerAnalyse2026">
+    <div id="containerKPIs" class="card" data-match-size="#containerAnalyse2026">
       <h2>Indicateurs clés</h2>
 
       <div class="metrics kpis-grid">
