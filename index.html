@@ -240,10 +240,10 @@ h3{
 
 /* ==================== DIMENSIONNEMENT DES CARTES ==================== */
 
-/* Variables de largeur */
+/* Variables */
 :root{
-  --narrow-max: 1050px;   /* cartes "graphiques / tableaux" */
-  --normal-max: 1320px;   /* cartes "texte" (ajuste la valeur à ton layout) */
+  --page-gap: clamp(16px, 4vw, 56px);  /* marge/gouttière pour les cartes "normal" */
+  --narrow-max: 1050px;                /* largeur "fixe" max pour les cartes "narrow" */
 }
 
 /* Base commune des cartes */
@@ -256,46 +256,48 @@ h3{
   border-left:6px solid #1f3c88;
   transition:transform 0.15s ease;
 
-  width:100%;
-  /* Empêche tout débordement visuel (canvas, images, etc.) */
-  overflow: hidden;
+  /* IMPORTANT : pas de width:100% ici, pour laisser les marges piloter la largeur */
+  width: auto;
+  box-sizing: border-box;
+  overflow: hidden;     /* évite tout débordement visuel (canvas, images, etc.) */
 }
 .card:hover{ transform:translateY(-2px); }
 
-/* 1) Carte "narrow" : limitée, centrée (graphiques, tableaux) */
-.card--narrow{
-  max-width: var(--narrow-max);
-  margin-inline: auto;     /* centrage dans .main */
+/* 1) Carte "normal" : largeur = (largeur du main) - 2×gouttière, centrée par marges */
+.card--normal{
+  /* pas de max-width ; la largeur s'ajuste avec la gouttière */
+  margin-inline: var(--page-gap);
 }
 
-/* 2) Carte "normal" : largeur de contenu "texte", centrée */
-.card--normal{
-  max-width: var(--normal-max);
-  margin-inline: auto;     /* centrage dans .main */
+/* 2) Carte "narrow" : centrée, largeur "fixe" via max-width (pas de gouttière) */
+.card--narrow{
+  width: 100%;                  /* pleine largeur disponible, mais… */
+  max-width: var(--narrow-max); /* …limitée à la largeur cible */
+  margin-inline: auto;          /* centrage */
 }
 
 /* 3) Carte "full" : pleine largeur du .main */
 .card--full{
+  width: 100%;
   max-width: none;
   margin-inline: 0;
 }
 
 /* ==================== CANVAS & BLOCS CONTENUS ==================== */
 
-/* Canvas responsive (évite les débordements) */
 .main .card canvas{
-  display:block;
-  width:100%;          /* s’adapte à la largeur de la carte */
-  height:auto;         /* garde le ratio si aucune hauteur fixe */
-  max-width:100%;
-  margin-top:20px;
+  display: block;
+  width: 100%;         /* rempli la carte */
+  height: auto;        /* garde le ratio si pas de hauteur forcée par JS */
+  max-width: 100%;
+  margin-top: 20px;
 }
 
-/* Hôte de graphe si tu fixes une hauteur */
+/* Hôte de graphe si tu fixes une hauteur avec maintainAspectRatio:false côté Chart.js */
 .chart-host{
-  position:relative;
-  width:100%;
-  height:340px;        /* ajuste si besoin */
+  position: relative;
+  width: 100%;
+  height: 340px;
 }
 #kpiScope12 { width:100% !important; height:100% !important; }
 
