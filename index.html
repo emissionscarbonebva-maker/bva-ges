@@ -1227,7 +1227,6 @@ const s12SimpleLabelsPlugin = {
 
     const valsS12 = [];
     const valsAero = [];
-    const missingS12 = [];   // "NC" / "A venir" / null
     const missingAero = [];
 
     years.forEach(y => {
@@ -1237,19 +1236,7 @@ const s12SimpleLabelsPlugin = {
       // valeurs numériques (0 si manquant)
       valsS12.push(clean.s12 || 0);
       valsAero.push(clean.aero || 0);
-
-      // marquage "NC" / "A venir"
-      const rawS12  = rawRow?.[K_S12];
-      const rawAero = rawRow?.[K_AERO];
-      const isText  = v => {
-        const s = (v ?? '').toString().trim().toLowerCase();
-        return s.length && (isNaN(parseFloat(s.replace(',', '.'))) || s.includes('nc') || s.includes('venir'));
-      };
-
-      missingS12.push(isText(rawS12)  ? String(rawS12).trim()  : null);
-      missingAero.push(isText(rawAero) ? String(rawAero).trim() : null);
-    });
-
+      
     if (window._kpiS12AeroGrouped) window._kpiS12AeroGrouped.destroy();
 
     window._kpiS12AeroGrouped = new Chart(canvas.getContext('2d'), {
