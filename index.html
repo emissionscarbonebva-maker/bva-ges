@@ -1076,150 +1076,144 @@ parseCSV('./data/EXPORT_yearly_total.csv', (rows, rawHeaders) => {
   }).filter(r => r.year).sort((a,b) => a.year - b.year);
 
   /* === Pastilles "NC" / "À venir" au-dessus des catégories === */
-  const missingDataPlugin = {
-    id: 'missingDataPlugin',
-    afterDatasetsDraw(chart) {
-      const { ctx, scales: { x, y } } = chart;
-      chart.data.datasets.forEach((ds, dsi) => {
-        const missing = ds.missingLabels || [];
-        const meta = chart.getDatasetMeta(dsi);
-        missing.forEach((label, i) => {
-          if (!label) return;
-          // Position (léger décalage pour éviter superposition S1&2 / Aéronefs)
-          const el = meta.data?.[i];
-          const xPos = el ? el.x + (dsi === 0 ? -12 : 12)
-                          : x.getPixelForValue(i) + (dsi === 0 ? -12 : 12);
-          const yPos = y.top + 10;
+const missingDataPlugin = {
+  id: 'missingDataPlugin',
+  afterDatasetsDraw(chart) {
+    const { ctx, scales: { x, y } } = chart;
+    chart.data.datasets.forEach((ds, dsi) => {
+      const missing = ds.missingLabels || [];
+      const meta = chart.getDatasetMeta(dsi);
+      missing.forEach((label, i) => {
+        if (!label) return;
+        // Position (léger décalage pour éviter superposition S1&2 / Aéronefs)
+        const el = meta.data?.[i];
+        const xPos = el ? el.x + (dsi === 0 ? -12 : 12)
+                        : x.getPixelForValue(i) + (dsi === 0 ? -12 : 12);
+        const yPos = y.top + 10;
 
-          // Pastille arrondie
-          const text = String(label).trim();
-          ctx.save();
-          ctx.font = '11px Arial';
-          const padX = 6, h = 18, r = 9;
-          const tw = ctx.measureText(text).width;
-          const w = Math.max(28, tw + padX * 2);
-          const px = xPos - w / 2;
-          const py = yPos;
+        // Pastille arrondie
+        const text = String(label).trim();
+        ctx.save();
+        ctx.font = '11px Arial';
+        const padX = 6, h = 18, r = 9;
+        const tw = ctx.measureText(text).width;
+        const w = Math.max(28, tw + padX * 2);
+        const px = xPos - w / 2;
+        const py = yPos;
 
-          ctx.fillStyle = '#F6C96E'; // ambre
-          ctx.beginPath();
-          const right = px + w, bottom = py + h;
-          ctx.moveTo(px + r, py);
-          ctx.lineTo(right - r, py);
-          ctx.quadraticCurveTo(right, py, right, py + r);
-          ctx.lineTo(right, bottom - r);
-          ctx.quadraticCurveTo(right, bottom, right - r, bottom);
-          ctx.lineTo(px + r, bottom);
-          ctx.quadraticCurveTo(px, bottom, px, bottom - r);
-          ctx.lineTo(px, py + r);
-          ctx.quadraticCurveTo(px, py, px + r, py);
-          ctx.closePath();
-          ctx.fill();
+        ctx.fillStyle = '#F6C96E'; // ambre
+        ctx.beginPath();
+        const right = px + w, bottom = py + h;
+        ctx.moveTo(px + r, py);
+        ctx.lineTo(right - r, py);
+        ctx.quadraticCurveTo(right, py, right, py + r);
+        ctx.lineTo(right, bottom - r);
+        ctx.quadraticCurveTo(right, bottom, right - r, bottom);
+        ctx.lineTo(px + r, bottom);
+        ctx.quadraticCurveTo(px, bottom, px, bottom - r);
+        ctx.lineTo(px, py + r);
+        ctx.quadraticCurveTo(px, py, px + r, py);
+        ctx.closePath();
+        ctx.fill();
 
-          ctx.fillStyle = '#1B1D22';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText(text, xPos, py + h / 2);
-          ctx.restore();
-        });
+        ctx.fillStyle = '#1B1D22';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(text, xPos, py + h / 2);
+        ctx.restore();
       });
-    }
-  };
+    });
+  }
+};
 
-  /* === Étiquettes numériques horizontales pour la série "Aéronefs" === */
-  /* === Tuning lisibilité KPI2 (seuils, offsets, couleurs) === */
- 
- const aeroValueLabelsPlugin = {
-    id: 'aeroValueLabelsPlugin',
-    afterDatasetsDraw(chart) {
-      const { ctx } = chart;
-     if (chart.width < KPI2_LABELS_TUNING.minWidthForLabels) return;
-      ctx.save();
-      ctx.font = '11px Arial';
-      ctx.fillStyle = '#222';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'bottom';
+/* === Tuning lisibilité KPI2 (seuils, offsets, couleurs) — Déclaré UNE seule fois === */
+const KPI2_LABELS_TUNING = {
+  minWidthForLabels: 700,                 // sous cette largeur, on masque les étiquettes
+  s12:  { xOffset: 0,  yOffset: 4, color: '#9467bd' }, // labels verticaux S1&2
+  aero: { xOffset: 0,  yOffset: 4, color: '#222'     } // labels horizontaux Aéronefs
+};
 
-      chart.data.datasets.forEach((ds, dsi) => {
-        if (!/aéronefs/i.test(ds.label)) return; // uniquement Aéronefs
-        const meta = chart.getDatasetMeta(dsi);
-        if (!meta || meta.hidden) return;
+/* === Étiquettes numériques horizontales pour "Aéronefs" === */
+const aeroValueLabelsPlugin = {
+  id: 'aeroValueLabelsPlugin',
+  afterDatasetsDraw(chart) {
+    const { ctx } = chart;
 
-        meta.data.forEach((el, i) => {
-          const miss = ds.missingLabels?.[i];
-          const val  = ds.data[i];
-          if (miss || typeof val !== 'number' || !isFinite(val) || val <= 0) return;
+    // (option) couper l'affichage si le chart est étroit
+    if (chart.width < KPI2_LABELS_TUNING.minWidthForLabels) return;
 
-          const { x, y } = el.getProps(['x','y'], true);
-          const text = Math.round(val).toLocaleString('fr-FR').replace(/\u202F/g, ' ');
-          
-/* (4b) couleur et offsets */
-        ctx.fillStyle   = KPI2_LABELS_TUNING.aero.color;   // ⬅️ couleur personnalisée
-        const xOffset   = KPI2_LABELS_TUNING.aero.xOffset; // ⬅️ décalage latéral
-        const yOffset   = KPI2_LABELS_TUNING.aero.yOffset; // ⬅️ décalage vertical
+    ctx.save();
+    ctx.font = '11px Arial';
+    chart.data.datasets.forEach((ds, dsi) => {
+      if (!/aéronefs/i.test(ds.label)) return; // uniquement Aéronefs
+      const meta = chart.getDatasetMeta(dsi);
+      if (!meta || meta.hidden) return;
+
+      meta.data.forEach((el, i) => {
+        const miss = ds.missingLabels?.[i];
+        const val  = ds.data[i];
+        if (miss || typeof val !== 'number' || !isFinite(val) || val <= 0) return;
+
+        const { x, y } = el.getProps(['x','y'], true);
+        const text = Math.round(val).toLocaleString('fr-FR').replace(/\u202F/g, ' ');
+
+        // Couleur + offsets
+        ctx.fillStyle   = KPI2_LABELS_TUNING.aero.color;
+        const xOffset   = KPI2_LABELS_TUNING.aero.xOffset;
+        const yOffset   = KPI2_LABELS_TUNING.aero.yOffset;
 
         ctx.textAlign = 'center';
         ctx.textBaseline = 'bottom';
-        ctx.fillText(text, x + xOffset, y - yOffset);      // ⬅️ on applique les offsets
+        ctx.fillText(text, x + xOffset, y - yOffset);
       });
     });
-
     ctx.restore();
-
-    }
-  };
-
-  /* === Étiquettes verticales vers le haut pour la série "Scope 1 & 2" === */
- 
-const KPI2_LABELS_TUNING = {
-  minWidthForLabels: 700,             // ⬅️ en dessous, on n'affiche pas les étiquettes
-  s12:  { xOffset: 0,  yOffset: 4,  color: '#9467bd' }, // labels verticaux S1&2
-  aero: { xOffset: 0,  yOffset: 4,  color: '#222'     }  // labels horizontaux Aéronefs
+  }
 };
- 
- const s12VerticalLabelsPlugin = {
-    id: 's12VerticalLabelsPlugin',
-    afterDatasetsDraw(chart) {
-      const { ctx } = chart;
-     if (chart.width < KPI2_LABELS_TUNING.minWidthForLabels) return;
-      ctx.save();
-      ctx.font = '11px Arial';
-      ctx.fillStyle = '#000';
 
-      chart.data.datasets.forEach((ds, dsi) => {
-        if (!/scope\s*1\s*&\s*2/i.test(ds.label)) return; // uniquement Scope 1 & 2
-        const meta = chart.getDatasetMeta(dsi);
-        if (!meta || meta.hidden) return;
+/* === Étiquettes verticales vers le haut pour "Scope 1 & 2" === */
+const s12VerticalLabelsPlugin = {
+  id: 's12VerticalLabelsPlugin',
+  afterDatasetsDraw(chart) {
+    const { ctx } = chart;
 
-        meta.data.forEach((el, i) => {
-          const miss = ds.missingLabels?.[i];
-          const val  = ds.data[i];
-          if (miss || typeof val !== 'number' || !isFinite(val) || val <= 0) return;
+    // (option) couper l'affichage si le chart est étroit
+    if (chart.width < KPI2_LABELS_TUNING.minWidthForLabels) return;
 
-          const { x, y } = el.getProps(['x','y'], true);
-          const text = Math.round(val).toLocaleString('fr-FR').replace(/\u202F/g, ' ');
+    ctx.save();
+    ctx.font = '11px Arial';
+    chart.data.datasets.forEach((ds, dsi) => {
+      if (!/scope\s*1\s*&\s*2/i.test(ds.label)) return; // uniquement Scope 1 & 2
+      const meta = chart.getDatasetMeta(dsi);
+      if (!meta || meta.hidden) return;
 
+      meta.data.forEach((el, i) => {
+        const miss = ds.missingLabels?.[i];
+        const val  = ds.data[i];
+        if (miss || typeof val !== 'number' || !isFinite(val) || val <= 0) return;
 
-/* (4b) couleur et offsets */
-        const xOffset = KPI2_LABELS_TUNING.s12.xOffset;    // ⬅️ décalage latéral
-        const yOffset = KPI2_LABELS_TUNING.s12.yOffset;    // ⬅️ décalage vertical
-        ctx.fillStyle = KPI2_LABELS_TUNING.s12.color;      // ⬅️ couleur
-         
-          ctx.save();
-          // juste au-dessus de la barre violette
-          ctx.translate(x, y - 4);
-          // vertical "vers le haut"
-          ctx.rotate(-Math.PI / 2);
-          ctx.textAlign = 'right';
-          ctx.textBaseline = 'middle';
-          ctx.fillText(text, 0, 0);
-          ctx.restore();
-        });
+        const { x, y } = el.getProps(['x','y'], true);
+        const text = Math.round(val).toLocaleString('fr-FR').replace(/\u202F/g, ' ');
+
+        // Couleur + offsets
+        const xOffset = KPI2_LABELS_TUNING.s12.xOffset;
+        const yOffset = KPI2_LABELS_TUNING.s12.yOffset;
+        ctx.fillStyle = KPI2_LABELS_TUNING.s12.color;
+
+        ctx.save();
+        // position juste au-dessus de la barre violette avec offset
+        ctx.translate(x + xOffset, y - yOffset);
+        // vertical vers le haut
+        ctx.rotate(-Math.PI / 2);
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(text, 0, 0);
+        ctx.restore();
       });
-
-      ctx.restore();
-    }
-  };
+    });
+    ctx.restore();
+  }
+};
 
   (function renderKPI_S12_vs_Aero_Grouped(){
     const canvas = document.getElementById('kpiScope12');
