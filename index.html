@@ -1132,84 +1132,10 @@ const missingDataPlugin = {
   }
 };
 
-/* === Paramètres (UNE seule déclaration) === */
-const KPI2_LABELS_TUNING = {
-  minWidthForLabels: 0, // ⬅️ plus de seuil : on dessine toujours
-  s12:  { xOffset: 0, yOffset: 4, color: '#9467bd' }, // S1&2, vertical
-  aero: { xOffset: 0, yOffset: 4, color: '#222'     }  // Aéronefs, horizontal
-};
-
-/* === Étiquettes horizontales pour "Aéronefs" === */
-const aeroValueLabelsPlugin = {
-  id: 'aeroValueLabelsPlugin',
-  afterDatasetsDraw(chart) {
-    if (chart.width < KPI2_LABELS_TUNING.minWidthForLabels) return;
-    const { ctx } = chart;
-    ctx.save();
-    ctx.font = '11px Arial';
-
-    chart.data.datasets.forEach((ds, dsi) => {
-      if (ds.role !== 'aero') return;         // on ne dépend plus du libellé
-      const meta = chart.getDatasetMeta(dsi);
-      if (!meta || meta.hidden) return;
-
-      meta.data.forEach((el, i) => {
-        const miss = ds.missingLabels?.[i];
-        const val  = ds.data[i];
-        if (miss || typeof val !== 'number' || !isFinite(val) || val <= 0) return;
-
-        const { x, y } = el.getProps(['x','y'], true);
-        const text = Math.round(val).toLocaleString('fr-FR').replace(/\u202F/g, ' ');
-        ctx.fillStyle   = KPI2_LABELS_TUNING.aero.color;
-        ctx.textAlign   = 'center';
-        ctx.textBaseline= 'bottom';
-        ctx.fillText(text, x + KPI2_LABELS_TUNING.aero.xOffset, y - KPI2_LABELS_TUNING.aero.yOffset);
-      });
-    });
-
     ctx.restore();
   }
 };
 
-/* === Étiquettes verticales (vers le haut) pour "Scope 1 & 2" === */
-const s12VerticalLabelsPlugin = {
-  id: 's12VerticalLabelsPlugin',
-  afterDatasetsDraw(chart) {
-    if (chart.width < KPI2_LABELS_TUNING.minWidthForLabels) return;
-    const { ctx } = chart;
-    ctx.save();
-    ctx.font = '11px Arial';
-
-    chart.data.datasets.forEach((ds, dsi) => {
-      if (ds.role !== 's12') return;          // on ne dépend plus du libellé
-      const meta = chart.getDatasetMeta(dsi);
-      if (!meta || meta.hidden) return;
-
-      meta.data.forEach((el, i) => {
-        const miss = ds.missingLabels?.[i];
-        const val  = ds.data[i];
-        if (miss || typeof val !== 'number' || !isFinite(val) || val <= 0) return;
-
-        const { x, y } = el.getProps(['x','y'], true);
-        const text = Math.round(val).toLocaleString('fr-FR').replace(/\u202F/g, ' ');
-        ctx.fillStyle = KPI2_LABELS_TUNING.s12.color;
-
-        ctx.save();
-        // position juste au-dessus de la barre violette avec offsets
-        ctx.translate(x + KPI2_LABELS_TUNING.s12.xOffset, y - KPI2_LABELS_TUNING.s12.yOffset);
-        // vertical "vers le haut"
-        ctx.rotate(-Math.PI / 2);
-        ctx.textAlign   = 'right';
-        ctx.textBaseline= 'middle';
-        ctx.fillText(text, 0, 0);
-        ctx.restore();
-      });
-    });
-
-    ctx.restore();
-  }
-};
- 
   (function renderKPI_S12_vs_Aero_Grouped(){
     const canvas = document.getElementById('kpiScope12');
     const canvasOld = document.getElementById('kpiAircraft');
