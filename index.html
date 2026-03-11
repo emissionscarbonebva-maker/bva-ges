@@ -911,30 +911,38 @@ document.addEventListener("DOMContentLoaded", function(){
   function formatTonsFR(n){ return Math.round(n).toLocaleString('fr-FR'); }
 
   /* ---------- Plugin Chart.js pour afficher les valeurs au-dessus des barres ---------- */
-  const valueLabelsPlugin = {
-    id: 'valueLabelsPlugin',
-    afterDatasetsDraw(chart, args, pluginOptions) {
-      const { ctx } = chart;
-      ctx.save();
-      ctx.font = (pluginOptions && pluginOptions.font) || '11px Arial';
-      ctx.fillStyle = (pluginOptions && pluginOptions.color) || '#222';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'bottom';
+  /* === Étiquettes numériques au-dessus des barres (Aéronefs seulement) === */
+const valueLabelsPlugin = {
+  id: 'valueLabelsPlugin',
+  afterDatasetsDraw(chart) {
+    const { ctx } = chart;
+    ctx.save();
+    ctx.font = '11px Arial';
+    ctx.fillStyle = '#222';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
 
-      chart.data.datasets.forEach((dataset, datasetIndex) => {
-        const meta = chart.getDatasetMeta(datasetIndex);
-        if (!meta || meta.hidden) return;
-        if (dataset.type && dataset.type !== 'bar') return;
-        meta.data.forEach((element, index) => {
-          const val = dataset.data[index];
-          if (val === null || val === undefined || isNaN(val)) return;
-          const { x, y } = element.getProps(['x', 'y'], true);
-          if (Math.abs(val) > 0) ctx.fillText(formatTonsFR(val), x, y - 3);
-        });
+    chart.data.datasets.forEach((ds, dsi) => {
+      // On ne dessine que pour la série Aéronefs
+      if (!/aéronefs/i.test(ds.label)) return;
+
+      const meta = chart.getDatasetMeta(dsi);
+      if (!meta || meta.hidden) return;
+
+      meta.data.forEach((el, i) => {
+        const miss = ds.missingLabels?.[i];
+        const val  = ds.data[i];
+        if (miss || typeof val !== 'number' || !isFinite(val) || val <= 0) return;
+
+        const { x, y } = el.getProps(['x','y'], true);
+        const text = Math.round(val).toLocaleString('fr-FR').replace(/\u202F/g, ' ');
+        ctx.fillText(text, x, y - 4); // 4px au-dessus de la barre
       });
-      ctx.restore();
-    }
-  };
+    });
+
+    ctx.restore();
+  }
+};
 
       
 //KPI 1 basé sur EXPORT_cumul_scopes.csv — on lit désormais la 2e ligne (index 1)
@@ -1054,228 +1062,319 @@ parseCSV('./data/EXPORT_cumul_scopes.csv', (rowsCumul, rawHeadersCumul) => {
 
 
 /* ---------- KPI 2+3 fusionné : S1&2 vs Aéronefs (EXPORT_yearly_total.csv) ---------- */
-  parseCSV('./data/EXPORT_yearly_total.csv', (rows, rawHeaders) => {
-    const headers = (rawHeaders || []).map(h => String(h).trim());
-    const K_YEAR  = headers.find(h => h.toLowerCase().includes('année')) || headers[0];
-    const K_S12   = headers.find(h => h.toLowerCase().includes('emissions_scope_1_2'));
-    const K_AERO  = headers.find(h => h.toLowerCase().includes('emissions_aeronefs'));
+parseCSV('./data/EXPORT_yearly_total.csv', (rows, rawHeaders) => {
+  const headers = (rawHeaders || []).map(h => String(h).trim());
+  const K_YEAR  = headers.find(h => h.toLowerCase().includes('année')) || headers[0];
+  const K_S12   = headers.find(h => h.toLowerCase().includes('emissions_scope_1_2'));
+  const K_AERO  = headers.find(h => h.toLowerCase().includes('emissions_aeronefs'));
 
-    const yearly = rows.map(r => {
-      const year = Number(String(r[K_YEAR]).replace(/[^\d]/g,''));
-      const s12  = _toNumberS12(r[K_S12]);
-      const aero = _toNumberAero(r[K_AERO]);
-      return { year, s12, aero, ok: (s12 + aero) > 0 };
-    }).filter(r => r.year).sort((a,b) => a.year - b.year);
+  const yearly = rows.map(r => {
+    const year = Number(String(r[K_YEAR]).replace(/[^\d]/g,''));
+    const s12  = _toNumberS12(r[K_S12]);
+    const aero = _toNumberAero(r[K_AERO]);
+    return { year, s12, aero, ok: (s12 + aero) > 0 };
+  }).filter(r => r.year).sort((a,b) => a.year - b.year);
 
-   /* === Plugin qui dessine les labels "NC" / "À venir" au-dessus des catégories === */
-const missingDataPlugin = {
-  id: 'missingDataPlugin',
-  afterDatasetsDraw(chart, args) {
-    const { ctx, chartArea, scales: { x, y } } = chart;
-    chart.data.datasets.forEach((ds, dsi) => {
-      const missing = ds.missingLabels || [];
-      const meta = chart.getDatasetMeta(dsi);
-      missing.forEach((label, i) => {
-        if (!label) return;
+  /* === Pastilles "NC" / "À venir" au-dessus des catégories === */
+  const missingDataPlugin = {
+    id: 'missingDataPlugin',
+    afterDatasetsDraw(chart) {
+      const { ctx, scales: { x, y } } = chart;
+      chart.data.datasets.forEach((ds, dsi) => {
+        const missing = ds.missingLabels || [];
+        const meta = chart.getDatasetMeta(dsi);
+        missing.forEach((label, i) => {
+          if (!label) return;
+          // Position (léger décalage pour éviter superposition S1&2 / Aéronefs)
+          const el = meta.data?.[i];
+          const xPos = el ? el.x + (dsi === 0 ? -12 : 12)
+                          : x.getPixelForValue(i) + (dsi === 0 ? -12 : 12);
+          const yPos = y.top + 10;
 
-        // Position du "pastorel"
-        const el = meta.data?.[i];
-        const xPos = el ? el.x + (dsi === 0 ? -12 : 12)       // léger décalage S1&2 vs Aéronefs
-                        : x.getPixelForValue(i) + (dsi === 0 ? -12 : 12);
-        const yPos = y.top + 10;                               // proche du haut de la zone chart
+          // Pastille arrondie
+          const text = String(label).trim();
+          ctx.save();
+          ctx.font = '11px Arial';
+          const padX = 6, h = 18, r = 9;
+          const tw = ctx.measureText(text).width;
+          const w = Math.max(28, tw + padX * 2);
+          const px = xPos - w / 2;
+          const py = yPos;
 
-        // Dessine un badge arrondi
-        const text = String(label).trim();
-        ctx.save();
-        ctx.font = '11px Arial';
-        const padX = 6, padY = 3, h = 18, r = 9;
-        const tw = ctx.measureText(text).width;
-        const w = Math.max(28, tw + padX * 2);
-        const px = xPos - w / 2;
-        const py = yPos;
+          ctx.fillStyle = '#F6C96E'; // ambre
+          ctx.beginPath();
+          const right = px + w, bottom = py + h;
+          ctx.moveTo(px + r, py);
+          ctx.lineTo(right - r, py);
+          ctx.quadraticCurveTo(right, py, right, py + r);
+          ctx.lineTo(right, bottom - r);
+          ctx.quadraticCurveTo(right, bottom, right - r, bottom);
+          ctx.lineTo(px + r, bottom);
+          ctx.quadraticCurveTo(px, bottom, px, bottom - r);
+          ctx.lineTo(px, py + r);
+          ctx.quadraticCurveTo(px, py, px + r, py);
+          ctx.closePath();
+          ctx.fill();
 
-        ctx.fillStyle = '#F6C96E'; // ambre doux
-        ctx.beginPath();
-        const right = px + w, bottom = py + h;
-        ctx.moveTo(px + r, py);
-        ctx.lineTo(right - r, py);
-        ctx.quadraticCurveTo(right, py, right, py + r);
-        ctx.lineTo(right, bottom - r);
-        ctx.quadraticCurveTo(right, bottom, right - r, bottom);
-        ctx.lineTo(px + r, bottom);
-        ctx.quadraticCurveTo(px, bottom, px, bottom - r);
-        ctx.lineTo(px, py + r);
-        ctx.quadraticCurveTo(px, py, px + r, py);
-        ctx.closePath();
-        ctx.fill();
+          ctx.fillStyle = '#1B1D22';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(text, xPos, py + h / 2);
+          ctx.restore();
+        });
+      });
+    }
+  };
 
-        ctx.fillStyle = '#1B1D22';
+  /* === Étiquettes numériques horizontales pour la série "Aéronefs" === */
+  /* === Tuning lisibilité KPI2 (seuils, offsets, couleurs) === */
+const KPI2_LABELS_TUNING = {
+  minWidthForLabels: 700,             // ⬅️ en dessous, on n'affiche pas les étiquettes
+  s12:  { xOffset: 0,  yOffset: 4,  color: '#9467bd' }, // labels verticaux S1&2
+  aero: { xOffset: 0,  yOffset: 4,  color: '#222'     }  // labels horizontaux Aéronefs
+};
+ 
+ const aeroValueLabelsPlugin = {
+    id: 'aeroValueLabelsPlugin',
+    afterDatasetsDraw(chart) {
+      const { ctx } = chart;
+     if (chart.width < KPI2_LABELS_TUNING.minWidthForLabels) return;
+      ctx.save();
+      ctx.font = '11px Arial';
+      ctx.fillStyle = '#222';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+
+      chart.data.datasets.forEach((ds, dsi) => {
+        if (!/aéronefs/i.test(ds.label)) return; // uniquement Aéronefs
+        const meta = chart.getDatasetMeta(dsi);
+        if (!meta || meta.hidden) return;
+
+        meta.data.forEach((el, i) => {
+          const miss = ds.missingLabels?.[i];
+          const val  = ds.data[i];
+          if (miss || typeof val !== 'number' || !isFinite(val) || val <= 0) return;
+
+          const { x, y } = el.getProps(['x','y'], true);
+          const text = Math.round(val).toLocaleString('fr-FR').replace(/\u202F/g, ' ');
+          
+/* (4b) couleur et offsets */
+        ctx.fillStyle   = KPI2_LABELS_TUNING.aero.color;   // ⬅️ couleur personnalisée
+        const xOffset   = KPI2_LABELS_TUNING.aero.xOffset; // ⬅️ décalage latéral
+        const yOffset   = KPI2_LABELS_TUNING.aero.yOffset; // ⬅️ décalage vertical
+
         ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(text, xPos, py + h / 2);
-        ctx.restore();
+        ctx.textBaseline = 'bottom';
+        ctx.fillText(text, x + xOffset, y - yOffset);      // ⬅️ on applique les offsets
       });
     });
-  }
+
+    ctx.restore();
+
+    }
+  };
+
+  /* === Étiquettes verticales vers le haut pour la série "Scope 1 & 2" === */
+ 
+const KPI2_LABELS_TUNING = {
+  minWidthForLabels: 700,             // ⬅️ en dessous, on n'affiche pas les étiquettes
+  s12:  { xOffset: 0,  yOffset: 4,  color: '#9467bd' }, // labels verticaux S1&2
+  aero: { xOffset: 0,  yOffset: 4,  color: '#222'     }  // labels horizontaux Aéronefs
 };
-   
-    (function renderKPI_S12_vs_Aero_Grouped(){
-  const canvas = document.getElementById('kpiScope12');
-  const canvasOld = document.getElementById('kpiAircraft');
-  if (!canvas) return;
-  if (canvasOld) {
-    const ctxOld = canvasOld.getContext('2d');
-    ctxOld && ctxOld.clearRect(0, 0, canvasOld.width, canvasOld.height);
-    canvasOld.style.display = 'none';
-  }
+ 
+ const s12VerticalLabelsPlugin = {
+    id: 's12VerticalLabelsPlugin',
+    afterDatasetsDraw(chart) {
+      const { ctx } = chart;
+     if (chart.width < KPI2_LABELS_TUNING.minWidthForLabels) return;
+      ctx.save();
+      ctx.font = '11px Arial';
+      ctx.fillStyle = '#000';
 
-  // === Étend l'axe jusqu'à 2025
-  const years = [2010, 2015, ...Array.from({length:(2025-2016+1)}, (_,i) => 2016+i)];
+      chart.data.datasets.forEach((ds, dsi) => {
+        if (!/scope\s*1\s*&\s*2/i.test(ds.label)) return; // uniquement Scope 1 & 2
+        const meta = chart.getDatasetMeta(dsi);
+        if (!meta || meta.hidden) return;
 
-  // Map "propre" (numérique) déjà créée plus haut : 'yearly'
-  // On fabrique un map "brut" pour lire les libellés NC / À venir
-  const mapRaw = new Map(rows.map(r => [
-    Number(String(r[K_YEAR]).replace(/[^\d]/g,'')), r
-  ]));
-  const mapClean = new Map(yearly.map(r => [r.year, r]));
+        meta.data.forEach((el, i) => {
+          const miss = ds.missingLabels?.[i];
+          const val  = ds.data[i];
+          if (miss || typeof val !== 'number' || !isFinite(val) || val <= 0) return;
 
-  const valsS12 = [];
-  const valsAero = [];
-  const missingS12 = [];   // valeur = "NC" / "A venir" ou null
-  const missingAero = [];
+          const { x, y } = el.getProps(['x','y'], true);
+          const text = Math.round(val).toLocaleString('fr-FR').replace(/\u202F/g, ' ');
 
-  years.forEach((y, idx) => {
-    const rawRow = mapRaw.get(y) || {};
-    const clean = mapClean.get(y) || { s12: 0, aero: 0 };
 
-    // Valeurs numériques (0 si manquant)
-    valsS12.push(clean.s12 || 0);
-    valsAero.push(clean.aero || 0);
+/* (4b) couleur et offsets */
+        const xOffset = KPI2_LABELS_TUNING.s12.xOffset;    // ⬅️ décalage latéral
+        const yOffset = KPI2_LABELS_TUNING.s12.yOffset;    // ⬅️ décalage vertical
+        ctx.fillStyle = KPI2_LABELS_TUNING.s12.color;      // ⬅️ couleur
+         
+          ctx.save();
+          // juste au-dessus de la barre violette
+          ctx.translate(x, y - 4);
+          // vertical "vers le haut"
+          ctx.rotate(-Math.PI / 2);
+          ctx.textAlign = 'right';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(text, 0, 0);
+          ctx.restore();
+        });
+      });
 
-    // Détection libellé non numérique
-    const rawS12 = rawRow?.[K_S12];
-    const rawAero = rawRow?.[K_AERO];
+      ctx.restore();
+    }
+  };
 
-    const isText = v => {
-      const s = (v ?? '').toString().trim().toLowerCase();
-      return s.length && (isNaN(parseFloat(s.replace(',', '.'))) || s.includes('nc') || s.includes('venir'));
-    };
+  (function renderKPI_S12_vs_Aero_Grouped(){
+    const canvas = document.getElementById('kpiScope12');
+    const canvasOld = document.getElementById('kpiAircraft');
+    if (!canvas) return;
+    if (canvasOld) {
+      const ctxOld = canvasOld.getContext('2d');
+      ctxOld && ctxOld.clearRect(0, 0, canvasOld.width, canvasOld.height);
+      canvasOld.style.display = 'none';
+    }
 
-    missingS12.push(isText(rawS12) ? String(rawS12).trim() : null);
-    missingAero.push(isText(rawAero) ? String(rawAero).trim() : null);
-  });
+    // === Axe X étendu jusqu'à 2025
+    const years = [2010, 2015, ...Array.from({length:(2025-2016+1)}, (_,i) => 2016+i)];
 
-  if (window._kpiS12AeroGrouped) window._kpiS12AeroGrouped.destroy();
+    // Accès aux valeurs brutes (pour repérer "NC"/"À venir") et nettes (numériques)
+    const mapRaw   = new Map(rows.map(r => [Number(String(r[K_YEAR]).replace(/[^\d]/g,'')), r]));
+    const mapClean = new Map(yearly.map(r => [r.year, r]));
 
-  window._kpiS12AeroGrouped = new Chart(canvas.getContext('2d'), {
-    type: 'bar',
-    data: {
-      labels: years,
-      datasets: [
-        {
-          label: 'Scope 1 & 2 (t éq CO₂)',
-          data: valsS12,
-          // Barres plus claires si manquantes
-          backgroundColor: (ctx) => {
-            const i = ctx.dataIndex;
-            return missingS12[i] ? toRGBA('#9467bd', 0.25) : toRGBA('#9467bd', 0.70);
+    const valsS12 = [];
+    const valsAero = [];
+    const missingS12 = [];   // "NC" / "A venir" / null
+    const missingAero = [];
+
+    years.forEach(y => {
+      const rawRow = mapRaw.get(y) || {};
+      const clean  = mapClean.get(y) || { s12: 0, aero: 0 };
+
+      // valeurs numériques (0 si manquant)
+      valsS12.push(clean.s12 || 0);
+      valsAero.push(clean.aero || 0);
+
+      // marquage "NC" / "A venir"
+      const rawS12  = rawRow?.[K_S12];
+      const rawAero = rawRow?.[K_AERO];
+      const isText  = v => {
+        const s = (v ?? '').toString().trim().toLowerCase();
+        return s.length && (isNaN(parseFloat(s.replace(',', '.'))) || s.includes('nc') || s.includes('venir'));
+      };
+
+      missingS12.push(isText(rawS12)  ? String(rawS12).trim()  : null);
+      missingAero.push(isText(rawAero) ? String(rawAero).trim() : null);
+    });
+
+    if (window._kpiS12AeroGrouped) window._kpiS12AeroGrouped.destroy();
+
+    window._kpiS12AeroGrouped = new Chart(canvas.getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: years,
+        datasets: [
+          {
+            label: 'Scope 1 & 2 (t éq CO₂)',
+            data: valsS12,
+            backgroundColor: (ctx) => {
+              const i = ctx.dataIndex;
+              return missingS12[i] ? toRGBA('#9467bd', 0.25) : toRGBA('#9467bd', 0.70);
+            },
+            borderColor: '#9467bd',
+            borderWidth: 1,
+            missingLabels: missingS12
           },
-          borderColor: '#9467bd',
-          borderWidth: 1,
-          missingLabels: missingS12   // <-- on passe les libellés manquants au plugin
-        },
-        {
-          label: 'Aéronefs (t éq CO₂)',
-          data: valsAero,
-          backgroundColor: (ctx) => {
-            const i = ctx.dataIndex;
-            return missingAero[i] ? toRGBA('#1f78b4', 0.25) : toRGBA('#1f78b4', 0.70);
-          },
-          borderColor: '#1f78b4',
-          borderWidth: 1,
-          missingLabels: missingAero   // <-- idem
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { position: 'top' },
-        tooltip: {
-          callbacks: {
-            label: (ctx) => {
-              const miss = ctx.dataset.missingLabels?.[ctx.dataIndex];
-              if (miss) {
-                // Affiche "NC" / "À venir" si non numérique
-                return `${ctx.dataset.label} : ${miss}`;
+          {
+            label: 'Aéronefs (t éq CO₂)',
+            data: valsAero,
+            backgroundColor: (ctx) => {
+              const i = ctx.dataIndex;
+              return missingAero[i] ? toRGBA('#1f78b4', 0.25) : toRGBA('#1f78b4', 0.70);
+            },
+            borderColor: '#1f78b4',
+            borderWidth: 1,
+            missingLabels: missingAero
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top' },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => {
+                const miss = ctx.dataset.missingLabels?.[ctx.dataIndex];
+                if (miss) return `${ctx.dataset.label} : ${miss}`;
+                const v = ctx.raw ?? 0;
+                return `${ctx.dataset.label} : ${formatTonsFR(v)} t éq CO₂`;
               }
-              const v = ctx.raw ?? 0;
-              return `${ctx.dataset.label} : ${formatTonsFR(v)} t éq CO₂`;
             }
           }
+        },
+        scales: {
+          x: { stacked: false, ticks: { autoSkip: false, maxRotation: 0 } },
+          y: { beginAtZero: true, title: { display: true, text: 't éq CO₂' } }
         }
       },
-      scales: {
-        x: { stacked: false, ticks: { autoSkip: false, maxRotation: 0 } },
-        y: { beginAtZero: true, title: { display: true, text: 't éq CO₂' } }
-      }
-    },
-    // Ajoute le plugin maison + tes labels de valeurs
-    plugins: [valueLabelsPlugin, missingDataPlugin]
-  });
+      // Plugins spécifiques KPI2 : pastilles manquants + labels Aéronefs + labels S1&2 verticaux
+      plugins: [aeroValueLabelsPlugin, missingDataPlugin, s12VerticalLabelsPlugin]
+    });
 
-  // === Phrase explicative (inchangée), garde ton calcul XX/YY/ZZ
-  const y2017 = mapClean.get(2017);
-  const y2024 = mapClean.get(2024);
-  const total2017 = (y2017 ? (y2017.s12 + y2017.aero) : null);
-  const total2024 = (y2024 ? (y2024.s12 + y2024.aero) : null);
+    // ======= Phrase explicative (inchangée) =======
+    const y2017 = mapClean.get(2017);
+    const y2024 = mapClean.get(2024);
+    const total2017 = (y2017 ? (y2017.s12 + y2017.aero) : null);
+    const total2024 = (y2024 ? (y2024.s12 + y2024.aero) : null);
 
-  let YY = null, ZZ = null;
-  if (total2017 && total2017 > 0 && total2024 !== null) {
-    YY = ((total2024 / total2017) - 1) * 100;
-  }
-  if (y2017 && y2017.s12 > 0 && y2024) {
-    ZZ = ((y2024.s12 / y2017.s12) - 1) * 100;
-  }
+    let YY = null, ZZ = null;
+    if (total2017 && total2017 > 0 && total2024 !== null) {
+      YY = ((total2024 / total2017) - 1) * 100;
+    }
+    if (y2017 && y2017.s12 > 0 && y2024) {
+      ZZ = ((y2024.s12 / y2017.s12) - 1) * 100;
+    }
 
-  let explain = document.getElementById('kpiS12AeroExplain');
-  if (!explain) {
-    explain = document.createElement('div');
-    explain.id = 'kpiS12AeroExplain';
-    explain.style.marginTop = '8px';
-    explain.style.fontSize = '0.95rem';
-    explain.style.color = '#333';
-    canvas.parentElement?.appendChild(explain);
-  }
+    let explain = document.getElementById('kpiS12AeroExplain');
+    if (!explain) {
+      explain = document.createElement('div');
+      explain.id = 'kpiS12AeroExplain';
+      explain.style.marginTop = '8px';
+      explain.style.fontSize = '0.95rem';
+      explain.style.color = '#333';
+      canvas.parentElement?.appendChild(explain);
+    }
 
-  const XX = (typeof window._kpi1_shareS12 === 'number') ? window._kpi1_shareS12 : null;
-  const textePart = (XX !== null)
-    ? `représentent seulement ${XX.toFixed(1)}% des émissions de l'aéroport`
-    : `représentent une part limitée des émissions de l'aéroport`;
+    const XX = (typeof window._kpi1_shareS12 === 'number') ? window._kpi1_shareS12 : null;
+    const textePart = (XX !== null)
+      ? `représentent seulement ${XX.toFixed(1)}% des émissions de l'aéroport`
+      : `représentent une part limitée des émissions de l'aéroport`;
 
-  const texteYY = (YY === null)
-    ? `les émissions totales (S1&2 + aéronefs) entre 2017 et 2024 sont « n.d. » faute de données complètes`
-    : `les émissions ont ${YY >= 0 ? 'augmenté' : 'diminué'} de ${Math.abs(YY).toFixed(1)}% entre 2017 et 2024`;
+    const texteYY = (YY === null)
+      ? `les émissions totales (S1&2 + aéronefs) entre 2017 et 2024 sont « n.d. » faute de données complètes`
+      : `les émissions ont ${YY >= 0 ? 'augmenté' : 'diminué'} de ${Math.abs(YY).toFixed(1)}% entre 2017 et 2024`;
 
-  let texteZZ;
-  if (ZZ === null) {
-    texteZZ = `la variation des scopes 1 & 2 est « n.d. » faute de données complètes`;
-  } else if (ZZ < 0) {
-    texteZZ = `la réduction de ${Math.abs(ZZ).toFixed(1)}% sur les scopes 1 & 2, bien que réelle, n'a aucune influence`;
-  } else if (ZZ > 0) {
-    texteZZ = `l’augmentation de ${Math.abs(ZZ).toFixed(1)}% sur les scopes 1 & 2 n'a aucune influence`;
-  } else {
-    texteZZ = `la stabilité des scopes 1 & 2 n'a aucune influence`;
-  }
+    let texteZZ;
+    if (ZZ === null) {
+      texteZZ = `la variation des scopes 1 & 2 est « n.d. » faute de données complètes`;
+    } else if (ZZ < 0) {
+      texteZZ = `la réduction de ${Math.abs(ZZ).toFixed(1)}% sur les scopes 1 & 2, bien que réelle, n'a aucune influence`;
+    } else if (ZZ > 0) {
+      texteZZ = `l’augmentation de ${Math.abs(ZZ).toFixed(1)}% sur les scopes 1 & 2 n'a aucune influence`;
+    } else {
+      texteZZ = `la stabilité des scopes 1 & 2 n'a aucune influence`;
+    }
 
-  explain.innerText =
-    `Les émissions de GES des scopes 1 & 2 sur lesquels reposent les actions de décarbonation ` +
-    `de l'accréditation ACA 4 ${textePart} dès lors que l'on intègre dans le périmètre d'analyse ` +
-    `les transports (aériens et routiers). Enfin, sur ce même périmètre, on peut voir que ${texteYY}, ` +
-    `${texteZZ}.`;
-})();
-   });
+    explain.innerText =
+      `Les émissions de GES des scopes 1 & 2 sur lesquels reposent les actions de décarbonation ` +
+      `de l'accréditation ACA 4 ${textePart} dès lors que l'on intègre dans le périmètre d'analyse ` +
+      `les transports (aériens et routiers). Enfin, sur ce même périmètre, on peut voir que ${texteYY}, ` +
+      `${texteZZ}.`;
+  })();
+});
  
   /* ====== 1. Émissions journalières par scope ====== */
   parseCSV('./data/EXPORT_daily_scopes.csv', (data,headers) => {
