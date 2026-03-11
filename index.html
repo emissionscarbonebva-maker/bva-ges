@@ -1075,13 +1075,13 @@ parseCSV('./data/EXPORT_yearly_total.csv', (rows, rawHeaders) => {
     return { year, s12, aero, ok: (s12 + aero) > 0 };
   }).filter(r => r.year).sort((a,b) => a.year - b.year);
 
-  /* === Pastilles "NC" / "À venir" ancrées près de l'axe X === */
+ /* === Pastilles "NC" / "À venir" ancrées près de l'axe X === */
 const missingDataPlugin = {
   id: 'missingDataPlugin',
   afterDatasetsDraw(chart) {
     const { ctx, chartArea, scales: { x, y } } = chart;
-    const baseY = y.getPixelForValue(0);                           // ligne de base (zéro)
-    const yPos  = Math.min(baseY - 20, chartArea.bottom - 22);     // 20px au-dessus de l'axe, borné
+    const baseY = y.getPixelForValue(0);                 // ligne de base (zéro)
+    const yPos  = Math.min(baseY - 20, chartArea.bottom - 22);
 
     chart.data.datasets.forEach((ds, dsi) => {
       const missing = ds.missingLabels || [];
@@ -1090,7 +1090,7 @@ const missingDataPlugin = {
       missing.forEach((label, i) => {
         if (!label) return;
 
-        // Centre de la barre i de ce dataset (petit décalage gauche/droite si 2 pastilles la même année)
+        // Centre de la barre, léger décalage si 2 pastilles sur la même année
         const el = meta.data?.[i];
         const xPos = (el ? el.x : x.getPixelForValue(i)) + (ds.role === 's12' ? -12 : +12);
 
@@ -1104,8 +1104,8 @@ const missingDataPlugin = {
         let px = xPos - w / 2;
         let py = yPos;
 
-        // garde dans la zone chart
-        px = Math.max(chartArea.left,  Math.min(px, chartArea.right - w));
+        // borne dans la zone chart
+        px = Math.max(chartArea.left, Math.min(px, chartArea.right - w));
 
         ctx.fillStyle = '#F6C96E';
         ctx.beginPath();
@@ -1132,9 +1132,9 @@ const missingDataPlugin = {
   }
 };
 
-/* === Paramètres d'affichage (UNE seule déclaration) === */
+/* === Paramètres (UNE seule déclaration) === */
 const KPI2_LABELS_TUNING = {
-  minWidthForLabels: 700,
+  minWidthForLabels: 0, // ⬅️ plus de seuil : on dessine toujours
   s12:  { xOffset: 0, yOffset: 4, color: '#9467bd' }, // S1&2, vertical
   aero: { xOffset: 0, yOffset: 4, color: '#222'     }  // Aéronefs, horizontal
 };
@@ -1149,7 +1149,7 @@ const aeroValueLabelsPlugin = {
     ctx.font = '11px Arial';
 
     chart.data.datasets.forEach((ds, dsi) => {
-      if (ds.role !== 'aero') return;             // ⬅️ on ne dépend plus du libellé
+      if (ds.role !== 'aero') return;         // on ne dépend plus du libellé
       const meta = chart.getDatasetMeta(dsi);
       if (!meta || meta.hidden) return;
 
@@ -1171,7 +1171,7 @@ const aeroValueLabelsPlugin = {
   }
 };
 
-/* === Étiquettes verticales vers le haut pour "Scope 1 & 2" === */
+/* === Étiquettes verticales (vers le haut) pour "Scope 1 & 2" === */
 const s12VerticalLabelsPlugin = {
   id: 's12VerticalLabelsPlugin',
   afterDatasetsDraw(chart) {
@@ -1181,7 +1181,7 @@ const s12VerticalLabelsPlugin = {
     ctx.font = '11px Arial';
 
     chart.data.datasets.forEach((ds, dsi) => {
-      if (ds.role !== 's12') return;              // ⬅️ on ne dépend plus du libellé
+      if (ds.role !== 's12') return;          // on ne dépend plus du libellé
       const meta = chart.getDatasetMeta(dsi);
       if (!meta || meta.hidden) return;
 
@@ -1195,7 +1195,9 @@ const s12VerticalLabelsPlugin = {
         ctx.fillStyle = KPI2_LABELS_TUNING.s12.color;
 
         ctx.save();
+        // position juste au-dessus de la barre violette avec offsets
         ctx.translate(x + KPI2_LABELS_TUNING.s12.xOffset, y - KPI2_LABELS_TUNING.s12.yOffset);
+        // vertical "vers le haut"
         ctx.rotate(-Math.PI / 2);
         ctx.textAlign   = 'right';
         ctx.textBaseline= 'middle';
@@ -1207,7 +1209,6 @@ const s12VerticalLabelsPlugin = {
     ctx.restore();
   }
 };
-
  
   (function renderKPI_S12_vs_Aero_Grouped(){
     const canvas = document.getElementById('kpiScope12');
@@ -1220,7 +1221,7 @@ const s12VerticalLabelsPlugin = {
     }
 
     // === Axe X étendu jusqu'à 2025
-    const years = [2010, 2015, ...Array.from({length:(2025-2016+1)}, (_,i) => 2016+i)];
+    const years = [2010, 2015, ...Array.from({length:(2024-2016+1)}, (_,i) => 2016+i)];
 
     // Accès aux valeurs brutes (pour repérer "NC"/"À venir") et nettes (numériques)
     const mapRaw   = new Map(rows.map(r => [Number(String(r[K_YEAR]).replace(/[^\d]/g,'')), r]));
