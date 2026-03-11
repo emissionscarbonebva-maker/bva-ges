@@ -20,17 +20,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
-<script src="https://cdn.jsdelivr.net/npm/date-fns@2.30.0/dist/date-fns.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-
-<style>
-body{
-  margin:0;
-  font-family:Arial, sans-serif;
+https://cdn.jsdelivr.net/npm/chart.js@3.9.1</script>
+<script src="https://cdn.jsdelivr.net/npm0.0/dist/date-fns.min.js</script>
+<script src="https://cdn.jsdelivr.net/npm/chartte-fns@2</script>
+https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css  font-family:Arial, sans-serif;
   display:flex;
   background:#f5f6fa;
 }
@@ -245,7 +239,13 @@ h3{
 .main .card:has(#tableArrivals) {
   width: 100%; max-width: var(--narrow-max); margin-inline: auto;
 }
-.main .card canvas { display: block; max-width: 100%; height: auto; }
+
+/* Ajustement utile : s'assurer que les canvas s'affichent proprement dans les cartes */
+.main .card canvas { 
+  display: block; 
+  max-width: 100%; 
+  height: auto; 
+}
 .table-wrapper { max-width: 100%; overflow: auto; }
 .chart-container { width: 100%; max-width: 100%; margin-inline: auto; }
 
@@ -265,6 +265,11 @@ h3{
 #kpiScope12 { width:100% !important; height:100% !important; }
 .kpi-explain { margin-top:8px; font-size:0.95rem; color:#333; }
 
+/* === Option 2 : classe utilitaire pour forcer la pleine largeur === */
+.card.full-width {
+  max-width: none !important;   /* lève la contrainte 1050px */
+  margin-inline: 0 !important;  /* supprime le centrage auto */
+}
 </style>
 
 <script type="application/ld+json">
@@ -282,29 +287,21 @@ h3{
 }
 </script>
 
-<link rel="icon" type="image/png" href="Favicon/favicon.png">  
-</head>
-
-<body>
-
-<!-- SIDEBAR -->
+<link rel="icon" type="image/png" href="Favicon/favicon
 <div class="sidebar" id="sidebar">
   <div class="logo">
-    <img src="logo-bva.png">
-  </div>
+    <img src="logo-b/div>
 
   <button id="toggleSidebar" class="toggle-btn">
     <i class="fa-solid fa-angle-left"></i>
   </button>
 
   <nav class="menu">
-    <a href="index.html" data-title="Accueil">
-<span class="icon">🏠</span>
+    <a href="indexan class="icon">🏠</span>
 <span class="text">Accueil</span>
 </a>
 
-<a href="methodologie.html" data-title="Méthodologie">
-<span class="icon">📘</span>
+<a href="methodologie.html" data-title="Méthod
 <span class="text">Méthodologie</span>
 </a>
 
@@ -359,8 +356,8 @@ h3{
       </p>
     </div>
   
-    <!-- Container KPI qui s'aligne sur la taille du container "Analyse des émissions en 2026" -->
-    <div id="containerKPIs" class="card" data-match-size="#containerAnalyse2026">
+    <!-- Container KPI mis en pleine largeur via la classe utilitaire -->
+    <div id="containerKPIs" class="card full-width" data-match-size="#containerAnalyse2026">
       <h2>Indicateurs clés</h2>
 
       <div class="metrics kpis-grid">
@@ -535,6 +532,8 @@ h3{
     Hébergement : GitHub Pages (GitHub Inc.)
   </footer>
 </div>
+</body>
+</html>
 
 <!-- ========== JS GLOBALS (helpers) ========== -->
 <script>
