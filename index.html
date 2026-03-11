@@ -10,7 +10,7 @@
 <meta name="keywords" content="BVA, carbone, GES, émissions, Beauvais, empreinte carbone aéroport Beauvais, gaz effet de serre, pollution Beauvais, émissions aviation France, bilan carbone, 
  bilan carbone aéroport Beauvais">
 <meta name="author" content="Analyse indépendante BVA">
-<meta name="robots" content="index, follow">
+<meta name="robots" content=-"index, follow">
 
 <!-- ===== Open Graph ===== -->
 <meta property="og:title" content="Émissions carbone Aéroport Paris-Beauvais (BVA)">
@@ -304,20 +304,81 @@ h3{
 .table-wrapper{ max-width:100%; overflow:auto; }
 .chart-container{ width:100%; max-width:100%; margin-inline:auto; }
 
-/* ====== KPI (styles existants que tu veux garder) ====== */
-.kpis-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-  gap: 16px;
-}
-.metric-header { display:flex; justify-content:space-between; align-items:flex-end; gap:12px; }
-.metric-title { font-weight:600; line-height:1.2; }
-.metric-body { margin-top:8px; }
-.mini-legend { font-size:0.9em; margin-top:6px; color:#555; }
-.kpi-explain { margin-top:8px; font-size:0.95rem; color:#333; }
+/* ====== Indicateurs clés : format souhaité ====== */
 
-/*}*/
- 
+/* Mise en page en 2 colonnes : KPI cumul (gauche) | Histogramme (droite) */
+.kpi-layout{
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;  /* gauche un peu plus large */
+  gap: 16px;
+  align-items: stretch;
+}
+
+/* Panneaux internes doux */
+.kpi-panel{
+  background: #eef2f7;
+  border-radius: 12px;
+  padding: 16px 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+
+/* En‑tête de chaque panneau : titre à gauche, valeur à droite (si présent) */
+.kpi-head{
+  display:flex; 
+  justify-content:space-between; 
+  align-items:flex-end; 
+  gap:12px; 
+  margin-bottom:8px;
+}
+
+.kpi-title{
+  font-weight:600; 
+  line-height:1.2; 
+  color:#253b6e; 
+  font-size: clamp(15px, 1.6vw, 18px);
+}
+
+.kpi-value{
+  font-weight:800; 
+  color:#1f3c88; 
+  font-size: clamp(22px, 4vw, 32px);
+  white-space: nowrap;
+}
+
+/* Hôte du graphe (droite) pour un remplissage propre avec maintainAspectRatio:false */
+.kpi-chart-host{
+  position:relative; 
+  width:100%; 
+  height:320px;         /* ajuste à 300–360px selon ton goût */
+}
+
+/* Barres 100% (ruban) : canvas bas et lisible */
+#kpiBreakdown{
+  margin-top: 6px;
+}
+
+/* Légendes compactes/explications */
+.kpi-legend, .kpi-explain{
+  font-size: 0.92rem;
+  color:#555;
+  margin-top: 6px;
+}
+
+/* Responsive : en dessous de 900px -> pile verticale */
+@media (max-width: 900px){
+  .kpi-layout{ grid-template-columns: 1fr; }
+}
+
+/* Canvas responsive et sans débordement */
+#kpiScope12{ width:100% !important; height:100% !important; }
+.main .card canvas{
+  display:block; 
+  width:100%; 
+  height:auto; 
+  max-width:100%;
+}
+``
+
 </style>
 
 <script type="application/ld+json">
@@ -415,38 +476,39 @@ h3{
       </p>
     </div>
   
-    <!-- Container KPI mis en pleine largeur via la classe utilitaire -->
+    <!-- Container KPI -->
     <div id="containerKPIs" class="card card--normal">
-      <h2>Indicateurs clés</h2>
+  <h2>Indicateurs clés</h2>
 
-      <div class="metrics kpis-grid">
-        <!-- KPI 1 : cumul, ruban 100% -->
-        <div class="metric-box">
-          <div class="metric-header">
-            <div class="metric-title">Émissions totales (cumul le plus récent)</div>
-            <div id="kpiTotal" class="metric-value">…</div>
-          </div>
+  <div class="kpi-layout">
 
-          <div class="metric-body">
-            <canvas id="kpiBreakdown" height="60"></canvas>
-            <div id="kpiBreakdownLegend" class="mini-legend"></div>
-          </div>
-        </div>
-
-        <!-- KPI 2+3 fusion : histogramme groupé S1&2 vs Aéronefs -->
-        <div class="metric-box">
-          <div class="metric-title">S1&amp;2 vs Aéronefs — 2010, 2015, puis 2016→2024</div>
-
-          <!-- Hôte de chart pour un remplissage fluide -->
-          <div class="chart-host">
-            <canvas id="kpiScope12"></canvas>
-          </div>
-
-          <!-- Ligne explicative calculée / insérée par le JS -->
-          <div id="kpiS12AeroExplain" class="kpi-explain"></div>
-        </div>
+    <!-- Panneau gauche : KPI cumul + ruban 100% -->
+    <section class="kpi-panel">
+      <div class="kpi-head">
+        <div class="kpi-title">Émissions totales (cumul le plus récent)</div>
+        <div id="kpiTotal" class="kpi-value">…</div>
       </div>
-    </div>
+
+      <!-- Ruban 100% -->
+      <canvas id="kpiBreakdown" height="64"></canvas>
+      <div id="kpiBreakdownLegend" class="kpi-legend"></div>
+    </section>
+
+    <!-- Panneau droit : Histogramme groupé + explication -->
+    <section class="kpi-panel">
+      <div class="kpi-head">
+        <div class="kpi-title">S1&amp;2 vs Aéronefs — 2010, 2015, puis 2016→2024</div>
+      </div>
+
+      <div class="kpi-chart-host">
+        <canvas id="kpiScope12"></canvas>
+      </div>
+
+      <div id="kpiS12AeroExplain" class="kpi-explain"></div>
+    </section>
+
+  </div>
+</div>
 
     <div class="card card--narrow">
       <h2 class="tooltip" data-tip="Émissions quotidiennes de CO₂e réparties selon les différents scopes (1 : émissions directes, 2 : électricité, 3 : émissions indirectes).">
@@ -813,74 +875,98 @@ document.addEventListener("DOMContentLoaded", function(){
     return saved;
   }
 
-  /* ======================================================
-     === KPIs MAJ ===
-     KPI 1 : bascule sur EXPORT_cumul_scopes.csv (ligne la + récente)
-              - Aéronefs = cumul_vols
-              - Scope 1 & 2 = cumul_scope_1_2
-              - Autres = cumul_acces_ind + cumul_acces_coll + cumul_employes
-              - Affiche cumul_total en valeur absolue + ruban 100%
-     KPI 2+3 fusion : Histogramme groupé (2010, 2015, 2016→2024)
-              - S1&2 vs Aéronefs à même échelle
-              - Valeurs visibles sur les barres
-              - Ligne explicative en dessous (XX / YY / ZZ)
-     ====================================================== */
+<script>
+/* ======================================================
+   === KPIs MAJ (mise en page "souhaitée") ===
+   - KPI 1 : cumul + ruban 100 %
+   - KPI 2 : histogramme groupé S1&2 vs Aéronefs (plein conteneur)
+   ====================================================== */
 
-  /* ---------- Helpers numériques robustes ---------- */
-  function _toNumberS12(x){
-    if (x === null || x === undefined || x === '') return 0;
-    const s = String(x).replace(/\s/g,'').replace(/,/g,'');
-    const n = parseFloat(s);
-    return isNaN(n) ? 0 : n;
+/* ---------- Helpers numériques ---------- */
+function _toNumberS12(x){
+  if (x === null || x === undefined || x === '') return 0;
+  const s = String(x).replace(/\s/g,'').replace(/,/g,'');
+  const n = parseFloat(s);
+  return isNaN(n) ? 0 : n;
+}
+function _toNumberAero(x){
+  if (x === null || x === undefined || x === '') return 0;
+  const s = String(x).replace(/\s/g,'').replace(',', '.');
+  const n = parseFloat(s);
+  return isNaN(n) ? 0 : n;
+}
+function _toNumberSmart(x){
+  if (x === null || x === undefined || x === '') return 0;
+  let s = String(x).trim();
+  if (/^\d{1,3}(,\d{3})+(\.\d+)?$/.test(s)) s = s.replace(/,/g, '');
+  else if (/^\d{1,3}(\.\d{3})+(,\d+)?$/.test(s)) s = s.replace(/\./g, '').replace(',', '.');
+  else {
+    if (s.includes(',') && !s.includes('.')) s = s.replace(',', '.');
+    s = s.replace(/,/g, '');
   }
-  function _toNumberAero(x){
-    if (x === null || x === undefined || x === '') return 0;
-    const s = String(x).replace(/\s/g,'').replace(',', '.');
-    const n = parseFloat(s);
-    return isNaN(n) ? 0 : n;
-  }
-  function _toNumberSmart(x){
-    if (x === null || x === undefined || x === '') return 0;
-    let s = String(x).trim();
-    if (/^\d{1,3}(,\d{3})+(\.\d+)?$/.test(s)) s = s.replace(/,/g, '');
-    else if (/^\d{1,3}(\.\d{3})+(,\d+)?$/.test(s)) s = s.replace(/\./g, '').replace(',', '.');
-    else {
-      if (s.includes(',') && !s.includes('.')) s = s.replace(',', '.');
-      s = s.replace(/,/g, '');
-    }
-    const n = parseFloat(s);
-    return isNaN(n) ? 0 : n;
-  }
-  function formatTonsFR(n){ return Math.round(n).toLocaleString('fr-FR'); }
+  const n = parseFloat(s);
+  return isNaN(n) ? 0 : n;
+}
+function formatTonsFR(n){ return Math.round(n).toLocaleString('fr-FR'); }
 
-  /* ---------- Plugin Chart.js pour afficher les valeurs au-dessus des barres ---------- */
-  const valueLabelsPlugin = {
-    id: 'valueLabelsPlugin',
-    afterDatasetsDraw(chart, args, pluginOptions) {
-      const { ctx } = chart;
-      ctx.save();
-      ctx.font = (pluginOptions && pluginOptions.font) || '11px Arial';
-      ctx.fillStyle = (pluginOptions && pluginOptions.color) || '#222';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'bottom';
+/* ---------- Petits utilitaires graphiques ---------- */
+function toRGBA(hexOrRgb, alpha=1){
+  // #1f78b4 | rgb(r,g,b) -> rgba(r,g,b,a)
+  if (hexOrRgb.startsWith('#')) {
+    const bigint = parseInt(hexOrRgb.slice(1), 16);
+    const r = (bigint >> 16) & 255, g = (bigint >> 8) & 255, b = bigint & 255;
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+  const m = hexOrRgb.match(/(\d+)[,\s]+(\d+)[,\s]+(\d+)/);
+  if (m) return `rgba(${m[1]}, ${m[2]}, ${m[3]}, ${alpha})`;
+  return hexOrRgb;
+}
+const frTick = (v) => new Intl.NumberFormat('fr-FR').format(v);
 
-      chart.data.datasets.forEach((dataset, datasetIndex) => {
-        const meta = chart.getDatasetMeta(datasetIndex);
-        if (!meta || meta.hidden) return;
-        if (dataset.type && dataset.type !== 'bar') return;
-        meta.data.forEach((element, index) => {
-          const val = dataset.data[index];
-          if (val === null || val === undefined || isNaN(val)) return;
-          const { x, y } = element.getProps(['x', 'y'], true);
-          if (Math.abs(val) > 0) ctx.fillText(formatTonsFR(val), x, y - 3);
-        });
+/* ---------- Defaults Chart.js pour harmoniser le rendu ---------- */
+if (window.Chart) {
+  Chart.defaults.font.family = 'Arial, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue"';
+  Chart.defaults.font.size = 12;
+  Chart.defaults.plugins.legend.position = 'bottom';
+  Chart.defaults.plugins.legend.labels.boxWidth = 14;
+  Chart.defaults.plugins.tooltip.mode = 'index';
+}
+
+/* ---------- Plugin : valeurs au-dessus des barres ---------- */
+const valueLabelsPlugin = {
+  id: 'valueLabelsPlugin',
+  afterDatasetsDraw(chart, args, pluginOptions) {
+    const { ctx } = chart;
+    const font = (pluginOptions && pluginOptions.font) || '11px Arial';
+    const color = (pluginOptions && pluginOptions.color) || '#222';
+    ctx.save();
+    ctx.font = font;
+    ctx.fillStyle = color;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    chart.data.datasets.forEach((ds, i) => {
+      const meta = chart.getDatasetMeta(i);
+      if (!meta || meta.hidden) return;
+      if (ds.type && ds.type !== 'bar') return;
+      meta.data.forEach((el, idx) => {
+        const v = ds.data[idx];
+        if (v === null || v === undefined || isNaN(v)) return;
+        const { x, y } = el.getProps(['x','y'], true);
+        if (Math.abs(v) > 0) ctx.fillText(formatTonsFR(v), x, y - 3);
       });
-      ctx.restore();
-    }
-  };
+    });
+    ctx.restore();
+  }
+};
+if (window.Chart && Chart.register) Chart.register(valueLabelsPlugin);
 
-      
-//KPI 1 basé sur EXPORT_cumul_scopes.csv — on lit désormais la 2e ligne (index 1)
+/* ======================================================
+   KPI 1 — Cumul + ruban 100 %  (EXPORT_cumul_scopes.csv)
+   - Aéronefs = cumul_vol(s)
+   - Scope 1&2 = cumul_scope_1_2
+   - Autres = cumul_acces_ind + cumul_acces_coll + cumul_employes
+   - Affiche cumul_total + ruban horizontal empilé
+   ====================================================== */
 parseCSV('./data/EXPORT_cumul_scopes.csv', (rowsCumul, rawHeadersCumul) => {
   (function renderKPI1_fromCumul() {
     const elTotal  = document.getElementById('kpiTotal');
@@ -888,65 +974,47 @@ parseCSV('./data/EXPORT_cumul_scopes.csv', (rowsCumul, rawHeadersCumul) => {
     const cv       = document.getElementById('kpiBreakdown');
     if (!elTotal || !elLegend || !cv) return;
 
-    // Normalisation et recherche robuste des clés colonnes
     const headers = (rawHeadersCumul || []).map(h => String(h).trim());
     const findHeader = (re) => headers.find(h => re.test(h));
 
     const K_TOT = findHeader(/cumul_total/i);
-    // Accepte "cumul_vol" ou "cumul_vols"
     const K_VOL = findHeader(/cumul_vols?/i);
     const K_S12 = findHeader(/cumul_scope_1_2/i);
     const K_ACI = findHeader(/cumul_acces_ind/i);
     const K_ACC = findHeader(/cumul_acces_coll/i);
     const K_EMP = findHeader(/cumul_employes/i);
 
-    // On force l'utilisation de la 2e ligne du CSV (index 1)
-    const rowIndex = 1;
+    const rowIndex = 1; // 2e ligne
 
-    // Garde-fous
     if (!rowsCumul || rowsCumul.length <= rowIndex || !K_TOT || !K_VOL || !K_S12 || !K_ACI || !K_ACC || !K_EMP) {
-      elTotal.innerText = 'données indisponibles';
-      elLegend.innerText = '';
+      elTotal.textContent = 'données indisponibles';
+      elLegend.textContent = '';
       const ctx = cv.getContext('2d'); ctx.clearRect(0, 0, cv.width, cv.height);
       return;
     }
 
     const r = rowsCumul[rowIndex] || {};
-
-    // Extraction des valeurs (ligne 2)
-    const tot = _toNumberSmart(r[K_TOT]);
+    const tot  = _toNumberSmart(r[K_TOT]);
     const vols = _toNumberSmart(r[K_VOL]);
     const s12  = _toNumberSmart(r[K_S12]);
-    const aind = _toNumberSmart(r[K_ACI]);
-    const acol = _toNumberSmart(r[K_ACC]);
-    const emp  = _toNumberSmart(r[K_EMP]);
-    const oth  = aind + acol + emp;
+    const oth  = _toNumberSmart(r[K_ACI]) + _toNumberSmart(r[K_ACC]) + _toNumberSmart(r[K_EMP]);
 
-    // Si valeurs non valides, on évite d'afficher des NaN
     const invalid = [tot, vols, s12, oth].some(v => !isFinite(v));
     if (invalid || (tot + vols + s12 + oth) <= 0) {
-      elTotal.innerText = 'données indisponibles';
-      elLegend.innerText = '';
+      elTotal.textContent = 'données indisponibles';
+      elLegend.textContent = '';
       const ctx = cv.getContext('2d'); ctx.clearRect(0, 0, cv.width, cv.height);
       return;
     }
 
-    // 1) Valeur au-dessus du graphique
-    const total = tot;
-    elTotal.innerText = `${formatTonsFR(total)} t éq CO₂ (cumul)`;
+    // 1) Gros total à droite du titre (dans le HTML)
+    elTotal.textContent = `${formatTonsFR(tot)} t éq CO₂ (cumul)`;
 
-    // 2) Histogramme empilé horizontal (en dessous)
-    const valuesKPI = [vols, s12, oth];
-    const labelsKPI = [
-      "Aéronefs",
-      "Location based (scopes 1 & 2)",
-      "Autres émissions"
-    ];
-
+    // 2) Ruban 100% horizontal compact
     const colors = {
-      aero:   "rgb(31, 120, 180)",   // bleu
-      s12:    "rgb(148, 103, 189)",  // violet
-      autres: "rgb(255, 127, 14)"    // orange
+      aero:   "#1f78b4",   // bleu
+      s12:    "#9467bd",   // violet
+      autres: "#ff7f0e"    // orange
     };
 
     if (window._kpiBreakdownChart) window._kpiBreakdownChart.destroy();
@@ -955,172 +1023,168 @@ parseCSV('./data/EXPORT_cumul_scopes.csv', (rowsCumul, rawHeadersCumul) => {
       data: {
         labels: [""],
         datasets: [
-          { label: labelsKPI[0], data: [valuesKPI[0]], backgroundColor: toRGBA(colors.aero,   0.85), stack: "kpi" },
-          { label: labelsKPI[1], data: [valuesKPI[1]], backgroundColor: toRGBA(colors.s12,    0.85), stack: "kpi" },
-          { label: labelsKPI[2], data: [valuesKPI[2]], backgroundColor: toRGBA(colors.autres, 0.85), stack: "kpi" }
+          { label: "Aéronefs",                         data: [vols], backgroundColor: toRGBA(colors.aero,   0.90), stack: "kpi", borderRadius: 6, barThickness: 26 },
+          { label: "Location based (scopes 1 & 2)",    data: [s12],  backgroundColor: toRGBA(colors.s12,    0.90), stack: "kpi", borderRadius: 6, barThickness: 26 },
+          { label: "Autres émissions",                 data: [oth],  backgroundColor: toRGBA(colors.autres, 0.90), stack: "kpi", borderRadius: 6, barThickness: 26 }
         ]
       },
       options: {
-        indexAxis: "y",               // horizontal
+        indexAxis: "y",
         responsive: true,
+        maintainAspectRatio: true,     // ruban bas et stable (height fixe via <canvas height="64">)
         plugins: {
-          legend: { display: false }, // légende personnalisée en dessous
+          legend: { display: false },
           tooltip: {
             callbacks: {
               label: (ctx) => {
                 const v = ctx.parsed.x ?? 0;
-                const pct = total > 0 ? (v / total) * 100 : 0;
+                const pct = tot > 0 ? (v / tot) * 100 : 0;
                 return `${ctx.dataset.label} : ${formatTonsFR(v)} t — ${pct.toFixed(1)} %`;
               }
             }
           }
         },
+        layout: { padding: { left: 0, right: 0, top: 0, bottom: 0 } },
         scales: {
-          x: { stacked: true, display: false, max: total },
+          x: { stacked: true, display: false, max: tot },
           y: { stacked: true, display: false }
         }
       }
     });
 
-    // Légende texte en dessous + pourcentages
-    const pA = total > 0 ? (vols / total * 100).toFixed(1) : "0.0";
-    const pS = total > 0 ? (s12  / total * 100).toFixed(1) : "0.0";
-    const pO = total > 0 ? (oth  / total * 100).toFixed(1) : "0.0";
-    window._kpi1_shareS12 = total > 0 ? (s12 / total * 100) : null;
+    // 3) Légende texte sous le ruban
+    const pA = tot > 0 ? (vols / tot * 100).toFixed(1) : "0.0";
+    const pS = tot > 0 ? (s12  / tot * 100).toFixed(1) : "0.0";
+    const pO = tot > 0 ? (oth  / tot * 100).toFixed(1) : "0.0";
+    window._kpi1_shareS12 = tot > 0 ? (s12 / tot * 100) : null;
 
     elLegend.innerHTML =
       `<span style="color:${colors.aero}">■</span> Aéronefs ${pA}%&nbsp;&nbsp;` +
-      `<span style="color:${colors.s12}">■</span> Location based (scopes 1 &amp; 2) ${pS}%&nbsp;&nbsp;` +
+      `<span style="color:${colors.s12}">■</span> Location based (scopes 1 & 2) ${pS}%&nbsp;&nbsp;` +
       `<span style="color:${colors.autres}">■</span> Autres émissions ${pO}%`;
   })();
 });
 
 
-/* ---------- KPI 2+3 fusionné : S1&2 vs Aéronefs (EXPORT_yearly_total.csv) ---------- */
-  parseCSV('./data/EXPORT_yearly_total.csv', (rows, rawHeaders) => {
-    const headers = (rawHeaders || []).map(h => String(h).trim());
-    const K_YEAR  = headers.find(h => h.toLowerCase().includes('année')) || headers[0];
-    const K_S12   = headers.find(h => h.toLowerCase().includes('emissions_scope_1_2'));
-    const K_AERO  = headers.find(h => h.toLowerCase().includes('emissions_aeronefs'));
+/* ======================================================
+   KPI 2 — S1&2 vs Aéronefs (EXPORT_yearly_total.csv)
+   - Histogramme groupé, valeurs visibles
+   - Pleine hauteur du conteneur .kpi-chart-host (maintainAspectRatio:false)
+   ====================================================== */
+parseCSV('./data/EXPORT_yearly_total.csv', (rows, rawHeaders) => {
+  const headers = (rawHeaders || []).map(h => String(h).trim());
+  const K_YEAR  = headers.find(h => h.toLowerCase().includes('année')) || headers[0];
+  const K_S12   = headers.find(h => h.toLowerCase().includes('emissions_scope_1_2'));
+  const K_AERO  = headers.find(h => h.toLowerCase().includes('emissions_aeronefs'));
 
-    const yearly = rows.map(r => {
-      const year = Number(String(r[K_YEAR]).replace(/[^\d]/g,''));
-      const s12  = _toNumberS12(r[K_S12]);
-      const aero = _toNumberAero(r[K_AERO]);
-      return { year, s12, aero, ok: (s12 + aero) > 0 };
-    }).filter(r => r.year).sort((a,b) => a.year - b.year);
+  const yearly = rows.map(r => {
+    const year = Number(String(r[K_YEAR]).replace(/[^\d]/g,''));
+    const s12  = _toNumberS12(r[K_S12]);
+    const aero = _toNumberAero(r[K_AERO]);
+    return { year, s12, aero, ok: (s12 + aero) > 0 };
+  }).filter(r => r.year).sort((a,b) => a.year - b.year);
 
-    (function renderKPI_S12_vs_Aero_Grouped(){
-      const canvas = document.getElementById('kpiScope12');
-      const canvasOld = document.getElementById('kpiAircraft');
-      if (!canvas) return;
-      if (canvasOld) {
-        const ctxOld = canvasOld.getContext('2d');
-        ctxOld && ctxOld.clearRect(0, 0, canvasOld.width, canvasOld.height);
-        canvasOld.style.display = 'none';
-      }
+  (function renderKPI_S12_vs_Aero_Grouped(){
+    const canvas = document.getElementById('kpiScope12');
+    if (!canvas) return;
 
-      const years = [2010, 2015, ...Array.from({length:(2024-2016+1)}, (_,i) => 2016+i)];
-      const map = new Map(yearly.map(r => [r.year, r]));
-      const valsS12  = years.map(y => (map.get(y)?.s12 ?? 0));
-      const valsAero = years.map(y => (map.get(y)?.aero ?? 0));
+    const years = [2010, 2015, ...Array.from({length:(2024-2016+1)}, (_,i) => 2016+i)];
+    const map = new Map(yearly.map(r => [r.year, r]));
+    const valsS12  = years.map(y => (map.get(y)?.s12 ?? 0));
+    const valsAero = years.map(y => (map.get(y)?.aero ?? 0));
 
-      if (window._kpiS12AeroGrouped) window._kpiS12AeroGrouped.destroy();
+    if (window._kpiS12AeroGrouped) window._kpiS12AeroGrouped.destroy();
 
-      window._kpiS12AeroGrouped = new Chart(canvas.getContext('2d'), {
-        type: 'bar',
-        data: {
-          labels: years,
-          datasets: [
-            {
-              label: 'Scope 1 & 2 (t éq CO₂)',
-              data: valsS12,
-              backgroundColor: toRGBA('#9467bd', 0.70),
-              borderColor: '#9467bd',
-              borderWidth: 1
-            },
-            {
-              label: 'Aéronefs (t éq CO₂)',
-              data: valsAero,
-              backgroundColor: toRGBA('#1f78b4', 0.70),
-              borderColor: '#1f78b4',
-              borderWidth: 1
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'top' },
-            tooltip: {
-              callbacks: {
-                label: (ctx) => {
-                  const v = ctx.raw ?? 0;
-                  return `${ctx.dataset.label} : ${formatTonsFR(v)} t éq CO₂`;
-                }
+    window._kpiS12AeroGrouped = new Chart(canvas.getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: years,
+        datasets: [
+          {
+            label: 'Scope 1 & 2 (t éq CO₂)',
+            data: valsS12,
+            backgroundColor: toRGBA('#9467bd', 0.70),
+            borderColor: '#9467bd',
+            borderWidth: 1
+          },
+          {
+            label: 'Aéronefs (t éq CO₂)',
+            data: valsAero,
+            backgroundColor: toRGBA('#1f78b4', 0.70),
+            borderColor: '#1f78b4',
+            borderWidth: 1
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,       // rempli la hauteur de .kpi-chart-host (CSS: height:320px)
+        plugins: {
+          legend: { position: 'top' },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => {
+                const v = ctx.raw ?? 0;
+                return `${ctx.dataset.label} : ${formatTonsFR(v)} t éq CO₂`;
               }
             }
-          },
-          scales: {
-            x: { stacked: false, ticks: { autoSkip: false, maxRotation: 0 } },
-            y: { beginAtZero: true, title: { display: true, text: 't éq CO₂' } }
           }
         },
-        plugins: [valueLabelsPlugin]
-      });
+        layout: { padding: { left: 8, right: 8, top: 0, bottom: 0 } },
+        scales: {
+          x: { stacked: false, ticks: { autoSkip: false, maxRotation: 0 } },
+          y: {
+            beginAtZero: true,
+            title: { display: true, text: 't éq CO₂' },
+            ticks: { callback: frTick },
+            grid: { color: '#e3e7ee' }
+          }
+        }
+      },
+      plugins: [valueLabelsPlugin]
+    });
 
-      // Calculs pour la phrase explicative
-      const y2017 = map.get(2017);
-      const y2024 = map.get(2024);
-      const total2017 = (y2017 ? (y2017.s12 + y2017.aero) : null);
-      const total2024 = (y2024 ? (y2024.s12 + y2024.aero) : null);
+    // Phrase explicative sous le graphe
+    const y2017 = map.get(2017);
+    const y2024 = map.get(2024);
+    const total2017 = (y2017 ? (y2017.s12 + y2017.aero) : null);
+    const total2024 = (y2024 ? (y2024.s12 + y2024.aero) : null);
 
-      let YY = null, ZZ = null;
-      if (total2017 && total2017 > 0 && total2024 !== null) {
-        YY = ((total2024 / total2017) - 1) * 100;
-      }
-      if (y2017 && y2017.s12 > 0 && y2024) {
-        ZZ = ((y2024.s12 / y2017.s12) - 1) * 100;
-      }
+    let YY = null, ZZ = null;
+    if (total2017 && total2017 > 0 && total2024 !== null) YY = ((total2024 / total2017) - 1) * 100;
+    if (y2017 && y2017.s12 > 0 && y2024) ZZ = ((y2024.s12 / y2017.s12) - 1) * 100;
 
-      let explain = document.getElementById('kpiS12AeroExplain');
-      if (!explain) {
-        explain = document.createElement('div');
-        explain.id = 'kpiS12AeroExplain';
-        explain.style.marginTop = '8px';
-        explain.style.fontSize = '0.95rem';
-        explain.style.color = '#333';
-        canvas.parentElement?.appendChild(explain);
-      }
+    let explain = document.getElementById('kpiS12AeroExplain');
+    if (!explain) {
+      explain = document.createElement('div');
+      explain.id = 'kpiS12AeroExplain';
+      explain.className = 'kpi-explain';
+      canvas.parentElement?.appendChild(explain);
+    }
 
-      const XX = (typeof window._kpi1_shareS12 === 'number') ? window._kpi1_shareS12 : null;
-      const textePart = (XX !== null)
-        ? `représentent seulement ${XX.toFixed(1)}% des émissions de l'aéroport`
-        : `représentent une part limitée des émissions de l'aéroport`;
+    const XX = (typeof window._kpi1_shareS12 === 'number') ? window._kpi1_shareS12 : null;
+    const textePart = (XX !== null)
+      ? `représentent seulement ${XX.toFixed(1)} % des émissions de l'aéroport`
+      : `représentent une part limitée des émissions de l'aéroport`;
 
-      const texteYY = (YY === null)
-        ? `les émissions totales (S1&2 + aéronefs) entre 2017 et 2024 sont « n.d. » faute de données complètes`
-        : `les émissions ont ${YY >= 0 ? 'augmenté' : 'diminué'} de ${Math.abs(YY).toFixed(1)}% entre 2017 et 2024`;
+    const texteYY = (YY === null)
+      ? `les émissions totales (S1&2 + aéronefs) entre 2017 et 2024 sont « n.d. » faute de données complètes`
+      : `les émissions ont ${YY >= 0 ? 'augmenté' : 'diminué'} de ${Math.abs(YY).toFixed(1)} % entre 2017 et 2024`;
 
-      let texteZZ;
-      if (ZZ === null) {
-        texteZZ = `la variation des scopes 1 & 2 est « n.d. » faute de données complètes`;
-      } else if (ZZ < 0) {
-        texteZZ = `la réduction de ${Math.abs(ZZ).toFixed(1)}% sur les scopes 1 & 2, bien que réelle, n'a aucune influence`;
-      } else if (ZZ > 0) {
-        texteZZ = `l’augmentation de ${Math.abs(ZZ).toFixed(1)}% sur les scopes 1 & 2 n'a aucune influence`;
-      } else {
-        texteZZ = `la stabilité des scopes 1 & 2 n'a aucune influence`;
-      }
+    let texteZZ;
+    if (ZZ === null)      texteZZ = `la variation des scopes 1 & 2 est « n.d. » faute de données complètes`;
+    else if (ZZ < 0)      texteZZ = `la réduction de ${Math.abs(ZZ).toFixed(1)} % sur les scopes 1 & 2, bien que réelle, n'a aucune influence`;
+    else if (ZZ > 0)      texteZZ = `l’augmentation de ${Math.abs(ZZ).toFixed(1)} % sur les scopes 1 & 2 n'a aucune influence`;
+    else                  texteZZ = `la stabilité des scopes 1 & 2 n'a aucune influence`;
 
-      explain.innerText =
-        `Les émissions de GES des scopes 1 & 2 sur lesquels reposent les actions de décarbonation ` +
-        `de l'accréditation ACA 4 ${textePart} dès lors que l'on intègre dans le périmètre d'analyse ` +
-        `les transports (aériens et routiers). Enfin, sur ce même périmètre, on peut voir que ${texteYY}, ` +
-        `${texteZZ}.`;
-    })();
-   });
+    explain.textContent =
+      `Les émissions de GES des scopes 1 & 2 sur lesquels reposent les actions de décarbonation ` +
+      `de l'accréditation ACA 4 ${textePart} dès lors que l'on intègre dans le périmètre d'analyse ` +
+      `les transports (aériens et routiers). Enfin, sur ce même périmètre, on peut voir que ${texteYY}, ` +
+      `${texteZZ}.`;
+  })();
+});
+</script>
  
   /* ====== 1. Émissions journalières par scope ====== */
   parseCSV('./data/EXPORT_daily_scopes.csv', (data,headers) => {
