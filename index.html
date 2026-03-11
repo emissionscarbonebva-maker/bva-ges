@@ -107,12 +107,11 @@ body{
 .menu-items a:hover{ opacity:0.8; }
 
 /* MAIN */
-.main{ flex:1 1 auto; padding:20px; min-width:0; }
+.main{ flex:1 1 auto; padding:40px; min-width:0; }
 
 /* HEADER */
 header{ background:#1f3c88; color:white; padding:25px; margin-bottom:30px; }
 header h1{ color:white; margin:0; }
-h1{ margin:0; color:#162d63; }
 
 /* SECTIONS */
 section{ margin-bottom:60px; scroll-margin-top:80px; }
@@ -249,7 +248,7 @@ h3{
 /* Base commune des cartes */
 .card{
   background:white;
-  padding:20px;
+  padding:28px;
   border-radius:10px;
   box-shadow:0 4px 14px rgba(0,0,0,0.08);
   margin-bottom:35px;
@@ -266,7 +265,9 @@ h3{
 /* 1) Carte "normal" : largeur = (largeur du main) - 2×gouttière, centrée par marges */
 .card--normal{
   /* pas de max-width ; la largeur s'ajuste avec la gouttière */
-  margin-inline: var(--page-gap);
+  margin-inline: 0;     /* comme sur Méthodologie : pas de gouttière */
++   width: auto;
++   max-width: none;
 }
 
 /* 2) Carte "narrow" : centrée, largeur "fixe" via max-width (pas de gouttière) */
