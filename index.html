@@ -316,7 +316,50 @@ h3{
 .mini-legend { font-size:0.9em; margin-top:6px; color:#555; }
 .kpi-explain { margin-top:8px; font-size:0.95rem; color:#333; }
 
-/*}*/
+/* ================= KPIs — mise en page "Souhaité" ================= */
+
+/* Grille 2 colonnes = 50/50, 2 lignes (ligne 1 : KPI1 ; ligne 2 : texte) */
+#containerKPIs .kpis-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;   /* 50/50 */
+  grid-template-rows: auto auto;    /* 2 lignes */
+  gap: 16px;
+  align-items: start;               /* contenus démarrent en haut des cellules */
+}
+
+/* Placement des 3 éléments dans la grille */
+#containerKPIs .kpi1-chart{ grid-column: 1; grid-row: 1; }
+#containerKPIs .kpi1-text{
+  grid-column: 1; grid-row: 2;
+  /* Colle le texte en bas de la cellule ⇒ bas aligné avec le bas de KPI2 */
+  display: flex; flex-direction: column; justify-content: flex-end;
+  margin: 0; padding: 0;
+}
+#containerKPIs .kpi2-chart{
+  grid-column: 2; grid-row: 1 / span 2; /* KPI2 occupe la hauteur totale (lignes 1+2) */
+  display: flex; flex-direction: column; align-self: stretch;
+}
+
+/* S'assurer que le graph KPI2 occupe bien la hauteur disponible */
+#containerKPIs .kpi2-chart .chart-host{ flex: 1 1 auto; min-height: 360px; }
+
+/* Optionnel : harmoniser la typo/espacement du texte explicatif */
+#containerKPIs .kpi-explain{ 
+  margin-top: 8px; 
+  font-size: 0.95rem; 
+  color: #333; 
+}
+
+/* Responsive : sur mobile, on empile proprement */
+@media (max-width: 900px){
+  #containerKPIs .kpis-grid{
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto; /* KPI1, Texte, KPI2 */
+  }
+  #containerKPIs .kpi1-chart{ grid-column:1; grid-row:1; }
+  #containerKPIs .kpi1-text { grid-column:1; grid-row:2; }
+  #containerKPIs .kpi2-chart{ grid-column:1; grid-row:3; align-self:auto; }
+}
  
 </style>
 
@@ -416,37 +459,44 @@ h3{
     </div>
   
     <!-- Container KPI mis en pleine largeur via la classe utilitaire -->
-    <div id="containerKPIs" class="card card--normal">
-      <h2>Indicateurs clés</h2>
+    <!-- Container KPI (mise en page "Souhaité") -->
+<div id="containerKPIs" class="card card--normal">
+  <h2>Indicateurs clés</h2>
 
-      <div class="metrics kpis-grid">
-        <!-- KPI 1 : cumul, ruban 100% -->
-        <div class="metric-box">
-          <div class="metric-header">
-            <div class="metric-title">Émissions totales (cumul le plus récent)</div>
-            <div id="kpiTotal" class="metric-value">…</div>
-          </div>
+  <!-- ⚠️ IMPORTANT : on garde .kpis-grid mais on ajoute des classes
+       pour positionner les 3 éléments en CSS Grid -->
+  <div class="metrics kpis-grid">
+    <!-- KPI 1 : histogramme horizontal (colonne gauche, ligne 1) -->
+    <div class="metric-box kpi1-chart">
+      <div class="metric-header">
+        <div class="metric-title">Émissions totales (cumul le plus récent)</div>
+        <div id="kpiTotal" class="metric-value">…</div>
+      </div>
 
-          <div class="metric-body">
-            <canvas id="kpiBreakdown" height="60"></canvas>
-            <div id="kpiBreakdownLegend" class="mini-legend"></div>
-          </div>
-        </div>
-
-        <!-- KPI 2+3 fusion : histogramme groupé S1&2 vs Aéronefs -->
-        <div class="metric-box">
-          <div class="metric-title">S1&amp;2 vs Aéronefs — 2010, 2015, puis 2016→2024</div>
-
-          <!-- Hôte de chart pour un remplissage fluide -->
-          <div class="chart-host">
-            <canvas id="kpiScope12"></canvas>
-          </div>
-
-          <!-- Ligne explicative calculée / insérée par le JS -->
-          <div id="kpiS12AeroExplain" class="kpi-explain"></div>
-        </div>
+      <div class="metric-body">
+        <canvas id="kpiBreakdown" height="60"></canvas>
+        <div id="kpiBreakdownLegend" class="mini-legend"></div>
       </div>
     </div>
+
+    <!-- TEXTE (ce qui était sous KPI2) => passe sous KPI1 (colonne gauche, ligne 2) -->
+    <div class="kpi1-text">
+      <!-- Laisser cet ID : le JS l’actualise déjà -->
+      <div id="kpiS12AeroExplain" class="kpi-explain"></div>
+    </div>
+
+    <!-- KPI 2 : histogramme vertical (colonne droite, s'étend sur 2 lignes) -->
+    <div class="metric-box kpi2-chart">
+      <div class="metric-title">S1&amp;2 vs Aéronefs — 2010, 2015, puis 2016→2024</div>
+
+      <!-- Hôte de chart pour un remplissage fluide -->
+      <div class="chart-host">
+        <canvas id="kpiScope12"></canvas>
+      </div>
+
+    </div>
+  </div>
+</div>
 
     <div class="card card--narrow">
       <h2 class="tooltip" data-tip="Émissions quotidiennes de CO₂e réparties selon les différents scopes (1 : émissions directes, 2 : électricité, 3 : émissions indirectes).">
