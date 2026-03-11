@@ -1128,11 +1128,6 @@ parseCSV('./data/EXPORT_yearly_total.csv', (rows, rawHeaders) => {
 
   /* === Étiquettes numériques horizontales pour la série "Aéronefs" === */
   /* === Tuning lisibilité KPI2 (seuils, offsets, couleurs) === */
-const KPI2_LABELS_TUNING = {
-  minWidthForLabels: 700,             // ⬅️ en dessous, on n'affiche pas les étiquettes
-  s12:  { xOffset: 0,  yOffset: 4,  color: '#9467bd' }, // labels verticaux S1&2
-  aero: { xOffset: 0,  yOffset: 4,  color: '#222'     }  // labels horizontaux Aéronefs
-};
  
  const aeroValueLabelsPlugin = {
     id: 'aeroValueLabelsPlugin',
