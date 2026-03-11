@@ -266,8 +266,8 @@ h3{
 .card--normal{
   /* pas de max-width ; la largeur s'ajuste avec la gouttière */
   margin-inline: 0;     /* comme sur Méthodologie : pas de gouttière */
-+   width: auto;
-+   max-width: none;
+width: auto;
+max-width: none;
 }
 
 /* 2) Carte "narrow" : centrée, largeur "fixe" via max-width (pas de gouttière) */
@@ -1237,7 +1237,8 @@ const s12SimpleLabelsPlugin = {
       // valeurs numériques (0 si manquant)
       valsS12.push(clean.s12 || 0);
       valsAero.push(clean.aero || 0);
-      
+    });
+     
     if (window._kpiS12AeroGrouped) window._kpiS12AeroGrouped.destroy();
 
     window._kpiS12AeroGrouped = new Chart(canvas.getContext('2d'), {
@@ -1251,9 +1252,9 @@ const s12SimpleLabelsPlugin = {
             data: valsS12,
             backgroundColor: (ctx) => {
               const i = ctx.dataIndex;
-              return missingS12[i] ? toRGBA('#9467bd', 0.25) : toRGBA('#9467bd', 0.70);
+              return missingS12[i] ? toRGBA('#1f78b4', 0.25) : toRGBA('#1f78b4', 0.70);
             },
-            borderColor: '#9467bd',
+            borderColor: '#1f78b4',
             borderWidth: 1,
             missingLabels: missingS12
           },
@@ -1261,7 +1262,7 @@ const s12SimpleLabelsPlugin = {
            role: 'aero', 
            label: 'Aéronefs (t éq CO₂)',
             data: valsAero,
-            backgroundColor: toRGBA('#9467bd', 0.70),
+            backgroundColor: toRGBA('#1f78b4', 0.70),
             borderColor: '#1f78b4',
             borderWidth: 1,
            }
