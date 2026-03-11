@@ -1228,8 +1228,7 @@ const s12SimpleLabelsPlugin = {
 
     const valsS12 = [];
     const valsAero = [];
-    const missingAero = [];
-
+    
     years.forEach(y => {
       const rawRow = mapRaw.get(y) || {};
       const clean  = mapClean.get(y) || { s12: 0, aero: 0 };
@@ -1247,16 +1246,12 @@ const s12SimpleLabelsPlugin = {
         labels: years,
         datasets: [
           {
-           role: 's12', 
+           role: 's12',
            label: 'Scope 1 & 2 (t éq CO₂)',
-            data: valsS12,
-            backgroundColor: (ctx) => {
-              const i = ctx.dataIndex;
-              return missingS12[i] ? toRGBA('#1f78b4', 0.25) : toRGBA('#1f78b4', 0.70);
-            },
-            borderColor: '#1f78b4',
-            borderWidth: 1,
-            missingLabels: missingS12
+           data: valsS12,
+           backgroundColor: toRGBA('#9467bd', 0.70), // violet S1&2
+           borderColor: '#9467bd',
+           borderWidth: 1
           },
           {
            role: 'aero', 
