@@ -1171,44 +1171,42 @@ const aeroValueLabelsPlugin = {
   }
 };
 
-/* === Étiquettes verticales (vers le haut) pour "Scope 1 & 2" === */
-const s12VerticalLabelsPlugin = {
-  id: 's12VerticalLabelsPlugin',
+/* === Étiquettes simples pour "Scope 1 & 2" : horizontales au-dessus + "NM" si 0/vide === */
+const s12SimpleLabelsPlugin = {
+  id: 's12SimpleLabelsPlugin',
   afterDatasetsDraw(chart) {
-    if (chart.width < KPI2_LABELS_TUNING.minWidthForLabels) return;
     const { ctx } = chart;
     ctx.save();
-    ctx.font = '11px Arial';
+
+    // Utilise la police par défaut de Chart.js si dispo, sinon fallback léger
+    const d = Chart.defaults?.font;
+    ctx.font = d ? `${d.size}px ${d.family}` : '11px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    // pas de couleur imposée : on garde la couleur de texte par défaut
 
     chart.data.datasets.forEach((ds, dsi) => {
-      if (ds.role !== 's12') return;          // on ne dépend plus du libellé
+      if (ds.role !== 's12') return;           // ne traiter que "Scope 1 & 2"
       const meta = chart.getDatasetMeta(dsi);
       if (!meta || meta.hidden) return;
 
       meta.data.forEach((el, i) => {
-        const miss = ds.missingLabels?.[i];
-        const val  = ds.data[i];
-        if (miss || typeof val !== 'number' || !isFinite(val) || val <= 0) return;
+        const raw = ds.data?.[i];
+        const num = Number(raw);
+        // "NM" si vide / null / undefined / NaN / 0
+        const text = (!isFinite(num) || num === 0) ? 'NM'
+                   : Math.round(num).toLocaleString('fr-FR').replace(/\u202F/g, ' ');
 
         const { x, y } = el.getProps(['x','y'], true);
-        const text = Math.round(val).toLocaleString('fr-FR').replace(/\u202F/g, ' ');
-        ctx.fillStyle = KPI2_LABELS_TUNING.s12.color;
-
-        ctx.save();
-        // position juste au-dessus de la barre violette avec offsets
-        ctx.translate(x + KPI2_LABELS_TUNING.s12.xOffset, y - KPI2_LABELS_TUNING.s12.yOffset);
-        // vertical "vers le haut"
-        ctx.rotate(-Math.PI / 2);
-        ctx.textAlign   = 'right';
-        ctx.textBaseline= 'middle';
-        ctx.fillText(text, 0, 0);
-        ctx.restore();
+        // 4px au-dessus du sommet de la barre (ou au-dessus de la ligne de base si barre nulle)
+        ctx.fillText(text, x, y - 4);
       });
     });
 
     ctx.restore();
   }
 };
+
  
   (function renderKPI_S12_vs_Aero_Grouped(){
     const canvas = document.getElementById('kpiScope12');
@@ -1307,7 +1305,7 @@ const s12VerticalLabelsPlugin = {
         }
       },
       // Plugins spécifiques KPI2 : pastilles manquants + labels Aéronefs + labels S1&2 verticaux
-      plugins: [aeroValueLabelsPlugin, missingDataPlugin, s12VerticalLabelsPlugin]
+      plugins: [aeroValueLabelsPlugin, missingDataPlugin, s12SimpleLabelsPlugin]
     });
 
     // ======= Phrase explicative (inchangée) =======
