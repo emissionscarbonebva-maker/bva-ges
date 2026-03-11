@@ -1075,21 +1075,24 @@ parseCSV('./data/EXPORT_yearly_total.csv', (rows, rawHeaders) => {
     return { year, s12, aero, ok: (s12 + aero) > 0 };
   }).filter(r => r.year).sort((a,b) => a.year - b.year);
 
-  /* === Pastilles "NC" / "À venir" au-dessus des catégories === */
+  /* === Pastilles "NC" / "À venir" ancrées près de l'axe X === */
 const missingDataPlugin = {
   id: 'missingDataPlugin',
   afterDatasetsDraw(chart) {
-    const { ctx, scales: { x, y } } = chart;
+    const { ctx, chartArea, scales: { x, y } } = chart;
+    const baseY = y.getPixelForValue(0);                           // ligne de base (zéro)
+    const yPos  = Math.min(baseY - 20, chartArea.bottom - 22);     // 20px au-dessus de l'axe, borné
+
     chart.data.datasets.forEach((ds, dsi) => {
       const missing = ds.missingLabels || [];
       const meta = chart.getDatasetMeta(dsi);
+
       missing.forEach((label, i) => {
         if (!label) return;
-        // Position (léger décalage pour éviter superposition S1&2 / Aéronefs)
+
+        // Centre de la barre i de ce dataset (petit décalage gauche/droite si 2 pastilles la même année)
         const el = meta.data?.[i];
-        const xPos = el ? el.x + (dsi === 0 ? -12 : 12)
-                        : x.getPixelForValue(i) + (dsi === 0 ? -12 : 12);
-        const yPos = y.top + 10;
+        const xPos = (el ? el.x : x.getPixelForValue(i)) + (ds.role === 's12' ? -12 : +12);
 
         // Pastille arrondie
         const text = String(label).trim();
@@ -1098,10 +1101,13 @@ const missingDataPlugin = {
         const padX = 6, h = 18, r = 9;
         const tw = ctx.measureText(text).width;
         const w = Math.max(28, tw + padX * 2);
-        const px = xPos - w / 2;
-        const py = yPos;
+        let px = xPos - w / 2;
+        let py = yPos;
 
-        ctx.fillStyle = '#F6C96E'; // ambre
+        // garde dans la zone chart
+        px = Math.max(chartArea.left,  Math.min(px, chartArea.right - w));
+
+        ctx.fillStyle = '#F6C96E';
         ctx.beginPath();
         const right = px + w, bottom = py + h;
         ctx.moveTo(px + r, py);
@@ -1126,26 +1132,24 @@ const missingDataPlugin = {
   }
 };
 
-/* === Tuning lisibilité KPI2 (seuils, offsets, couleurs) — Déclaré UNE seule fois === */
+/* === Paramètres d'affichage (UNE seule déclaration) === */
 const KPI2_LABELS_TUNING = {
-  minWidthForLabels: 700,                 // sous cette largeur, on masque les étiquettes
-  s12:  { xOffset: 0,  yOffset: 4, color: '#9467bd' }, // labels verticaux S1&2
-  aero: { xOffset: 0,  yOffset: 4, color: '#222'     } // labels horizontaux Aéronefs
+  minWidthForLabels: 700,
+  s12:  { xOffset: 0, yOffset: 4, color: '#9467bd' }, // S1&2, vertical
+  aero: { xOffset: 0, yOffset: 4, color: '#222'     }  // Aéronefs, horizontal
 };
 
-/* === Étiquettes numériques horizontales pour "Aéronefs" === */
+/* === Étiquettes horizontales pour "Aéronefs" === */
 const aeroValueLabelsPlugin = {
   id: 'aeroValueLabelsPlugin',
   afterDatasetsDraw(chart) {
-    const { ctx } = chart;
-
-    // (option) couper l'affichage si le chart est étroit
     if (chart.width < KPI2_LABELS_TUNING.minWidthForLabels) return;
-
+    const { ctx } = chart;
     ctx.save();
     ctx.font = '11px Arial';
+
     chart.data.datasets.forEach((ds, dsi) => {
-      if (!/aéronefs/i.test(ds.label)) return; // uniquement Aéronefs
+      if (ds.role !== 'aero') return;             // ⬅️ on ne dépend plus du libellé
       const meta = chart.getDatasetMeta(dsi);
       if (!meta || meta.hidden) return;
 
@@ -1156,17 +1160,13 @@ const aeroValueLabelsPlugin = {
 
         const { x, y } = el.getProps(['x','y'], true);
         const text = Math.round(val).toLocaleString('fr-FR').replace(/\u202F/g, ' ');
-
-        // Couleur + offsets
         ctx.fillStyle   = KPI2_LABELS_TUNING.aero.color;
-        const xOffset   = KPI2_LABELS_TUNING.aero.xOffset;
-        const yOffset   = KPI2_LABELS_TUNING.aero.yOffset;
-
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'bottom';
-        ctx.fillText(text, x + xOffset, y - yOffset);
+        ctx.textAlign   = 'center';
+        ctx.textBaseline= 'bottom';
+        ctx.fillText(text, x + KPI2_LABELS_TUNING.aero.xOffset, y - KPI2_LABELS_TUNING.aero.yOffset);
       });
     });
+
     ctx.restore();
   }
 };
@@ -1175,15 +1175,13 @@ const aeroValueLabelsPlugin = {
 const s12VerticalLabelsPlugin = {
   id: 's12VerticalLabelsPlugin',
   afterDatasetsDraw(chart) {
-    const { ctx } = chart;
-
-    // (option) couper l'affichage si le chart est étroit
     if (chart.width < KPI2_LABELS_TUNING.minWidthForLabels) return;
-
+    const { ctx } = chart;
     ctx.save();
     ctx.font = '11px Arial';
+
     chart.data.datasets.forEach((ds, dsi) => {
-      if (!/scope\s*1\s*&\s*2/i.test(ds.label)) return; // uniquement Scope 1 & 2
+      if (ds.role !== 's12') return;              // ⬅️ on ne dépend plus du libellé
       const meta = chart.getDatasetMeta(dsi);
       if (!meta || meta.hidden) return;
 
@@ -1194,27 +1192,23 @@ const s12VerticalLabelsPlugin = {
 
         const { x, y } = el.getProps(['x','y'], true);
         const text = Math.round(val).toLocaleString('fr-FR').replace(/\u202F/g, ' ');
-
-        // Couleur + offsets
-        const xOffset = KPI2_LABELS_TUNING.s12.xOffset;
-        const yOffset = KPI2_LABELS_TUNING.s12.yOffset;
         ctx.fillStyle = KPI2_LABELS_TUNING.s12.color;
 
         ctx.save();
-        // position juste au-dessus de la barre violette avec offset
-        ctx.translate(x + xOffset, y - yOffset);
-        // vertical vers le haut
+        ctx.translate(x + KPI2_LABELS_TUNING.s12.xOffset, y - KPI2_LABELS_TUNING.s12.yOffset);
         ctx.rotate(-Math.PI / 2);
-        ctx.textAlign = 'right';
-        ctx.textBaseline = 'middle';
+        ctx.textAlign   = 'right';
+        ctx.textBaseline= 'middle';
         ctx.fillText(text, 0, 0);
         ctx.restore();
       });
     });
+
     ctx.restore();
   }
 };
 
+ 
   (function renderKPI_S12_vs_Aero_Grouped(){
     const canvas = document.getElementById('kpiScope12');
     const canvasOld = document.getElementById('kpiAircraft');
@@ -1265,7 +1259,8 @@ const s12VerticalLabelsPlugin = {
         labels: years,
         datasets: [
           {
-            label: 'Scope 1 & 2 (t éq CO₂)',
+           role: 's12' 
+           label: 'Scope 1 & 2 (t éq CO₂)',
             data: valsS12,
             backgroundColor: (ctx) => {
               const i = ctx.dataIndex;
@@ -1276,7 +1271,8 @@ const s12VerticalLabelsPlugin = {
             missingLabels: missingS12
           },
           {
-            label: 'Aéronefs (t éq CO₂)',
+           role: 'aero' 
+           label: 'Aéronefs (t éq CO₂)',
             data: valsAero,
             backgroundColor: (ctx) => {
               const i = ctx.dataIndex;
