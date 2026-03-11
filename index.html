@@ -1273,14 +1273,10 @@ const s12SimpleLabelsPlugin = {
            role: 'aero', 
            label: 'Aéronefs (t éq CO₂)',
             data: valsAero,
-            backgroundColor: (ctx) => {
-              const i = ctx.dataIndex;
-              return missingAero[i] ? toRGBA('#1f78b4', 0.25) : toRGBA('#1f78b4', 0.70);
-            },
+            backgroundColor: toRGBA('#9467bd', 0.70),
             borderColor: '#1f78b4',
             borderWidth: 1,
-            missingLabels: missingAero
-          }
+           }
         ]
       },
       options: {
@@ -1291,8 +1287,6 @@ const s12SimpleLabelsPlugin = {
           tooltip: {
             callbacks: {
               label: (ctx) => {
-                const miss = ctx.dataset.missingLabels?.[ctx.dataIndex];
-                if (miss) return `${ctx.dataset.label} : ${miss}`;
                 const v = ctx.raw ?? 0;
                 return `${ctx.dataset.label} : ${formatTonsFR(v)} t éq CO₂`;
               }
@@ -1305,7 +1299,7 @@ const s12SimpleLabelsPlugin = {
         }
       },
       // Plugins spécifiques KPI2 : pastilles manquants + labels Aéronefs + labels S1&2 verticaux
-      plugins: [aeroValueLabelsPlugin, missingDataPlugin, s12SimpleLabelsPlugin]
+     plugins: [aeroValueLabelsPlugin, s12SimpleLabelsPlugin]
     });
 
     // ======= Phrase explicative (inchangée) =======
