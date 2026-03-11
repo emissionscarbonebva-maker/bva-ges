@@ -1067,116 +1067,214 @@ parseCSV('./data/EXPORT_cumul_scopes.csv', (rowsCumul, rawHeadersCumul) => {
       return { year, s12, aero, ok: (s12 + aero) > 0 };
     }).filter(r => r.year).sort((a,b) => a.year - b.year);
 
-    (function renderKPI_S12_vs_Aero_Grouped(){
-      const canvas = document.getElementById('kpiScope12');
-      const canvasOld = document.getElementById('kpiAircraft');
-      if (!canvas) return;
-      if (canvasOld) {
-        const ctxOld = canvasOld.getContext('2d');
-        ctxOld && ctxOld.clearRect(0, 0, canvasOld.width, canvasOld.height);
-        canvasOld.style.display = 'none';
-      }
+   /* === Plugin qui dessine les labels "NC" / "À venir" au-dessus des catégories === */
+const missingDataPlugin = {
+  id: 'missingDataPlugin',
+  afterDatasetsDraw(chart, args) {
+    const { ctx, chartArea, scales: { x, y } } = chart;
+    chart.data.datasets.forEach((ds, dsi) => {
+      const missing = ds.missingLabels || [];
+      const meta = chart.getDatasetMeta(dsi);
+      missing.forEach((label, i) => {
+        if (!label) return;
 
-      const years = [2010, 2015, ...Array.from({length:(2024-2016+1)}, (_,i) => 2016+i)];
-      const map = new Map(yearly.map(r => [r.year, r]));
-      const valsS12  = years.map(y => (map.get(y)?.s12 ?? 0));
-      const valsAero = years.map(y => (map.get(y)?.aero ?? 0));
+        // Position du "pastorel"
+        const el = meta.data?.[i];
+        const xPos = el ? el.x + (dsi === 0 ? -12 : 12)       // léger décalage S1&2 vs Aéronefs
+                        : x.getPixelForValue(i) + (dsi === 0 ? -12 : 12);
+        const yPos = y.top + 10;                               // proche du haut de la zone chart
 
-      if (window._kpiS12AeroGrouped) window._kpiS12AeroGrouped.destroy();
+        // Dessine un badge arrondi
+        const text = String(label).trim();
+        ctx.save();
+        ctx.font = '11px Arial';
+        const padX = 6, padY = 3, h = 18, r = 9;
+        const tw = ctx.measureText(text).width;
+        const w = Math.max(28, tw + padX * 2);
+        const px = xPos - w / 2;
+        const py = yPos;
 
-      window._kpiS12AeroGrouped = new Chart(canvas.getContext('2d'), {
-        type: 'bar',
-        data: {
-          labels: years,
-          datasets: [
-            {
-              label: 'Scope 1 & 2 (t éq CO₂)',
-              data: valsS12,
-              backgroundColor: toRGBA('#9467bd', 0.70),
-              borderColor: '#9467bd',
-              borderWidth: 1
-            },
-            {
-              label: 'Aéronefs (t éq CO₂)',
-              data: valsAero,
-              backgroundColor: toRGBA('#1f78b4', 0.70),
-              borderColor: '#1f78b4',
-              borderWidth: 1
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'top' },
-            tooltip: {
-              callbacks: {
-                label: (ctx) => {
-                  const v = ctx.raw ?? 0;
-                  return `${ctx.dataset.label} : ${formatTonsFR(v)} t éq CO₂`;
-                }
-              }
-            }
-          },
-          scales: {
-            x: { stacked: false, ticks: { autoSkip: false, maxRotation: 0 } },
-            y: { beginAtZero: true, title: { display: true, text: 't éq CO₂' } }
-          }
-        },
-        plugins: [valueLabelsPlugin]
+        ctx.fillStyle = '#F6C96E'; // ambre doux
+        ctx.beginPath();
+        const right = px + w, bottom = py + h;
+        ctx.moveTo(px + r, py);
+        ctx.lineTo(right - r, py);
+        ctx.quadraticCurveTo(right, py, right, py + r);
+        ctx.lineTo(right, bottom - r);
+        ctx.quadraticCurveTo(right, bottom, right - r, bottom);
+        ctx.lineTo(px + r, bottom);
+        ctx.quadraticCurveTo(px, bottom, px, bottom - r);
+        ctx.lineTo(px, py + r);
+        ctx.quadraticCurveTo(px, py, px + r, py);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = '#1B1D22';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(text, xPos, py + h / 2);
+        ctx.restore();
       });
+    });
+  }
+};
+   
+    (function renderKPI_S12_vs_Aero_Grouped(){
+  const canvas = document.getElementById('kpiScope12');
+  const canvasOld = document.getElementById('kpiAircraft');
+  if (!canvas) return;
+  if (canvasOld) {
+    const ctxOld = canvasOld.getContext('2d');
+    ctxOld && ctxOld.clearRect(0, 0, canvasOld.width, canvasOld.height);
+    canvasOld.style.display = 'none';
+  }
 
-      // Calculs pour la phrase explicative
-      const y2017 = map.get(2017);
-      const y2024 = map.get(2024);
-      const total2017 = (y2017 ? (y2017.s12 + y2017.aero) : null);
-      const total2024 = (y2024 ? (y2024.s12 + y2024.aero) : null);
+  // === Étend l'axe jusqu'à 2025
+  const years = [2010, 2015, ...Array.from({length:(2025-2016+1)}, (_,i) => 2016+i)];
 
-      let YY = null, ZZ = null;
-      if (total2017 && total2017 > 0 && total2024 !== null) {
-        YY = ((total2024 / total2017) - 1) * 100;
+  // Map "propre" (numérique) déjà créée plus haut : 'yearly'
+  // On fabrique un map "brut" pour lire les libellés NC / À venir
+  const mapRaw = new Map(rows.map(r => [
+    Number(String(r[K_YEAR]).replace(/[^\d]/g,'')), r
+  ]));
+  const mapClean = new Map(yearly.map(r => [r.year, r]));
+
+  const valsS12 = [];
+  const valsAero = [];
+  const missingS12 = [];   // valeur = "NC" / "A venir" ou null
+  const missingAero = [];
+
+  years.forEach((y, idx) => {
+    const rawRow = mapRaw.get(y) || {};
+    const clean = mapClean.get(y) || { s12: 0, aero: 0 };
+
+    // Valeurs numériques (0 si manquant)
+    valsS12.push(clean.s12 || 0);
+    valsAero.push(clean.aero || 0);
+
+    // Détection libellé non numérique
+    const rawS12 = rawRow?.[K_S12];
+    const rawAero = rawRow?.[K_AERO];
+
+    const isText = v => {
+      const s = (v ?? '').toString().trim().toLowerCase();
+      return s.length && (isNaN(parseFloat(s.replace(',', '.'))) || s.includes('nc') || s.includes('venir'));
+    };
+
+    missingS12.push(isText(rawS12) ? String(rawS12).trim() : null);
+    missingAero.push(isText(rawAero) ? String(rawAero).trim() : null);
+  });
+
+  if (window._kpiS12AeroGrouped) window._kpiS12AeroGrouped.destroy();
+
+  window._kpiS12AeroGrouped = new Chart(canvas.getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: years,
+      datasets: [
+        {
+          label: 'Scope 1 & 2 (t éq CO₂)',
+          data: valsS12,
+          // Barres plus claires si manquantes
+          backgroundColor: (ctx) => {
+            const i = ctx.dataIndex;
+            return missingS12[i] ? toRGBA('#9467bd', 0.25) : toRGBA('#9467bd', 0.70);
+          },
+          borderColor: '#9467bd',
+          borderWidth: 1,
+          missingLabels: missingS12   // <-- on passe les libellés manquants au plugin
+        },
+        {
+          label: 'Aéronefs (t éq CO₂)',
+          data: valsAero,
+          backgroundColor: (ctx) => {
+            const i = ctx.dataIndex;
+            return missingAero[i] ? toRGBA('#1f78b4', 0.25) : toRGBA('#1f78b4', 0.70);
+          },
+          borderColor: '#1f78b4',
+          borderWidth: 1,
+          missingLabels: missingAero   // <-- idem
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top' },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => {
+              const miss = ctx.dataset.missingLabels?.[ctx.dataIndex];
+              if (miss) {
+                // Affiche "NC" / "À venir" si non numérique
+                return `${ctx.dataset.label} : ${miss}`;
+              }
+              const v = ctx.raw ?? 0;
+              return `${ctx.dataset.label} : ${formatTonsFR(v)} t éq CO₂`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: { stacked: false, ticks: { autoSkip: false, maxRotation: 0 } },
+        y: { beginAtZero: true, title: { display: true, text: 't éq CO₂' } }
       }
-      if (y2017 && y2017.s12 > 0 && y2024) {
-        ZZ = ((y2024.s12 / y2017.s12) - 1) * 100;
-      }
+    },
+    // Ajoute le plugin maison + tes labels de valeurs
+    plugins: [valueLabelsPlugin, missingDataPlugin]
+  });
 
-      let explain = document.getElementById('kpiS12AeroExplain');
-      if (!explain) {
-        explain = document.createElement('div');
-        explain.id = 'kpiS12AeroExplain';
-        explain.style.marginTop = '8px';
-        explain.style.fontSize = '0.95rem';
-        explain.style.color = '#333';
-        canvas.parentElement?.appendChild(explain);
-      }
+  // === Phrase explicative (inchangée), garde ton calcul XX/YY/ZZ
+  const y2017 = mapClean.get(2017);
+  const y2024 = mapClean.get(2024);
+  const total2017 = (y2017 ? (y2017.s12 + y2017.aero) : null);
+  const total2024 = (y2024 ? (y2024.s12 + y2024.aero) : null);
 
-      const XX = (typeof window._kpi1_shareS12 === 'number') ? window._kpi1_shareS12 : null;
-      const textePart = (XX !== null)
-        ? `représentent seulement ${XX.toFixed(1)}% des émissions de l'aéroport`
-        : `représentent une part limitée des émissions de l'aéroport`;
+  let YY = null, ZZ = null;
+  if (total2017 && total2017 > 0 && total2024 !== null) {
+    YY = ((total2024 / total2017) - 1) * 100;
+  }
+  if (y2017 && y2017.s12 > 0 && y2024) {
+    ZZ = ((y2024.s12 / y2017.s12) - 1) * 100;
+  }
 
-      const texteYY = (YY === null)
-        ? `les émissions totales (S1&2 + aéronefs) entre 2017 et 2024 sont « n.d. » faute de données complètes`
-        : `les émissions ont ${YY >= 0 ? 'augmenté' : 'diminué'} de ${Math.abs(YY).toFixed(1)}% entre 2017 et 2024`;
+  let explain = document.getElementById('kpiS12AeroExplain');
+  if (!explain) {
+    explain = document.createElement('div');
+    explain.id = 'kpiS12AeroExplain';
+    explain.style.marginTop = '8px';
+    explain.style.fontSize = '0.95rem';
+    explain.style.color = '#333';
+    canvas.parentElement?.appendChild(explain);
+  }
 
-      let texteZZ;
-      if (ZZ === null) {
-        texteZZ = `la variation des scopes 1 & 2 est « n.d. » faute de données complètes`;
-      } else if (ZZ < 0) {
-        texteZZ = `la réduction de ${Math.abs(ZZ).toFixed(1)}% sur les scopes 1 & 2, bien que réelle, n'a aucune influence`;
-      } else if (ZZ > 0) {
-        texteZZ = `l’augmentation de ${Math.abs(ZZ).toFixed(1)}% sur les scopes 1 & 2 n'a aucune influence`;
-      } else {
-        texteZZ = `la stabilité des scopes 1 & 2 n'a aucune influence`;
-      }
+  const XX = (typeof window._kpi1_shareS12 === 'number') ? window._kpi1_shareS12 : null;
+  const textePart = (XX !== null)
+    ? `représentent seulement ${XX.toFixed(1)}% des émissions de l'aéroport`
+    : `représentent une part limitée des émissions de l'aéroport`;
 
-      explain.innerText =
-        `Les émissions de GES des scopes 1 & 2 sur lesquels reposent les actions de décarbonation ` +
-        `de l'accréditation ACA 4 ${textePart} dès lors que l'on intègre dans le périmètre d'analyse ` +
-        `les transports (aériens et routiers). Enfin, sur ce même périmètre, on peut voir que ${texteYY}, ` +
-        `${texteZZ}.`;
-    })();
+  const texteYY = (YY === null)
+    ? `les émissions totales (S1&2 + aéronefs) entre 2017 et 2024 sont « n.d. » faute de données complètes`
+    : `les émissions ont ${YY >= 0 ? 'augmenté' : 'diminué'} de ${Math.abs(YY).toFixed(1)}% entre 2017 et 2024`;
+
+  let texteZZ;
+  if (ZZ === null) {
+    texteZZ = `la variation des scopes 1 & 2 est « n.d. » faute de données complètes`;
+  } else if (ZZ < 0) {
+    texteZZ = `la réduction de ${Math.abs(ZZ).toFixed(1)}% sur les scopes 1 & 2, bien que réelle, n'a aucune influence`;
+  } else if (ZZ > 0) {
+    texteZZ = `l’augmentation de ${Math.abs(ZZ).toFixed(1)}% sur les scopes 1 & 2 n'a aucune influence`;
+  } else {
+    texteZZ = `la stabilité des scopes 1 & 2 n'a aucune influence`;
+  }
+
+  explain.innerText =
+    `Les émissions de GES des scopes 1 & 2 sur lesquels reposent les actions de décarbonation ` +
+    `de l'accréditation ACA 4 ${textePart} dès lors que l'on intègre dans le périmètre d'analyse ` +
+    `les transports (aériens et routiers). Enfin, sur ce même périmètre, on peut voir que ${texteYY}, ` +
+    `${texteZZ}.`;
+})();
    });
  
   /* ====== 1. Émissions journalières par scope ====== */
