@@ -1093,7 +1093,7 @@ const dateKey = headers[0]; // la 1ère colonne est la date dans ce CSV
 });
 
 
-/* ---------- KPI 2+3 fusionné : S1&2 vs Aéronefs (EXPORT_yearly_total.csv) ---------- */
+/* ---------- KPI 2 : S1&2 vs Aéronefs (EXPORT_yearly_total.csv) ---------- */
 parseCSV('./data/EXPORT_yearly_total.csv', (rows, rawHeaders) => {
   const headers = (rawHeaders || []).map(h => String(h).trim());
   const K_YEAR  = headers.find(h => h.toLowerCase().includes('année')) || headers[0];
@@ -1278,7 +1278,7 @@ const s12SimpleLabelsPlugin = {
         datasets: [
           {
            role: 's12',
-           label: 'Scope 1 & 2 (t éq CO₂)',
+           label: 'Location based (scope 1 & 2) (t éq CO₂)',
            data: valsS12,
            backgroundColor: toRGBA('#9467bd', 0.70), // violet S1&2
            borderColor: '#9467bd',
