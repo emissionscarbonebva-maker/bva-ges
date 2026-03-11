@@ -316,41 +316,46 @@ h3{
 .mini-legend { font-size:0.9em; margin-top:6px; color:#555; }
 .kpi-explain { margin-top:8px; font-size:0.95rem; color:#333; }
 
-/* ================= KPIs — mise en page "Souhaité" ================= */
+/* ================= KPIs — grille "Souhaité" pleine hauteur ================= */
+:root{
+  /* écart unique qui sert à la fois en vertical et en horizontal */
+  --kpi-gap: 16px;
+}
 
-/* Grille 2 colonnes = 50/50, 2 lignes (ligne 1 : KPI1 ; ligne 2 : texte) */
+/* Grille 2 colonnes = 50/50 ; 2 lignes : (1) KPI1, (2) le reste */
 #containerKPIs .kpis-grid{
   display: grid;
-  grid-template-columns: 1fr 1fr;   /* 50/50 */
-  grid-template-rows: auto auto;    /* 2 lignes */
-  gap: 16px;
-  align-items: start;               /* contenus démarrent en haut des cellules */
+  grid-template-columns: 1fr 1fr;  /* 50/50 */
+  grid-template-rows: auto 1fr;    /* L1 = hauteur de KPI1 ; L2 = tout le reste */
+  gap: var(--kpi-gap);             /* écart vertical = écart horizontal */
+  align-items: stretch;            /* les items s’étirent sur la hauteur de leur piste */
 }
 
-/* Placement des 3 éléments dans la grille */
+/* Placement des 3 éléments (3 enfants directs de .kpis-grid) */
 #containerKPIs .kpi1-chart{ grid-column: 1; grid-row: 1; }
+
 #containerKPIs .kpi1-text{
-  grid-column: 1; grid-row: 2;
-  /* Colle le texte en bas de la cellule ⇒ bas aligné avec le bas de KPI2 */
+  grid-column: 1; grid-row: 2;     /* sous KPI1 */
+  align-self: stretch;              /* la carte texte remplit toute la piste de ligne 2 */
   display: flex; flex-direction: column; justify-content: flex-end;
-  margin: 0; padding: 0;
+  margin: 0;                        /* fond coloré plein, sans jour */
+  /* Justification & césures propres */
+  text-align: justify;
+  -webkit-hyphens: auto; -ms-hyphens: auto; hyphens: auto;
+  overflow-wrap: anywhere;
+  line-height: 1.45;
 }
+#containerKPIs .kpi1-text .kpi-explain{ margin: 0; } /* pas d’espace inutile */
+
+/* KPI2 s’étend sur 2 lignes = pleine hauteur à droite */
 #containerKPIs .kpi2-chart{
-  grid-column: 2; grid-row: 1 / span 2; /* KPI2 occupe la hauteur totale (lignes 1+2) */
+  grid-column: 2; grid-row: 1 / span 2;
   display: flex; flex-direction: column; align-self: stretch;
 }
+/* Le graphe remplit son conteneur (ajuste min-height si besoin) */
+#containerKPIs .kpi2-chart .chart-host{ flex: 1 1 auto; min-height: 420px; }
 
-/* S'assurer que le graph KPI2 occupe bien la hauteur disponible */
-#containerKPIs .kpi2-chart .chart-host{ flex: 1 1 auto; min-height: 360px; }
-
-/* Optionnel : harmoniser la typo/espacement du texte explicatif */
-#containerKPIs .kpi-explain{ 
-  margin-top: 8px; 
-  font-size: 0.95rem; 
-  color: #333; 
-}
-
-/* Responsive : sur mobile, on empile proprement */
+/* Responsive : on empile proprement */
 @media (max-width: 900px){
   #containerKPIs .kpis-grid{
     grid-template-columns: 1fr;
@@ -361,49 +366,6 @@ h3{
   #containerKPIs .kpi2-chart{ grid-column:1; grid-row:3; align-self:auto; }
 }
 
-/* === KPI texte : même look que les graphes + justification === */
-#containerKPIs .kpi1-text{
-  /* la classe .metric-box fournit déjà background, padding, radius */
-  display: flex;                 /* pour coller le contenu en bas */
-  flex-direction: column;
-  justify-content: flex-end;     /* alignement bas = même base que KPI2 */
-  margin: 0;
-  /* Justification & césures propres */
-  text-align: justify;
-  -webkit-hyphens: auto;
-  -ms-hyphens: auto;
-  hyphens: auto;
-  overflow-wrap: anywhere;       /* évite les débordements sur mots très longs/URLs */
-  line-height: 1.45;
-}
-
-/* Nettoyage des marges internes pour coller visuellement en bas */
-#containerKPIs .kpi1-text .kpi-explain{
-  margin: 0;                     /* pas d’espace inutile en bas */
-}
-
-/* Option : si tu veux une teinte différente du fond texte (au lieu de #eef2f7) */
-#containerKPIs .kpi1-text{
-  /* décommente si besoin */
-  /* background: #F7F9FC; */
-}
-
-/* (rappel) KPI2 doit respirer verticalement */
-#containerKPIs .kpi2-chart .chart-host{
-  flex: 1 1 auto;
-  min-height: 360px;             /* ajuste à 420px si tu veux un bloc plus “massif” */
-}
-
-/* Responsive inchangé : empilement propre sur mobile */
-@media (max-width: 900px){
-  #containerKPIs .kpis-grid{
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto;
-  }
-  #containerKPIs .kpi1-chart{ grid-column:1; grid-row:1; }
-  #containerKPIs .kpi1-text { grid-column:1; grid-row:2; }
-  #containerKPIs .kpi2-chart{ grid-column:1; grid-row:3; align-self:auto; }
-}
  
 </style>
 
