@@ -240,11 +240,12 @@ h3{
 
 /* === NARROW CONTENT: limiter la largeur des cartes avec graphes & tableaux === */
 
+
 /* Limitation des cartes contenant des canvas — sauf KPIs */
-.main .card:has(canvas):not(#containerKPIs),
-.main .card:has(.table-wrapper):not(#containerKPIs),
-.main .card:has(#tableDepartures):not(#containerKPIs),
-.main .card:has(#tableArrivals):not(#containerKPIs) {
+.main .card:not(#containerKPIs):has(canvas),
+.main .card:not(#containerKPIs):has(.table-wrapper),
+.main .card:not(#containerKPIs):has(#tableDepartures),
+.main .card:not(#containerKPIs):has(#tableArrivals) {
   width: 100%;
   max-width: var(--narrow-max);
   margin-inline: auto;
@@ -275,7 +276,7 @@ h3{
 #kpiScope12 { width:100% !important; height:100% !important; }
 .kpi-explain { margin-top:8px; font-size:0.95rem; color:#333; }
 
-}
+/*}*/
  
 </style>
 
