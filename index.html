@@ -1171,35 +1171,34 @@ const aeroValueLabelsPlugin = {
   }
 };
 
-/* === Étiquettes verticales (vers le haut) pour "Scope 1 & 2" === */
+/* === Étiquettes verticales (vers le haut) pour "Scope 1 & 2" alignées sur l’axe X === */
 const s12VerticalLabelsPlugin = {
   id: 's12VerticalLabelsPlugin',
   afterDatasetsDraw(chart) {
-    if (chart.width < KPI2_LABELS_TUNING.minWidthForLabels) return;
-    const { ctx } = chart;
+    const { ctx, scales: { y } } = chart;
+    const baseY = y.getPixelForValue(0);   // y de la ligne d’axe X
+
     ctx.save();
     ctx.font = '11px Arial';
 
-    chart.data.datasets.forEach((ds, dsi) => {
-      if (ds.role !== 's12') return;          // on ne dépend plus du libellé
-      const meta = chart.getDatasetMeta(dsi);
+    chart.data.datasets.forEach(ds => {
+      if (ds.role !== 's12') return;                  // on cible par role
+      const meta = chart.getDatasetMeta(chart.data.datasets.indexOf(ds));
       if (!meta || meta.hidden) return;
 
       meta.data.forEach((el, i) => {
         const miss = ds.missingLabels?.[i];
         const val  = ds.data[i];
-        if (miss || typeof val !== 'number' || !isFinite(val) || val <= 0) return;
+        if (miss || typeof val !== 'number' || !Number.isFinite(val) || val <= 0) return;
 
-        const { x, y } = el.getProps(['x','y'], true);
+        const { x } = el.getProps(['x'], true);
         const text = Math.round(val).toLocaleString('fr-FR').replace(/\u202F/g, ' ');
-        ctx.fillStyle = KPI2_LABELS_TUNING.s12.color;
 
         ctx.save();
-        // position juste au-dessus de la barre violette avec offsets
-        ctx.translate(x + KPI2_LABELS_TUNING.s12.xOffset, y - KPI2_LABELS_TUNING.s12.yOffset);
-        // vertical "vers le haut"
+        ctx.translate(x + KPI2_LABELS_TUNING.s12.xOffset, baseY - KPI2_LABELS_TUNING.s12.yOffset);
         ctx.rotate(-Math.PI / 2);
-        ctx.textAlign   = 'right';
+        ctx.fillStyle   = KPI2_LABELS_TUNING.s12.color;
+        ctx.textAlign   = 'right';      // “base” du texte posée sur l’axe
         ctx.textBaseline= 'middle';
         ctx.fillText(text, 0, 0);
         ctx.restore();
@@ -1232,25 +1231,42 @@ const s12VerticalLabelsPlugin = {
     const missingS12 = [];   // "NC" / "A venir" / null
     const missingAero = [];
 
+    /* -- Helper : classifyMissing -> 'NC' / 'À venir' / null si numérique -- */
+function classifyMissing(raw) {
+  let s = String(raw ?? '').trim();
+  if (!s) return 'NC';
+
+  const low = s.toLowerCase();
+  // cas textuels explicites
+  if (/(^|\s)nc(\s|$)|^n\.?c\.?$/i.test(s)) return 'NC';
+  if (low.includes('à venir') || low.includes('a venir')) return 'À venir';
+
+  // tentative robuste de parsing numérique (résiste aux "1,020", "1.019", espaces, guillemets...)
+  let t = s.replace(/[^\d,.\-]/g, '');                   // garde chiffres/séparateurs
+  if (!t) return 'NC';
+
+  if (/^\d{1,3}(,\d{3})+(\.\d+)?$/.test(t)) t = t.replace(/,/g, '');           // "1,234.56" -> "1234.56"
+  else if (/^\d{1,3}(\.\d{3})+(,\d+)?$/.test(t)) t = t.replace(/\./g, '').replace(',', '.'); // "1.234,56" -> "1234.56"
+  else { if (t.includes(',') && !t.includes('.')) t = t.replace(',', '.'); t = t.replace(/,/g, ''); }
+
+  const n = parseFloat(t);
+  return Number.isFinite(n) ? null : 'NC';
+}
+   
     years.forEach(y => {
-      const rawRow = mapRaw.get(y) || {};
-      const clean  = mapClean.get(y) || { s12: 0, aero: 0 };
+  const rawRow = mapRaw.get(y) || {};
+  const clean  = mapClean.get(y) || { s12: 0, aero: 0 };
 
-      // valeurs numériques (0 si manquant)
-      valsS12.push(clean.s12 || 0);
-      valsAero.push(clean.aero || 0);
+  // valeurs numériques (0 si manquant)
+  valsS12.push(clean.s12 || 0);
+  valsAero.push(clean.aero || 0);
 
-      // marquage "NC" / "A venir"
-      const rawS12  = rawRow?.[K_S12];
-      const rawAero = rawRow?.[K_AERO];
-      const isText  = v => {
-        const s = (v ?? '').toString().trim().toLowerCase();
-        return s.length && (isNaN(parseFloat(s.replace(',', '.'))) || s.includes('nc') || s.includes('venir'));
-      };
-
-      missingS12.push(isText(rawS12)  ? String(rawS12).trim()  : null);
-      missingAero.push(isText(rawAero) ? String(rawAero).trim() : null);
-    });
+  // marquage "NC" / "À venir" -> robuste, évite les faux positifs (2016=1 020; 2017=846)
+  const missS = classifyMissing(rawRow?.[K_S12]);
+  const missA = classifyMissing(rawRow?.[K_AERO]);
+  missingS12.push(missS);
+  missingAero.push(missA);
+});
 
     if (window._kpiS12AeroGrouped) window._kpiS12AeroGrouped.destroy();
 
