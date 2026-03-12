@@ -431,7 +431,7 @@ max-width: none;
       <h2>Analyse des émissions en 2026</h2>
 
       <p>
-        Ce site présente une analyse indépendante des émissions de gaz à effet de serre
+        Ce site présente une analyse indépendante des émissions de gaz à effet de serre (GES)
         de l’aéroport de Paris-Beauvais (BVA) pour l'année 2026. Les données sont issues de sources publiques
         et retraitées afin de présenter une vision journalière et cumulée des émissions.
       </p>
@@ -514,7 +514,7 @@ max-width: none;
 </div>
 
     <div class="card card--narrow">
-      <h2 class="tooltip" data-tip="Émissions quotidiennes de CO₂e réparties selon les différents scopes (1 & 2 : émissions directes & électricité aérooprt, 3 : émissions indirectes : aéronefs, transports terrestres passagers et employés ).">
+      <h2 class="tooltip" data-tip="Émissions quotidiennes de GES réparties selon les différents scopes (1 & 2 : émissions directes & électricité aérooprt, 3 : émissions indirectes : aéronefs, transports terrestres passagers et employés )">
         Émissions journalières par scope ⓘ
       </h2>
       <canvas id="chartDaily"></canvas>
@@ -525,8 +525,8 @@ max-width: none;
     </div>
 
     <div class="card card--narrow">
-      <h2 class="tooltip" data-tip="Total des émissions depuis le 1er janvier par catégorie d'émission">
-        Cumul annuel par scope ⓘ
+      <h2 class="tooltip" data-tip="Total des émissions de GES depuis le 1er janvier selon les différents scopes (1 & 2 : émissions directes & électricité aérooprt, 3 : émissions indirectes : aéronefs, transports terrestres passagers et employés )">
+        Total des émissions 2026 par scope ⓘ
       </h2>
       <canvas id="chartCumul"></canvas>
 
@@ -536,7 +536,9 @@ max-width: none;
     </div>
   
     <div class="card card--narrow">
-      <h2>Émissions journalières par compagnie</h2>
+     <h2 class="tooltip" data-tip="Emissions des GES du scope 3 ''Aéronefs'' (APU, décollage-atterrissage, vol 1/2 croisière) générées par les différentes compagnies opérants sur l'aéroport">
+        Émissions journalières par compagnie ⓘ 
+     </h2>
       <canvas id="chartAirlines"></canvas>
 
       <button class="export-btn" onclick="exportChartCSV('chartAirlines','emissions_compagnies.csv')">
@@ -545,8 +547,8 @@ max-width: none;
     </div>
 
     <div class="card card--narrow">
-      <h2 class="tooltip" data-tip="Nombre de vols effectués chaque jour par compagnie">
-        Rotations journalières par compagnie ⓘ
+      <h2 class="tooltip" data-tip="Nombre de mouvements (atterrissages et décollages) effectués chaque jour par compagnie">
+        Mouvements journaliers par compagnie ⓘ
       </h2>
       <canvas id="chartRotations"></canvas>
 
@@ -556,7 +558,8 @@ max-width: none;
     </div>
 
     <div class="card card--narrow">
-      <h2>Émissions par destination ⓘ</h2>
+      <h2 class="tooltip" data-tip="Nombre de mouvements (atterrissages et décollages) effectués chaque jour par compagnie">
+        Émissions par destination ⓘ</h2>
 
       <canvas id="chartDestination"></canvas>
 
