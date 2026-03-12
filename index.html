@@ -1358,30 +1358,30 @@ const s12SimpleLabelsPlugin = {
 
     const XX = (typeof window._kpi1_shareS12 === 'number') ? window._kpi1_shareS12 : null;
     const textePart = (XX !== null)
-      ? `représentent seulement <strong>${XX.toFixed(1)}%</strong> des émissions de l'aéroport`
-      : `représentent une part limitée des émissions de l'aéroport`;
+      ? "représentent seulement <strong>${XX.toFixed(1)}%</strong> des émissions de l'aéroport"
+      : "représentent une part limitée des émissions de l'aéroport";
 
     const texteYY = (YY === null)
-      ? `les émissions totales (S1&2 + aéronefs) entre 2017 et 2024 sont « n.d. » faute de données complètes`
-      : `les émissions des aéronefs ont <strong>${YY >= 0 ? 'augmenté' : 'diminué'} de ${Math.abs(YY).toFixed(1)}%</strong>';
+      ? "les émissions totales (S1&2 + aéronefs) entre 2017 et 2024 sont « n.d. » faute de données complètes"
+      : "les émissions des aéronefs ont <strong>${YY >= 0 ? 'augmenté' : 'diminué'} de ${Math.abs(YY).toFixed(1)}%</strong>";
 
     let texteZZ;
     if (ZZ === null) {
-      texteZZ = `la variation des scopes 1 & 2 est « n.d. » faute de données complètes`;
+      texteZZ = "la variation des scopes 1 & 2 est « n.d. » faute de données complètes";
     } else if (ZZ < 0) {
-      texteZZ = `ces émissions "Location based" ont été réduite de ${Math.abs(ZZ).toFixed(1)}% entre 2017 et 2024`;
+      texteZZ = "ces émissions "Location based" ont été réduite de ${Math.abs(ZZ).toFixed(1)}% entre 2017 et 2024";
     } else if (ZZ > 0) {
-      texteZZ = `l’augmentation de ${Math.abs(ZZ).toFixed(1)}% sur les scopes 1 & 2 n'a aucune influence`;
+      texteZZ = "l’augmentation de ${Math.abs(ZZ).toFixed(1)}% sur les scopes 1 & 2 n'a aucune influence";
     } else {
-      texteZZ = `la stabilité des scopes 1 & 2 n'a aucune influence`;
+      texteZZ = "la stabilité des scopes 1 & 2 n'a aucune influence";
     }
 
-    explain.innerHTML = `
+    explain.innerHTML = "
 L'accréditation ACA 4 mise en avant concerne uniquement les émissions de GES directes de l'aéroport ("Location based" ou "scopes 1 & 2") 
 qui ${textePart} dès lors que l'on intègre les transports passagers (aériens et routiers) dans le périmètre d'analyse.
 <br><br>
 Quand bien même ${texteYY}, ceci n'a aucun incidence puisque dans le même temps${texteYY}.
-`;
+";
   })();
 });
  
