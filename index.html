@@ -1363,7 +1363,7 @@ const s12SimpleLabelsPlugin = {
 
     const texteYY = (YY === null)
       ? `les émissions totales (S1&2 + aéronefs) entre 2017 et 2024 sont « n.d. » faute de données complètes`
-      : `les émissions ont ${YY >= 0 ? 'augmenté' : 'diminué'} de ${Math.abs(YY).toFixed(1)}% entre 2017 et 2024`;
+      : `les émissions ont <strong>${YY >= 0 ? 'augmenté' : 'diminué'} de ${Math.abs(YY).toFixed(1)}%</strong> entre 2017 et 2024`;
 
     let texteZZ;
     if (ZZ === null) {
@@ -1377,13 +1377,13 @@ const s12SimpleLabelsPlugin = {
     }
 
     explain.innerHTML = `
-Les émissions de GES des scopes 1 & 2 sur lesquels reposent les actions de décarbonation
-de l'accréditation ACA 4 ${textePart} dès lors que l'on intègre dans le périmètre d'analyse
+L'accréditation ACA 4 mise en avant concerne uniquement les émissions de GES des scopes 1 & 2 
+qui ${textePart} dès lors que l'on intègre dans le périmètre d'analyse
 les transports (aériens et routiers).
 
 <br><br>
 
-Sur ce même périmètre, on peut voir que ${texteYY}, ${texteZZ}.
+En tenant compte de l'ensemble des sources, on peut voir que ${texteYY}, ${texteZZ}.
 `;
   })();
 });
