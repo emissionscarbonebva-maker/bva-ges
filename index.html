@@ -526,7 +526,7 @@ max-width: none;
 
     <div class="card card--narrow">
       <h2 class="tooltip" data-tip="Total des émissions de GES depuis le 1er janvier selon les différents scopes (1 & 2 : émissions directes & électricité aérooprt, 3 : émissions indirectes : aéronefs, transports terrestres passagers et employés )">
-        Total des émissions 2026 par scope ⓘ
+        Total des émissions par scope depuis le 1er janvier 2026 ⓘ
       </h2>
       <canvas id="chartCumul"></canvas>
 
@@ -558,9 +558,9 @@ max-width: none;
     </div>
 
     <div class="card card--narrow">
-      <h2 class="tooltip" data-tip="Emissions de GES du scope ''Aéronefs" et nombre de mouvements (atterrissages et décollages) selon la destination ou l'origine pour l'année 2026">
-        Émissions et nombre de vols par destination ⓘ</h2>
-
+      <h2 class="tooltip" data-tip="Emissions de GES du scope ''Aéronefs'' et nombre de mouvements (atterrissages et décollages) selon la destination ou l'origine pour l'année 2026">
+        Émissions et nombre de vols par destination depuis le 1er janvier 2026 ⓘ
+      </h2>
       <canvas id="chartDestination"></canvas>
 
       <button class="export-btn" onclick="exportChartCSV('chartDestination','emissions_destinations.csv')">
@@ -568,21 +568,21 @@ max-width: none;
       </button>
   
       <p style="font-size:0.85em;color:#666;margin-top:10px;">
-        Les principales destinations représentant au moins 90% des émissions sont affichées.
+        Les principales destinations représentant au moins 90% des émissions de GES ou 90% des mouvements sont affichées.
         Les autres sont regroupées dans « Autres destinations ».
       </p>
     </div>
   
     <div class="card card--narrow">
       <h2 class="tooltip" data-tip="Liste détaillée des vols au départ avec distance et émissions estimées">
-        Vols départ ⓘ
+        Vols au départ depuis le 1er janvier 2026 ⓘ
       </h2>
       <div id="tableDepartures"></div>
     </div>
 
     <div class="card card--narrow">
       <h2 class="tooltip" data-tip="Liste détaillée des vols à l'arrivée avec distance et émissions estimées">
-        Vols arrivée ⓘ
+        Vols à l'arrivée depuis le 1er janvier 2026 ⓘ
       </h2>
       <div id="tableArrivals"></div>
     </div>
@@ -2108,7 +2108,7 @@ const s12SimpleLabelsPlugin = {
               },
               {
                 type: "line",
-                label: "Nombre de vols (YTD)",
+                label: "Nombre de mouvements",
                 data: valuesVols,
                 yAxisID: "y1",
                 borderColor: "#d62728",
