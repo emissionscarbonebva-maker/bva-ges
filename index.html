@@ -936,7 +936,7 @@ const valueLabelsPlugin = {
 
       const meta = chart.getDatasetMeta(dsi);
       if (!meta || meta.hidden) return;
-
+    
       meta.data.forEach((el, i) => {
         const miss = ds.missingLabels?.[i];
         const val  = ds.data[i];
@@ -1167,8 +1167,8 @@ const missingDataPlugin = {
 /* === Paramètres (UNE seule déclaration) === */
 const KPI2_LABELS_TUNING = {
   minWidthForLabels: 0, // ⬅️ plus de seuil : on dessine toujours
-  s12:  { xOffset: 0, yOffset: 4, color: '#222' }, // S1&2, vertical
-  aero: { xOffset: 0, yOffset: 4, color: '#222'     }  // Aéronefs, horizontal
+  s12:  { xOffset: 0, yOffset: 4, color: '#222' }, // S1&2
+  aero: { xOffset: 0, yOffset: 4, color: '#222'     }  // Aéronefs
 };
 
 /* === Étiquettes horizontales pour "Aéronefs" === */
@@ -1230,7 +1230,8 @@ const s12SimpleLabelsPlugin = {
                    : Math.round(num).toLocaleString('fr-FR').replace(/\u202F/g, ' ');
 
         const { x, y } = el.getProps(['x','y'], true);
-        // 4px au-dessus du sommet de la barre (ou au-dessus de la ligne de base si barre nulle)
+        ctx.fillStyle = KPI2_LABELS_TUNING.s12.color; 
+       // 4px au-dessus du sommet de la barre (ou au-dessus de la ligne de base si barre nulle)
         ctx.fillText(text, x, y - 4);
       });
     });
