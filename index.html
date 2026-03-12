@@ -1369,7 +1369,7 @@ const s12SimpleLabelsPlugin = {
     if (ZZ === null) {
       texteZZ = "la variation des scopes 1 & 2 est « n.d. » faute de données complètes";
     } else if (ZZ < 0) {
-      texteZZ = "ces émissions "Location based" ont été réduite de ${Math.abs(ZZ).toFixed(1)}% entre 2017 et 2024";
+      texteZZ = "ces émissions ''Location based'' ont été réduite de ${Math.abs(ZZ).toFixed(1)}% entre 2017 et 2024";
     } else if (ZZ > 0) {
       texteZZ = "l’augmentation de ${Math.abs(ZZ).toFixed(1)}% sur les scopes 1 & 2 n'a aucune influence";
     } else {
@@ -1377,7 +1377,7 @@ const s12SimpleLabelsPlugin = {
     }
 
     explain.innerHTML = "
-L'accréditation ACA 4 mise en avant concerne uniquement les émissions de GES directes de l'aéroport ("Location based" ou "scopes 1 & 2") 
+L'accréditation ACA 4 mise en avant concerne uniquement les émissions de GES directes de l'aéroport (''Location based'' ou ''scopes 1 & 2'') 
 qui ${textePart} dès lors que l'on intègre les transports passagers (aériens et routiers) dans le périmètre d'analyse.
 <br><br>
 Quand bien même ${texteYY}, ceci n'a aucun incidence puisque dans le même temps.
