@@ -360,7 +360,7 @@ Cependant, les données nécessaires à la quantification de leurs émissions n'
 
 
 <div class="card">
-<h2>Émissions liées aux vols</h2>
+<h2>Émissions liées aux aéronefs</h2>
 
 <p>
 Comme le montre les résultats, les émissions associées aux vols représentent le principal post d'émissions de gaz à effet de serre.
@@ -369,7 +369,7 @@ et d’un facteur d’émission spécifique au type d’appareil et à la compag
 </p>
 
 <p>
-  <strong>1. Principe de calcul du facteur d’émission par avion.km</strong>
+  <strong>1. Facteur d’émission pour la pahse de vol</strong>
 <br>
   Les facteurs d’émission utilisés pour les vols au départ et à l'arrivée de l'aéroport de Paris-Beauvais sont exprimés en kg éq CO₂ / avion.km.
 Contrairement aux FE classiques basés sur le passager, ceux-ci se fondent sur la performance carbone par appareil, indépendamment de son taux de remplissage.
@@ -384,41 +384,81 @@ Ces émissions sont alors rapportées aux caractéristiques opérationnelles :
 FE (kg CO₂ / avion.km) = Emissions totales GES / (Nb de vols * Distance moyenne)
 <br>
 Pour les autres compagnies opérants sur l'aéroport (et qui représentent donc environ 4% de l'activité), ces données ne sont pas disponibles.
-Le facteur d'émissions par avion.km est donc calculé à partir des données disponibles dans la base carbone de l'ADEME (3,16 kg éq CO2 / kg de fuel et 0,023 kg de fuel / péq) selon le modèle de l'aéronef.
+Le facteur d'émissions par avion.km est donc calculé à partir des données disponibles dans la Base Empreinte de l'ADEME pour les aéronefs de 101 à 220 sièges 
+  parcourant 1000 à 2000 km (3,16 kg éq CO₂ / kg de fuel et 0,026 kg de fuel / péq), ajustée selon le modèle de l'aéronef.
 </p>
 
+<p>
+<strong>2. Facteur d’émission pour l'approvisionnement du carburant d'aviation</strong>
+  <br> Pour l'approvisionnement en carburant d'aviation, les rapports annuels des compagnies aériennes ne présentent pas de valeurs spécifiques.
+  <br> Par conséquent,le facteur d'émissions retenu est celui proposé par la Base Empreinte de l'ADEME, à savoir 18,3 g éq CO₂ pour 83 g éq CO₂ émis en phase de vol (soit 220 g éq CO₂ / kg éq CO₂)
+</p>
+  
 <p>
   <strong>2. Facteur d'émissions par appareil par compagnie</strong>
 <br>  
 Les facteurs d'émissions utilisés sont ainsi les suivant :
 <br>
  <br>• Ryanair :
-  <br>    - B737-800 :     12,5  kg éq CO2 / km
-  <br>    - B737-Max 8 :   10,0  kg éq CO2 / km
+  <br>    - B737-800 :     12,5  kg éq CO₂ / km
+  <br>    - B737-Max 8 :   10,0  kg éq CO₂ / km
 <br>
  <br>• Wizz Air :
-  <br>    - A320-200 :     8,96  kg éq CO2 / km
-  <br>    - A320neo :      7,4   kg éq CO2 / km 
-  <br>    - A321-200 :     11,4  kg éq CO2 / km 
-  <br>    - A321neo :      9,51  kg éq CO2 / km 
+  <br>    - A320-200 :     8,96  kg éq CO₂ / km
+  <br>    - A320neo :      7,4   kg éq CO₂ / km 
+  <br>    - A321-200 :     11,4  kg éq CO₂ / km 
+  <br>    - A321neo :      9,51  kg éq CO₂ / km 
 <br>
  <br>• HiSky :
-  <br>    - A319-100 :     10,5  kg éq CO2 / km
-  <br>    - A320-200 :     13,1  kg éq CO2 / km 
+  <br>    - A319-100 :     11,8  kg éq CO₂ / km
+  <br>    - A320-200 :     14,8  kg éq CO₂ / km 
 <br>
  <br>• SkyUp :
-  <br>    - B737-700 :     13,7  kg éq CO2 / km
-  <br>    - B737-800 :     13,7  kg éq CO2 / km
+  <br>    - B737-700 :     15,5  kg éq CO₂ / km
+  <br>    - B737-800 :     15,5  kg éq CO₂ / km
 <br>
  <br>• Volotea :
-  <br>    - A318-100 :     11,3  kg éq CO2 / km
-  <br>    - B320-214 :     13,1  kg éq CO2 / km
+  <br>    - A318-100 :     12,8  kg éq CO₂ / km
+  <br>    - B320-214 :     14,8  kg éq CO₂ / km
 </p>
-  
+
 <p>
-  
+  <table>
+  <tr>
+    <td>Compagnie</td>
+    <td>Modèle d'appareil</td>
+    <td>Facteur d'émission en vol <br> (kg éq CO₂ / km)</td>
+    <td>Facteur d'émission approvisionnement carburant <br> (kg éq CO₂ / km)</td>
+  </tr>
+  <tr>
+    <td>Race</td>
+    <td>Jack Russell</td>
+    <td>Poodle</td>
+    <td>Streetdog</td>
+  </tr>
+  <tr>
+    <td>Age</td>
+    <td>16</td>
+    <td>9</td>
+    <td>10</td>
+  </tr>
+  <tr>
+    <td>Propriétaire</td>
+    <td>Belle-mère</td>
+    <td>Moi</td>
+    <td>Moi</td>
+  </tr>
+  <tr>
+    <td>Habitudes alimentaires</td>
+    <td>Mange tous les restes</td>
+    <td>Mange copieusement</td>
+    <td>Mange jusqu'à ce qu'il éclate</td>
+  </tr>
+</table>
 </p>
-   <strong>3. Distance de vol</strong>
+
+  
+  <strong>3. Distance de vol</strong>
 <br>  
 La 
 </div>
