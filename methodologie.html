@@ -351,57 +351,11 @@ Pour l'aéroport de Paris Beauvais, les posts étudiés sont les suivants :
   <br>• fabrication des aéronefs (scope 3)
   <br>• transports individuels et collectifs des passagers pour accéder et quitter l'aéroport (scope 3)
   <br>• transport des employés pour accéder et quitter l'aéroport (scope 3)
-<br>
+<br> <br>
 A noter que les posts analysés ici ne sont pas exhaustifs, d'autres posts liés à l'activité de l'aéroport pourraient faire l'objet d'une quantification de leurs émissions de GES :
 nourritures, boissons, presses et objets vendus dans les aérogares ou par les compagnies aériennes, consommables bureautiques, traitement des déchets et des eaux usées, entrerien et maintenance des pistes et bâtiments, ...
 Cependant, les données nécessaires à la quantification de leurs émissions n'étant pas disponibles, ces postes sont par conséquent exclut du champ de la présente évaluation.
 </p>
-</div>
-
-
-<div class="card">
-<h2>Principales sources d’émissions liées à l’activité aéroportuaire</h2>
-
-<div class="table-wrapper">
-<table>
-
-<tr>
-<th>Source d'émission</th>
-<th>Exemple</th>
-</tr>
-
-<tr>
-<td>Transport aérien</td>
-<td>Combustion du kérosène lors des vols</td>
-</tr>
-
-<tr>
-<td>Production du carburant</td>
-<td>Extraction et raffinage du pétrole</td>
-</tr>
-
-<tr>
-<td>Fabrication des avions</td>
-<td>Production des matériaux et assemblage</td>
-</tr>
-
-<tr>
-<td>Accès des passagers</td>
-<td>Voitures, bus, navettes ou trains</td>
-</tr>
-
-<tr>
-<td>Déplacements employés</td>
-<td>Trajets domicile-travail</td>
-</tr>
-
-<tr>
-<td>Fonctionnement de l’aéroport</td>
-<td>Électricité, chauffage, véhicules</td>
-</tr>
-
-</table>
-</div>
 </div>
 
 
@@ -411,8 +365,68 @@ Cependant, les données nécessaires à la quantification de leurs émissions n'
 <p>
 Comme le montre les résultats, les émissions associées aux vols représentent le principal post d'émissions de gaz à effet de serre.
 Elles sont estimées à partir de la distance parcourue par les avions
-et d’un facteur d’émission spécifique au type d’appareil.
+et d’un facteur d’émission spécifique au type d’appareil et à la compagnie l'opérant
 </p>
+
+<p>
+  <strong>1. Principe de calcul du facteur d’émission par avion.km</strong>
+<br>
+  Les facteurs d’émission utilisés pour les vols au départ et à l'arrivée de l'aéroport de Paris-Beauvais sont exprimés en kg éq CO₂ / avion.km.
+Contrairement aux FE classiques basés sur le passager, ceux-ci se fondent sur la performance carbone par appareil, indépendamment de son taux de remplissage.
+<br>
+Les compagnies Ryanair et Wizz Air (qui représentent ensemble plus de 96% du trafic) publient leurs émissions annuelles GES "Scope 1" correspondant à l'usage des aéronefs.
+Ces émissions sont alors rapportées aux caractéristiques opérationnelles :
+<br>• nombre de vols annuels (sectors flown),
+<br>• distance moyenne parcourue par vol (average sector length),
+<br>• composition de la flotte (en tenant compte que les aéronefs de nouvelles génération ; "Gamechanger" pour Ryanair et "neo" chez Wizz Air consomment 20% de moins que ceux de la précédente génération).
+  
+À partir de ces données, il est alors possible de calculer les facteurs d'émissions par km pour chaque type d'aéronefs :
+FE (kg CO₂ / avion.km) = Emissions totales GES / (Nb de vols * Distance moyenne)
+
+Pour les autres compagnies opérants sur l'aéroport (et qui représentent donc environ 4% de l'activité), ces données ne sont pas disponibles.
+Le facteur d'émissions par avion.km est donc calculé à partir des données disponibles dans la base carbone de l'ADEME (3,16 kg éq CO2 / kg de fuel et 0,023 kg de fuel / péq) selon le modèle de l'aéronef.
+</p>
+
+<p>
+  <strong>2. Facteur d'émissions par appareil par compagnie</strong>
+<br>  
+Les facteurs d'émissions utilisés sont ainsi les suivant :
+<br>
+ <br>• Ryanair :
+  <br>    - B737-800 :     12,5  kg éq CO2 / km
+  <br>    - B737-Max 8 :   10,0  kg éq CO2 / km
+<br>
+ <br>• Wizz Air :
+  <br>    - A320-200 :     8,96  kg éq CO2 / km
+  <br>    - A320neo :      7,4   kg éq CO2 / km 
+  <br>    - A321-200 :     11,4  kg éq CO2 / km 
+  <br>    - A321neo :      9,51  kg éq CO2 / km 
+<br>
+ <br>• HiSky :
+  <br>    - A319-100 :     10,5  kg éq CO2 / km
+  <br>    - A320-200 :     13,1  kg éq CO2 / km 
+<br>
+ <br>• SkyUp :
+  <br>    - B737-700 :     13,7  kg éq CO2 / km
+  <br>    - B737-800 :     13,7  kg éq CO2 / km
+<br>
+ <br>• Volotea :
+  <br>    - A318-100 :     11,3  kg éq CO2 / km
+  <br>    - B320-214 :     13,1  kg éq CO2 / km
+</p>
+  
+Sélection de l'année 2024 et des modèles réellement opérés à Beauvais
+La valeur retenue est :
+
+par modèle d’avion (B737‑800 NG, B737‑8200 pour Ryanair ; A320/A321 pour Wizz),
+mais ton fichier indique clairement la valeur moyenne transversale 2024, déjà calculée dans les lignes indiquées.
+
+
+
+Ainsi, le FE utilisé est directement la valeur issue de ton fichier :
+« Emissions GES totale par avion par km » (kg éq CO₂ / avion.km).
+</p>
+  
 </div>
 
 
