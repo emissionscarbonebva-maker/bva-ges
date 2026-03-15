@@ -606,7 +606,6 @@ body {
   .kpi1-chart .kpi1-host { min-height: 240px; }  /* un peu plus de place en portrait */
 }
 .kpi1-chart .kpi1-host canvas { height: 100% !important; } /* remplir le host */
-``
  
 </style>
 
@@ -754,48 +753,39 @@ body {
   
     <!-- Container KPI mis en pleine largeur via la classe utilitaire -->
     <!-- Container KPI (mise en page "Souhaité") -->
+<!-- Container KPI (mise en page "Souhaité") -->
 <div id="containerKPIs" class="card card--normal">
   <h2>Indicateurs clés</h2>
 
-  <!-- ⚠️ IMPORTANT : on garde .kpis-grid mais on ajoute des classes
-       pour positionner les 3 éléments en CSS Grid -->
   <div class="metrics kpis-grid">
     <!-- KPI 1 : histogramme horizontal (colonne gauche, ligne 1) -->
     <div class="metric-box kpi1-chart">
       <div class="metric-header">
-       
-<div class="metric-header">
-  <div class="metric-title">
-    Emissions totales <span id="kpi1-year">2026</span> au <span id="kpi1-date-ddmois">11 mars</span>
-  </div>
-  <div id="kpiTotal" class="metric-value">…</div>
-</div>
+        <div class="metric-title">
+          Emissions totales <span id="kpi1-year">2026</span> au <span id="kpi1-date-ddmois">11 mars</span>
+        </div>
+        <div id="kpiTotal" class="metric-value">…</div>
+      </div>
 
-      <!-- <div id="kpiTotal" class="metric-value">…</div> -->
-       <div class="metric-body">
+      <div class="metric-body">
         <div class="chart-host kpi1-host">
           <canvas id="kpiBreakdown"></canvas>
         </div>
-       <div id="kpiBreakdownLegend" class="mini-legend"></div>
+        <div id="kpiBreakdownLegend" class="mini-legend"></div>
       </div>
+    </div>
 
-
-    <!-- TEXTE (ce qui était sous KPI2) => passe sous KPI1 (colonne gauche, ligne 2) -->
-    <div class="kpi1-text">
-      <div class="metric-box kpi1-text">
+    <!-- TEXTE KPI (passe sous KPI1, colonne gauche, ligne 2) -->
+    <div class="metric-box kpi1-text">
       <div id="kpiS12AeroExplain" class="kpi-explain"></div>
-   </div>
-   </div>
+    </div>
 
     <!-- KPI 2 : histogramme vertical (colonne droite, s'étend sur 2 lignes) -->
     <div class="metric-box kpi2-chart">
       <div class="metric-title">Evolution des émissions "Location based (scope 1 & 2)" et "Aéronefs"</div>
-
-      <!-- Hôte de chart pour un remplissage fluide -->
       <div class="chart-host">
         <canvas id="kpiScope12"></canvas>
       </div>
-
     </div>
   </div>
 </div>
