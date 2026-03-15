@@ -373,6 +373,7 @@ max-width: none;
   #containerKPIs .kpi2-chart{ grid-column:1; grid-row:3; align-self:auto; }
 }
 
+/* === ⬇️ COLLER ICI le bloc d’overrides “Méthodologie” ⬇️ === */
  /* =========================================================
    Responsive : sidebar, paddings, typographies, charts, tables
    ========================================================= */
@@ -472,6 +473,8 @@ header{ padding: clamp(14px, 3.5vw, 25px); }
     --page-gap: 16px;
   }
 }
+
+</style>
  
 </style>
 
@@ -537,6 +540,11 @@ header{ padding: clamp(14px, 3.5vw, 25px); }
 
 <body>
 
+
+<!-- BACKDROP pour mobile -->
+  <div class="backdrop" id="backdrop" aria-hidden="true"></div>
+
+ 
 <!-- SIDEBAR -->
 <div class="sidebar" id="sidebar">
   <div class="logo">
@@ -567,12 +575,24 @@ header{ padding: clamp(14px, 3.5vw, 25px); }
 
 <!-- MAIN -->
 <div class="main">
-  <header>
+
+  <!-- Barre header mobile (hamburger + espace titre) -->
+  <div class="header-bar">
+    <button class="hamburger" id="hamburger" type="button"
+            aria-label="Ouvrir le menu"
+            aria-controls="sidebar"
+            aria-expanded="false">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+    <div style="flex:1"></div>
+  </div>
+ 
+ <header>
     <h1>Observatoire des émissions de gaz à effet de serre de l'aéroport de Paris-Beauvais</h1>
   </header>
 
 <!-- Bandeau orientation pour mobile -->
-<div id="orientationHint" class="orientation-hint" aria-live="polite" hidden>
+<div id="orientationHint" class="orientation-hint" aria-live="polite">
   📈 Pour une meilleure lecture des graphiques, passez votre téléphone en <strong>mode paysage</strong>.
 </div>
  
@@ -2685,24 +2705,7 @@ fetch("data/EXPORT_update_time.csv")
   document.getElementById("update-date").innerHTML = "date de mise à jour indisponible";
 });
 
-// Menu rétractable
-const sidebar = document.getElementById("sidebar");
-const toggle = document.getElementById("toggleSidebar");
-if(localStorage.getItem("sidebarCollapsed") === "true"){ sidebar.classList.add("collapsed"); }
-toggle.addEventListener("click", function(){
-  sidebar.classList.toggle("collapsed");
-  localStorage.setItem("sidebarCollapsed", sidebar.classList.contains("collapsed"));
-});
-
-// MENU ACTIF
-let currentPage = window.location.pathname.split("/").pop();
-if(currentPage === "") currentPage = "index.html";
-document.querySelectorAll(".menu a").forEach(link => {
-  const linkPage = link.getAttribute("href");
-  if(linkPage === currentPage){ link.classList.add("active"); }
-});
-
-/* === Alignement de taille : container KPIs = container Analyse 2026 === */
+/***** === Alignement de taille : container KPIs = container Analyse 2026 === *****/
 function matchContainerSizeOnce() {
   const target = document.querySelector('[data-match-size]');
   if (!target) return;
@@ -2735,55 +2738,120 @@ function matchContainerSizeOnce() {
   if (window._kpiS12AeroGrouped && typeof window._kpiS12AeroGrouped.resize === 'function') {
     window._kpiS12AeroGrouped.resize();
   }
+}   // <-- fin de function matchContainerSizeOnce()
+
+/* ===== STATE alignée sur Méthodologie ===== */
+const sidebar   = document.getElementById("sidebar");
+const toggle    = document.getElementById("toggleSidebar");
+const hamburger = document.getElementById("hamburger");
+const backdrop  = document.getElementById("backdrop");
+
+/* ---- Desktop : applique l'état collapsed sur <body> (marge .main) ---- */
+function syncBodyCollapsedClass() {
+  const isDesktop   = window.matchMedia("(min-width: 992px)").matches;
+  const isCollapsed = sidebar?.classList.contains("collapsed");
+  if (isDesktop) {
+    document.body.classList.toggle("sidebar-collapsed", !!isCollapsed);
+  } else {
+    document.body.classList.remove("sidebar-collapsed");
+  }
 }
+
+/* ===== SIDEBAR COLLAPSE (DESKTOP) ===== */
+if (window.matchMedia("(min-width: 992px)").matches) {
+  try{
+    if (localStorage.getItem("sidebarCollapsed") === "true"){
+      sidebar?.classList.add("collapsed");
+    }
+  }catch(e){}
+  syncBodyCollapsedClass();
+}
+
+if (toggle){
+  toggle.addEventListener("click", function(){
+    sidebar?.classList.toggle("collapsed");
+    try{
+      localStorage.setItem("sidebarCollapsed",
+        sidebar?.classList.contains("collapsed")
+      );
+    }catch(e){}
+    syncBodyCollapsedClass();
+  });
+}
+
+/* Recalcule lors d’un resize (passage mobile<->desktop) */
+window.addEventListener("resize", syncBodyCollapsedClass);
+
+/* ===== OFF-CANVAS (MOBILE/TABLET) ===== */
+function openSidebarMobile() {
+  sidebar?.classList.add("open");
+  if (backdrop){
+    backdrop.style.visibility = "visible";
+    backdrop.style.opacity = "1";
+  }
+  if (hamburger){
+    hamburger.setAttribute("aria-expanded", "true");
+    hamburger.setAttribute("aria-label", "Fermer le menu");
+  }
+  document.documentElement.style.overflow = "hidden";
+  document.body.style.overflow = "hidden";
+}
+function closeSidebarMobile() {
+  sidebar?.classList.remove("open");
+  if (backdrop){
+    backdrop.style.opacity = "0";
+    backdrop.style.visibility = "hidden";
+  }
+  if (hamburger){
+    hamburger.setAttribute("aria-expanded", "false");
+    hamburger.setAttribute("aria-label", "Ouvrir le menu");
+  }
+  document.documentElement.style.overflow = "";
+  document.body.style.overflow = "";
+}
+
+if (hamburger){
+  hamburger.addEventListener("click", () => {
+    if (sidebar?.classList.contains("open")){
+      closeSidebarMobile();
+    } else {
+      openSidebarMobile();
+    }
+  });
+}
+if (backdrop){
+  backdrop.addEventListener("click", closeSidebarMobile);
+}
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape"){ closeSidebarMobile(); }
+});
+
+/* Fermer menu mobile quand on clique un lien */
+document.querySelectorAll(".menu a").forEach(a => {
+  a.addEventListener("click", () => {
+    if (window.matchMedia("(max-width: 991.98px)").matches) {
+      closeSidebarMobile();
+    }
+  });
+});
+
+/* ===== MENU ACTIF AUTOMATIQUE ===== */
+let currentPage = window.location.pathname.split("/").pop();
+if(currentPage === "") currentPage = "index.html";
+document.querySelectorAll(".menu a").forEach(link => {
+  const linkPage = link.getAttribute("href");
+  if(linkPage === currentPage){
+    link.classList.add("active");
+  }
+});
+
+/* (on conserve les listeners d'alignement de hauteur) */
 window.addEventListener('load', matchContainerSizeOnce);
 window.addEventListener('resize', () => {
   clearTimeout(window.__matchKPITimer);
   window.__matchKPITimer = setTimeout(matchContainerSizeOnce, 120);
 });
 
-<script>
-/* =========================================================
-   Responsive helpers : bandeau d’orientation + sidebar auto-compact
-   ========================================================= */
-(function mobileHelpers(){
-  const hint = document.getElementById('orientationHint');
-  function updateHint(){
-    const show = window.matchMedia('(max-width: 900px) and (orientation: portrait)').matches;
-    if (hint) hint.hidden = !show;
-  }
-  updateHint();
-  window.addEventListener('resize', updateHint);
-
-  /* Règle : en <768px -> compact forcé ; au-delà -> on respecte la préférence */
-  const sb = document.getElementById('sidebar');
-  function isSmall(){ return window.matchMedia('(max-width: 768px)').matches; }
-
-  function applySidebarAuto(){
-    if (!sb) return;
-    const userPrefCollapsed = (localStorage.getItem('sidebarCollapsed') === 'true');
-    if (isSmall()){
-      sb.classList.add('collapsed');
-    } else {
-      if (userPrefCollapsed) sb.classList.add('collapsed');
-      else sb.classList.remove('collapsed');
-    }
-  }
-  applySidebarAuto();
-  window.addEventListener('resize', applySidebarAuto);
-
-  /* On laisse ton listener existant gérer le clic & le localStorage.
-     Ici on ajoute juste une protection pour éviter les conflits en mobile. */
-  const toggle = document.getElementById("toggleSidebar");
-  if (toggle){
-    toggle.addEventListener('click', function(){
-      const collapsed = sb.classList.toggle('collapsed');
-      localStorage.setItem('sidebarCollapsed', collapsed);
-    });
-  }
-})();
-</script>
- 
 </script>
 
 </body>
