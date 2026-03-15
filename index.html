@@ -374,6 +374,158 @@ max-width: none;
   #containerKPIs .kpi2-chart{ grid-column:1; grid-row:3; align-self:auto; }
 }
 
+
+ /* ============ CSS pour responsive smartphone et tablette
+/* ============ 1) RÉGLAGES GLOBAUX & TYPO ============
+   - typo fluide
+   - césures, rupture de mot propre
+   - neutralise le zoom iOS sur inputs (<16px)
+*/
+html {
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  font-size: clamp(15px, 1.5vw, 16px);
+  line-height: 1.5;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+  hyphens: auto;
+  padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+/* Titres fluides */
+h1 { font-size: clamp(1.3rem, 2.5vw, 1.8rem); }
+h2 { font-size: clamp(1.15rem, 2.1vw, 1.6rem); }
+h3 { font-size: clamp(1rem, 1.8vw, 1.2rem); }
+
+/* ============ 2) LAYOUT GÉNÉRAL ============ */
+body {
+  /* empilement possible si sidebar off-canvas */
+  min-height: 100dvh; /* viewport mobile fiable */
+}
+
+/* .main : réduire les marges sur mobile */
+.main { padding: clamp(16px, 3.5vw, 40px); }
+
+/* Eviter le 100vh cassé sur iOS pour la sidebar */
+.sidebar {
+  height: 100dvh;
+}
+
+/* ============ 3) SIDEBAR OFF-CANVAS ============
+   - Visible sur desktop
+   - Cachée avec overlay sur < 992px
+*/
+@media (max-width: 992px) {
+  body { display: block; } /* arrêter le side-by-side forcé */
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 260px;            /* un peu plus large pour le doigt */
+    transform: translateX(-100%);
+    transition: transform .25s ease;
+    box-shadow: 0 0 0 rgba(0,0,0,0);
+    z-index: 1100;
+  }
+  .sidebar.open {
+    transform: translateX(0);
+    box-shadow: 0 8px 24px rgba(0,0,0,.35);
+  }
+  /* bouton d’ouverture en haut du header */
+  .toggle-btn {
+    position: fixed;
+    left: 12px;
+    top: 12px;
+    z-index: 1200;
+    width: 44px; height: 44px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: #1f3c88; border: none; border-radius: 10px;
+  }
+  .toggle-btn i { pointer-events: none; }
+  /* overlay */
+  .sidebar-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.35);
+    z-index: 1090;
+    opacity: 0; visibility: hidden; transition: .2s;
+  }
+  .sidebar.open + .sidebar-overlay {
+    opacity: 1; visibility: visible;
+  }
+
+  /* Mode "collapsed" desktop inutile sur mobile */
+  .sidebar.collapsed { width: 260px; }
+  .sidebar.collapsed .text { display: inline; }
+}
+
+/* ============ 4) CARTES & CONTENEURS ============ */
+/* Eviter les "double gouttières" en narrow : marges cohérentes */
+.card { padding: clamp(16px, 2.2vw, 28px); }
+.card--narrow { margin-inline: auto; }
+
+/* KPI grid : tu as déjà un breakpoint à 900px.
+   Ajoutons un palier tablette et mini-mobiles. */
+@media (max-width: 1200px) {
+  :root { --kpi-gap: 14px; }
+}
+@media (max-width: 768px) {
+  :root { --kpi-gap: 12px; }
+  #containerKPIs .kpi2-chart .chart-host { min-height: 360px; }
+}
+@media (max-width: 480px) {
+  #containerKPIs .kpi2-chart .chart-host { min-height: 300px; }
+}
+
+/* ============ 5) TABLEAUX RESPONSIVE ============ */
+.table-wrapper {
+  overflow-x: auto; /* scroll horizontal confortable */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Sur petits écrans, désactiver la 1ère colonne sticky (sinon "tremble") */
+@media (max-width: 640px) {
+  .data-table thead th,
+  .data-table td { padding: 10px 8px; font-size: 0.95em; }
+  .sticky-col { position: static; background: inherit; z-index: auto; }
+}
+
+/* Exemple : cacher des colonnes moins essentielles sous 480px (AJUSTE les sélecteurs selon l’ordre réel) */
+/*
+@media (max-width: 480px) {
+  .data-table th:nth-child(3),
+  .data-table td:nth-child(3),
+  .data-table th:nth-child(5),
+  .data-table td:nth-child(5) { display: none; }
+}
+*/
+
+/* ============ 6) SHARE BUTTONS & BOUTONS ============ */
+.share-links,
+.share-buttons { gap: 12px; }
+.share-btn {
+  padding: 12px 16px;
+  min-height: 44px; /* touch target */
+}
+
+/* ============ 7) TOOLTIP & HOVER SUR MOBILE ============ */
+@media (hover: none) and (pointer: coarse) {
+  /* Désactiver l’apparition au hover */
+  .tooltip:hover::after { opacity: 0; }
+}
+
+/* ============ 8) MOTION & ACCESSIBILITÉ ============ */
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+
+/* ============ 9) DIVERS ============ */
+/* Empêcher les canapés (=canvas) de déborder leurs cartes sur mini mobiles */
+.main .card canvas { max-width: 100%; height: auto !important; }
+
+/* Inputs filtres : taille mini pour éviter zoom iOS */
+.data-table input[type="text"] { font-size: 16px; }
+ 
  
 </style>
 
@@ -2585,14 +2737,68 @@ fetch("data/EXPORT_update_time.csv")
   document.getElementById("update-date").innerHTML = "date de mise à jour indisponible";
 });
 
-// Menu rétractable
+// Menu rétractable — version desktop+mobile (off-canvas) avec overlay & resize charts
 const sidebar = document.getElementById("sidebar");
-const toggle = document.getElementById("toggleSidebar");
-if(localStorage.getItem("sidebarCollapsed") === "true"){ sidebar.classList.add("collapsed"); }
+const toggle  = document.getElementById("toggleSidebar");
+
+// Crée l’overlay juste après la sidebar (utile pour le sélecteur CSS ".sidebar.open + .sidebar-overlay")
+function ensureOverlay(){
+  if (document.querySelector('.sidebar-overlay')) return;
+  const ov = document.createElement('div');
+  ov.className = 'sidebar-overlay';
+  sidebar.insertAdjacentElement('afterend', ov);
+  ov.addEventListener('click', () => {
+    sidebar.classList.remove('open');
+    queueChartsResize();
+  });
+}
+
+// Mobile = <992px
+function isMobile(){
+  return window.matchMedia("(max-width: 992px)").matches;
+}
+
+// Forcer le resize des charts Chart.js après reflow/layout
+function queueChartsResize(){
+  clearTimeout(window.__chartsResizeTimer);
+  window.__chartsResizeTimer = setTimeout(() => {
+    // Liste des ids de canvas utilisés
+    const ids = ["kpiScope12","kpiBreakdown","chartDaily","chartCumul","chartAirlines","chartRotations","chartDestination"];
+    ids.forEach(id => {
+      const c = Chart.getChart(id);
+      if (c && typeof c.resize === 'function') c.resize();
+    });
+  }, 180);
+}
+
+// Rétablir l’état "collapsed" desktop depuis localStorage
+if (localStorage.getItem("sidebarCollapsed") === "true") {
+  sidebar.classList.add("collapsed");
+}
+
+// On clique : desktop => collapsed ; mobile => off-canvas
 toggle.addEventListener("click", function(){
-  sidebar.classList.toggle("collapsed");
-  localStorage.setItem("sidebarCollapsed", sidebar.classList.contains("collapsed"));
+  if (isMobile()){
+    ensureOverlay();
+    sidebar.classList.toggle("open");
+  } else {
+    sidebar.classList.toggle("collapsed");
+    localStorage.setItem("sidebarCollapsed", sidebar.classList.contains("collapsed"));
+  }
+  queueChartsResize();
 });
+
+// Si on change de taille (passage mobile<->desktop), on ferme l’off-canvas et on resize
+let lastMobile = isMobile();
+window.addEventListener('resize', () => {
+  const nowMobile = isMobile();
+  if (nowMobile !== lastMobile) {
+    sidebar.classList.remove('open');
+    queueChartsResize();
+    lastMobile = nowMobile;
+  }
+});
+
 
 // MENU ACTIF
 let currentPage = window.location.pathname.split("/").pop();
