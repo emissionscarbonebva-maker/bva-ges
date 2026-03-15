@@ -474,7 +474,90 @@ header{ padding: clamp(14px, 3.5vw, 25px); }
   }
 }
 
-</style>
+/* ====== OVERRIDES ALIGNÉS SUR LA PAGE MÉTHODO ====== */
+:root{
+  --sidebar-w: 240px;
+  --sidebar-w-collapsed: 100px;
+}
+
+/* Header bar + hamburger + backdrop (styles de base) */
+.header-bar{
+  display:none;
+  align-items:center;
+  justify-content: space-between;
+  gap:12px;
+  margin-bottom: 16px;
+}
+.hamburger{
+  display:none;
+  background: #1f3c88;
+  color:#fff;
+  border:none;
+  border-radius:10px;
+  padding:10px 12px;
+  font-size:18px;
+  min-height:44px;
+  line-height:1;
+}
+.hamburger i{ pointer-events:none; }
+
+.backdrop{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease;
+  z-index: 900;
+}
+
+/* --- Desktop (>= 992px) : sidebar FIXE + marge contenu --- */
+@media (min-width: 992px){
+  .sidebar{
+    position: fixed;         /* FIXE : ne défile plus */
+    left: 0; top: 0; bottom: 0;
+    height: 100dvh;
+    transform: none;         /* pas d’off-canvas en desktop */
+    width: var(--sidebar-w);
+    overflow-y: auto;        /* si le menu dépasse */
+    -webkit-overflow-scrolling: touch;
+    z-index: 1000;
+  }
+  .main{
+    margin-left: var(--sidebar-w);           /* décale le contenu */
+    transition: margin-left .25s ease;       /* glissement doux */
+  }
+  /* Quand collapsée, réduire la marge du contenu */
+  body.sidebar-collapsed .main{
+    margin-left: var(--sidebar-w-collapsed);
+  }
+}
+
+/* --- Mobile/Tablet (< 992px) : off-canvas --- */
+@media (max-width: 991.98px){
+  body{ overflow-x: hidden; }
+
+  .sidebar{
+    position: fixed; /* off-canvas */
+    left: 0; top: 0; bottom: 0;
+    height: 100dvh;
+    transform: translateX(-100%);  /* cachée par défaut */
+    width: var(--sidebar-w);
+    border-right: 1px solid rgba(255,255,255,0.08);
+    z-index: 1000;
+  }
+  .sidebar.open{ transform: translateX(0); } /* affichée quand .open */
+  .sidebar.collapsed{ width: var(--sidebar-w); } /* pas de collapse en mobile */
+
+  .toggle-btn{ display:none; }           /* bouton collapse desktop masqué en mobile */
+  .header-bar{ display:flex; }           /* barre mobile visible */
+  .hamburger{ display:inline-flex; align-items:center; gap:8px; }
+
+  .main{ margin-left: 0; padding-left: 16px; padding-right: 16px; } /* pas de marge en mobile */
+
+  /* Tooltips inutiles en mobile */
+  .sidebar .menu a:hover::after{ content:none !important; }
+}
  
 </style>
 
