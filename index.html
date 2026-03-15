@@ -334,13 +334,13 @@ max-width: none;
 #containerKPIs .kpis-grid{
   display: grid;
   grid-template-columns: 1fr 1fr;  /* 50/50 */
-  grid-template-rows: 1fr 1fr;     /* <-- deux lignes de hauteur égale */
+  grid-template-rows: auto 1fr;    /* L1 = hauteur de KPI1 ; L2 = tout le reste */
   gap: var(--kpi-gap);             /* écart vertical = écart horizontal */
   align-items: stretch;            /* les items s’étirent sur la hauteur de leur piste */
 }
 
 /* Placement des 3 éléments (3 enfants directs de .kpis-grid) */
-#containerKPIs .metric-box{ min-height: 0; }
+#containerKPIs .kpi1-chart{ grid-column: 1; grid-row: 1; }
 
 #containerKPIs .kpi1-text{
   grid-column: 1; grid-row: 2;     /* sous KPI1 */
@@ -358,22 +358,10 @@ max-width: none;
 /* KPI2 s’étend sur 2 lignes = pleine hauteur à droite */
 #containerKPIs .kpi2-chart{
   grid-column: 2; grid-row: 1 / span 2;
-  display: flex; flex-direction: column; align-self: stretch; min-height: 0;
+  display: flex; flex-direction: column; align-self: stretch;
 }
 /* Le graphe remplit son conteneur (ajuste min-height si besoin) */
-
-#containerKPIs .kpi2-chart .chart-host{
-  flex: 1 1 auto;
-  min-height: 0;     /* laisse la grille décider */
-  height: auto;      /* ne fige pas une hauteur arbitraire */
-}
-
-
-/* Canvas : ne pousse PAS contre l'aspect-ratio de Chart.js.
-   On laisse Chart.js piloter la hauteur quand maintainAspectRatio:true.
-   On ne garde "height:100%" que si on met maintainAspectRatio:false */
-.chart-host canvas { height: auto !important; }
-
+#containerKPIs .kpi2-chart .chart-host{ flex: 1 1 auto; min-height: 420px; }
 
 /* Responsive : on empile proprement */
 @media (max-width: 900px){
@@ -386,238 +374,6 @@ max-width: none;
   #containerKPIs .kpi2-chart{ grid-column:1; grid-row:3; align-self:auto; }
 }
 
-
- /* ============ CSS pour responsive smartphone et tablette
-/* ============ 1) RÉGLAGES GLOBAUX & TYPO ============
-   - typo fluide
-   - césures, rupture de mot propre
-   - neutralise le zoom iOS sur inputs (<16px)
-*/
-html {
-  -webkit-text-size-adjust: 100%;
-}
-body {
-  font-size: clamp(15px, 1.5vw, 16px);
-  line-height: 1.5;
-  word-wrap: break-word;
-  overflow-wrap: anywhere;
-  hyphens: auto;
-  padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-}
-
-/* Titres fluides */
-h1 { font-size: clamp(1.3rem, 2.5vw, 1.8rem); }
-h2 { font-size: clamp(1.15rem, 2.1vw, 1.6rem); }
-h3 { font-size: clamp(1rem, 1.8vw, 1.2rem); }
-
-/* ============ 2) LAYOUT GÉNÉRAL ============ */
-body {
-  /* empilement possible si sidebar off-canvas */
-  min-height: 100dvh; /* viewport mobile fiable */
-}
-
-/* .main : réduire les marges sur mobile */
-.main { padding: clamp(16px, 3.5vw, 40px); }
-
-/* Eviter le 100vh cassé sur iOS pour la sidebar */
-.sidebar {
-  height: 100dvh;
-}
-
-/* ============ 3) SIDEBAR OFF-CANVAS ============
-   - Visible sur desktop
-   - Cachée avec overlay sur < 992px
-*/
-@media (max-width: 992px) {
-  body { display: block; } /* arrêter le side-by-side forcé */
-  .sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 260px;            /* un peu plus large pour le doigt */
-    transform: translateX(-100%);
-    transition: transform .25s ease;
-    box-shadow: 0 0 0 rgba(0,0,0,0);
-    z-index: 1100;
-  }
-  .sidebar.open {
-    transform: translateX(0);
-    box-shadow: 0 8px 24px rgba(0,0,0,.35);
-  }
-  /* bouton d’ouverture en haut du header */
-  /*.toggle-btn {
-    position: fixed;
-    left: 12px;
-    top: 12px;
-    z-index: 1200;
-    width: 44px; height: 44px;
-    display: inline-flex; align-items: center; justify-content: center;
-    background: #1f3c88; border: none; border-radius: 10px;
-  }
-  .toggle-btn i { pointer-events: none; }
-  /* overlay */
-  .sidebar-overlay {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,.35);
-    z-index: 1090;
-    opacity: 0; visibility: hidden; transition: .2s;
-  }
-  .sidebar.open + .sidebar-overlay {
-    opacity: 1; visibility: visible;
-  }
-
-  /* Mode "collapsed" desktop inutile sur mobile */
-  .sidebar.collapsed { width: 260px; }
-  .sidebar.collapsed .text { display: inline; }
-}
-
-/* ============ 4) CARTES & CONTENEURS ============ */
-/* Eviter les "double gouttières" en narrow : marges cohérentes */
-.card { padding: clamp(16px, 2.2vw, 28px); }
-.card--narrow { margin-inline: auto; }
-
-/* KPI grid : tu as déjà un breakpoint à 900px.
-   Ajoutons un palier tablette et mini-mobiles. */
-@media (max-width: 1200px) {
-  :root { --kpi-gap: 14px; }
-}
-@media (max-width: 768px) {
-  :root { --kpi-gap: 12px; }
-  #containerKPIs .kpi2-chart .chart-host { min-height: 360px; }
-}
-@media (max-width: 480px) {
-  #containerKPIs .kpi2-chart .chart-host { min-height: 300px; }
-}
-
-/* ============ 5) TABLEAUX RESPONSIVE ============ */
-.table-wrapper {
-  overflow-x: auto; /* scroll horizontal confortable */
-  -webkit-overflow-scrolling: touch;
-}
-
-/* Sur petits écrans, désactiver la 1ère colonne sticky (sinon "tremble") */
-@media (max-width: 640px) {
-  .data-table thead th,
-  .data-table td { padding: 10px 8px; font-size: 0.95em; }
-  .sticky-col { position: static; background: inherit; z-index: auto; }
-}
-
-/* Exemple : cacher des colonnes moins essentielles sous 480px (AJUSTE les sélecteurs selon l’ordre réel) */
-/*
-@media (max-width: 480px) {
-  .data-table th:nth-child(3),
-  .data-table td:nth-child(3),
-  .data-table th:nth-child(5),
-  .data-table td:nth-child(5) { display: none; }
-}
-*/
-
-/* ============ 6) SHARE BUTTONS & BOUTONS ============ */
-.share-links,
-.share-buttons { gap: 12px; }
-.share-btn {
-  padding: 12px 16px;
-  min-height: 44px; /* touch target */
-}
-
-/* ============ 7) TOOLTIP & HOVER SUR MOBILE ============ */
-@media (hover: none) and (pointer: coarse) {
-  /* Désactiver l’apparition au hover */
-  .tooltip:hover::after { opacity: 0; }
-}
-
-/* ============ 8) MOTION & ACCESSIBILITÉ ============ */
-@media (prefers-reduced-motion: reduce) {
-  * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
-}
-
-/* ============ 9) DIVERS ============ */
-
-/* Canvas : ne pas forcer height:auto si un conteneur gère la hauteur */
-.main .card canvas { max-width: 100%; }           /* largeur fluide */
-.chart-host canvas { height: 100% !important; }   /* respecte la hauteur du host */
-
-
-/* Inputs filtres : taille mini pour éviter zoom iOS */
-.data-table input[type="text"] { font-size: 16px; }
-
-/* ===== Bouton mobile pour ouvrir la sidebar ===== */
-.mobile-menu-btn {
-  display: none;                /* par défaut caché (desktop) */
-  position: fixed;              /* visible quelle que soit la page scrollée */
-  left: 12px;
-  top: 12px;
-  z-index: 1200;
-  width: 44px; height: 44px;
-  border: none;
-  border-radius: 10px;
-  background: #ffffff;
-  color: #1f3c88;
-  box-shadow: 0 4px 12px rgba(0,0,0,.15);
-  align-items: center;
-  justify-content: center;
-}
-.mobile-menu-btn i { pointer-events: none; font-size: 18px; }
-
-/* Afficher ce bouton uniquement sur mobile/tablette */
-@media (max-width: 992px) {
-  .mobile-menu-btn { display: inline-flex; }
-}
-
-/* ===== Améliorations lisibilité chart en portrait smartphone ===== */
-
-/* 1.1 — Plus de hauteur disponible pour les graphs dans les cartes étroites */
-@media (max-width: 480px) and (orientation: portrait) {
-  /* Si un host existe (KPI), on l’agrandit */
-  .chart-host { min-height: 420px !important; }
-
-  /* Si pas de host, donner de la hauteur max au canvas */
-  .card--narrow canvas {
-    max-height: 420px;
-  }
-}
-
-/* 1.2 — En paysage mobile on peut rester plus compact */
-@media (max-width: 480px) and (orientation: landscape) {
-  .chart-host { min-height: 320px !important; }
-  .card--narrow canvas { max-height: 320px; }
-}
-
-/* Canvas : ne pas forcer height:auto si un conteneur gère la hauteur */
-.main .card canvas { max-width: 100%; }           /* largeur fluide */
-.chart-host canvas { height: 100% !important; }   /* respecte la hauteur du host */
-
-
-/* ===== Bandeau "lisez en paysage" ===== */
-#landscape-hint {
-  position: fixed;
-  left: 12px; right: 12px; bottom: 12px;
-  z-index: 1300;
-  background: #1f3c88;
-  color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 8px 20px rgba(0,0,0,.25);
-  padding: 10px 12px;
-}
-#landscape-hint .hint-content {
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  font-size: 14px;
-}
-#landscape-hint button#close-hint {
-  background: #fff; color: #1f3c88;
-  border: none; border-radius: 8px;
-  padding: 8px 12px; font-weight: 600; cursor: pointer;
-}
-@media (min-width: 481px), (orientation: landscape) {
-  #landscape-hint { display: none; }
-}
-
- /* ===== KPI 1 : hauteur dédiée ===== */
-.kpi1-chart .kpi1-host { min-height: 200px; }  /* desktop / paysage */
-@media (max-width: 480px) and (orientation: portrait) {
-  .kpi1-chart .kpi1-host { min-height: 240px; }  /* un peu plus de place en portrait */
-}
-.kpi1-chart .kpi1-host canvas { height: 100% !important; } /* remplir le host */
  
 </style>
 
@@ -713,14 +469,9 @@ body {
 
 <!-- MAIN -->
 <div class="main">
- <header>
-  <!-- Bouton mobile pour ouvrir la sidebar -->
-  <button class="mobile-menu-btn" id="openSidebarBtn" aria-label="Ouvrir le menu">
-    <i class="fa-solid fa-bars"></i>
-  </button>
-
-  <h1>Observatoire des émissions de gaz à effet de serre de l'aéroport de Paris-Beauvais</h1>
-</header>
+  <header>
+    <h1>Observatoire des émissions de gaz à effet de serre de l'aéroport de Paris-Beauvais</h1>
+  </header>
 
   <div class="container">
 
@@ -765,39 +516,48 @@ body {
   
     <!-- Container KPI mis en pleine largeur via la classe utilitaire -->
     <!-- Container KPI (mise en page "Souhaité") -->
-<!-- Container KPI (mise en page "Souhaité") -->
 <div id="containerKPIs" class="card card--normal">
   <h2>Indicateurs clés</h2>
 
+  <!-- ⚠️ IMPORTANT : on garde .kpis-grid mais on ajoute des classes
+       pour positionner les 3 éléments en CSS Grid -->
   <div class="metrics kpis-grid">
     <!-- KPI 1 : histogramme horizontal (colonne gauche, ligne 1) -->
     <div class="metric-box kpi1-chart">
       <div class="metric-header">
-        <div class="metric-title">
-          Emissions totales <span id="kpi1-year">2026</span> au <span id="kpi1-date-ddmois">11 mars</span>
-        </div>
-        <div id="kpiTotal" class="metric-value">…</div>
+       
+<div class="metric-header">
+  <div class="metric-title">
+    Emissions totales <span id="kpi1-year">2026</span> au <span id="kpi1-date-ddmois">11 mars</span>
+  </div>
+  <div id="kpiTotal" class="metric-value">…</div>
+</div>
+
+      <!-- <div id="kpiTotal" class="metric-value">…</div> -->
       </div>
 
       <div class="metric-body">
-        <div class="chart-host kpi1-host">
-          <canvas id="kpiBreakdown"></canvas>
-        </div>
+        <canvas id="kpiBreakdown" height="40"></canvas>
         <div id="kpiBreakdownLegend" class="mini-legend"></div>
       </div>
     </div>
 
-    <!-- TEXTE KPI (passe sous KPI1, colonne gauche, ligne 2) -->
-    <div class="metric-box kpi1-text">
+    <!-- TEXTE (ce qui était sous KPI2) => passe sous KPI1 (colonne gauche, ligne 2) -->
+    <div class="kpi1-text">
+      <div class="metric-box kpi1-text">
       <div id="kpiS12AeroExplain" class="kpi-explain"></div>
-    </div>
+   </div>
+   </div>
 
     <!-- KPI 2 : histogramme vertical (colonne droite, s'étend sur 2 lignes) -->
     <div class="metric-box kpi2-chart">
       <div class="metric-title">Evolution des émissions "Location based (scope 1 & 2)" et "Aéronefs"</div>
+
+      <!-- Hôte de chart pour un remplissage fluide -->
       <div class="chart-host">
         <canvas id="kpiScope12"></canvas>
       </div>
+
     </div>
   </div>
 </div>
@@ -1067,37 +827,6 @@ function parseCSV(url, callback){
 <script>
 document.addEventListener("DOMContentLoaded", function(){
 
-/* ===== Contexte responsive global (portrait mobile) ===== */
-  function isPortraitMobile() {
-    return window.matchMedia("(max-width: 480px) and (orientation: portrait)").matches;
-  }
-
-  /* ===== Paramètres Chart.js par défaut adaptés au portrait ===== */
-  function applyMobilePortraitDefaults() {
-    const onMobile = isPortraitMobile();
-
-    // Valeurs globales Chart.js — n’affecte que les prochains charts créés
-    Chart.defaults.maintainAspectRatio = !onMobile ? true : false;
-
-    // Légende compacte en bas sur mobile portrait
-    Chart.defaults.plugins.legend.position = onMobile ? 'bottom' : 'top';
-    Chart.defaults.plugins.legend.labels = Chart.defaults.plugins.legend.labels || {};
-    Chart.defaults.plugins.legend.labels.boxWidth  = onMobile ? 12 : 40;
-    Chart.defaults.plugins.legend.labels.boxHeight = onMobile ? 12 : 12;
-    Chart.defaults.plugins.legend.labels.padding   = onMobile ? 10 : 12;
-
-    // Tooltips : police un peu plus petite sur mobile
-    Chart.defaults.plugins.tooltip = Chart.defaults.plugins.tooltip || {};
-    Chart.defaults.plugins.tooltip.titleFont = { size: onMobile ? 11 : 12 };
-    Chart.defaults.plugins.tooltip.bodyFont  = { size: onMobile ? 11 : 12 };
-  }
-  applyMobilePortraitDefaults();
-
-  // Re‑appliquer si l’utilisateur pivote l’écran
-  window.addEventListener('orientationchange', () => {
-    setTimeout(applyMobilePortraitDefaults, 100);
-  });
- 
   /* ========= Utils Périodes & Contrôles ========= */
 
   // 0.1 Fallback ISO week si date-fns n'est pas dispo
@@ -1386,50 +1115,33 @@ const dateKey = headers[0]; // la 1ère colonne est la date dans ce CSV
       data: {
         labels: [""],
         datasets: [
-  {
-    label: labelsKPI[0],
-    data: [valuesKPI[0]],
-    backgroundColor: toRGBA(colors.aero, 0.85),
-    stack: "kpi",
-    barThickness: 35   // ← ÉPAISSEUR histogramme KPI 1
-  },
-  {
-    label: labelsKPI[1],
-    data: [valuesKPI[1]],
-    backgroundColor: toRGBA(colors.s12, 0.85),
-    stack: "kpi",
-    barThickness: 35
-  },
-  {
-    label: labelsKPI[2],
-    data: [valuesKPI[2]],
-    backgroundColor: toRGBA(colors.autres, 0.85),
-    stack: "kpi",
-    barThickness: 35
-  }
-]
+          { label: labelsKPI[0], data: [valuesKPI[0]], backgroundColor: toRGBA(colors.aero,   0.85), stack: "kpi" },
+          { label: labelsKPI[1], data: [valuesKPI[1]], backgroundColor: toRGBA(colors.s12,    0.85), stack: "kpi" },
+          { label: labelsKPI[2], data: [valuesKPI[2]], backgroundColor: toRGBA(colors.autres, 0.85), stack: "kpi" }
+        ]
       },
-      
-options: {
-  indexAxis: "y",
-  responsive: true,
-  maintainAspectRatio: !isPortraitMobile(),
-  plugins: { legend: { display: false } },
-  scales: {
-    x: { stacked: true, display: false, max: total, ticks: { maxTicksLimit: isPortraitMobile() ? 4 : 8 } },
-    y: { stacked: true, display: false }
-  }
-}
+      options: {
+        indexAxis: "y",               // horizontal
+        responsive: true,
+        plugins: {
+          legend: { display: false }, // légende personnalisée en dessous
+          tooltip: {
+            callbacks: {
+              label: (ctx) => {
+                const v = ctx.parsed.x ?? 0;
+                const pct = total > 0 ? (v / total) * 100 : 0;
+                return `${ctx.dataset.label} : ${formatTonsFR(v)} t — ${pct.toFixed(1)} %`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: { stacked: true, display: false, max: total },
+          y: { stacked: true, display: false }
+        }
+      }
     });
 
-
-// Ajuste la hauteur du conteneur (chart-host) en fonction de l’épaisseur choisie
-// 26 = barThickness ; 36 = marge (padding + respiration)
-const kpi1Thickness = 26;
-const host = cv.closest('.chart-host') || cv.parentElement;
-if (host) host.style.minHeight = (kpi1Thickness + 36) + 'px';
-
-   
     // Légende texte en dessous + pourcentages
     const pA = total > 0 ? (vols / total * 100).toFixed(1) : "0.0";
     const pS = total > 0 ? (s12  / total * 100).toFixed(1) : "0.0";
@@ -1646,34 +1358,25 @@ const s12SimpleLabelsPlugin = {
            }
         ]
       },
-      
-options: {
-  responsive: true,
-  maintainAspectRatio: !isPortraitMobile(),
-  plugins: {
-    legend: { position: isPortraitMobile() ? 'bottom' : 'top' },
-    tooltip: {
-      callbacks: {
-        label: (ctx) => {
-          const v = ctx.raw ?? 0;
-          return `${ctx.dataset.label} : ${Math.round(v).toLocaleString('fr-FR')} t éq CO₂`;
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top' },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => {
+                const v = ctx.raw ?? 0;
+                return `${ctx.dataset.label} : ${formatTonsFR(v)} t éq CO₂`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: { stacked: false, ticks: { autoSkip: false, maxRotation: 0 } },
+          y: { beginAtZero: true, title: { display: true, text: 't éq CO₂' } }
         }
-      }
-    }
-  },
-  scales: {
-    x: {
-      title: { display: !isPortraitMobile(), text: 'Année' },
-      ticks: { autoSkip: true, maxRotation: 0, maxTicksLimit: isPortraitMobile() ? 6 : 12 }
-    },
-    y: {
-      beginAtZero: true,
-      title: { display: !isPortraitMobile(), text: 't éq CO₂' },
-      ticks: { maxTicksLimit: isPortraitMobile() ? 5 : 8 }
-
-    }
-  }
-},
+      },
       // Plugins spécifiques KPI2 : pastilles manquants + labels Aéronefs + labels S1&2 verticaux
      plugins: [aeroValueLabelsPlugin, s12SimpleLabelsPlugin]
     });
@@ -1800,10 +1503,9 @@ Les émissions pour l'année 2025 seront ajoutées lorsque l'ensemble des source
         data: { labels, datasets },
         options: {
           responsive: true,
-         maintainAspectRatio: !isPortraitMobile(),
           interaction: { mode: 'index', intersect: false },
           plugins: {
-            legend: { position: isPortraitMobile() ? 'bottom' : 'top'},
+            legend: { position: 'top' },
             zoom: {
               pan:  { enabled: true, mode: 'x' },
               zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }
@@ -1854,18 +1556,15 @@ Les émissions pour l'année 2025 seront ajoutées lorsque l'ensemble des source
               }
             }
           },
-          
-scales: {
-    x: {
-      title: { display: !isPortraitMobile(), text: isDay ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois") },
-      stacked: !isDay,
-      ticks: { autoSkip: true, maxRotation: 0, maxTicksLimit: isPortraitMobile() ? 5 : 12 }
-    },
-    y: {
-      beginAtZero: true,
-      stacked: true,
-      title: { display: !isPortraitMobile(), text: "Emissions de gaz à effet de serre (en t éq CO₂)" },
-      ticks: { maxTicksLimit: isPortraitMobile() ? 5 : 8 }
+          scales: {
+            x: {
+              title: { display: true, text: isDay ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois") },
+              stacked: !isDay
+            },
+            y: {
+              beginAtZero: true,
+              stacked: true,
+              title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" }
             }
           }
         }
@@ -1943,10 +1642,9 @@ scales: {
         data: { labels, datasets },
         options: {
           responsive: true,
-         maintainAspectRatio: !isPortraitMobile(),
           interaction: { mode:'index', intersect:false },
           plugins: {
-            legend: { position: isPortraitMobile() ? 'bottom' : 'top' },
+            legend: { position:'top' },
             tooltip: {
               itemSort: (a, b) => {
                 const va = (a.parsed && typeof a.parsed.y === 'number') ? a.parsed.y : 0;
@@ -1998,18 +1696,11 @@ scales: {
                 }
               }
             },
-            
-zoom: { pan:{enabled:true, mode:'x'}, zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' } }
-  },
-  scales: {
-    x: { title: { display: !isPortraitMobile(), text: (isDay ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")) },
-         stacked: !isDay,
-         ticks: { autoSkip: true, maxRotation: 0, maxTicksLimit: isPortraitMobile() ? 5 : 12 } },
-    y: { beginAtZero: true,
-         stacked: !isDay,
-         title: { display: !isPortraitMobile(), text: "Emissions de gaz à effet de serre (en t éq CO₂)" },
-         ticks: { maxTicksLimit: isPortraitMobile() ? 5 : 8 } }
-
+            zoom: { pan:{enabled:true, mode:'x'}, zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' } }
+          },
+          scales: {
+            x: { title: { display: true, text: (isDay ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")) }, stacked: !isDay },
+            y: { beginAtZero: true, stacked: !isDay, title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" } }
           }
         }
       });
@@ -2091,11 +1782,10 @@ zoom: { pan:{enabled:true, mode:'x'}, zoom:{ wheel:{enabled:true}, pinch:{enable
         data:{ labels, datasets },
         options: {
           responsive: true,
-         maintainAspectRatio: !isPortraitMobile(),
           interaction: { mode: 'index', intersect: false },
           plugins: {
             legend: {
-              position: isPortraitMobile() ? 'bottom' : 'top',
+              position: 'top',
               labels: {
                 sort: (a, b) => {
                   const order = { "Ryanair":0, "Wizz Air":1, "HiSky":2, "SkyUp":3, "Volotea":4, "Autres":5 };
@@ -2175,18 +1865,17 @@ zoom: { pan:{enabled:true, mode:'x'}, zoom:{ wheel:{enabled:true}, pinch:{enable
               }
             }
           },
-          
-scales: {
-    x: {
-      title: { display: !isPortraitMobile(), text: (period === "day" ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")) },
-      ticks: { autoSkip: true, maxRotation: 0, maxTicksLimit: isPortraitMobile() ? 5 : 12 }
-    },
-    y: {
-      beginAtZero: true,
-      stacked: (period !== "day"),
-      title: { display: !isPortraitMobile(), text: "Emissions de gaz à effet de serre (en t éq CO₂)" },
-      ticks: { maxTicksLimit: isPortraitMobile() ? 5 : 8 }
-
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: (period === "day" ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois"))
+              }
+            },
+            y: {
+              beginAtZero: true,
+              stacked: (period !== "day"),
+              title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" }
             }
           }
         }
@@ -2262,11 +1951,10 @@ scales: {
         data:{ labels, datasets },
         options: {
           responsive: true,
-         maintainAspectRatio: !isPortraitMobile(),
           interaction: { mode: 'index', intersect: false },
           plugins: {
             legend: {
-              position: isPortraitMobile() ? 'bottom' : 'top',
+              position: 'top',
               labels: {
                 sort: (a, b) => {
                   const order = { "Ryanair":0, "Wizz Air":1, "HiSky":2, "SkyUp":3, "Volotea":4, "Autres":5 };
@@ -2344,18 +2032,17 @@ scales: {
               }
             }
           },
-          
-scales: {
-    x: {
-      title: { display: !isPortraitMobile(), text: (period === "day" ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")) },
-      ticks: { autoSkip: true, maxRotation: 0, maxTicksLimit: isPortraitMobile() ? 5 : 12 }
-    },
-    y: {
-      beginAtZero: true,
-      stacked: (period !== "day"),
-      title: { display: !isPortraitMobile(), text: "Nombre de rotations" },
-      ticks: { maxTicksLimit: isPortraitMobile() ? 5 : 8 }
-
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: (period === "day" ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois"))
+              }
+            },
+            y: {
+              beginAtZero: true,
+              stacked: (period !== "day"),
+              title: { display: true, text: "Nombre de rotations" }
             }
           }
         }
@@ -2497,9 +2184,8 @@ scales: {
           },
           options: {
             responsive: true,
-           maintainAspectRatio: !isPortraitMobile(),
             plugins: {
-              legend: { display: true, position: isPortraitMobile() ? 'bottom' : 'top'  },
+              legend: { display: true },
               tooltip: {
                 callbacks: {
                   label: function (context) {
@@ -2527,33 +2213,27 @@ scales: {
                   }
                 }
               }
-            
-},
+            },
             scales: {
-              x: { 
-                ticks: { 
-                  autoSkip: true, 
-                  maxRotation: isPortraitMobile() ? 0 : 45, 
-                  minRotation: 0, 
-                  maxTicksLimit: isPortraitMobile() ? 6 : 12 
-                } 
-              },
+              x: { ticks: { maxRotation: 90, minRotation: 45 } },
               y: {
                 beginAtZero: true,
-                title: { display: !isPortraitMobile(), text: "Emissions de gaz à effet de serre (en t éq CO₂)" },
-                ticks: { maxTicksLimit: isPortraitMobile() ? 5 : 8 }
+                title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" }
               },
               y1: {
                 beginAtZero: true,
                 position: "right",
                 grid: { drawOnChartArea: false },
-                title: { display: !isPortraitMobile(), text: "Nombre de vols (cumul depuis le 1er janvier)" },
-                ticks: { stepSize: 1 }
+                title: { display: true, text: "Nombre de vols (cumul depuis le 1er janvier)" },
+                ticks: {
+                  stepSize: 1,
+                  callback: (v) => Number.isInteger(v) ? v : ""
+                }
               }
             }
           }
         });
-       }
+      }
 
       const btns = document.getElementById("chartDestination")._sortBtns || {};
       btns.btnEmi?.addEventListener("click", () => { sortKey = "emission"; buildDestinationChart(); });
@@ -2905,73 +2585,14 @@ fetch("data/EXPORT_update_time.csv")
   document.getElementById("update-date").innerHTML = "date de mise à jour indisponible";
 });
 
-/// Menu rétractable — desktop + mobile off-canvas (overlay) + resize charts
+// Menu rétractable
 const sidebar = document.getElementById("sidebar");
-const toggle  = document.getElementById("toggleSidebar");   // bouton de la sidebar (desktop)
-const opener  = document.getElementById("openSidebarBtn");  // nouveau bouton (mobile)
-
-function isMobile(){ return window.matchMedia("(max-width: 992px)").matches; }
-
-// Crée l’overlay juste après la sidebar (pour le sélecteur CSS ".sidebar.open + .sidebar-overlay")
-function ensureOverlay(){
-  if (document.querySelector('.sidebar-overlay')) return;
-  const ov = document.createElement('div');
-  ov.className = 'sidebar-overlay';
-  sidebar.insertAdjacentElement('afterend', ov);
-  ov.addEventListener('click', () => {
-    sidebar.classList.remove('open');
-    queueChartsResize();
-  });
-}
-
-// Force un resize des charts (Chart.js) après les changements de layout
-function queueChartsResize(){
-  clearTimeout(window.__chartsResizeTimer);
-  window.__chartsResizeTimer = setTimeout(() => {
-    const ids = ["kpiScope12","kpiBreakdown","chartDaily","chartCumul","chartAirlines","chartRotations","chartDestination"];
-    ids.forEach(id => {
-      const c = Chart.getChart(id);
-      if (c && typeof c.resize === 'function') c.resize();
-    });
-  }, 180);
-}
-
-// État collapsed desktop
-if (localStorage.getItem("sidebarCollapsed") === "true") {
-  sidebar.classList.add("collapsed");
-}
-
-// Clic bouton de la sidebar : desktop => collapsed ; mobile => ferme l’off-canvas (quand ouvert)
+const toggle = document.getElementById("toggleSidebar");
+if(localStorage.getItem("sidebarCollapsed") === "true"){ sidebar.classList.add("collapsed"); }
 toggle.addEventListener("click", function(){
-  if (isMobile()){
-    // en mobile, le bouton de la sidebar sert de "fermer"
-    sidebar.classList.remove('open');
-  } else {
-    sidebar.classList.toggle("collapsed");
-    localStorage.setItem("sidebarCollapsed", sidebar.classList.contains("collapsed"));
-  }
-  queueChartsResize();
+  sidebar.classList.toggle("collapsed");
+  localStorage.setItem("sidebarCollapsed", sidebar.classList.contains("collapsed"));
 });
-
-// Clic bouton mobile (fixe dans le header) => ouvre off-canvas
-opener.addEventListener("click", function(){
-  ensureOverlay();
-  sidebar.classList.add("open");
-  queueChartsResize();
-});
-
-// Changement de breakpoint (desktop <-> mobile)
-let lastMobile = isMobile();
-window.addEventListener('resize', () => {
-  const nowMobile = isMobile();
-  if (nowMobile !== lastMobile){
-    // fermer l’off-canvas si on repasse desktop
-    sidebar.classList.remove('open');
-    queueChartsResize();
-    lastMobile = nowMobile;
-  }
-});
-
 
 // MENU ACTIF
 let currentPage = window.location.pathname.split("/").pop();
@@ -3021,40 +2642,7 @@ window.addEventListener('resize', () => {
   window.__matchKPITimer = setTimeout(matchContainerSizeOnce, 120);
 });
 
-/* ===== Bandeau conseil "Passez en paysage" (portrait mobile) ===== */
-(function(){
-  const KEY = 'hideLandscapeHint';
-  const isPortrait = () => window.matchMedia('(max-width: 480px) and (orientation: portrait)').matches;
-
-  function ensureBanner(){
-    if (!isPortrait()) return removeBanner();
-    if (localStorage.getItem(KEY) === '1') return removeBanner();
-    if (document.getElementById('landscape-hint')) return;
-
-    const bar = document.createElement('div');
-    bar.id = 'landscape-hint';
-    bar.innerHTML = `
-      <div class="hint-content">
-        <span>💡 Pour une meilleure lecture des graphiques, passez<br class="hint-br">votre téléphone en mode horizontal.</span>
-        <button id="close-hint" aria-label="Fermer">OK</button>
-      </div>
-    `;
-    document.body.appendChild(bar);
-
-    document.getElementById('close-hint').addEventListener('click', () => {
-      localStorage.setItem(KEY, '1');
-      removeBanner();
-    });
-  }
-  function removeBanner(){
-    const el = document.getElementById('landscape-hint');
-    if (el) el.remove();
-  }
-
-  ensureBanner();
-  window.addEventListener('orientationchange', () => setTimeout(ensureBanner, 150));
-})();
- 
+console.log("SCRIPT OK");
 </script>
 
 </body>
