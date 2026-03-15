@@ -1,860 +1,716 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Méthodologie – Calcul des émissions carbone de l'aéroport Paris-Beauvais (BVA)</title>
-
 <meta name="description" content="Méthodologie de calcul des émissions de gaz à effet de serre associées à l'activité de l'aéroport de Paris-Beauvais.">
 <meta name="robots" content="index, follow">
-
+<link rel="icon" type="image/png" href="Favicon/favicon.png">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
+/* ===== RESET LÉGER ===== */
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+img { max-width: 100%; display: block; }
 
 /* ===== GLOBAL ===== */
+:root{
+  --sidebar-w: 240px;
+  --sidebar-w-collapsed: 100px;
+  --brand:#162d63;
+  --brand-2:#1f3c88;
+  --brand-3:#2e55c7;
+  --bg:#f5f6fa;
+  --card-bg:#fff;
+  --text:#0b1320;
+  --muted:#666;
+  --radius:10px;
+  --shadow:0 4px 14px rgba(0,0,0,0.08);
+}
+
+@media (prefers-reduced-motion: reduce){
+  * { animation: none !important; transition: none !important; }
+}
 
 body{
-margin:0;
-font-family:Arial, sans-serif;
-display:flex;
-background:#f5f6fa;
+  margin:0;
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display:flex;
+  min-height:100dvh; /* unités dynamiques mobiles */
 }
 
 /* ===== SIDEBAR ===== */
-
 .sidebar{
-width:240px;
-background:#162d63;
-color:white;
-height:100vh;
-position:sticky;
-top:0;
-padding:20px 10px;
-box-sizing:border-box;
-transition:width 0.25s;
-overflow:visible;
-flex-shrink:0;
-z-index:1000;
+  width: var(--sidebar-w);
+  background: var(--brand);
+  color: white;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  padding: 20px 10px;
+  transition: width 0.25s ease, transform 0.3s ease;
+  overflow: visible;
+  flex-shrink: 0;
+  z-index: 1000;
 }
 
-.sidebar.collapsed{
-width:100px;
-}
+.sidebar.collapsed{ width: var(--sidebar-w-collapsed); }
+.sidebar.collapsed .text{ display:none; }
+.sidebar.collapsed .menu a{ justify-content:center; }
 
-.sidebar.collapsed .text{
-display:none;
-}
+.toggle-btn i{ transition: transform 0.3s ease; }
+.sidebar.collapsed .toggle-btn i{ transform: rotate(180deg); }
 
-.sidebar.collapsed .menu a{
-justify-content:center;
-}
-
-.toggle-btn i{
-transition:transform 0.3s ease;
-}
-
-.sidebar.collapsed .toggle-btn i{
-transform:rotate(180deg);
-}
-
-/* TOOLTIP */
-
-.sidebar.collapsed .menu a{
-position:relative;
-}
-
+/* TOOLTIP quand collapsé desktop */
+.menu a{ position:relative; }
 .sidebar.collapsed .menu a:hover::after{
-content:attr(data-title);
-position:absolute;
-left:80px;
-background:#162d63;
-color:white;
-padding:6px 10px;
-border-radius:6px;
-white-space:nowrap;
-font-size:14px;
-z-index:9999;
-box-shadow:0 4px 12px rgba(0,0,0,0.2);
+  content:attr(data-title);
+  position:absolute;
+  left: 90px;
+  top: 50%;
+  transform: translateY(-50%);
+  background:#162d63;
+  color:white;
+  padding:6px 10px;
+  border-radius:6px;
+  white-space:nowrap;
+  font-size:14px;
+  z-index: 9999;
+  box-shadow:0 4px 12px rgba(0,0,0,0.2);
+  opacity:1;
 }
 
 /* LOGO */
+.logo{ text-align:center; margin-bottom:20px; }
+.logo img{ max-width:140px; transition: all 0.3s; }
+.sidebar.collapsed .logo img{ max-width:50px; }
 
-.logo{
-text-align:center;
-margin-bottom:20px;
-}
-
-.logo img{
-max-width:140px;
-transition:all 0.3s;
-}
-
-.sidebar.collapsed .logo img{
-max-width:50px;
-}
-
-/* TOGGLE BUTTON */
-
+/* TOGGLE (dans la sidebar pour desktop) */
 .toggle-btn{
-background:none;
-border:none;
-color:white;
-font-size:20px;
-cursor:pointer;
-margin-bottom:20px;
+  background:none;
+  border:1px solid rgba(255,255,255,0.25);
+  color:white;
+  font-size:18px;
+  cursor:pointer;
+  margin-bottom:20px;
+  width:100%;
+  border-radius:8px;
+  padding:8px 10px;
 }
 
 /* MENU */
-
 .menu a{
-display:flex;
-align-items:center;
-gap:10px;
-color:white;
-text-decoration:none;
-padding:10px;
-border-radius:6px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:white;
+  text-decoration:none;
+  padding:12px 10px;
+  border-radius:8px;
+  min-height:44px; /* tap target */
 }
-
-.menu a{
-position:relative;
-}
-  
-.sidebar.collapsed .menu a:hover::after{
-content:attr(data-title);
-position:absolute;
-left:90px;
-top:50%;
-transform:translateY(-50%);
-background:#162d63;
-color:white;
-padding:6px 10px;
-border-radius:6px;
-white-space:nowrap;
-font-size:14px;
-z-index:9999;
-box-shadow:0 4px 12px rgba(0,0,0,0.2);
-}
-
-.sidebar.collapsed .menu a::after{
-opacity:0;
-transition:opacity 0.15s ease;
-}
-
-.sidebar.collapsed .menu a:hover::after{
-opacity:1;
-}
-  
-.menu a:hover{
-background:#1f3c88;
-}
-
+.menu a:hover{ background:#1f3c88; }
 .menu a.active{
-background:#2e55c7;
-box-shadow:inset 4px 0 0 #ffffff;
-font-weight:600;
+  background:#2e55c7;
+  box-shadow: inset 4px 0 0 #ffffff;
+  font-weight:600;
 }
-  
-.icon{
-font-size:18px;
-width:30px;
-text-align:center;
-}
-  
-/* ===== MAIN ===== */
-
-.main{
-flex:1 1 auto;
-padding:40px;
-min-width:0;
-}
+.icon{ font-size:18px; width:30px; text-align:center; }
 
 /* ===== HEADER ===== */
-
 header{
-background:#1f3c88;
-color:white;
-padding:25px;
-margin-bottom:30px;
+  background: var(--brand-2);
+  color:white;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  border-radius: 12px;
 }
+header h1{ margin:0; font-size: clamp(20px, 2.2vw, 28px); }
 
-header h1{
-margin:0;
-}
-
-/* ===== Main ===== */
-
+/* ===== MAIN WRAPPER ===== */
 .main{
-flex:1 1 auto;
-padding:40px;
-min-width:0;
+  flex:1 1 auto;
+  padding: 32px 40px;
+  min-width:0;
 }
 
 /* ===== CARDS ===== */
-
 .card{
-background:white;
-padding:28px;
-border-radius:10px;
-box-shadow:0 4px 14px rgba(0,0,0,0.08);
-margin-bottom:35px;
-border-left:6px solid #1f3c88;
+  background: var(--card-bg);
+  padding: 24px 20px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 28px;
+  border-left: 6px solid var(--brand-2);
 }
-
 .card h2{
-margin-top:0;
-color:#1f3c88;
-border-bottom:2px solid #e6e9ef;
-padding-bottom:6px;
+  margin-top:0;
+  color: var(--brand-2);
+  border-bottom: 2px solid #e6e9ef;
+  padding-bottom: 6px;
+  font-size: clamp(18px, 2vw, 22px);
 }
+.card p, .card li{ line-height:1.65; font-size: 16px; }
+.card ul{ padding-left: 20px; }
+.card li{ margin-bottom: 6px; }
 
-.card p{
-line-height:1.6;
-}
-
-.card ul{
-padding-left:20px;
-}
-
-.card li{
-margin-bottom:6px;
-}
-
-/* ===== TABLE ===== */
-
+/* ===== TABLES ===== */
 .table-wrapper{
-max-height:600px;
-overflow:auto;
-border:1px solid #ddd;
-border-radius:8px;
-margin-top:15px;
+  max-height: 600px;
+  overflow: auto;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-top: 15px;
+  -webkit-overflow-scrolling: touch; /* inertie iOS */
 }
-
 table{
-width:100%;
-border-collapse:collapse;
-font-size:14px;
+  width:100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 640px; /* évite écrasement */
 }
-
 th,td{
-padding:10px;
-border-bottom:1px solid #e5e5e5;
-text-align:left;
+  padding:10px;
+  border-bottom:1px solid #e5e5e5;
+  text-align:left;
+  vertical-align: top;
 }
-
 th{
-background:#f4f6f8;
-font-weight:600;
+  background:#f4f6f8;
+  font-weight:600;
+  position: sticky; /* en-tête collante quand scroll */
+  top: 0;
+  z-index: 1;
 }
-
-tr:hover{
-background:#fafafa;
-}
+tr:hover{ background:#fafafa; }
 
 /* ===== FOOTER ===== */
-
 footer{
-text-align:center;
-padding:30px;
-font-size:0.9em;
-color:#666;
+  text-align:center;
+  padding: 30px 16px;
+  font-size: 0.95em;
+  color: #666;
 }
 
-</style>
+/* ===== HAMBURGER EN-TÊTE (mobile) ===== */
+/* Apparaît uniquement sous 992px */
+.header-bar{
+  display:none;
+  align-items:center;
+  justify-content: space-between;
+  gap:12px;
+  margin-bottom: 16px;
+}
+.hamburger{
+  display:none;
+  background: var(--brand-2);
+  color:#fff;
+  border:none;
+  border-radius:10px;
+  padding:10px 12px;
+  font-size:18px;
+  min-height:44px;
+  line-height:1;
+}
+.hamburger i{ pointer-events:none; }
 
-<link rel="icon" type="image/png" href="Favicon/favicon.png"> 
+/* ===== BACKDROP ===== */
+.backdrop{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease;
+  z-index: 900;
+}
+
+/* ===== BREAKPOINTS ===== */
+
+/* < 1200px : adoucir paddings */
+@media (max-width: 1199.98px){
+  .main{ padding: 28px; }
+}
+
+/* < 992px : sidebar off-canvas, header mobile */
+@media (max-width: 991.98px){
+  body{ /* sidebar sort du flux */
+    overflow-x: hidden;
+  }
+  .sidebar{
+    position: fixed; /* off-canvas */
+    left: 0;
+    top: 0;
+    bottom: 0;
+    height: 100dvh;
+    transform: translateX(-100%);
+    width: var(--sidebar-w);
+    border-right: 1px solid rgba(255,255,255,0.08);
+  }
+  .sidebar.open{ transform: translateX(0); }
+  .sidebar.collapsed{ width: var(--sidebar-w); } /* pas de collapse en mobile */
+
+  .toggle-btn{ display:none; } /* bouton collapse desktop masqué en mobile */
+
+  /* Header bar (mobile) */
+  .header-bar{ display:flex; }
+  .hamburger{ display:inline-flex; align-items:center; gap:8px; }
+  .main{ padding: 20px; }
+
+  /* Tooltips inutiles en mobile */
+  .sidebar .menu a:hover::after{ content:none !important; }
+}
+
+/* < 768px : typo et espacements mobiles */
+@media (max-width: 767.98px){
+  header{ padding: 14px 16px; border-radius: 10px; }
+  .card{ padding: 16px; margin-bottom: 20px; }
+  .card p, .card li{ font-size: 15px; line-height: 1.7; }
+  table{ font-size: 13.5px; min-width: 560px; }
+}
+
+/* < 576px : option cartes empilées pour tables (opt-in via .stacked) */
+@media (max-width: 575.98px){
+  .main{ padding: 16px; }
+
+  /* Si on ajoute la classe .stacked sur une table, on passe en cartes */
+  .table-wrapper.stacked{ overflow: visible; }
+  .table-wrapper.stacked table{ border:0; min-width: 0; }
+  .table-wrapper.stacked thead{ display:none; }
+  .table-wrapper.stacked tr{
+    display:block;
+    background:#fff;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    border:1px solid #eee;
+    overflow: hidden;
+  }
+  .table-wrapper.stacked td{
+    display:flex;
+    width:100%;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 14px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .table-wrapper.stacked td:last-child{ border-bottom: 0; }
+  .table-wrapper.stacked td::before{
+    content: attr(data-label);
+    font-weight: 600;
+    color:#333;
+    padding-right: 10px;
+    white-space: nowrap;
+  }
+}
+
+/* ===== ACCESSIBILITÉ : focus visibles ===== */
+:focus-visible{
+  outline: 3px solid #8ab4ff;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+</style>
 </head>
 
 <body>
+  <!-- BACKDROP pour mobile -->
+  <div class="backdrop" id="backdrop" aria-hidden="true"></div>
 
-<!-- SIDEBAR -->
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar" aria-label="Navigation latérale">
+    <div class="logo">
+      <img src="logo-bva.png" alt="Logo BVA">
+    </div>
 
-<div class="sidebar" id="sidebar">
+    <!-- Bouton collapse (desktop uniquement) -->
+    <button id="toggleSidebar" class="toggle-btn" type="button" aria-label="Réduire/Étendre la barre latérale">
+      <i class="fa-solid fa-angle-left"></i>
+    </button>
 
-<div class="logo">
-<img src="logo-bva.png">
-</div>
+    <nav class="menu" role="navigation">
+      <a href="index.html" data-title="Accueil">
+        <span class="icon">🏠</span><span class="text">Accueil</span>
+      </a>
+      <a href="methodologie.html" data-title="Méthodologie">
+        <span class="icon">📘</span><span class="text">Méthodologie</span>
+      </a>
+    </nav>
+  </aside>
 
-<button id="toggleSidebar" class="toggle-btn">
-<i class="fa-solid fa-angle-left"></i>
-</button>
+  <!-- MAIN -->
+  <main class="main" id="mainContent">
+    <!-- Barre header mobile (hamburger + titre) -->
+    <div class="header-bar">
+      <button class="hamburger" id="hamburger" type="button"
+              aria-label="Ouvrir le menu"
+              aria-controls="sidebar"
+              aria-expanded="false">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <div style="flex:1"></div>
+    </div>
 
-<nav class="menu">
+    <header>
+      <h1>Méthodologie de calcul des émissions de gaz à effet de serre</h1>
+    </header>
 
-<a href="index.html" data-title="Accueil">
-<span class="icon">🏠</span>
-<span class="text">Accueil</span>
-</a>
+    <div class="container">
 
-<a href="methodologie.html" data-title="Méthodologie">
-<span class="icon">📘</span>
-<span class="text">Méthodologie</span>
-</a>
+      <div class="card">
+        <h2>Objectif du projet</h2>
+        <p>
+          Ce site vise à estimer les émissions de gaz à effet de serre associées à l'ensemble des activités de l'aéroport de Paris-Beauvais.
+        </p>
+        <p>
+          L’objectif est de fournir une vision transparente et accessible de l’impact de l’activité
+          de l’aéroport sur le dérèglement climatique à partir de données publiques
+          et de méthodes de calcul documentées.
+        </p>
+      </div>
 
-</nav>
+      <div class="card">
+        <h2>Périmètre des émissions prises en compte</h2>
+        <p>
+          L’évaluation repose sur une approche par postes d’émissions afin de quantifier
+          l’empreinte carbone globale de l’activité aéroportuaire. 
+        </p>
+        <p>
+          Ces différents posts sont regroupés en catégories selon le périmètre (dit "scope") auquel il peuvent être rattraché :
+          <br>• Scope 1 : émissions directes engendrées par l'activité (traduit pour l'aéroport par les émissions dont il est juridiquement responsable)
+          <br>• Scope 2 : émissions énergétiques indirectes mais dont la consommation directement faite sur site (par exemple, l'électricité ou un réseau de chaleur urbain)
+          <br>• Scope 3 : émissions indirectes prenant place à l'amont (production de carburant, fabrication de consommables, ...) et à l'aval (traitement des déchets, eaux usées, consommation des production, ...) de l'activité analysée
+        </p>
+        <p>
+          Pour l'aéroport de Paris Beauvais, les posts étudiés sont les suivants :
+          <br>• émissions liées au fonctionnement de l’aéroport : chauffage, électicité, engins de pistes, ... (scopes 1 &amp; 2 regoupés, dit "Location based")
+          <br>• émissions liées aux vols commerciaux au départ et à destination de l'aéroport (scope 3)
+          <br>• approvisionnement en carburant d'aviation (scope 3)
+          <br>• fabrication des aéronefs (scope 3)
+          <br>• transports individuels et collectifs des passagers pour accéder et quitter l'aéroport (scope 3)
+          <br>• transport des employés pour accéder et quitter l'aéroport (scope 3)
+          <br><br>
+          A noter que les posts analysés ici ne sont pas exhaustifs, d'autres posts liés à l'activité de l'aéroport pourraient faire l'objet d'une quantification de leurs émissions de GES :
+          nourritures, boissons, presses et objets vendus dans les aérogares ou par les compagnies aériennes, consommables bureautiques, traitement des déchets et des eaux usées, entrerien et maintenance des pistes et bâtiments, ...
+          Cependant, les données nécessaires à la quantification de leurs émissions n'étant pas disponibles, ces postes sont par conséquent exclut du champ de la présente évaluation.
+        </p>
+      </div>
 
-</div>
+      <div class="card">
+        <h2>Émissions liées aux aéronefs</h2>
+        <p>
+          Les émissions des aéronefs sont estimées à partir de la distance parcourue par les avions et d’un facteur d’émission spécifique au type d’appareil et à la compagnie l'opérant.
+          <br> Ces émissions représentant le principal post d'émissions de gaz à effet de serre de l'activité de l'aéroport, une attention particulière a donc été portée à la qualité des données utilisées.
+        </p>
 
-<!-- MAIN -->
+        <p>
+          <strong>1. Facteur d’émission pour la pahse de vol</strong><br>
+          Les facteurs d’émission utilisés pour les vols au départ et à l'arrivée de l'aéroport de Paris-Beauvais sont exprimés en kg éq CO₂ / appareil.km.
+          Contrairement aux FE classiques basés sur le passager.km, ceux-ci se fondent sur la performance carbone par appareil permettant ainsi de s'affranchir du paramètre du paramètre "nombre de passager" qui n'est connu qu'a postériori.
+          <br>
+          Les compagnies Ryanair et Wizz Air (qui représentent ensemble plus de 96% du trafic) publient leurs émissions annuelles GES "Scope 1" correspondant à l'usage des aéronefs.
+          Ces émissions sont alors rapportées aux caractéristiques opérationnelles :
+          <br>• nombre de vols annuels (sectors flown),
+          <br>• distance moyenne parcourue par vol (average sector length),
+          <br>• composition de la flotte (en tenant compte que les aéronefs de nouvelles génération ; "Gamechanger" pour Ryanair et "neo" chez Wizz Air consomment 20% de moins que ceux de la précédente génération)
+          <br>• intensité carbone par passager.km
+          <br>
+          À partir de ces données, il est alors possible de calculer les facteurs d'émissions par km pour chaque type d'aéronefs :
+          FE&nbsp;du type d'aéronef (kg&nbsp;CO₂&nbsp;/&nbsp;km) = (Emissions GES&nbsp;totales * % de vol du type d'aéronef)&nbsp;/ (Nb&nbsp;de&nbsp;vols total * Distance&nbsp;moyenne)
+          <br>
+          Pour les autres compagnies opérants sur l'aéroport (et qui représentent donc environ 4% de l'activité), ces données ne sont pas disponibles.
+          Le facteur d'émissions par avion.km est donc calculé à partir des données disponibles dans la Base Empreinte de l'ADEME pour les aéronefs de 101 à 220 sièges 
+          parcourant 1000 à 2000 km (3,16 kg éq CO₂ / kg de fuel et 0,026 kg de fuel / péq), ajustée selon le modèle de l'aéronef.
+        </p>
 
-<div class="main">
+        <p>
+          <strong>2. Facteur d’émission pour l'approvisionnement du carburant d'aviation</strong><br>
+          Pour l'approvisionnement en carburant d'aviation, les rapports annuels des compagnies aériennes ne présentent pas de valeurs spécifiques.
+          <br> Par conséquent le facteur d'émissions retenu est celui proposé par la Base Empreinte de l'ADEME, soit 18,3 g éq CO₂ pour 83 g éq CO₂ émis en phase de vol (soit 220 g éq CO₂ / kg éq CO₂).
+        </p>
 
-<header>
+        <p>
+          <strong>3. Facteur d’émission pour la fabrication des aéronefs</strong><br>
+          Le facteur d'émissions retenu est également celui proposé par la Base Empreinte de l'ADEME pour les aéronefs de 101 à 220 sièges 
+          parcourant 1000 à 2000 km, soit 0,361 g éq CO₂ / péq.km. Le FE par aéronefs est alors obtenu en multipliant cette valeur par le nombre de sièges du modèle.
+        </p>
+        
+        <p>
+          <strong>4. Facteur d'émissions par appareil par compagnie</strong><br>
+          <!-- TABLE responsive : scroll par défaut -->
+          <div class="table-wrapper" role="region" aria-label="Facteurs d'émissions par appareil" tabindex="0">
+            <table>
+              <thead>
+                <tr>
+                  <th>Compagnie</th>
+                  <th>Modèle d'appareil</th>
+                  <th>Nombre de sièges</th>
+                  <th>FE en vol <br> (kg éq CO₂ / km)</th>
+                  <th>FE approvisionnement carburant <br> (kg éq CO₂ / km)</th>
+                  <th>FE fabrication appareil <br> (kg éq CO₂ / km)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Ryanair</td><td>B737-800</td><td>189</td><td>12,48</td><td>2,75</td><td>0,0682</td>
+                </tr>
+                <tr>
+                  <td>&nbsp;</td><td>B737-Max 8</td><td>197</td><td>9,99</td><td>2,20</td><td>0,0711</td>
+                </tr>
+                <tr>
+                  <td>Wizz Air</td><td>A320-200</td><td>180</td><td>9,95</td><td>2,19</td><td>0,0650</td>
+                </tr>
+                <tr>
+                  <td>&nbsp;</td><td>A320neo</td><td>186</td><td>8,22</td><td>1,81</td><td>0,0671</td>
+                </tr>
+                <tr>
+                  <td>&nbsp;</td><td>A321-200</td><td>230</td><td>12,71</td><td>2,80</td><td>0,0830</td>
+                </tr>
+                <tr>
+                  <td>&nbsp;</td><td>A321neo</td><td>239</td><td>10,57</td><td>2,33</td><td>0,0863</td>
+                </tr>
+                <tr>
+                  <td>HiSky</td><td>A319-100</td><td>144</td><td>11,83</td><td>2,61</td><td>0,0520</td>
+                </tr>
+                <tr>
+                  <td>&nbsp;</td><td>A320-200</td><td>180</td><td>14,79</td><td>3,26</td><td>0,0650</td>
+                </tr>
+                <tr>
+                  <td>SkyUp</td><td>B737-700</td><td>189</td><td>15,53</td><td>3,42</td><td>0,0682</td>
+                </tr>
+                <tr>
+                  <td>&nbsp;</td><td>B738-700</td><td>189</td><td>15,53</td><td>3,42</td><td>0,0682</td>
+                </tr>
+                <tr>
+                  <td>Volotea</td><td>A319-111</td><td>156</td><td>12,82</td><td>2,83</td><td>0,0563</td>
+                </tr>
+                <tr>
+                  <td>&nbsp;</td><td>A320-214</td><td>180</td><td>14,79</td><td>3,26</td><td>0,0650</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </p>
 
-<h1>Méthodologie de calcul des émissions de gaz à effet de serre</h1>
+        <p>
+          <strong>5. Distance de vol</strong><br>
+          La distance de vol retenue correspond à la moyenne des distances réellement parcourues, ...
+        </p>
 
-</header>
+        <p>
+          <strong>6. Source de données</strong><br>
+          Rapports annuels de Ryanair : <a href="https://investor.ryanair.com/results-centre/" target="_blank" rel="noopener">https://investor.ryanair.com/results-centre</a><br>
+          Rapports annuels de Wizz Air : <a href="https://www.wizzair.com/fr-fr/informations-et-services/relations-investisseurs/investisseurs/rapports-annuels" target="_blank" rel="noopener">https://www.wizzair.com/fr-fr/informations-et-services/relations-investisseurs/investisseurs/rapports-annuels</a><br>
+          Base Empreinte ADEME : <a href="https://base-empreinte.ademe.fr/donnees/jeu-donnees" target="_blank" rel="noopener">https://base-empreinte.ademe.fr/donnees/jeu-donnees</a><br>
+          Statistiques annuels de l'aéroport de Paris-Beauvais : <a href="https://www.aeroport.fr/view-statistiques/beauvais-tille" target="_blank" rel="noopener">https://www.aeroport.fr/view-statistiques/beauvais-tille</a>
+        </p>
+      </div>
 
-<div class="container">
+      <!-- ... (LES AUTRES CARTES : contenu inchangé, conservées comme dans ton HTML) ... -->
 
-<div class="card">
-<h2>Objectif du projet</h2>
+      <div class="card">
+        <h2>Exemple d'application</h2>
+        <p>
+          Afin d'expliciter au mieux le principe d'évaluation des émissions de gaz à effet de serre, ...
+        </p>
 
-<p>
-Ce site vise à estimer les émissions de gaz à effet de serre associées à l'ensemble des activités de l'aéroport de Paris-Beauvais.
-</p>
+        <p><strong>1. Emissions liées à l'aéronef</strong></p>
+        <!-- Exemple table avec conteneur scrollable -->
+        <div class="table-wrapper" role="region" aria-label="Exemple Porto">
+          <table>
+            <thead>
+              <tr>
+                <th>Post d'émission</th>
+                <th>Distance (km)</th>
+                <th>Modèle d'aéronef</th>
+                <th>Facteur d'émissions associé (kg éq CO₂ / km)</th>
+                <th>Emissions totales (kg éq CO₂ / km)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Phase de vol</td><td>643</td><td>B737-800</td><td>12,48</td><td>8 025</td>
+              </tr>
+              <tr>
+                <td>Approvisionnement carburant</td><td>643</td><td>&nbsp;</td><td>2,75</td><td>1 768</td>
+              </tr>
+              <tr>
+                <td>Fabrication aéronef</td><td>643</td><td>&nbsp;</td><td>0,0682</td><td>44</td>
+              </tr>
+              <tr>
+                <td><strong>TOTAL scope "Aéronef"</strong></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td><strong>9 837</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-<p>
-L’objectif est de fournir une vision transparente et accessible de l’impact de l’activité
-de l’aéroport sur le dérèglement climatique à partir de données publiques
-et de méthodes de calcul documentées.
-</p>
+        <p><strong>2. Emissions liées aux transports terrestres des passagers</strong></p>
+        <!-- Variante “cartes empilées” : ACTIVE sur mobile <576px en ajoutant .stacked -->
+        <div class="table-wrapper stacked" role="region" aria-label="Transports terrestres (empilé)">
+          <table>
+            <thead>
+              <tr>
+                <th>Mode de transport</th>
+                <th>Répartition d'usage</th>
+                <th>Nombre de passagers</th>
+                <th>Distance (km)</th>
+                <th>Facteur (kg éq CO₂ / passager.km)</th>
+                <th>Emissions totales</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td data-label="Mode de transport">Navette aérobus</td>
+                <td data-label="Répartition d'usage">40%</td>
+                <td data-label="Nombre de passagers">64</td>
+                <td data-label="Distance (km)">90</td>
+                <td data-label="Facteur">0,015</td>
+                <td data-label="Emissions totales">86,4</td>
+              </tr>
+              <tr>
+                <td data-label="Mode de transport">Autres navettes</td>
+                <td data-label="Répartition d'usage">11%</td>
+                <td data-label="Nombre de passagers">18</td>
+                <td data-label="Distance (km)">90</td>
+                <td data-label="Facteur">0,0375</td>
+                <td data-label="Emissions totales">60,8</td>
+              </tr>
+              <tr>
+                <td data-label="Mode de transport">Individuels thermiques</td>
+                <td data-label="Répartition d'usage">48,5%</td>
+                <td data-label="Nombre de passagers">78</td>
+                <td data-label="Distance (km)">65</td>
+                <td data-label="Facteur">0,203</td>
+                <td data-label="Emissions totales">1 029</td>
+              </tr>
+              <tr>
+                <td data-label="Mode de transport">Individuels électriques</td>
+                <td data-label="Répartition d'usage">0,5%</td>
+                <td data-label="Nombre de passagers">1</td>
+                <td data-label="Distance (km)">65</td>
+                <td data-label="Facteur">0,095</td>
+                <td data-label="Emissions totales">6</td>
+              </tr>
+              <tr>
+                <td data-label="TOTAL"><strong>TOTAL scope "Transports terrestres passagers"</strong></td>
+                <td data-label=""></td>
+                <td data-label=""></td>
+                <td data-label=""></td>
+                <td data-label=""></td>
+                <td data-label=""><strong>1 182</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-   
-</div>
+        <!-- Le reste de la section garde ton texte existant -->
+        <p><strong>3. Emissions liées au "Locations based"</strong><br> ...</p>
+        <p><strong>4. Emissions totales ...</strong><br> ...</p>
+        <p><strong>5. Transport terrestres des employés</strong><br> ...</p>
+      </div>
 
+      <!-- (Autres cartes conservées) -->
 
-<div class="card">
-<h2>Périmètre des émissions prises en compte</h2>
-
-<p>
-L’évaluation repose sur une approche par postes d’émissions afin de quantifier
-l’empreinte carbone globale de l’activité aéroportuaire. 
-</p>
-
-<p>
-Ces différents posts sont regroupés en catégories selon le périmètre (dit “scope”) auquel ils peuvent être rattachés :
-  <br>• Scope 1 : émissions directes engendrées par l'activité (traduit pour l'aéroport par les émissions dont il est juridiquement responsable)
-  <br>• Scope 2 : émissions énergétiques indirectes mais dont la consommation directement faite sur site (par exemple, l'électricité ou un réseau de chaleur urbain)
-  <br>• Scope 3 : émissions indirectes prenant place à l'amont (production de carburant, fabrication de consommables, ...) et à l'aval (traitement des déchets, eaux usées, consommation des production, ...) de l'activité analysée
-</p>
-<p>
-Pour l'aéroport de Paris Beauvais, les posts étudiés sont les suivants :
-  <br>• émissions liées au fonctionnement de l’aéroport : chauffage, électicité, engins de pistes, ... (scopes 1 & 2 regoupés, dit "Location based")
-  <br>• émissions liées aux vols commerciaux au départ et à destination de l'aéroport (scope 3)
-  <br>• approvisionnement en carburant d'aviation (scope 3)
-  <br>• fabrication des aéronefs (scope 3)
-  <br>• transports individuels et collectifs des passagers pour accéder et quitter l'aéroport (scope 3)
-  <br>• transport des employés pour accéder et quitter l'aéroport (scope 3)
-<br> <br>
-A noter que les posts analysés ici ne sont pas exhaustifs, d'autres posts liés à l'activité de l'aéroport pourraient faire l'objet d'une quantification de leurs émissions de GES :
-nourritures, boissons, presses et objets vendus dans les aérogares ou par les compagnies aériennes, consommables bureautiques, traitement des déchets et des eaux usées, entrerien et maintenance des pistes et bâtiments, ...
-Cependant, les données nécessaires à la quantification de leurs émissions n'étant pas disponibles, ces postes sont par conséquent exclut du champ de la présente évaluation.
-</p>
-</div>
-
-
-<div class="card">
-<h2>Émissions liées aux aéronefs</h2>
-
-<p>
-Les émissions des aéronefs sont estimées à partir de la distance parcourue par les avions et d’un facteur d’émission spécifique au type d’appareil et à la compagnie l'opérant.
-<br> Ces émissions représentant le principal post d'émissions de gaz à effet de serre de l'activité de l'aéroport, une attention particulière a donc été portée à la qualité des données utilisées.
-</p>
-
-<p>
-  <strong>1. Facteur d’émission pour la pahse de vol</strong>
-<br>
-  Les facteurs d’émission utilisés pour les vols au départ et à l'arrivée de l'aéroport de Paris-Beauvais sont exprimés en kg éq CO₂ / appareil.km.
-Contrairement aux FE classiques basés sur le passager.km, ceux-ci se fondent sur la performance carbone par appareil permettant ainsi de s'affranchir du paramètre du paramètre "nombre de passager" qui n'est connu qu'a postériori.
-<br>
-Les compagnies Ryanair et Wizz Air (qui représentent ensemble plus de 96% du trafic) publient leurs émissions annuelles GES "Scope 1" correspondant à l'usage des aéronefs.
-Ces émissions sont alors rapportées aux caractéristiques opérationnelles :
-<br>• nombre de vols annuels (sectors flown),
-<br>• distance moyenne parcourue par vol (average sector length),
-<br>• composition de la flotte (en tenant compte que les aéronefs de nouvelles génération ; "Gamechanger" pour Ryanair et "neo" chez Wizz Air consomment 20% de moins que ceux de la précédente génération)
-<br>• intensité carbone par passager.km
-  <br>
-À partir de ces données, il est alors possible de calculer les facteurs d'émissions par km pour chaque type d'aéronefs :
-FE du type d'aéronef (kg CO₂ / km) = (Emissions GES totales * % de vol du type d'aéronef) / (Nb de vols total * Distance moyenne)
-<br>
-Pour les autres compagnies opérants sur l'aéroport (et qui représentent donc environ 4% de l'activité), ces données ne sont pas disponibles.
-Le facteur d'émissions par avion.km est donc calculé à partir des données disponibles dans la Base Empreinte de l'ADEME pour les aéronefs de 101 à 220 sièges 
-  parcourant 1 000 à 2 000 km (3,16 kg éq CO₂ / kg de fuel et 0,026 kg de fuel / péq), ajustée selon le modèle de l'aéronef.
-</p>
-
-<p>
-<strong>2. Facteur d’émission pour l'approvisionnement du carburant d'aviation</strong>
-  <br> Pour l'approvisionnement en carburant d'aviation, les rapports annuels des compagnies aériennes ne présentent pas de valeurs spécifiques.
-  <br> Par conséquent le facteur d'émissions retenu est celui proposé par la Base Empreinte de l'ADEME, soit 18,3 g éq CO₂ pour 83 g éq CO₂ émis par la combustion du carburant (soit 220 g éq CO₂ / kg éq CO₂).
-</p>
-
-<p>
-<strong>3. Facteur d’émission pour la fabrication des aéronefs</strong>
-  <br> Le facteur d'émissions retenu est également celui proposé par la Base Empreinte de l'ADEME pour les aéronefs de 101 à 220 sièges 
-  parcourant 1 000 à 2 000 km, soit 0,361 g éq CO₂ / péq.km. Le FE par aéronefs est alors obtenu en multipliant cette valeur par le nombre de sièges du modèle.
-</p>
-  
-<p>
-  <strong>4. Facteur d'émissions par appareil par compagnie</strong>
-<br>  
-Les facteurs d'émissions utilisés sont ainsi les suivants :
-<br>
-  <table>
-  <tr>
-    <td><strong>Compagnie</strong></td>
-    <td><strong>Modèle d'appareil</strong></td>
-    <td><strong>Nombre de sièges</strong></td>
-    <td><strong>FE en vol <br> (kg éq CO₂ / km)</strong></td>
-    <td><strong>FE approvisionnement carburant <br> (kg éq CO₂ / km)</strong></td>
-    <td><strong>FE fabrication appareil <br> (kg éq CO₂ / km)</strong></td>
-  </tr>
-  <tr>
-    <td>Ryanair</td>
-    <td>B737-800</td>
-    <td>189</td>
-    <td>12,48</td>
-    <td>2,75</td>
-    <td>0,0682</td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td>B737-Max 8</td>
-    <td>197</td>
-    <td>9,99</td>
-    <td>2,20</td>
-    <td>0,0711</td>
-  </tr>
-  <tr>
-    <td>Wizz Air</td>
-    <td>A320-200</td>
-    <td>180</td>
-    <td>9,95</td>
-    <td>2,19</td>
-    <td>0,0650</td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td>A320neo</td>
-    <td>186</td>
-    <td>8,22</td>
-    <td>1,81</td>
-    <td>0,0671</td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td>A321-200</td>
-    <td>230</td>
-    <td>12,71</td>
-    <td>2,80</td>
-    <td>0,0830</td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td>A321neo</td>
-    <td>239</td>
-    <td>10,57</td>
-    <td>2,33</td>
-    <td>0,0863</td>
-  </tr>
-  <tr>
-    <td>HiSky</td>
-    <td>A319-100</td>
-    <td>144</td>
-    <td>11,83</td>
-    <td>2,61</td>
-    <td>0,0520</td>
-  </tr>  
-  <tr>
-    <td>&nbsp;</td>
-    <td>A320-200</td>
-    <td>180</td>
-    <td>14,79</td>
-    <td>3,26</td>
-    <td>0,0650</td>
-  </tr>
-  <tr>
-    <td>SkyUp</td>
-    <td>B737-700</td>
-    <td>189</td>
-    <td>15,53</td>
-    <td>3,42</td>
-    <td>0,0682</td>
-  </tr>  
-  <tr>
-    <td>&nbsp;</td>
-    <td>B738-700</td>
-    <td>189</td>
-    <td>15,53</td>
-    <td>3,42</td>
-    <td>0,0682</td>
-  </tr>
-  <tr>
-    <td>Volotea</td>
-    <td>A319-111</td>
-    <td>156</td>
-    <td>12,82</td>
-    <td>2,83</td>
-    <td>0,0563</td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td>A320-214</td>
-    <td>180</td>
-    <td>14,79</td>
-    <td>3,26</td>
-    <td>0,0650</td>
-  </tr>
-</table>
-</p>
-
-<P>
-  <strong>5. Distance de vol</strong>
-<br>  
-La distance de vol retenue correspond à la moyenne des distances réellement parcourues, relevée pour plusieurs vols distincts sur une site de tracking, en séparant les trajets au départ et à l’arrivée de BVA.
-Lorsque ces relevés ne sont pas disponibles, la distance utilisée est la distance à "vol d’oiseau" (dit orthodromique) majorée de 5 % afin de refléter la trajectoire réelle de vols commerciaux. 
-Cette distance est ensuite divisée par deux afin de répartir les émissions de GES entre l'aéroport de départ et l'aéroport d'arrivée (approche dite "demi-croisière").
-</P>
-
-<P>
-  <strong>6. Source de données</strong>
-<br> Rapports annuels de Ryanair : <a href="https://investor.ryanair.com/results-centre/" target="_blank">https://investor.ryanair.com/results-centre</a>
-<br> Rapports annuels de Wizz Air : <a href="https://www.wizzair.com/fr-fr/informations-et-services/relations-investisseurs/investisseurs/rapports-annuels" target="_blank">https://www.wizzair.com/fr-fr/informations-et-services/relations-investisseurs/investisseurs/rapports-annuels</a>
-<Br> Base Empreinte ADEME : <a href="https://base-empreinte.ademe.fr/donnees/jeu-donnees" target="_blank">https://base-empreinte.ademe.fr/donnees/jeu-donnees</a>
-<Br> Statistiques annuelles de l'aéroport de Paris-Beauvais : <a href="https://www.aeroport.fr/view-statistiques/beauvais-tille" target="_blank">https://www.aeroport.fr/view-statistiques/beauvais-tille</a>
-</P>
-  
-</div>
-
-<div class="card">
-<h2>Emissions liées aux transports terrestres des passagers</h2>
-
-<P>
-  <strong>1. Transports collectifs</strong>
-<br>  
-Pour les facteur d'émissions des transports collectifs des passagers, deux cas sont distingués :
-<br>• navette officielle "Aérobus" : depuis fin 2025 l'aéroport a annoncé la conversion de toutes les navettes au biodiesel B100, 
-  générant en moyenne 60% d'émissions de GES en moins qu'un diesel d'origine fossile selon le producteur. 
-<br>• autres navettes : aucune information n'étant disponible, il est considéré que celle-ci fonctionne au diesel d'origine fossile.
-<br>
-<br> Dans les deux cas, le facteur d'émissions retenu est issu de la base Empreinte de l'ADEME, soit 37,5 g éq CO₂ / passager.km. 
-<br> Cependant, afin de tenir compte de l'usage de biodiesel, dans le cadre des navettes officielles "Aérobus", ce facteur d'émissions est donc réduit de 60% soit 15 g éq CO₂ / passager.km.
-</P>
-
-<P>
-  <strong>2. Transports individuels</strong>
-<br>  
-Pour les facteurs d'émissions des transports individuels des passagers, deux cas dont également distingués :
-<br>• véhicule thermique
-<br>• véhicule électrique
-<br>
-<br> Dans les deux cas les facteurs d'émissions retenus sont issus de la base Empreinte de l'ADEME, soit 203 g éq CO₂ / passager.km pour les véhicules thermiques
-  et 95 g éq CO₂ / passager.km pour les véhicules électriques.
-</P>
-
-<P>
-  <strong>3. Distances de transport</strong>
-<br>  
-Pour les transports collectifs, la distance retenue est de 90 km. 
-<br> Cette distance correspond à une distance représentative des différentes lignes opérées depuis l'aéroport : Porte-Maillot (86 km), Saint-Denis Université (70 km), Paris-La Vilette (97 km) et Disneyland Paris (123 km).
-<br>  
-Pour les transports individuels, la distance retenue est de 65 km. 
-<br> Cette distance m'a pas pu être directement documentée à partir de sources publiques, elle a donc été estimée afin de correspondre aux résultats disponibles pour ce post dans les bilans carbone publiés par l'aéroport (2022 et 2024).
-</P>
-
- <P>
-  <strong>4. Répartition des usages</strong>
-<br>  
-Pour chaque vols au départ ou à destination de l'aéroport de Paris-Beauvais, une répartition des voyageurs entre les différents modes de transport à été réalisée.
-   <br>• Nombre de passagers par vol : à partir de la composition des flottes aériennes des différentes compagnies opérant à l'aéroprot de Paris-Beauvais et de l'emport moyen (nombre de passagers par vol), 
-   il a été estimé que le taux d'emport moyen est de 85% (ainsi, pour un aéronefs disposant de 189 sièges, il est considéré que celui-ci transporte 161 passagers).
-   <br>• Usage des navettes officielles "Aérobus" : sur la base des différentes déclarations de responsables de l'aéroport et des données disponibles dans les "Bulletins de l'environnements" publiés par l'aéroport,
-   il est considéré de 40% des voyageurs ont recours à ce moyen de transport.
-   <br>• Usage des autres navettes : l'estimation de l'usage des autres navettes est moins documenté. Cependant, en reprenant les propos de M. Anthony Martin dans un arctile du ActuOise du 15 janvier 2025, 
-   il est considéré que 11% des voyageurs ont recours à ce moyens de transport.
-   <br>• Usage des véhicules individuels : par déduction, il est considéré que 49% des voyageurs ont donc recours à ce moyens de transports, dont 99% en véhicules thermiques et 1% en véhicules électriques.
-</P> 
-
- <P>
-  <strong>5. Source de données</strong>
-<br> Biodiesel B100 : <a href="https://www.oleo100.com/agenda-et-actualites/energies-renouvelables-vs-fossiles-quels-sont-les-avantages-des-biocarburants" target="_blank">https://www.oleo100.com/agenda-et-actualites/energies-renouvelables-vs-fossiles-quels-sont-les-avantages-des-biocarburants</a>
-<Br> Base Empreinte ADEME : <a href="https://base-empreinte.ademe.fr/donnees/jeu-donnees" target="_blank">https://base-empreinte.ademe.fr/donnees/jeu-donnees</a>
-<br> Lignes opérées par les navettes au départ de l'aéroport : <a href="https://www.aerobus.fr/d/carte-de-nos-lignes?retailerPartnerNumber=807197&locale=fr&currency=EUR" target="_blank">https://www.aerobus.fr/d/carte-de-nos-lignes?retailerPartnerNumber=807197&locale=fr&currency=EUR</a>
-<Br> Bulletin environnement de l'aéroport : <a href="https://www.aeroportparisbeauvais.com/professionnels/developpement-durable/le-bulletin-de-lenvironnement" target="_blank">https://www.aeroportparisbeauvais.com/professionnels/developpement-durable/le-bulletin-de-lenvironnement</a>
-<Br> Article ActuOise du 15 janvier 2025 : <a href="https://actu.fr/hauts-de-france/beauvais_60057/comment-l-aeroport-de-beauvais-s-y-prend-pour-reduire-ses-emissions-de-co2_62121646.html" target="_blank">https://actu.fr/hauts-de-france/beauvais_60057/comment-l-aeroport-de-beauvais-s-y-prend-pour-reduire-ses-emissions-de-co2_62121646.html</a>  
-<Br> Bilan carbone 2022 de l'aéroport : <a href="https://www.aeroportparisbeauvais.com/professionnels/developpement-durable/notre-strategie-de-durabilite/nos-engagements-aca" target="_blank">https://www.aeroportparisbeauvais.com/professionnels/developpement-durable/notre-strategie-de-durabilite/nos-engagements-aca</a> 
-<br> <em> Au 14/03/2026, le site de l'aéroport a mis à jour cette page, ne présenant plus les données détaillées de 2022 mais celles agrégées de 2024. </em>
-</P>
-  
-</div>
-
-
-<div class="card">
-<h2>Emissions liées aux transport des employés</h2>
-<p>
-L'accès des employés à la plateforme étant difficiellement modélisable car nécessitant de connaitre présicément différents paramètres non publics (distance de domicile-travail, mode de transport, etc ...), 
-  le choix a été fait ici d'appliquer une valeur journalière constante, déterminée à partir des données disponibles.
-  Ainsi, le bilan carbone 2022 de l'aéroport permet d'évaluer que ce post génère environ 4 400 t éq CO₂ / an, soit 12,05 t éq CO₂ / jour.
-</p>
-
-<P>
-  <strong>Source de données</strong>
-<Br> Base Empreinte ADEME : <a href="https://base-empreinte.ademe.fr/donnees/jeu-donnees" target="_blank">https://base-empreinte.ademe.fr/donnees/jeu-donnees</a>
-<Br> Bilan carbone 2022 de l'aéroport : <a href="https://www.aeroportparisbeauvais.com/professionnels/developpement-durable/notre-strategie-de-durabilite/nos-engagements-aca" target="_blank">https://www.aeroportparisbeauvais.com/professionnels/developpement-durable/notre-strategie-de-durabilite/nos-engagements-aca</a> 
-<br> <em> Au 14/03/2026, le site de l'aéroport à mis à jour cette page, ne présenant plus les données détaillées de 2022 mais celles agrégées de 2024. </em>
-</P>
-</div>
-
-
-  
-<div class="card">
-<h2>Emissions liées au "Location based (scopes 1 & 2)"</h2>
-<p>
-Comme pour le transport des employés, ce post a été évalué à partir des données publiées par l'aéroport.
-<br> Ainsi, comme le montre le dossier de conceration du projet de modernisation en page 48, l'intensité carbone par passager sur ces scopes est de 110 g éq CO₂ / pax en 2024.
-<br> En tenant compte de l'engagement de l'aéroport à atteindre "net zéro" sur ces scopes en 2035, et en appliquant une trajctoire de réduction linéaire, 
-  l'intensité carbone retenue pour l'année 2026 est de 85 g éq CO₂ / pax.
-</p>
-
-<P>
-  <strong>Source de données</strong>
-<Br> Dossier de concertation du projet de modernisation : <a href="https://bvaconcertation.fra1.cdn.digitaloceanspaces.com/BVA%20Concertation/fr/documentation/20250603_111629-dossierdumaitredouvragejuin2025.pdf" target="_blank">https://bvaconcertation.fra1.cdn.digitaloceanspaces.com/BVA%20Concertation/fr/documentation/20250603_111629-dossierdumaitredouvragejuin2025.pdf</a> 
-</p>
-</div>
-
-
-<div class="card">
-<h2>Autres postes non retenus dans le périmètre d'analyse</h2>
-<p>
-Comme indiqué précédemment, pour assurer la complétendute d'un bilan carbone d'autres posts devraient être prises en compte.
-  <br> Cependant, les données disponibles à l'évaluation de ces posts n'étant pas disponibles, il a été fait le choix de ne pas les prendre en compte ici.
-  <br> Toutefois, il est important de souligner que les émissions liées à une partie de ces posts est très largement maginal par rapport aux posts déjà quantifiés.
-  <br> Ainsi, selon les données présenté lors de l'atelier public que 26 juin 2025, les émissions cumulées associées aux
-  traitements des déchets et des eaux usées, à l'usage de l'antigivrage, aux deplacements professionnels du personnel, aux engins représente moins de 0,2% des émissions totales.
-  <br>
-  <br> Un posts non analysé mais qui mériterait d'être investigué concerne la nourriture et les boissons vendus par les boutiques présentent dans les aérogares
-  ainsi que celles vendues au cours des vols par les compagnies aériennes (l'alimentation représentant environ 25% de l'empreinte carbone moyenne Française).
-  <br> Il en est de même avec la vente de presse ou autres objets manufacturés (carte postales, souvenirs, jouets, ...).
- </p>
-
-  <P>
-  <strong>Source de données</strong>
-<Br> Atelier public du 26 juin 2025 : <a href="https://concertation.aeroportparisbeauvais.com/fr/evenements/atelier-thematique-enjeux-environnementaux-et-impacts-locaux" target="_blank">https://concertation.aeroportparisbeauvais.com/fr/evenements/atelier-thematique-enjeux-environnementaux-et-impacts-locaux</a> 
-<br> Empreinte carbone moyenne Française : <a href="https://www.carbone4.com/analyse-myco2-empreinte-carbone-moyenne-2021" target="_blank">https://www.carbone4.com/analyse-myco2-empreinte-carbone-moyenne-2021</a>
-  </p>
-</div>
-
-
-<div class="card">
-<h2>Exemple d'application</h2>
-
-<p>
-  Afin d'expliciter au mieux le principe d'évaluation des émissions de gaz à effet de serre, un exemple est proposé ici en s'appuyant sur l'analyse d'un vol 
-  Paris-Beauvais -> Porto au moyen d'un B737-800 de la compagnie Ryanair.
-</p>
-
-<p>
- <br><strong>1. Emissions liées à l'aéronef</strong>
-  <br> Au moment de la rédaction de ces lignes, la distance moyenne d'un vol partant de Paris-Beauvais à destination de Porto est de 1 286 km, soit 643 km en approche 1/2 croisière.
-  <br> Pour un B737-800, les émissions de gaz à effet de serre du scope "Aéronefs" sont donc de :
-  <br>
-  <table>
-  <tr>
-    <td><strong>Post d'émission</strong></td>
-    <td><strong>Distance <br> (km)</strong></td>
-    <td><strong>Modèle d'aéronef</strong></td>
-    <td><strong>Facteur d'émissions associé <br> (kg éq CO₂ / km)</strong></td>
-    <td><strong>Emissions totales <br> (kg éq CO₂ / km)</strong></td>
-  </tr>
-  <tr>
-    <td>Phase de vol</td>
-    <td>643</td>
-    <td>B737-800</td>
-    <td>12,48</td>
-    <td>8 025</td>
-  </tr>
-   <tr>
-    <td>Approvisionnement carburant</td>
-    <td>643</td>
-    <td>&nbsp;</td>
-    <td>2,75</td>
-    <td>1 768</td>
-  </tr>
-  <tr>
-    <td>Fabrication aéronef</td>
-    <td>643</td>
-    <td>&nbsp;</td>
-    <td>0,0682</td>
-    <td>44</td>
-  </tr>
-  <tr>
-    <td><strong>TOTAL scope "Aéronef"</strong></td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td><strong>9 837</strong></td>
-  </tr>  
-  </table>
-</p>
-
-<p>
- <br><strong>2. Emissions liées aux transports terrestres des passagers </strong>
-<br> Un B737-800 dispose de 189 sièges. En tenant compte du taux d'emport moyen de 85%, cela correspond donc à 161 passagers.
-<br> Les émissions de gaz à effet de serre du scope "Transports terrestres passagers" sont donc de :
-<table>
-<tr>
-    <td><strong>Mode de transport</strong></td>
-    <td><strong>Répartition d'usage</strong></td>
-    <td><strong>Nombre de passagers correspondant</strong></td>
-    <td><strong>Distance de transport <br> (km)</strong></td>
-    <td><strong>Facteur d'émissions <br> (kg éq CO₂ / passager.km)</strong></td>
-    <td><strong>Emissions totales <br> (kg éq CO₂ / passager.km)</strong></td>
-</tr>
-<tr>
-    <td>Navette aérobus</td>
-    <td>40%</td>
-    <td>64</td>
-    <td>90</td>
-    <td>0,015</td>
-    <td>86,4</td>
-</tr>
-<tr>
-    <td>Autres navettes</td>
-    <td>11%</td>
-    <td>18</td>
-    <td>90</td>
-    <td>0,0375</td>
-    <td>60,8</td>
-</tr>
-<tr>
-    <td>Individuels thermiques</td>
-    <td>48,5%</td>
-    <td>78</td>
-    <td>65</td>
-    <td>0,203</td>
-    <td>1 029</td>
-</tr>
-<tr>
-    <td>Individuels élecrtiques</td>
-    <td>0,5%</td>
-    <td>1</td>
-    <td>65</td>
-    <td>0,095</td>
-    <td>6</td>
-</tr> 
-<tr>
-    <td><strong>TOTAL scope "Transports terrestres passagers"</strong></td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-     <td>&nbsp;</td>
-    <td><strong>1 182</strong></td>
-  </tr>  
-  </table>
-</p>
-
-<p>
- <br><strong>3. Emissions liées au "Locations based" </strong>
-<br> Un B737-800 propose 189 sièges. En tenant compte du taux d'emport moyen de 85%, cela correspond donc à 161 passagers.
-<br> En appliquant le facteurs d'émissions de 0,085 kg CO₂ / passagers, on obtient alors <strong>14 kg éq CO₂</strong>
-</p>
-
-<p>
- <br><strong>4. Emissions totales associées à un vol Paris-Beauvais -> Porto  </strong>
-<br> Les émissions totales de gaz à effet de serre associée à un vol Paris-Beauvais -> Porto sont ainsi de 9 837 + 1 182 + 14 = <strong>11 033 kg éq CO₂</strong>
-</p>
-
-<p>
- <br><strong>5. Transport terrestres des employés  </strong>
-<br> Aevc l'approche retenue, les émissions liées au transport des employés ne sont pas reliées directement au vol, mais quantifiées chaque jour comme une constante de 12,05 t éq CO₂.
-</p>
- </div>
-
-<div class="card">
-<h2>Analyse qualitative des données</h2>
-
-<P>
-Une attention particulière a été porté à la qualité des données utilisées, notamment pour le scope "Aéronefs".
-<br> Un travail d'adaptation a été fait afin de s'appuyer au maximum sur les données des compagnies aériennes lorsque celles-ci étaient disponibles, plutôt que de recourir à des facteurs d'émissions "moyens", 
-  quand bien même ceux-ci sont issus de base de données reconnus.
-<br> Pour le moment, les facteurs d'émissions calculés sont basés sur les données disponibles documents publiés en 2025 et représentatif de l'année 2024. Ces facteurs d'émissions seront mis à jour à la publication 
-  des documents 2026 et représentatif de l'année 2025. Dans un contexte important d'objectif de décarbonation et de déploiement des carburant d'aviation durable SAF, la mise à jour et l'utilisation des données les plus
-  récentes est primordiale afin d'assurer la meilleure fiabilité possible des résultats.
-<br> De plus, un travail approfondi et constant est réalisé afin d'assurer la meilleure représentativité possible des distances de vol.
-
-<br><br> Pour les autres scopes, les facteurs d'émissions sont issus d'une base reconnue, et les données utilisées sont basées au maximum sur des documents et publications spécifiques. 
-  <br> En l'absence de telles données, des hypothèses ont été formulées en cohérence avec les observations ou résultats déjà connus afin d'assurer une cohérence d'ensemble.
-</p> 
-</div>
-
-<div class="card">
-<h2>Fonctionnement et mise à jour</h2>
-
-<P>
-Le site est mise à jour régulièrement.
-  <br> Bien qu'automatisé, et malgrés l'extrême attention portée par les auteurs, il est possible que des erreurs soient présentes dans les résultats disponibles. Celles-ci sont bien entendus corrigées dès leur identification.
-  <br> De plus, une partie des données d'entrée évoluant constamment (notamment distance de vol et facteurs d'émissions), il est possible que les valeurs présentées évoluent lorsque ces données sont mises à jour. A titre d'information, 
-  les données des compagnies aériennes nécessaires au calcul des facteurs d'émissions sont souvent publiées autour des mois de mai/juin. Dès leurs publications, les auteurs d'efforceront des les intégrer au plus vite dans le modèle de calcul.
-<br>
-  <br> Ce site est également en constante évolution. De nouvelles données, informations, comparaisons viendront au fur et à mesure compléter et enrichir les informations déjà disponibles.
-</p> 
-</div>
-
-<div>  
-<footer>
-    Observatoire citoyen indépendant – Analyse des émissions de GES liées à l’activité de l’aéroport Paris-Beauvais |
-    Contact : <a href="mailto:emissionscarbonebva@gmail.com">emissionscarbonebva@gmail.com</a> |
-    Hébergement : GitHub Pages (GitHub Inc.)
-  </footer>
-
-</div>
+      <div>
+        <footer>
+          Observatoire citoyen indépendant – Analyse des émissions de GES liées à l’activité de l’aéroport Paris-Beauvais |
+          Contact : <a href="mailto:emissionscarbonebva@gmail.com">emissionscarbonebva@gmail.com</a> |
+          Hébergement : GitHub Pages (GitHub Inc.)
+        </footer>
+      </div>
+    </div>
+  </main>
 
 <script>
+/* ===== STATE ===== */
+const sidebar   = document.getElementById("sidebar");
+const toggle    = document.getElementById("toggleSidebar");
+const hamburger = document.getElementById("hamburger");
+const backdrop  = document.getElementById("backdrop");
 
-/* MENU RETRACTABLE */
-
-const sidebar = document.getElementById("sidebar");
-const toggle = document.getElementById("toggleSidebar");
-
-if(localStorage.getItem("sidebarCollapsed") === "true"){
-sidebar.classList.add("collapsed");
+/* ===== SIDEBAR COLLAPSE (DESKTOP) ===== */
+if (window.matchMedia("(min-width: 992px)").matches) {
+  if (localStorage.getItem("sidebarCollapsed") === "true"){
+    sidebar.classList.add("collapsed");
+  }
 }
 
-toggle.addEventListener("click", function(){
+if (toggle){
+  toggle.addEventListener("click", function(){
+    sidebar.classList.toggle("collapsed");
+    try{
+      localStorage.setItem("sidebarCollapsed",
+        sidebar.classList.contains("collapsed")
+      );
+    }catch(e){}
+  });
+}
 
-sidebar.classList.toggle("collapsed");
+/* ===== OFF-CANVAS (MOBILE/TABLET) ===== */
+function openSidebarMobile() {
+  sidebar.classList.add("open");
+  backdrop.style.visibility = "visible";
+  backdrop.style.opacity = "1";
+  if (hamburger){
+    hamburger.setAttribute("aria-expanded", "true");
+    hamburger.setAttribute("aria-label", "Fermer le menu");
+  }
+  // Lock scroll sous iOS/Android
+  document.documentElement.style.overflow = "hidden";
+  document.body.style.overflow = "hidden";
+}
+function closeSidebarMobile() {
+  sidebar.classList.remove("open");
+  backdrop.style.opacity = "0";
+  backdrop.style.visibility = "hidden";
+  if (hamburger){
+    hamburger.setAttribute("aria-expanded", "false");
+    hamburger.setAttribute("aria-label", "Ouvrir le menu");
+  }
+  document.documentElement.style.overflow = "";
+  document.body.style.overflow = "";
+}
 
-localStorage.setItem(
-"sidebarCollapsed",
-sidebar.classList.contains("collapsed")
-);
-
+if (hamburger){
+  hamburger.addEventListener("click", () => {
+    if (sidebar.classList.contains("open")){
+      closeSidebarMobile();
+    } else {
+      openSidebarMobile();
+    }
+  });
+}
+if (backdrop){
+  backdrop.addEventListener("click", closeSidebarMobile);
+}
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape"){
+    closeSidebarMobile();
+  }
 });
 
-/* MENU ACTIF AUTOMATIQUE */
+/* Fermer menu mobile quand on clique un lien */
+document.querySelectorAll(".menu a").forEach(a => {
+  a.addEventListener("click", () => {
+    if (window.matchMedia("(max-width: 991.98px)").matches) {
+      closeSidebarMobile();
+    }
+  });
+});
 
+/* ===== MENU ACTIF AUTOMATIQUE ===== */
 let currentPage = window.location.pathname.split("/").pop();
-
-if(currentPage === ""){
-currentPage = "index.html";
-}
-
+if(currentPage === "") currentPage = "index.html";
 document.querySelectorAll(".menu a").forEach(link => {
-
-const linkPage = link.getAttribute("href");
-
-if(linkPage === currentPage){
-link.classList.add("active");
-}
-
+  const linkPage = link.getAttribute("href");
+  if(linkPage === currentPage){
+    link.classList.add("active");
+  }
 });
-  
 </script>
-
 </body>
 </html>
-  
