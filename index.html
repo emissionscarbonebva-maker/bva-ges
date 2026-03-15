@@ -396,6 +396,38 @@ header{ padding: clamp(14px, 3.5vw, 25px); }
   .logo img{ max-width: 44px; }
 }
 
+/* ===== Mobile/Tablet — overrides quand la sidebar est OUVERTE ===== */
+@media (max-width: 991.98px){
+  /* Quand le menu off-canvas est ouvert, on montre les libellés */
+  .sidebar.open .text{ 
+    display: inline !important; 
+  }
+  .sidebar.open .menu-title,
+  .sidebar.open .menu-items{
+    display: block !important;
+  }
+
+  /* Logo en grand quand la sidebar est ouverte */
+  .sidebar.open .logo img{
+    max-width: 140px !important; /* même taille qu’en desktop */
+    transition: all 0.2s ease;
+  }
+
+  /* Confort visuel : largeur et padding des liens quand ouvert */
+  .sidebar.open .menu a{
+    min-height: 44px;
+    padding: 12px 10px;
+    gap: 10px;
+  }
+
+  /* On garde la version “compacte” (icônes seules) quand la sidebar N’EST PAS open */
+  .sidebar:not(.open) .text,
+  .sidebar:not(.open) .menu-title,
+  .sidebar:not(.open) .menu-items{
+    display: none !important;
+  }
+}
+ 
 /* Textes & cartes : lisibilité mobile */
 @media (max-width: 768px){
   h2{ font-size: 1.25em; }
@@ -557,6 +589,26 @@ header{ padding: clamp(14px, 3.5vw, 25px); }
 
   /* Tooltips inutiles en mobile */
   .sidebar .menu a:hover::after{ content:none !important; }
+}
+
+/* ===== Bouton flèche (desktop) — aligné sur Méthodologie ===== */
+@media (min-width: 992px){
+  .toggle-btn{
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    width: 100%;
+    border-radius: 8px;
+    padding: 8px 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .toggle-btn i{ transition: transform 0.3s ease; }
+  .sidebar.collapsed .toggle-btn i{ transform: rotate(180deg); }
 }
  
 </style>
