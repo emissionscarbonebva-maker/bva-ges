@@ -334,13 +334,13 @@ max-width: none;
 #containerKPIs .kpis-grid{
   display: grid;
   grid-template-columns: 1fr 1fr;  /* 50/50 */
-  grid-template-rows: auto 1fr;    /* L1 = hauteur de KPI1 ; L2 = tout le reste */
+  grid-template-rows: 1fr 1fr;     /* <-- deux lignes de hauteur égale */
   gap: var(--kpi-gap);             /* écart vertical = écart horizontal */
   align-items: stretch;            /* les items s’étirent sur la hauteur de leur piste */
 }
 
 /* Placement des 3 éléments (3 enfants directs de .kpis-grid) */
-#containerKPIs .kpi1-chart{ grid-column: 1; grid-row: 1; }
+#containerKPIs .metric-box{ min-height: 0; }
 
 #containerKPIs .kpi1-text{
   grid-column: 1; grid-row: 2;     /* sous KPI1 */
@@ -358,10 +358,22 @@ max-width: none;
 /* KPI2 s’étend sur 2 lignes = pleine hauteur à droite */
 #containerKPIs .kpi2-chart{
   grid-column: 2; grid-row: 1 / span 2;
-  display: flex; flex-direction: column; align-self: stretch;
+  display: flex; flex-direction: column; align-self: stretch; min-height: 0;
 }
 /* Le graphe remplit son conteneur (ajuste min-height si besoin) */
-#containerKPIs .kpi2-chart .chart-host{ flex: 1 1 auto; min-height: 420px; }
+
+#containerKPIs .kpi2-chart .chart-host{
+  flex: 1 1 auto;
+  min-height: 0;     /* laisse la grille décider */
+  height: auto;      /* ne fige pas une hauteur arbitraire */
+}
+
+
+/* Canvas : ne pousse PAS contre l'aspect-ratio de Chart.js.
+   On laisse Chart.js piloter la hauteur quand maintainAspectRatio:true.
+   On ne garde "height:100%" que si on met maintainAspectRatio:false */
+.chart-host canvas { height: auto !important; }
+
 
 /* Responsive : on empile proprement */
 @media (max-width: 900px){
