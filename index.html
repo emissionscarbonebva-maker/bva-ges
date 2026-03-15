@@ -552,6 +552,54 @@ body {
   .mobile-menu-btn { display: inline-flex; }
 }
 
+/* ===== Améliorations lisibilité chart en portrait smartphone ===== */
+
+/* 1.1 — Plus de hauteur disponible pour les graphs dans les cartes étroites */
+@media (max-width: 480px) and (orientation: portrait) {
+  /* Si un host existe (KPI), on l’agrandit */
+  .chart-host { min-height: 420px !important; }
+
+  /* Si pas de host, donner de la hauteur max au canvas */
+  .card--narrow canvas {
+    max-height: 420px;
+  }
+}
+
+/* 1.2 — En paysage mobile on peut rester plus compact */
+@media (max-width: 480px) and (orientation: landscape) {
+  .chart-host { min-height: 320px !important; }
+  .card--narrow canvas { max-height: 320px; }
+}
+
+/* Canvas : ne pas forcer height:auto si un conteneur gère la hauteur */
+.main .card canvas { max-width: 100%; }           /* largeur fluide */
+.chart-host canvas { height: 100% !important; }   /* respecte la hauteur du host */
+
+
+/* ===== Bandeau "lisez en paysage" ===== */
+#landscape-hint {
+  position: fixed;
+  left: 12px; right: 12px; bottom: 12px;
+  z-index: 1300;
+  background: #1f3c88;
+  color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0,0,0,.25);
+  padding: 10px 12px;
+}
+#landscape-hint .hint-content {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  font-size: 14px;
+}
+#landscape-hint button#close-hint {
+  background: #fff; color: #1f3c88;
+  border: none; border-radius: 8px;
+  padding: 8px 12px; font-weight: 600; cursor: pointer;
+}
+@media (min-width: 481px), (orientation: landscape) {
+  #landscape-hint { display: none; }
+}
+
  
 </style>
 
@@ -1010,6 +1058,37 @@ function parseCSV(url, callback){
 <script>
 document.addEventListener("DOMContentLoaded", function(){
 
+/* ===== Contexte responsive global (portrait mobile) ===== */
+  function isPortraitMobile() {
+    return window.matchMedia("(max-width: 480px) and (orientation: portrait)").matches;
+  }
+
+  /* ===== Paramètres Chart.js par défaut adaptés au portrait ===== */
+  function applyMobilePortraitDefaults() {
+    const onMobile = isPortraitMobile();
+
+    // Valeurs globales Chart.js — n’affecte que les prochains charts créés
+    Chart.defaults.maintainAspectRatio = !onMobile ? true : false;
+
+    // Légende compacte en bas sur mobile portrait
+    Chart.defaults.plugins.legend.position = onMobile ? 'bottom' : 'top';
+    Chart.defaults.plugins.legend.labels = Chart.defaults.plugins.legend.labels || {};
+    Chart.defaults.plugins.legend.labels.boxWidth  = onMobile ? 12 : 40;
+    Chart.defaults.plugins.legend.labels.boxHeight = onMobile ? 12 : 12;
+    Chart.defaults.plugins.legend.labels.padding   = onMobile ? 10 : 12;
+
+    // Tooltips : police un peu plus petite sur mobile
+    Chart.defaults.plugins.tooltip = Chart.defaults.plugins.tooltip || {};
+    Chart.defaults.plugins.tooltip.titleFont = { size: onMobile ? 11 : 12 };
+    Chart.defaults.plugins.tooltip.bodyFont  = { size: onMobile ? 11 : 12 };
+  }
+  applyMobilePortraitDefaults();
+
+  // Re‑appliquer si l’utilisateur pivote l’écran
+  window.addEventListener('orientationchange', () => {
+    setTimeout(applyMobilePortraitDefaults, 100);
+  });
+ 
   /* ========= Utils Périodes & Contrôles ========= */
 
   // 0.1 Fallback ISO week si date-fns n'est pas dispo
@@ -1303,26 +1382,17 @@ const dateKey = headers[0]; // la 1ère colonne est la date dans ce CSV
           { label: labelsKPI[2], data: [valuesKPI[2]], backgroundColor: toRGBA(colors.autres, 0.85), stack: "kpi" }
         ]
       },
-      options: {
-        indexAxis: "y",               // horizontal
-        responsive: true,
-        plugins: {
-          legend: { display: false }, // légende personnalisée en dessous
-          tooltip: {
-            callbacks: {
-              label: (ctx) => {
-                const v = ctx.parsed.x ?? 0;
-                const pct = total > 0 ? (v / total) * 100 : 0;
-                return `${ctx.dataset.label} : ${formatTonsFR(v)} t — ${pct.toFixed(1)} %`;
-              }
-            }
-          }
-        },
-        scales: {
-          x: { stacked: true, display: false, max: total },
-          y: { stacked: true, display: false }
-        }
-      }
+      
+options: {
+  indexAxis: "y",
+  responsive: true,
+  maintainAspectRatio: !isPortraitMobile(),
+  plugins: { legend: { display: false } },
+  scales: {
+    x: { stacked: true, display: false, max: total, ticks: { maxTicksLimit: isPortraitMobile() ? 4 : 8 } },
+    y: { stacked: true, display: false }
+  }
+}
     });
 
     // Légende texte en dessous + pourcentages
@@ -1542,24 +1612,44 @@ const s12SimpleLabelsPlugin = {
         ]
       },
       options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { position: 'top' },
-          tooltip: {
-            callbacks: {
-              label: (ctx) => {
-                const v = ctx.raw ?? 0;
-                return `${ctx.dataset.label} : ${formatTonsFR(v)} t éq CO₂`;
-              }
-            }
-          }
-        },
-        scales: {
-          x: { stacked: false, ticks: { autoSkip: false, maxRotation: 0 } },
-          y: { beginAtZero: true, title: { display: true, text: 't éq CO₂' } }
-        }
+  responsive: true,
+  maintainAspectRatio: !isPortraitMobile(), // false en portrait mobile
+  interaction: { mode: 'index', intersect: false },
+  plugins: {
+    legend: { position: isPortraitMobile() ? 'bottom' : 'top' },
+    // Décimation des points en "jour" pour éviter la surdensité
+    decimation: {
+      enabled: true,
+      algorithm: 'min-max',
+      samples: isPortraitMobile() ? 24 : 60 // moins de points à dessiner en portrait
+    },
+    zoom: {
+      pan:  { enabled: true, mode: 'x' },
+      zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }
+    },
+    tooltip: {
+      callbacks: { /* … conserve tes callbacks actuels … */ }
+    }
+  },
+  scales: {
+    x: {
+      title: { display: true, text: isPortraitMobile() ? "" : (isDay ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")) },
+      ticks: {
+        autoSkip: true,
+        maxRotation: isPortraitMobile() ? 0 : 30,
+        minRotation: 0,
+        maxTicksLimit: isPortraitMobile() ? 5 : 12
       },
+      stacked: !isDay
+    },
+    y: {
+      beginAtZero: true,
+      stacked: true,
+      title: { display: !isPortraitMobile(), text: "Emissions de gaz à effet de serre (en t éq CO₂)" },
+      ticks: { maxTicksLimit: isPortraitMobile() ? 5 : 8 }
+    }
+  }
+},
       // Plugins spécifiques KPI2 : pastilles manquants + labels Aéronefs + labels S1&2 verticaux
      plugins: [aeroValueLabelsPlugin, s12SimpleLabelsPlugin]
     });
@@ -1686,9 +1776,10 @@ Les émissions pour l'année 2025 seront ajoutées lorsque l'ensemble des source
         data: { labels, datasets },
         options: {
           responsive: true,
+         maintainAspectRatio: !isPortraitMobile(),
           interaction: { mode: 'index', intersect: false },
           plugins: {
-            legend: { position: 'top' },
+            legend: { position: isPortraitMobile() ? 'bottom' : 'top'},
             zoom: {
               pan:  { enabled: true, mode: 'x' },
               zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }
@@ -1739,15 +1830,18 @@ Les émissions pour l'année 2025 seront ajoutées lorsque l'ensemble des source
               }
             }
           },
-          scales: {
-            x: {
-              title: { display: true, text: isDay ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois") },
-              stacked: !isDay
-            },
-            y: {
-              beginAtZero: true,
-              stacked: true,
-              title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" }
+          
+scales: {
+    x: {
+      title: { display: !isPortraitMobile(), text: isDay ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois") },
+      stacked: !isDay,
+      ticks: { autoSkip: true, maxRotation: 0, maxTicksLimit: isPortraitMobile() ? 5 : 12 }
+    },
+    y: {
+      beginAtZero: true,
+      stacked: true,
+      title: { display: !isPortraitMobile(), text: "Emissions de gaz à effet de serre (en t éq CO₂)" },
+      ticks: { maxTicksLimit: isPortraitMobile() ? 5 : 8 }
             }
           }
         }
@@ -1825,9 +1919,10 @@ Les émissions pour l'année 2025 seront ajoutées lorsque l'ensemble des source
         data: { labels, datasets },
         options: {
           responsive: true,
+         maintainAspectRatio: !isPortraitMobile(),
           interaction: { mode:'index', intersect:false },
           plugins: {
-            legend: { position:'top' },
+            legend: { position: isPortraitMobile() ? 'bottom' : 'top' },
             tooltip: {
               itemSort: (a, b) => {
                 const va = (a.parsed && typeof a.parsed.y === 'number') ? a.parsed.y : 0;
@@ -1879,11 +1974,18 @@ Les émissions pour l'année 2025 seront ajoutées lorsque l'ensemble des source
                 }
               }
             },
-            zoom: { pan:{enabled:true, mode:'x'}, zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' } }
-          },
-          scales: {
-            x: { title: { display: true, text: (isDay ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")) }, stacked: !isDay },
-            y: { beginAtZero: true, stacked: !isDay, title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" } }
+            
+zoom: { pan:{enabled:true, mode:'x'}, zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, mode:'x' } }
+  },
+  scales: {
+    x: { title: { display: !isPortraitMobile(), text: (isDay ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")) },
+         stacked: !isDay,
+         ticks: { autoSkip: true, maxRotation: 0, maxTicksLimit: isPortraitMobile() ? 5 : 12 } },
+    y: { beginAtZero: true,
+         stacked: !isDay,
+         title: { display: !isPortraitMobile(), text: "Emissions de gaz à effet de serre (en t éq CO₂)" },
+         ticks: { maxTicksLimit: isPortraitMobile() ? 5 : 8 } }
+
           }
         }
       });
@@ -1965,10 +2067,11 @@ Les émissions pour l'année 2025 seront ajoutées lorsque l'ensemble des source
         data:{ labels, datasets },
         options: {
           responsive: true,
+         maintainAspectRatio: !isPortraitMobile(),
           interaction: { mode: 'index', intersect: false },
           plugins: {
             legend: {
-              position: 'top',
+              position: isPortraitMobile() ? 'bottom' : 'top',
               labels: {
                 sort: (a, b) => {
                   const order = { "Ryanair":0, "Wizz Air":1, "HiSky":2, "SkyUp":3, "Volotea":4, "Autres":5 };
@@ -2048,17 +2151,18 @@ Les émissions pour l'année 2025 seront ajoutées lorsque l'ensemble des source
               }
             }
           },
-          scales: {
-            x: {
-              title: {
-                display: true,
-                text: (period === "day" ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois"))
-              }
-            },
-            y: {
-              beginAtZero: true,
-              stacked: (period !== "day"),
-              title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" }
+          
+scales: {
+    x: {
+      title: { display: !isPortraitMobile(), text: (period === "day" ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")) },
+      ticks: { autoSkip: true, maxRotation: 0, maxTicksLimit: isPortraitMobile() ? 5 : 12 }
+    },
+    y: {
+      beginAtZero: true,
+      stacked: (period !== "day"),
+      title: { display: !isPortraitMobile(), text: "Emissions de gaz à effet de serre (en t éq CO₂)" },
+      ticks: { maxTicksLimit: isPortraitMobile() ? 5 : 8 }
+
             }
           }
         }
@@ -2134,10 +2238,11 @@ Les émissions pour l'année 2025 seront ajoutées lorsque l'ensemble des source
         data:{ labels, datasets },
         options: {
           responsive: true,
+         maintainAspectRatio: !isPortraitMobile(),
           interaction: { mode: 'index', intersect: false },
           plugins: {
             legend: {
-              position: 'top',
+              position: isPortraitMobile() ? 'bottom' : 'top',
               labels: {
                 sort: (a, b) => {
                   const order = { "Ryanair":0, "Wizz Air":1, "HiSky":2, "SkyUp":3, "Volotea":4, "Autres":5 };
@@ -2215,17 +2320,18 @@ Les émissions pour l'année 2025 seront ajoutées lorsque l'ensemble des source
               }
             }
           },
-          scales: {
-            x: {
-              title: {
-                display: true,
-                text: (period === "day" ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois"))
-              }
-            },
-            y: {
-              beginAtZero: true,
-              stacked: (period !== "day"),
-              title: { display: true, text: "Nombre de rotations" }
+          
+scales: {
+    x: {
+      title: { display: !isPortraitMobile(), text: (period === "day" ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")) },
+      ticks: { autoSkip: true, maxRotation: 0, maxTicksLimit: isPortraitMobile() ? 5 : 12 }
+    },
+    y: {
+      beginAtZero: true,
+      stacked: (period !== "day"),
+      title: { display: !isPortraitMobile(), text: "Nombre de rotations" },
+      ticks: { maxTicksLimit: isPortraitMobile() ? 5 : 8 }
+
             }
           }
         }
@@ -2367,8 +2473,9 @@ Les émissions pour l'année 2025 seront ajoutées lorsque l'ensemble des source
           },
           options: {
             responsive: true,
+           maintainAspectRatio: !isPortraitMobile(),
             plugins: {
-              legend: { display: true },
+              legend: { display: true, position: isPortraitMobile() ? 'bottom' : 'top'  },
               tooltip: {
                 callbacks: {
                   label: function (context) {
@@ -2397,20 +2504,21 @@ Les émissions pour l'année 2025 seront ajoutées lorsque l'ensemble des source
                 }
               }
             },
-            scales: {
-              x: { ticks: { maxRotation: 90, minRotation: 45 } },
-              y: {
-                beginAtZero: true,
-                title: { display: true, text: "Emissions de gaz à effet de serre (en t éq CO₂)" }
-              },
-              y1: {
-                beginAtZero: true,
-                position: "right",
-                grid: { drawOnChartArea: false },
-                title: { display: true, text: "Nombre de vols (cumul depuis le 1er janvier)" },
-                ticks: {
-                  stepSize: 1,
-                  callback: (v) => Number.isInteger(v) ? v : ""
+            
+scales: {
+    x: { ticks: { autoSkip: true, maxRotation: isPortraitMobile() ? 0 : 45, minRotation: 0, maxTicksLimit: isPortraitMobile() ? 6 : 12 } },
+    y: {
+      beginAtZero: true,
+      title: { display: !isPortraitMobile(), text: "Emissions de gaz à effet de serre (en t éq CO₂)" },
+      ticks: { maxTicksLimit: isPortraitMobile() ? 5 : 8 }
+    },
+    y1: {
+      beginAtZero: true,
+      position: "right",
+      grid: { drawOnChartArea: false },
+      title: { display: !isPortraitMobile(), text: "Nombre de vols (cumul depuis le 1er janvier)" },
+      ticks: { stepSize: 1 }
+
                 }
               }
             }
@@ -2884,7 +2992,40 @@ window.addEventListener('resize', () => {
   window.__matchKPITimer = setTimeout(matchContainerSizeOnce, 120);
 });
 
-console.log("SCRIPT OK");
+/* ===== Bandeau conseil "Passez en paysage" (portrait mobile) ===== */
+(function(){
+  const KEY = 'hideLandscapeHint';
+  const isPortrait = () => window.matchMedia('(max-width: 480px) and (orientation: portrait)').matches;
+
+  function ensureBanner(){
+    if (!isPortrait()) return removeBanner();
+    if (localStorage.getItem(KEY) === '1') return removeBanner();
+    if (document.getElementById('landscape-hint')) return;
+
+    const bar = document.createElement('div');
+    bar.id = 'landscape-hint';
+    bar.innerHTML = `
+      <div class="hint-content">
+        <span>💡 Pour une meilleure lecture des graphiques, passez votre téléphone en mode horizontal.</span>
+        <button id="close-hint" aria-label="Fermer">OK</button>
+      </div>
+    `;
+    document.body.appendChild(bar);
+
+    document.getElementById('close-hint').addEventListener('click', () => {
+      localStorage.setItem(KEY, '1');
+      removeBanner();
+    });
+  }
+  function removeBanner(){
+    const el = document.getElementById('landscape-hint');
+    if (el) el.remove();
+  }
+
+  ensureBanner();
+  window.addEventListener('orientationchange', () => setTimeout(ensureBanner, 150));
+})();
+ 
 </script>
 
 </body>
