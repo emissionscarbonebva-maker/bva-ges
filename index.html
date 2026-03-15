@@ -520,47 +520,41 @@ max-width: none;
 
   <!-- ⚠️ IMPORTANT : on garde .kpis-grid mais on ajoute des classes
        pour positionner les 3 éléments en CSS Grid -->
-  <div class="metrics kpis-grid">
-    <!-- KPI 1 : histogramme horizontal (colonne gauche, ligne 1) -->
-         
-<div class="metric-header">
-  <div class="metric-title">
-    Emissions totales <span id="kpi1-year">2026</span> au <span id="kpi1-date-ddmois">11 mars</span>
-  </div>
-  <div id="kpiTotal" class="metric-value">…</div>
-</div>
+<div class="metrics kpis-grid">
 
-      <!-- <div id="kpiTotal" class="metric-value">…</div> -->
+  <!-- KPI 1 : histogramme horizontal (colonne gauche, ligne 1) -->
+  <div class="metric-box kpi1-chart">
+    <div class="metric-header">
+      <div class="metric-title">
+        Emissions totales <span id="kpi1-year">2026</span> au <span id="kpi1-date-ddmois">11 mars</span>
       </div>
+      <div id="kpiTotal" class="metric-value">…</div>
+    </div>
 
-      
-<div class="metric-body">
-  <!-- On enveloppe le canvas dans un conteneur dimensionné -->
-  <div class="chart-host" style="height: 140px;">
-    <canvas id="kpiBreakdown"></canvas>
-  </div>
-  <div id="kpiBreakdownLegend" class="mini-legend"></div>
-</div>
-
-
-    <!-- TEXTE (ce qui était sous KPI2) => passe sous KPI1 (colonne gauche, ligne 2) -->
-    <div class="kpi1-text">
-      <div class="metric-box kpi1-text">
-      <div id="kpiS12AeroExplain" class="kpi-explain"></div>
-   </div>
-   </div>
-
-    <!-- KPI 2 : histogramme vertical (colonne droite, s'étend sur 2 lignes) -->
-    <div class="metric-box kpi2-chart">
-      <div class="metric-title">Evolution des émissions "Location based (scope 1 & 2)" et "Aéronefs"</div>
-
-      <!-- Hôte de chart pour un remplissage fluide -->
-      <div class="chart-host">
-        <canvas id="kpiScope12"></canvas>
+    <div class="metric-body">
+      <!-- On enveloppe le canvas dans un conteneur dimensionné -->
+      <div class="chart-host" style="height: 140px;">
+        <canvas id="kpiBreakdown"></canvas>
       </div>
-
+      <div id="kpiBreakdownLegend" class="mini-legend"></div>
     </div>
   </div>
+
+  <!-- TEXTE (ce qui était sous KPI2) => passe sous KPI1 (colonne gauche, ligne 2) -->
+  <div class="kpi1-text">
+    <div class="metric-box kpi1-text">
+      <div id="kpiS12AeroExplain" class="kpi-explain"></div>
+    </div>
+  </div>
+
+  <!-- KPI 2 : histogramme vertical (colonne droite, s'étend sur 2 lignes) -->
+  <div class="metric-box kpi2-chart">
+    <div class="metric-title">Evolution des émissions "Location based (scope 1 & 2)" et "Aéronefs"</div>
+    <div class="chart-host">
+      <canvas id="kpiScope12"></canvas>
+    </div>
+  </div>
+
 </div>
 
     <div class="card card--narrow">
