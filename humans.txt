@@ -1,0 +1,13 @@
+/* TEAM */
+Project: Émissions carbone Aéroport Paris-Beauvais (BVA)
+Author: Analyse indépendante BVA
+Site: https://emissionscarbonebva.fr
+
+/* SITE */
+Description: Analyse indépendante des émissions de gaz à effet de serre liées aux vols de l'aéroport Paris-Beauvais.
+Data sources: Données publiques aviation / vols / facteurs d'émission.
+
+/* TECHNOLOGY */
+HTML5
+Chart.js
+GitHub Pages
