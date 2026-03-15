@@ -600,6 +600,13 @@ body {
   #landscape-hint { display: none; }
 }
 
+ /* ===== KPI 1 : hauteur dédiée ===== */
+.kpi1-chart .kpi1-host { min-height: 200px; }  /* desktop / paysage */
+@media (max-width: 480px) and (orientation: portrait) {
+  .kpi1-chart .kpi1-host { min-height: 240px; }  /* un peu plus de place en portrait */
+}
+.kpi1-chart .kpi1-host canvas { height: 100% !important; } /* remplir le host */
+``
  
 </style>
 
@@ -765,13 +772,13 @@ body {
 </div>
 
       <!-- <div id="kpiTotal" class="metric-value">…</div> -->
+       <div class="metric-body">
+        <div class="chart-host kpi1-host">
+          <canvas id="kpiBreakdown"></canvas>
+        </div>
+       <div id="kpiBreakdownLegend" class="mini-legend"></div>
       </div>
 
-      <div class="metric-body">
-        <canvas id="kpiBreakdown" height="40"></canvas>
-        <div id="kpiBreakdownLegend" class="mini-legend"></div>
-      </div>
-    </div>
 
     <!-- TEXTE (ce qui était sous KPI2) => passe sous KPI1 (colonne gauche, ligne 2) -->
     <div class="kpi1-text">
@@ -3000,7 +3007,7 @@ window.addEventListener('resize', () => {
     bar.id = 'landscape-hint';
     bar.innerHTML = `
       <div class="hint-content">
-        <span>💡 Pour une meilleure lecture des graphiques, passez votre téléphone en mode horizontal.</span>
+        <span>💡 Pour une meilleure lecture des graphiques, passez<br class="hint-br">votre téléphone en mode horizontal.</span>
         <button id="close-hint" aria-label="Fermer">OK</button>
       </div>
     `;
