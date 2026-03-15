@@ -373,6 +373,105 @@ max-width: none;
   #containerKPIs .kpi2-chart{ grid-column:1; grid-row:3; align-self:auto; }
 }
 
+ /* =========================================================
+   Responsive : sidebar, paddings, typographies, charts, tables
+   ========================================================= */
+
+/* Paddings adaptatifs */
+.main{ padding: clamp(16px, 4vw, 40px); }
+header{ padding: clamp(14px, 3.5vw, 25px); }
+
+/* Sidebar : tailles à paliers + mode compact forcé en mobile */
+@media (max-width: 1200px){
+  .sidebar{ width: 200px; }
+  .sidebar.collapsed{ width: 80px; }
+}
+@media (max-width: 768px){
+  /* On force compact pour l’ergonomie (le JS garde la préférence au-delà) */
+  .sidebar{ width: 72px; }
+  .sidebar .text,
+  .sidebar .menu-title,
+  .sidebar .menu-items{ display:none !important; }
+  .logo img{ max-width: 44px; }
+}
+
+/* Textes & cartes : lisibilité mobile */
+@media (max-width: 768px){
+  h2{ font-size: 1.25em; }
+  h3{ font-size: 1.05em; }
+  .card{ padding: 18px; }
+  .metric-box{ min-width: 160px; padding: 14px; }
+}
+
+/* KPI grid : s’empile bien (complète ta règle 900px existante) */
+.kpis-grid{
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+/* Hauteurs des charts : plus modestes sur petits écrans */
+.chart-host{ height: 420px; }
+@media (max-width: 900px){
+  .chart-host{ height: 320px; }
+  #containerKPIs .kpi2-chart .chart-host{ min-height: 340px; }
+}
+@media (max-width: 480px){
+  .chart-host{ height: 260px; }
+}
+
+/* Bandeau d’orientation */
+.orientation-hint{
+  display:none;
+  background:#fff3cd;
+  color:#5c3c00;
+  border:1px solid #ffe69c;
+  border-left:4px solid #f59f00;
+  padding:10px 12px;
+  border-radius:8px;
+  margin: 0 0 16px 0;
+  font-size:0.95em;
+}
+@media (max-width: 900px) and (orientation: portrait){
+  .orientation-hint{ display:block; }
+}
+
+/* Overlay d’orientation sur chaque chart en portrait mobile
+   (non bloquant : pointer-events:none) */
+@media (max-width: 900px) and (orientation: portrait){
+  .chart-host{
+    position: relative;
+  }
+  .chart-host::before{
+    content: "Basculer le téléphone en paysage pour mieux lire ce graphique";
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 10px 12px;
+    background: rgba(255,255,255,0.85);
+    color: #1f3c88;
+    font-weight: 600;
+    border: 1px dashed #1f3c88;
+    border-radius: 8px;
+    pointer-events: none;
+  }
+}
+
+/* Tables : confort mobile */
+@media (max-width: 768px){
+  .table-wrapper{ max-height: 60vh; overflow: auto; }
+  .data-table{ font-size: 13px; }
+  .data-table th, .data-table td{ padding: 8px; }
+}
+
+/* Réduction des gouttières et marges sur petits écrans */
+@media (max-width: 768px){
+  :root{
+    --kpi-gap: 12px;
+    --page-gap: 16px;
+  }
+}
  
 </style>
 
@@ -472,6 +571,11 @@ max-width: none;
     <h1>Observatoire des émissions de gaz à effet de serre de l'aéroport de Paris-Beauvais</h1>
   </header>
 
+<!-- Bandeau orientation pour mobile -->
+<div id="orientationHint" class="orientation-hint" aria-live="polite" hidden>
+  📈 Pour une meilleure lecture des graphiques, passez votre téléphone en <strong>mode paysage</strong>.
+</div>
+ 
   <div class="container">
 
     <!-- ✅ Ajout d'un ID pour servir de référence de taille -->
@@ -2638,7 +2742,48 @@ window.addEventListener('resize', () => {
   window.__matchKPITimer = setTimeout(matchContainerSizeOnce, 120);
 });
 
-console.log("SCRIPT OK");
+<script>
+/* =========================================================
+   Responsive helpers : bandeau d’orientation + sidebar auto-compact
+   ========================================================= */
+(function mobileHelpers(){
+  const hint = document.getElementById('orientationHint');
+  function updateHint(){
+    const show = window.matchMedia('(max-width: 900px) and (orientation: portrait)').matches;
+    if (hint) hint.hidden = !show;
+  }
+  updateHint();
+  window.addEventListener('resize', updateHint);
+
+  /* Règle : en <768px -> compact forcé ; au-delà -> on respecte la préférence */
+  const sb = document.getElementById('sidebar');
+  function isSmall(){ return window.matchMedia('(max-width: 768px)').matches; }
+
+  function applySidebarAuto(){
+    if (!sb) return;
+    const userPrefCollapsed = (localStorage.getItem('sidebarCollapsed') === 'true');
+    if (isSmall()){
+      sb.classList.add('collapsed');
+    } else {
+      if (userPrefCollapsed) sb.classList.add('collapsed');
+      else sb.classList.remove('collapsed');
+    }
+  }
+  applySidebarAuto();
+  window.addEventListener('resize', applySidebarAuto);
+
+  /* On laisse ton listener existant gérer le clic & le localStorage.
+     Ici on ajoute juste une protection pour éviter les conflits en mobile. */
+  const toggle = document.getElementById("toggleSidebar");
+  if (toggle){
+    toggle.addEventListener('click', function(){
+      const collapsed = sb.classList.toggle('collapsed');
+      localStorage.setItem('sidebarCollapsed', collapsed);
+    });
+  }
+})();
+</script>
+ 
 </script>
 
 </body>
