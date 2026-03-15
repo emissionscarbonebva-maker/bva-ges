@@ -1611,42 +1611,31 @@ const s12SimpleLabelsPlugin = {
            }
         ]
       },
-      options: {
+      
+options: {
   responsive: true,
-  maintainAspectRatio: !isPortraitMobile(), // false en portrait mobile
-  interaction: { mode: 'index', intersect: false },
+  maintainAspectRatio: !isPortraitMobile(),
   plugins: {
     legend: { position: isPortraitMobile() ? 'bottom' : 'top' },
-    // Décimation des points en "jour" pour éviter la surdensité
-    decimation: {
-      enabled: true,
-      algorithm: 'min-max',
-      samples: isPortraitMobile() ? 24 : 60 // moins de points à dessiner en portrait
-    },
-    zoom: {
-      pan:  { enabled: true, mode: 'x' },
-      zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }
-    },
     tooltip: {
-      callbacks: { /* … conserve tes callbacks actuels … */ }
+      callbacks: {
+        label: (ctx) => {
+          const v = ctx.raw ?? 0;
+          return `${ctx.dataset.label} : ${Math.round(v).toLocaleString('fr-FR')} t éq CO₂`;
+        }
+      }
     }
   },
   scales: {
     x: {
-      title: { display: true, text: isPortraitMobile() ? "" : (isDay ? "Date" : (period === "week" ? "Semaine (ISO)" : "Mois")) },
-      ticks: {
-        autoSkip: true,
-        maxRotation: isPortraitMobile() ? 0 : 30,
-        minRotation: 0,
-        maxTicksLimit: isPortraitMobile() ? 5 : 12
-      },
-      stacked: !isDay
+      title: { display: !isPortraitMobile(), text: 'Année' },
+      ticks: { autoSkip: true, maxRotation: 0, maxTicksLimit: isPortraitMobile() ? 6 : 12 }
     },
     y: {
       beginAtZero: true,
-      stacked: true,
-      title: { display: !isPortraitMobile(), text: "Emissions de gaz à effet de serre (en t éq CO₂)" },
+      title: { display: !isPortraitMobile(), text: 't éq CO₂' },
       ticks: { maxTicksLimit: isPortraitMobile() ? 5 : 8 }
+
     }
   }
 },
