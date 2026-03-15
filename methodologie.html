@@ -43,7 +43,7 @@ body{
   min-height:100dvh;
 }
 
-/* ===== SIDEBAR ===== */
+/* ===== SIDEBAR (style par défaut) ===== */
 .sidebar{
   width: var(--sidebar-w);
   background: var(--brand);
@@ -226,10 +226,37 @@ footer{
   z-index: 900;
 }
 
-/* ===== BREAKPOINTS ===== */
+/* ==============
+   BREAKPOINTS
+   ============== */
+
+/* --- Desktop (>= 992px) : sidebar FIXE + marge contenu --- */
+@media (min-width: 992px){
+  .sidebar{
+    position: fixed;         /* FIXE : ne défile plus */
+    left: 0; top: 0; bottom: 0;
+    height: 100dvh;
+    transform: none;         /* pas d’off-canvas en desktop */
+    width: var(--sidebar-w);
+    overflow-y: auto;        /* si le menu dépasse */
+    -webkit-overflow-scrolling: touch;
+  }
+  .main{
+    margin-left: var(--sidebar-w);           /* décale le contenu */
+    transition: margin-left .25s ease;       /* glissement doux */
+  }
+  /* Quand collapsée, réduire la marge du contenu */
+  body.sidebar-collapsed .main{
+    margin-left: var(--sidebar-w-collapsed);
+  }
+}
+
+/* --- Large tablets / small desktops --- */
 @media (max-width: 1199.98px){
   .main{ padding: 28px; }
 }
+
+/* --- Mobile/Tablet (< 992px) : off-canvas --- */
 @media (max-width: 991.98px){
   body{ overflow-x: hidden; }
   .sidebar{
@@ -245,10 +272,12 @@ footer{
   .toggle-btn{ display:none; } /* bouton collapse desktop masqué en mobile */
   .header-bar{ display:flex; }
   .hamburger{ display:inline-flex; align-items:center; gap:8px; }
-  .main{ padding: 20px; }
+  .main{ padding: 20px; margin-left: 0; }    /* pas de marge en mobile */
   /* Tooltips inutiles en mobile */
   .sidebar .menu a:hover::after{ content:none !important; }
 }
+
+/* --- Small phones --- */
 @media (max-width: 767.98px){
   header{ padding: 14px 16px; border-radius: 10px; }
   .card{ padding: 16px; margin-bottom: 20px; }
@@ -590,7 +619,6 @@ footer{
         </div>
 
         <p><strong>2. Emissions liées aux transports terrestres des passagers</strong></p>
-        <!-- Désormais traité comme les autres : conteneur scrollable, pas d’empilement -->
         <div class="table-wrapper" role="region" aria-label="Transports terrestres passagers">
           <table>
             <thead>
@@ -624,53 +652,50 @@ footer{
         </div>
 
         <p>
- <br><strong>3. Emissions liées au "Locations based" </strong>
-<br> Un B737-800 propose 189 sièges. En tenant compte du taux d'emport moyen de 85%, cela correspond donc à 161 passagers.
-<br> En appliquant le facteurs d'émissions de 0,085 kg CO₂ / passagers, on obtient alors <strong>14 kg éq CO₂</strong>
-</p>
+          <br><strong>3. Emissions liées au "Locations based" </strong>
+          <br> Un B737-800 propose 189 sièges. En tenant compte du taux d'emport moyen de 85%, cela correspond donc à 161 passagers.
+          <br> En appliquant le facteurs d'émissions de 0,085 kg CO₂ / passagers, on obtient alors <strong>14 kg éq CO₂</strong>
+        </p>
 
-<p>
- <br><strong>4. Emissions totales associées à un vol Paris-Beauvais -> Porto  </strong>
-<br> Les émissions totales de gaz à effet de serre associée à un vol Paris-Beauvais -> Porto sont ainsi de 9 837 + 1 182 + 14 = <strong>11 033 kg éq CO₂</strong>
-</p>
+        <p>
+          <br><strong>4. Emissions totales associées à un vol Paris-Beauvais -> Porto  </strong>
+          <br> Les émissions totales de gaz à effet de serre associée à un vol Paris-Beauvais -> Porto sont ainsi de 9 837 + 1 182 + 14 = <strong>11 033 kg éq CO₂</strong>
+        </p>
 
-<p>
- <br><strong>5. Transport terrestres des employés  </strong>
-<br> Aevc l'approche retenue, les émissions liées au transport des employés ne sont pas reliées directement au vol, mais quantifiées chaque jour.
-</p>
- </div>
+        <p>
+          <br><strong>5. Transport terrestres des employés  </strong>
+          <br> Aevc l'approche retenue, les émissions liées au transport des employés ne sont pas reliées directement au vol, mais quantifiées chaque jour.
+        </p>
+      </div>
 
-<div class="card">
-<h2>Analyse qualitative des données</h2>
+      <div class="card">
+        <h2>Analyse qualitative des données</h2>
+        <p>
+          Une attention particulière a été porté à la qualité des données utilisées, notamment pour le scope "Aéronefs".
+          <br> Un travail d'adaptation a été fait afin de s'appuyer au maximum sur les données des compagnies aériennes lorsque celles-ci étaient disponibles, plutôt que de recourir à des facteurs d'émissions "moyens", 
+            quand bien même ceux-ci sont issus de base de données reconnus.
+          <br> Pour le moment, les facteurs d'émissions calculés sont basés sur les données disponibles documents publiés en 2025 et représentatif de l'année 2024. Ces facteurs d'émissions seront mis à jour à la publication 
+            des documents 2026 et représentatif de l'année 2025. Dans un contexte important d'objectif de décarbonation et de déploiement des carburant d'aviation durable SAF, la mise à jour et l'utilisation des données les plus
+            récentes est primordiale afin d'assurer la meilleure fiabilité possible des résultats.
+          <br> De plus, un travail approfondi et constant est réalisé afin d'assurer la meilleure représentativité possible des distances de vol.
+          <br><br> Pour les autres scopes, les facteurs d'émissions sont issus d'une base reconnue, et les données utilisées sont basées au maximum sur des documents et publications spécifiques. 
+            <br> En l'absence de telles données, des hypothèses ont été formulées en cohérence avec les observations ou résultats déjà connus afin d'assurer une cohérence d'ensemble.
+        </p> 
+      </div>
 
-<P>
-Une attention particulière a été porté à la qualité des données utilisées, notamment pour le scope "Aéronefs".
-<br> Un travail d'adaptation a été fait afin de s'appuyer au maximum sur les données des compagnies aériennes lorsque celles-ci étaient disponibles, plutôt que de recourir à des facteurs d'émissions "moyens", 
-  quand bien même ceux-ci sont issus de base de données reconnus.
-<br> Pour le moment, les facteurs d'émissions calculés sont basés sur les données disponibles documents publiés en 2025 et représentatif de l'année 2024. Ces facteurs d'émissions seront mis à jour à la publication 
-  des documents 2026 et représentatif de l'année 2025. Dans un contexte important d'objectif de décarbonation et de déploiement des carburant d'aviation durable SAF, la mise à jour et l'utilisation des données les plus
-  récentes est primordiale afin d'assurer la meilleure fiabilité possible des résultats.
-<br> De plus, un travail approfondi et constant est réalisé afin d'assurer la meilleure représentativité possible des distances de vol.
+      <div class="card">
+        <h2>Fonctionnement et mise à jour</h2>
+        <p>
+          Le site est mise à jour régulièrement.
+            <br> Bien qu'automatisé, et malgrés l'extrême attention portée par les auteurs, il est possible que des erreurs soient présentes dans les résultats disponibles. Celles-ci sont bien entendus corrigées dès leur identification.
+            <br> De plus, une partie des donénes d'entrée évoluant constamment (notamment distance de vol et facteurs d'émissions), il est possible que les valeurs présentées évoluent lorsque ces données sont mises à jour. A titre d'information, 
+            les données des compagnies aériennes nécessaires au calcul des facteurs d'émissions sont souvent publiées autour des mois de mai/juin. Dès leurs publications, les auteurs d'efforceront des les intégrer au plus vite dans le modèle de calcul.
+          <br>
+            <br> Ce site est également en constante évolution. De nouvelles données, informations, comparaisons viendront au fur et à mesure compléter et enrichir les informations déjà disponibles.
+        </p> 
+      </div>
 
-<br><br> Pour les autres scopes, les facteurs d'émissions sont issus d'une base reconnue, et les données utilisées sont basées au maximum sur des documents et publications spécifiques. 
-  <br> En l'absence de telles données, des hypothèses ont été formulées en cohérence avec les observations ou résultats déjà connus afin d'assurer une cohérence d'ensemble.
-</p> 
-</div>
-
-<div class="card">
-<h2>Fonctionnement et mise à jour</h2>
-
-<P>
-Le site est mise à jour régulièrement.
-  <br> Bien qu'automatisé, et malgrés l'extrême attention portée par les auteurs, il est possible que des erreurs soient présentes dans les résultats disponibles. Celles-ci sont bien entendus corrigées dès leur identification.
-  <br> De plus, une partie des donénes d'entrée évoluant constamment (notamment distance de vol et facteurs d'émissions), il est possible que les valeurs présentées évoluent lorsque ces données sont mises à jour. A titre d'information, 
-  les données des compagnies aériennes nécessaires au calcul des facteurs d'émissions sont souvent publiées autour des mois de mai/juin. Dès leurs publications, les auteurs d'efforceront des les intégrer au plus vite dans le modèle de calcul.
-<br>
-  <br> Ce site est également en constante évolution. De nouvelles données, informations, comparaisons viendront au fur et à mesure compléter et enrichir les informations déjà disponibles.
-</p> 
-</div>
-
-<div> 
+      <div> 
         <footer>
           Observatoire citoyen indépendant – Analyse des émissions de GES liées à l’activité de l’aéroport Paris-Beauvais |
           Contact : <a href="mailto:emissionscarbonebva@gmail.com">emissionscarbonebva@gmail.com</a> |
@@ -688,6 +713,17 @@ const toggle    = document.getElementById("toggleSidebar");
 const hamburger = document.getElementById("hamburger");
 const backdrop  = document.getElementById("backdrop");
 
+/* ---- Helper: applique l'état collapsed sur <body> en desktop ---- */
+function syncBodyCollapsedClass() {
+  const isDesktop = window.matchMedia("(min-width: 992px)").matches;
+  const isCollapsed = sidebar.classList.contains("collapsed");
+  if (isDesktop) {
+    document.body.classList.toggle("sidebar-collapsed", isCollapsed);
+  } else {
+    document.body.classList.remove("sidebar-collapsed");
+  }
+}
+
 /* ===== SIDEBAR COLLAPSE (DESKTOP) ===== */
 if (window.matchMedia("(min-width: 992px)").matches) {
   try{
@@ -695,6 +731,7 @@ if (window.matchMedia("(min-width: 992px)").matches) {
       sidebar.classList.add("collapsed");
     }
   }catch(e){}
+  syncBodyCollapsedClass();
 }
 
 if (toggle){
@@ -705,8 +742,12 @@ if (toggle){
         sidebar.classList.contains("collapsed")
       );
     }catch(e){}
+    syncBodyCollapsedClass();
   });
 }
+
+/* Recalcule lors d’un resize (passage mobile<->desktop) */
+window.addEventListener("resize", syncBodyCollapsedClass);
 
 /* ===== OFF-CANVAS (MOBILE/TABLET) ===== */
 function openSidebarMobile() {
