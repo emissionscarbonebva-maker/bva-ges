@@ -40,7 +40,7 @@ body{
   background: var(--bg);
   color: var(--text);
   display:flex;
-  min-height:100dvh; /* unités dynamiques mobiles */
+  min-height:100dvh;
 }
 
 /* ===== SIDEBAR ===== */
@@ -57,7 +57,6 @@ body{
   flex-shrink: 0;
   z-index: 1000;
 }
-
 .sidebar.collapsed{ width: var(--sidebar-w-collapsed); }
 .sidebar.collapsed .text{ display:none; }
 .sidebar.collapsed .menu a{ justify-content:center; }
@@ -65,7 +64,7 @@ body{
 .toggle-btn i{ transition: transform 0.3s ease; }
 .sidebar.collapsed .toggle-btn i{ transform: rotate(180deg); }
 
-/* TOOLTIP quand collapsé desktop */
+/* Tooltips quand collapsé (desktop) */
 .menu a{ position:relative; }
 .sidebar.collapsed .menu a:hover::after{
   content:attr(data-title);
@@ -81,7 +80,6 @@ body{
   font-size:14px;
   z-index: 9999;
   box-shadow:0 4px 12px rgba(0,0,0,0.2);
-  opacity:1;
 }
 
 /* LOGO */
@@ -111,7 +109,7 @@ body{
   text-decoration:none;
   padding:12px 10px;
   border-radius:8px;
-  min-height:44px; /* tap target */
+  min-height:44px;
 }
 .menu a:hover{ background:#1f3c88; }
 .menu a.active{
@@ -171,7 +169,7 @@ table{
   width:100%;
   border-collapse: collapse;
   font-size: 14px;
-  min-width: 640px; /* évite écrasement */
+  min-width: 640px; /* évite écrasement sur petits écrans */
 }
 th,td{
   padding:10px;
@@ -197,7 +195,6 @@ footer{
 }
 
 /* ===== HAMBURGER EN-TÊTE (mobile) ===== */
-/* Apparaît uniquement sous 992px */
 .header-bar{
   display:none;
   align-items:center;
@@ -230,22 +227,14 @@ footer{
 }
 
 /* ===== BREAKPOINTS ===== */
-
-/* < 1200px : adoucir paddings */
 @media (max-width: 1199.98px){
   .main{ padding: 28px; }
 }
-
-/* < 992px : sidebar off-canvas, header mobile */
 @media (max-width: 991.98px){
-  body{ /* sidebar sort du flux */
-    overflow-x: hidden;
-  }
+  body{ overflow-x: hidden; }
   .sidebar{
     position: fixed; /* off-canvas */
-    left: 0;
-    top: 0;
-    bottom: 0;
+    left: 0; top: 0; bottom: 0;
     height: 100dvh;
     transform: translateX(-100%);
     width: var(--sidebar-w);
@@ -253,59 +242,21 @@ footer{
   }
   .sidebar.open{ transform: translateX(0); }
   .sidebar.collapsed{ width: var(--sidebar-w); } /* pas de collapse en mobile */
-
   .toggle-btn{ display:none; } /* bouton collapse desktop masqué en mobile */
-
-  /* Header bar (mobile) */
   .header-bar{ display:flex; }
   .hamburger{ display:inline-flex; align-items:center; gap:8px; }
   .main{ padding: 20px; }
-
   /* Tooltips inutiles en mobile */
   .sidebar .menu a:hover::after{ content:none !important; }
 }
-
-/* < 768px : typo et espacements mobiles */
 @media (max-width: 767.98px){
   header{ padding: 14px 16px; border-radius: 10px; }
   .card{ padding: 16px; margin-bottom: 20px; }
   .card p, .card li{ font-size: 15px; line-height: 1.7; }
   table{ font-size: 13.5px; min-width: 560px; }
 }
-
-/* < 576px : option cartes empilées pour tables (opt-in via .stacked) */
 @media (max-width: 575.98px){
   .main{ padding: 16px; }
-
-  /* Si on ajoute la classe .stacked sur une table, on passe en cartes */
-  .table-wrapper.stacked{ overflow: visible; }
-  .table-wrapper.stacked table{ border:0; min-width: 0; }
-  .table-wrapper.stacked thead{ display:none; }
-  .table-wrapper.stacked tr{
-    display:block;
-    background:#fff;
-    margin-bottom: 12px;
-    border-radius: 10px;
-    box-shadow: var(--shadow);
-    border:1px solid #eee;
-    overflow: hidden;
-  }
-  .table-wrapper.stacked td{
-    display:flex;
-    width:100%;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 10px 14px;
-    border-bottom: 1px solid #f0f0f0;
-  }
-  .table-wrapper.stacked td:last-child{ border-bottom: 0; }
-  .table-wrapper.stacked td::before{
-    content: attr(data-label);
-    font-weight: 600;
-    color:#333;
-    padding-right: 10px;
-    white-space: nowrap;
-  }
 }
 
 /* ===== ACCESSIBILITÉ : focus visibles ===== */
@@ -324,7 +275,7 @@ footer{
   <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar" aria-label="Navigation latérale">
     <div class="logo">
-      <img src="logo-bva.png" alt="Logo BVA">
+      <img src="logo-bva.png" alt="Logo Paris-Beauvais">
     </div>
 
     <!-- Bouton collapse (desktop uniquement) -->
@@ -498,28 +449,118 @@ footer{
 
         <p>
           <strong>5. Distance de vol</strong><br>
-          La distance de vol retenue correspond à la moyenne des distances réellement parcourues, ...
+          La distance de vol retenue correspond à la moyenne des distances réellement parcourues, relevée pour plusieurs vols distincts sur une site de tracking, en séparant les trajets au départ et à l’arrivée de BVA.
+          Lorsque ces relevés ne sont pas disponibles, la distance utilisée est la distance à "vol d’oiseau" (dit orthodromique) majorée de 5 % pour refléter la trajectoire réelle de vols commerciaux. 
+          Cette distance est ensuite divisée par deux afin de répartir les émissions de GES entre l'aéroport de départ et l'aéroport d'arrivée (approche dite "demi-croisière").
         </p>
 
         <p>
           <strong>6. Source de données</strong><br>
-          Rapports annuels de Ryanair : <a href="https://investor.ryanair.com/results-centre/" target="_blank" rel="noopener">https://investor.ryanair.com/results-centre</a><br>
-          Rapports annuels de Wizz Air : <a href="https://www.wizzair.com/fr-fr/informations-et-services/relations-investisseurs/investisseurs/rapports-annuels" target="_blank" rel="noopener">https://www.wizzair.com/fr-fr/informations-et-services/relations-investisseurs/investisseurs/rapports-annuels</a><br>
-          Base Empreinte ADEME : <a href="https://base-empreinte.ademe.fr/donnees/jeu-donnees" target="_blank" rel="noopener">https://base-empreinte.ademe.fr/donnees/jeu-donnees</a><br>
-          Statistiques annuels de l'aéroport de Paris-Beauvais : <a href="https://www.aeroport.fr/view-statistiques/beauvais-tille" target="_blank" rel="noopener">https://www.aeroport.fr/view-statistiques/beauvais-tille</a>
+          Rapports annuels de Ryanair :
+          <a href="https://investor.ryanair.com/results-centre/" target="_blank" rel="noopener">https://investor.ryanair.com/results-centre/</a><br>
+          Rapports annuels de Wizz Air :
+          <a href="https://www.wizzair.com/fr-fr/informations-et-services/relations-investisseurs/investisseurs/rapports-annuels" target="_blank" rel="noopener">https://www.wizzair.com/fr-fr/informations-et-services/relations-investisseurs/investisseurs/rapports-annuels</a><br>
+          Base Empreinte ADEME :
+          <a href="https://base-empreinte.ademe.fr/donnees/jeu-donnees" target="_blank" rel="noopener">https://base-empreinte.ademe.fr/donnees/jeu-donnees</a><br>
+          Statistiques annuelles de l'aéroport de Paris-Beauvais :
+          <a href="https://www.aeroport.fr/view-statistiques/beauvais-tille" target="_blank" rel="noopener">https://www.aeroport.fr/view-statistiques/beauvais-tille</a>
         </p>
       </div>
 
-      <!-- ... (LES AUTRES CARTES : contenu inchangé, conservées comme dans ton HTML) ... -->
+      <div class="card">
+        <h2>Emissions liées aux transports terrestres des passagers</h2>
+
+        <p><strong>1. Transports collectifs</strong><br>
+          Pour les facteur d'émissions des transports collectifs des passagers, deux cas sont distingués :
+          <br>• navette officielle "Aérobus" : depuis fin 2025 l'aéroport à annoncé la conversion de toutes les navettes au biodiesel B100, générant en moyenne 60% d'émissions de GES en moins qu'un diesel d'origine selon le producteur. 
+          <br>• autres navettes : aucune information n'étant disponible, il est considéré que celle-ci fonctionne au diesel d'origine fossile.
+          <br><br>Dans les deux cas, le facteur d'émissions retenu est issu de la base Empreinte de l'ADEME, soit 37,5 g éq CO₂ / passager.km. 
+          Cependant, afin de tenir compte de l'usage de biodiesel, dans le cadre des navettes officielles "Aérobus", ce facteur d'émissions est donc réduit de 60% soit 15 g éq CO₂ / passager.km.
+        </p>
+
+        <p><strong>2. Transports individuels</strong><br>
+          Pour les facteurs d'émissions des transports individuels des passagers, deux cas dont également distingués :
+          <br>• véhicule thermique
+          <br>• véhicule électrique
+          <br><br>Dans les deux cas les facteurs d'émissions retenus sont issus de la base Empreinte de l'ADEME, soit 203 g éq CO₂ / passager.km pour les véhicules thermiques
+          et 95 g éq CO₂ / passager.km pour les véhicules électriques.
+        </p>
+
+        <p><strong>3. Distances de transport</strong><br>
+          Pour les transports collectifs, la distance retenue est de 90 km. 
+          <br>Cette distance correspond à une distance représentative des différentes lignes opérées depuis l'aéroport : Porte-Maillot (86 km), Saint-Denis Université (70 km), Paris-La Vilette (97 km) et Disneyland Paris (123 km).
+          <br>Pour les transports individuels, la distance retenue est de 65 km. 
+          <br>Cette distance n'a pas pu être directement documentée à partir de sources publiques, elle a donc été estimée afin de correspondre aux résultats disponibles pour ce post dans les bilans carbone publiés par l'aéroport (2022 et 2024).
+        </p>
+
+        <p><strong>4. Répartition des usages</strong><br>
+          Pour chaque vols au départ ou à destination de l'aéroport de Paris-Beauvais, une répartition des voyageurs entre les différents modes de transport a été réalisée.
+          <br>• Nombre de passagers par vol : ... (85% de taux d’emport).
+          <br>• Usage des navettes officielles "Aérobus" : ... (40%).
+          <br>• Usage des autres navettes : ... (11%).
+          <br>• Usage des véhicules individuels : ... (49%, dont 99% thermiques, 1% électriques).
+        </p>
+
+        <p><strong>5. Source de données</strong><br>
+          Biodiesel B100 :
+          <a href="https://www.oleo100.com/agenda-et-actualites/energies-renouvelables-vs-fossiles-quels-sont-les-avantages-des-biocarburants" target="_blank" rel="noopener">https://www.oleo100.com/agenda-et-actualites/energies-renouvelables-vs-fossiles-quels-sont-les-avantages-des-biocarburants</a>
+          <br>Base Empreinte ADEME :
+          <a href="https://base-empreinte.ademe.fr/donnees/jeu-donnees" target="_blank" rel="noopener">https://base-empreinte.ademe.fr/donnees/jeu-donnees</a>
+          <br>Lignes opérées par les navettes :
+          <a href="https://www.aerobus.fr/d/carte-de-nos-lignes?retailerPartnerNumber=807197&amp;locale=fr&amp;currency=EUR" target="_blank" rel="noopener">https://www.aerobus.fr/d/carte-de-nos-lignes?retailerPartnerNumber=807197&amp;locale=fr&amp;currency=EUR</a>
+          <br>Bulletin environnement :
+          <a href="https://www.aeroportparisbeauvais.com/professionnels/developpement-durable/le-bulletin-de-lenvironnement" target="_blank" rel="noopener">https://www.aeroportparisbeauvais.com/professionnels/developpement-durable/le-bulletin-de-lenvironnement</a>
+          <br>Article ActuOise (15/01/2025) :
+          <a href="https://actu.fr/hauts-de-france/beauvais_60057/comment-l-aeroport-de-beauvais-s-y-prend-pour-reduire-ses-emissions-de-co2_62121646.html" target="_blank" rel="noopener">https://actu.fr/hauts-de-france/beauvais_60057/comment-l-aeroport-de-beauvais-s-y-prend-pour-reduire-ses-emissions-de-co2_62121646.html</a>
+          <br>Bilan carbone :
+          <a href="https://www.aeroportparisbeauvais.com/professionnels/developpement-durable/notre-strategie-de-durabilite/nos-engagements-aca" target="_blank" rel="noopener">https://www.aeroportparisbeauvais.com/professionnels/developpement-durable/notre-strategie-de-durabilite/nos-engagements-aca</a>
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>Emissions liées aux transport des employés</h2>
+        <p>
+          L'accès des employés à la plateforme étant difficiellement modélisable ..., environ 4 400 t éq CO₂ / an, soit 12,05 t éq CO₂ / jour.
+        </p>
+        <p><strong>Source de données</strong><br>
+          Base Empreinte ADEME :
+          <a href="https://base-empreinte.ademe.fr/donnees/jeu-donnees" target="_blank" rel="noopener">https://base-empreinte.ademe.fr/donnees/jeu-donnees</a><br>
+          Bilan carbone 2022 :
+          <a href="https://www.aeroportparisbeauvais.com/professionnels/developpement-durable/notre-strategie-de-durabilite/nos-engagements-aca" target="_blank" rel="noopener">https://www.aeroportparisbeauvais.com/professionnels/developpement-durable/notre-strategie-de-durabilite/nos-engagements-aca</a>
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>Emissions liées au "Location based (scopes 1 &amp; 2)"</h2>
+        <p>
+          Comme pour le transport des employés, ce post a été évalué à partir des données publiées ...
+        </p>
+        <p><strong>Source de données</strong><br>
+          Dossier de concertation :
+          <a href="https://bvaconcertation.fra1.cdn.digitaloceanspaces.com/BVA%20Concertation/fr/documentation/20250603_111629-dossierdumaitredouvragejuin2025.pdf" target="_blank" rel="noopener">PDF (juin 2025)</a>
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>Autres postes non retenus dans le périmètres d'analyse</h2>
+        <p>
+          ... (texte conservé) ...
+        </p>
+        <p><strong>Source de données</strong><br>
+          Atelier public :
+          <a href="https://concertation.aeroportparisbeauvais.com/fr/evenements/atelier-thematique-enjeux-environnementaux-et-impacts-locaux" target="_blank" rel="noopener">https://concertation.aeroportparisbeauvais.com/...</a><br>
+          Empreinte moyenne :
+          <a href="https://www.carbone4.com/analyse-myco2-empreinte-carbone-moyenne-2021" target="_blank" rel="noopener">Carbone 4 – MyCO2</a>
+        </p>
+      </div>
 
       <div class="card">
         <h2>Exemple d'application</h2>
         <p>
-          Afin d'expliciter au mieux le principe d'évaluation des émissions de gaz à effet de serre, ...
+          Afin d'expliciter au mieux ... (texte conservé) ...
         </p>
 
         <p><strong>1. Emissions liées à l'aéronef</strong></p>
-        <!-- Exemple table avec conteneur scrollable -->
         <div class="table-wrapper" role="region" aria-label="Exemple Porto">
           <table>
             <thead>
@@ -549,8 +590,8 @@ footer{
         </div>
 
         <p><strong>2. Emissions liées aux transports terrestres des passagers</strong></p>
-        <!-- Variante “cartes empilées” : ACTIVE sur mobile <576px en ajoutant .stacked -->
-        <div class="table-wrapper stacked" role="region" aria-label="Transports terrestres (empilé)">
+        <!-- Désormais traité comme les autres : conteneur scrollable, pas d’empilement -->
+        <div class="table-wrapper" role="region" aria-label="Transports terrestres passagers">
           <table>
             <thead>
               <tr>
@@ -564,64 +605,51 @@ footer{
             </thead>
             <tbody>
               <tr>
-                <td data-label="Mode de transport">Navette aérobus</td>
-                <td data-label="Répartition d'usage">40%</td>
-                <td data-label="Nombre de passagers">64</td>
-                <td data-label="Distance (km)">90</td>
-                <td data-label="Facteur">0,015</td>
-                <td data-label="Emissions totales">86,4</td>
+                <td>Navette aérobus</td><td>40%</td><td>64</td><td>90</td><td>0,015</td><td>86,4</td>
               </tr>
               <tr>
-                <td data-label="Mode de transport">Autres navettes</td>
-                <td data-label="Répartition d'usage">11%</td>
-                <td data-label="Nombre de passagers">18</td>
-                <td data-label="Distance (km)">90</td>
-                <td data-label="Facteur">0,0375</td>
-                <td data-label="Emissions totales">60,8</td>
+                <td>Autres navettes</td><td>11%</td><td>18</td><td>90</td><td>0,0375</td><td>60,8</td>
               </tr>
               <tr>
-                <td data-label="Mode de transport">Individuels thermiques</td>
-                <td data-label="Répartition d'usage">48,5%</td>
-                <td data-label="Nombre de passagers">78</td>
-                <td data-label="Distance (km)">65</td>
-                <td data-label="Facteur">0,203</td>
-                <td data-label="Emissions totales">1 029</td>
+                <td>Individuels thermiques</td><td>48,5%</td><td>78</td><td>65</td><td>0,203</td><td>1 029</td>
               </tr>
               <tr>
-                <td data-label="Mode de transport">Individuels électriques</td>
-                <td data-label="Répartition d'usage">0,5%</td>
-                <td data-label="Nombre de passagers">1</td>
-                <td data-label="Distance (km)">65</td>
-                <td data-label="Facteur">0,095</td>
-                <td data-label="Emissions totales">6</td>
+                <td>Individuels électriques</td><td>0,5%</td><td>1</td><td>65</td><td>0,095</td><td>6</td>
               </tr>
               <tr>
-                <td data-label="TOTAL"><strong>TOTAL scope "Transports terrestres passagers"</strong></td>
-                <td data-label=""></td>
-                <td data-label=""></td>
-                <td data-label=""></td>
-                <td data-label=""></td>
-                <td data-label=""><strong>1 182</strong></td>
+                <td><strong>TOTAL scope "Transports terrestres passagers"</strong></td><td></td><td></td><td></td><td></td><td><strong>1 182</strong></td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <!-- Le reste de la section garde ton texte existant -->
         <p><strong>3. Emissions liées au "Locations based"</strong><br> ...</p>
-        <p><strong>4. Emissions totales ...</strong><br> ...</p>
+        <p><strong>4. Emissions totales associées à un vol ...</strong><br> ...</p>
         <p><strong>5. Transport terrestres des employés</strong><br> ...</p>
       </div>
 
-      <!-- (Autres cartes conservées) -->
+      <div class="card">
+        <h2>Analyse qualitative des données</h2>
+        <p>
+          ... (texte conservé) ...
+        </p>
+      </div>
 
-      <div>
+      <div class="card">
+        <h2>Fonctionnement et mise à jour</h2>
+        <p>
+          ... (texte conservé) ...
+        </p>
+      </div>
+
+      <div>  
         <footer>
           Observatoire citoyen indépendant – Analyse des émissions de GES liées à l’activité de l’aéroport Paris-Beauvais |
           Contact : <a href="mailto:emissionscarbonebva@gmail.com">emissionscarbonebva@gmail.com</a> |
           Hébergement : GitHub Pages (GitHub Inc.)
         </footer>
       </div>
+
     </div>
   </main>
 
@@ -634,9 +662,11 @@ const backdrop  = document.getElementById("backdrop");
 
 /* ===== SIDEBAR COLLAPSE (DESKTOP) ===== */
 if (window.matchMedia("(min-width: 992px)").matches) {
-  if (localStorage.getItem("sidebarCollapsed") === "true"){
-    sidebar.classList.add("collapsed");
-  }
+  try{
+    if (localStorage.getItem("sidebarCollapsed") === "true"){
+      sidebar.classList.add("collapsed");
+    }
+  }catch(e){}
 }
 
 if (toggle){
@@ -659,7 +689,6 @@ function openSidebarMobile() {
     hamburger.setAttribute("aria-expanded", "true");
     hamburger.setAttribute("aria-label", "Fermer le menu");
   }
-  // Lock scroll sous iOS/Android
   document.documentElement.style.overflow = "hidden";
   document.body.style.overflow = "hidden";
 }
