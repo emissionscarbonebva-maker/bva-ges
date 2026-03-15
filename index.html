@@ -1379,21 +1379,21 @@ const dateKey = headers[0]; // la 1ère colonne est la date dans ce CSV
     data: [valuesKPI[0]],
     backgroundColor: toRGBA(colors.aero, 0.85),
     stack: "kpi",
-    barThickness: 26   // ← ÉPAISSEUR histogramme KPI 1
+    barThickness: 35   // ← ÉPAISSEUR histogramme KPI 1
   },
   {
     label: labelsKPI[1],
     data: [valuesKPI[1]],
     backgroundColor: toRGBA(colors.s12, 0.85),
     stack: "kpi",
-    barThickness: 26
+    barThickness: 35
   },
   {
     label: labelsKPI[2],
     data: [valuesKPI[2]],
     backgroundColor: toRGBA(colors.autres, 0.85),
     stack: "kpi",
-    barThickness: 26
+    barThickness: 35
   }
 ]
       },
@@ -1410,6 +1410,14 @@ options: {
 }
     });
 
+
+// Ajuste la hauteur du conteneur (chart-host) en fonction de l’épaisseur choisie
+// 26 = barThickness ; 36 = marge (padding + respiration)
+const kpi1Thickness = 26;
+const host = cv.closest('.chart-host') || cv.parentElement;
+if (host) host.style.minHeight = (kpi1Thickness + 36) + 'px';
+
+   
     // Légende texte en dessous + pourcentages
     const pA = total > 0 ? (vols / total * 100).toFixed(1) : "0.0";
     const pS = total > 0 ? (s12  / total * 100).toFixed(1) : "0.0";
