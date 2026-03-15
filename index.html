@@ -293,21 +293,20 @@ max-width: none;
 
 /* ==================== CANVAS & BLOCS CONTENUS ==================== */
 
+/* Laisse Chart.js gérer width/height du bitmap.
+   On ne force pas width/height sur LE CANVAS lui‑même. */
 .main .card canvas{
   display: block;
-  width: 100%;         /* rempli la carte */
-  height: auto;        /* garde le ratio si pas de hauteur forcée par JS */
-  max-width: 100%;
   margin-top: 20px;
 }
 
-/* Hôte de graphe si tu fixes une hauteur avec maintainAspectRatio:false côté Chart.js */
+/* C’est le CONTENEUR qui fixe la taille visuelle ; Chart.js s’y adapte avec
+   maintainAspectRatio:false (voir Correctif 3). */
 .chart-host{
   position: relative;
   width: 100%;
-  height: 340px;
+  height: 420px;   /* choisis ta hauteur (420px est un bon point de départ) */
 }
-#kpiScope12 { width:100% !important; height:100% !important; }
 
 .table-wrapper{ max-width:100%; overflow:auto; }
 .chart-container{ width:100%; max-width:100%; margin-inline:auto; }
@@ -536,11 +535,15 @@ max-width: none;
       <!-- <div id="kpiTotal" class="metric-value">…</div> -->
       </div>
 
-      <div class="metric-body">
-        <canvas id="kpiBreakdown" height="40"></canvas>
-        <div id="kpiBreakdownLegend" class="mini-legend"></div>
-      </div>
-    </div>
+      
+<div class="metric-body">
+  <!-- On enveloppe le canvas dans un conteneur dimensionné -->
+  <div class="chart-host" style="height: 140px;">
+    <canvas id="kpiBreakdown"></canvas>
+  </div>
+  <div id="kpiBreakdownLegend" class="mini-legend"></div>
+</div>
+
 
     <!-- TEXTE (ce qui était sous KPI2) => passe sous KPI1 (colonne gauche, ligne 2) -->
     <div class="kpi1-text">
@@ -1123,6 +1126,7 @@ const dateKey = headers[0]; // la 1ère colonne est la date dans ce CSV
       options: {
         indexAxis: "y",               // horizontal
         responsive: true,
+       maintainAspectRatio: false,
         plugins: {
           legend: { display: false }, // légende personnalisée en dessous
           tooltip: {
