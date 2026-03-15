@@ -433,7 +433,7 @@ body {
     box-shadow: 0 8px 24px rgba(0,0,0,.35);
   }
   /* bouton d’ouverture en haut du header */
-  .toggle-btn {
+  /*.toggle-btn {
     position: fixed;
     left: 12px;
     top: 12px;
@@ -520,12 +520,38 @@ body {
 }
 
 /* ============ 9) DIVERS ============ */
-/* Empêcher les canapés (=canvas) de déborder leurs cartes sur mini mobiles */
-.main .card canvas { max-width: 100%; height: auto !important; }
+
+/* Canvas : ne pas forcer height:auto si un conteneur gère la hauteur */
+.main .card canvas { max-width: 100%; }           /* largeur fluide */
+.chart-host canvas { height: 100% !important; }   /* respecte la hauteur du host */
+
 
 /* Inputs filtres : taille mini pour éviter zoom iOS */
 .data-table input[type="text"] { font-size: 16px; }
- 
+
+/* ===== Bouton mobile pour ouvrir la sidebar ===== */
+.mobile-menu-btn {
+  display: none;                /* par défaut caché (desktop) */
+  position: fixed;              /* visible quelle que soit la page scrollée */
+  left: 12px;
+  top: 12px;
+  z-index: 1200;
+  width: 44px; height: 44px;
+  border: none;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #1f3c88;
+  box-shadow: 0 4px 12px rgba(0,0,0,.15);
+  align-items: center;
+  justify-content: center;
+}
+.mobile-menu-btn i { pointer-events: none; font-size: 18px; }
+
+/* Afficher ce bouton uniquement sur mobile/tablette */
+@media (max-width: 992px) {
+  .mobile-menu-btn { display: inline-flex; }
+}
+
  
 </style>
 
@@ -621,9 +647,14 @@ body {
 
 <!-- MAIN -->
 <div class="main">
-  <header>
-    <h1>Observatoire des émissions de gaz à effet de serre de l'aéroport de Paris-Beauvais</h1>
-  </header>
+ <header>
+  <!-- Bouton mobile pour ouvrir la sidebar -->
+  <button class="mobile-menu-btn" id="openSidebarBtn" aria-label="Ouvrir le menu">
+    <i class="fa-solid fa-bars"></i>
+  </button>
+
+  <h1>Observatoire des émissions de gaz à effet de serre de l'aéroport de Paris-Beauvais</h1>
+</header>
 
   <div class="container">
 
@@ -2737,11 +2768,14 @@ fetch("data/EXPORT_update_time.csv")
   document.getElementById("update-date").innerHTML = "date de mise à jour indisponible";
 });
 
-// Menu rétractable — version desktop+mobile (off-canvas) avec overlay & resize charts
+/// Menu rétractable — desktop + mobile off-canvas (overlay) + resize charts
 const sidebar = document.getElementById("sidebar");
-const toggle  = document.getElementById("toggleSidebar");
+const toggle  = document.getElementById("toggleSidebar");   // bouton de la sidebar (desktop)
+const opener  = document.getElementById("openSidebarBtn");  // nouveau bouton (mobile)
 
-// Crée l’overlay juste après la sidebar (utile pour le sélecteur CSS ".sidebar.open + .sidebar-overlay")
+function isMobile(){ return window.matchMedia("(max-width: 992px)").matches; }
+
+// Crée l’overlay juste après la sidebar (pour le sélecteur CSS ".sidebar.open + .sidebar-overlay")
 function ensureOverlay(){
   if (document.querySelector('.sidebar-overlay')) return;
   const ov = document.createElement('div');
@@ -2753,16 +2787,10 @@ function ensureOverlay(){
   });
 }
 
-// Mobile = <992px
-function isMobile(){
-  return window.matchMedia("(max-width: 992px)").matches;
-}
-
-// Forcer le resize des charts Chart.js après reflow/layout
+// Force un resize des charts (Chart.js) après les changements de layout
 function queueChartsResize(){
   clearTimeout(window.__chartsResizeTimer);
   window.__chartsResizeTimer = setTimeout(() => {
-    // Liste des ids de canvas utilisés
     const ids = ["kpiScope12","kpiBreakdown","chartDaily","chartCumul","chartAirlines","chartRotations","chartDestination"];
     ids.forEach(id => {
       const c = Chart.getChart(id);
@@ -2771,16 +2799,16 @@ function queueChartsResize(){
   }, 180);
 }
 
-// Rétablir l’état "collapsed" desktop depuis localStorage
+// État collapsed desktop
 if (localStorage.getItem("sidebarCollapsed") === "true") {
   sidebar.classList.add("collapsed");
 }
 
-// On clique : desktop => collapsed ; mobile => off-canvas
+// Clic bouton de la sidebar : desktop => collapsed ; mobile => ferme l’off-canvas (quand ouvert)
 toggle.addEventListener("click", function(){
   if (isMobile()){
-    ensureOverlay();
-    sidebar.classList.toggle("open");
+    // en mobile, le bouton de la sidebar sert de "fermer"
+    sidebar.classList.remove('open');
   } else {
     sidebar.classList.toggle("collapsed");
     localStorage.setItem("sidebarCollapsed", sidebar.classList.contains("collapsed"));
@@ -2788,11 +2816,19 @@ toggle.addEventListener("click", function(){
   queueChartsResize();
 });
 
-// Si on change de taille (passage mobile<->desktop), on ferme l’off-canvas et on resize
+// Clic bouton mobile (fixe dans le header) => ouvre off-canvas
+opener.addEventListener("click", function(){
+  ensureOverlay();
+  sidebar.classList.add("open");
+  queueChartsResize();
+});
+
+// Changement de breakpoint (desktop <-> mobile)
 let lastMobile = isMobile();
 window.addEventListener('resize', () => {
   const nowMobile = isMobile();
-  if (nowMobile !== lastMobile) {
+  if (nowMobile !== lastMobile){
+    // fermer l’off-canvas si on repasse desktop
     sidebar.classList.remove('open');
     queueChartsResize();
     lastMobile = nowMobile;
