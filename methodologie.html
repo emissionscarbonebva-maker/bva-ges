@@ -84,8 +84,16 @@ body{
 
 /* LOGO */
 .logo{ text-align:center; margin-bottom:20px; }
-.logo img{ max-width:140px; transition: all 0.3s; }
-.sidebar.collapsed .logo img{ max-width:50px; }
+.logo img{
+  max-width: 140px;
+  transition: all 0.3s;
+  margin-inline: auto; /* <-- centre horizontalement l'image bloc */
+}
+.sidebar.collapsed .logo img{
+  max-width: 50px;
+  margin-inline: auto; /* <-- garde le centrage quand la sidebar est réduite */
+}
+
 
 /* TOGGLE (dans la sidebar pour desktop) */
 .toggle-btn{
