@@ -109,7 +109,16 @@ body{
 }
 
 /* MENU */
-.menu a{
+/* structure du menu */
+.menu{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  margin-top:10px;
+}
+
+/* boutons du menu */
+  .menu a{
   display:flex;
   align-items:center;
   gap:10px;
