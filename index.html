@@ -92,11 +92,17 @@ img { max-width: 100%; display: block; }
 .sidebar.collapsed .menu a::after{ opacity:0; transition:opacity 0.15s ease; }
 .sidebar.collapsed .menu a:hover::after{ opacity:1; }
   
-/* Logo */
+/* LOGO */
 .logo{ text-align:center; margin-bottom:20px; }
-.logo img{ max-width:140px; transition:all 0.3s; }
-/* logo réduit */
-.sidebar.collapsed .logo img{ max-width:50px; }
+.logo img{
+  max-width: 140px;
+  transition: all 0.3s;
+  margin-inline: auto; /* <-- centre horizontalement l'image bloc */
+}
+.sidebar.collapsed .logo img{
+  max-width: 50px;
+  margin-inline: auto; /* <-- garde le centrage quand la sidebar est réduite */
+}
 
 /* bouton */
 .toggle-btn{
