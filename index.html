@@ -1297,9 +1297,6 @@ const valueLabelsPlugin = {
       
 //KPI 1 basé sur EXPORT_cumul_scopes.csv — on lit désormais la 2e ligne (index 1)
 
-const ratioBois_parc = total / 5600;
-const ratioHez_Froidmont = total / 19600;
- 
  parseCSV('./data/EXPORT_cumul_scopes.csv', (rowsCumul, rawHeadersCumul) => {
   (function renderKPI1_fromCumul() {
     const elTotal  = document.getElementById('kpiTotal');
