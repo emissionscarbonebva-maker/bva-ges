@@ -1433,8 +1433,6 @@ const dateKey = headers[0]; // la 1ère colonne est la date dans ce CSV
       `<span style="color:${colors.aero}">■</span> Aéronefs ${pA}%&nbsp;&nbsp;` +
       `<span style="color:${colors.s12}">■</span> Location based (scopes 1 &amp; 2) ${pS}%&nbsp;&nbsp;` +
       `<span style="color:${colors.autres}">■</span> Autres émissions ${pO}%`;
-  })();
-});
 
 // === Équivalent forêt (AU BON ENDROIT) ===
 const absorptionParHa = 6.5;
@@ -1458,7 +1456,9 @@ const equivalenceHTML = `
 // Injection sous la légende
 elLegend.innerHTML += equivalenceHTML;
  
-
+  })();
+});
+   
 /* ---------- KPI 2 : S1&2 vs Aéronefs (EXPORT_yearly_total.csv) ---------- */
 parseCSV('./data/EXPORT_yearly_total.csv', (rows, rawHeaders) => {
   const headers = (rawHeaders || []).map(h => String(h).trim());
