@@ -1436,8 +1436,8 @@ const dateKey = headers[0]; // la 1ère colonne est la date dans ce CSV
   })();
 });
 
-// === Équivalent forêt ===
-const absorptionParHa = 6.5; // t CO2 / ha / an
+// === Équivalent forêt (AU BON ENDROIT) ===
+const absorptionParHa = 6.5;
 
 const boisParcHa = 800;
 const hezHa = 2800;
@@ -1448,7 +1448,6 @@ const hezCapacite = hezHa * absorptionParHa;
 const ratioBois = total / boisCapacite;
 const ratioHez = total / hezCapacite;
 
-// Création du bloc texte
 const equivalenceHTML = `
   <div style="margin-top:10px; padding:8px 10px; background:#f5f7f5; border-left:4px solid #2e7d32; font-size:0.9em;">
     🌳 <strong>Impact :</strong> Il faudrait <strong>${ratioBois.toFixed(1)} années</strong> d’absorption du bois du parc
