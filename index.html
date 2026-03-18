@@ -1446,10 +1446,16 @@ const hezCapacite = hezHa * absorptionParHa;
 const ratioBois = total / boisCapacite;
 const ratioHez = total / hezCapacite;
 
+const now = new Date();
+const start = new Date(now.getFullYear(), 0, 1);
+const end = new Date(now.getFullYear(), 11, 31);
+
+const pctAnnee = ((now - start) / (end - start) * 100).toFixed(1);
+   
 const equivalenceHTML = `
   <div style="margin-top:10px; padding:8px 10px; background:#f5f7f5; border-left:4px solid #2e7d32; font-size:0.9em;">
-    🌳 <strong>Traduction de l'impact :</strong> Il faudrait <strong>${ratioBois.toFixed(1)} années</strong> d’absorption du bois du parc
-    ou <strong>${ratioHez.toFixed(1)} années</strong> pour la forêt de Hez-Froidmont pour compenser ces émissions.
+    🌳 <strong>Impact :</strong> Il faudrait <strong>${ratioHez.toFixed(1)} années</strong> d’absorption de la forêt de Hez-Froidmont
+    pour compenser ces émissions, alors que nous ne sommes qu’à <strong>${pctAnnee}%</strong> de l’année ${now.getFullYear()}.
   </div>
 `;
 
