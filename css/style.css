@@ -101,9 +101,6 @@ img { max-width: 100%; display: block; }
 }
 .icon{ font-size:18px; width:30px; text-align:center; }
 
-/* MAIN */
-.main{ flex:1 1 auto; padding: 32px 40px;; min-width:0; }
-
 /* HEADER */
 header{ background:#1f3c88; color:white; padding:25px; margin-bottom:30px;border-radius: 12px; }
 header h1{ color:white; margin:0; }
@@ -114,16 +111,6 @@ section{ margin-bottom:60px; scroll-margin-top:80px; }
 /* GRAPH */
 .chart-container{ max-width:700px; }
 
-/* ===== CARDS ===== */
-.card{
-  background:white;
-  padding:28px;
-  border-radius:10px;
-  box-shadow:0 4px 14px rgba(0,0,0,0.08);
-  margin-bottom:30px;
-  border-left:6px solid #1f3c88;
-  transition:transform 0.15s ease;
-}
 .card:hover{ transform:translateY(-2px); }
 .card table{ width:100%; border-collapse:collapse; margin-top:15px; font-size:14px; }
 .card th,
@@ -347,8 +334,6 @@ max-width: none;
   grid-column: 2; grid-row: 1 / span 2;
   display: flex; flex-direction: column; align-self: stretch;
 }
-/* Le graphe remplit son conteneur (ajuste min-height si besoin) */
-#containerKPIs .kpi2-chart .chart-host{ flex: 1 1 auto; min-height: 420px; }
 
 /* Responsive : on empile proprement */
 @media (max-width: 900px){
