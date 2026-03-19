@@ -2,29 +2,25 @@
    1. RESET & BASE
    ========================================================= */
 
-/* Reset global */
 * { box-sizing: border-box; }
-
 html, body { height: 100%; }
 
-/* Empêche le scroll horizontal (corrige débordements) */
 body{
   margin:0;
   font-family: Arial, sans-serif;
   display:flex;
   background:#f5f6fa;
-  overflow-x: hidden; /* ✅ correction débordement */
-  line-height: 1.6;   /* ✅ amélioration lisibilité globale */
+  overflow-x: hidden;
+  line-height: 1.6;
 }
 
-/* Images responsive */
 img{ max-width:100%; display:block; }
 
 /* =========================================================
    2. LAYOUT GLOBAL
    ========================================================= */
 
-/* SIDEBAR (menu gauche) */
+/* SIDEBAR */
 .sidebar{
   width:240px;
   background:#162d63;
@@ -43,7 +39,7 @@ img{ max-width:100%; display:block; }
 .sidebar.collapsed .text{ display:none; }
 .sidebar.collapsed .menu a{ justify-content:center; }
 
-/* Bouton toggle (flèche) */
+/* Bouton toggle (flèche sidebar) */
 .toggle-btn{
   background:none;
   border:none;
@@ -55,7 +51,7 @@ img{ max-width:100%; display:block; }
 .toggle-btn i{ transition:transform 0.3s ease; }
 .sidebar.collapsed .toggle-btn i{ transform:rotate(180deg); }
 
-/* Tooltip sidebar en mode réduit */
+/* Tooltip sidebar */
 .sidebar.collapsed .menu a{ position:relative; }
 .sidebar.collapsed .menu a::after{
   content:attr(data-title);
@@ -108,18 +104,42 @@ img{ max-width:100%; display:block; }
 
 .icon{ width:30px; text-align:center; }
 
-/* MAIN CONTENT */
+/* MAIN */
 .main{
   flex:1;
   padding: clamp(16px, 4vw, 40px);
-  min-width:0; /* ✅ évite débordement en flex */
+  min-width:0;
+}
+
+/* =========================================================
+   🔥 HEADER MOBILE + BOUTON BURGER
+   ========================================================= */
+
+/* Conteneur du burger (barre mobile) */
+.header-bar{
+  display:none; /* ❌ caché en desktop */
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:16px;
+}
+
+/* Bouton burger */
+.hamburger{
+  display:none !important; /* ❌ sécurité : jamais visible en desktop */
+  background:#1f3c88;
+  color:white;
+  border:none;
+  border-radius:8px;
+  padding:10px 12px;
+  font-size:18px;
+  cursor:pointer;
 }
 
 /* HEADER */
 header{
   background:#1f3c88;
   color:white;
-  padding: clamp(14px, 3.5vw, 25px); /* 🔧 hauteur du header */
+  padding: clamp(14px, 3.5vw, 25px);
   margin-bottom:30px;
   border-radius:12px;
 }
@@ -135,34 +155,29 @@ section{
    3. COMPONENTS
    ========================================================= */
 
-/* CARDS (containers principaux) */
 .card{
   background:white;
-  padding:28px; /* 🔧 espace interne du container */
+  padding:28px;
   border-radius:10px;
   box-shadow:0 4px 14px rgba(0,0,0,0.08);
   margin-bottom:35px;
   border-left:6px solid #1f3c88;
   transition:0.15s;
-  max-width:100%; /* ✅ évite débordement */
+  max-width:100%;
 }
-
 .card:hover{ transform:translateY(-2px); }
 
-/* Texte dans les cards → plus lisible */
 .card p{
-  line-height:1.7; /* 🔧 espacement lignes */
+  line-height:1.7;
   margin-bottom:12px;
 }
 
-/* Listes plus lisibles */
 .card ul{
   padding-left:18px;
   line-height:1.7;
 }
 .card li{ margin-bottom:6px; }
 
-/* Tables dans card */
 .card table{
   width:100%;
   border-collapse:collapse;
@@ -184,7 +199,7 @@ section{
   border-radius:10px;
 }
 
-/* TYPOGRAPHIE */
+/* TYPO */
 h2{
   color:#1f3c88;
   margin-bottom:15px;
@@ -207,7 +222,7 @@ footer{
 
 .table-wrapper{
   max-height:600px;
-  max-width:100%; /* ✅ évite débordement */
+  max-width:100%;
   overflow:auto;
   border:1px solid #ccc;
   border-radius:8px;
@@ -232,7 +247,6 @@ footer{
    5. UI ELEMENTS
    ========================================================= */
 
-/* TOOLTIP */
 .tooltip{
   position:relative;
   cursor:help;
@@ -252,7 +266,6 @@ footer{
 }
 .tooltip:hover::after{ opacity:1; }
 
-/* BOUTON EXPORT */
 .export-btn{
   margin-top:15px;
   padding:8px 14px;
@@ -266,43 +279,45 @@ footer{
    6. CHARTS
    ========================================================= */
 
-/* Container graphique → contrôle la taille */
 .chart-host{
   position:relative;
   width:100%;
-  height:420px; /* 🔧 hauteur graphique */
+  height:420px;
 }
 
 /* =========================================================
    7. RESPONSIVE
    ========================================================= */
 
-/* Tablette */
 @media (max-width: 1200px){
   .sidebar{ width:200px; }
 }
 
-/* Mobile */
+/* 🔥 MOBILE : activation burger */
+@media (max-width: 991.98px){
+
+  .header-bar{
+    display:flex; /* ✅ visible uniquement mobile */
+  }
+
+  .hamburger{
+    display:inline-flex !important; /* ✅ visible uniquement mobile */
+  }
+}
+
 @media (max-width: 768px){
 
-  .sidebar{
-    width:72px;
-  }
+  .sidebar{ width:72px; }
 
   .sidebar .text{ display:none !important; }
 
   .logo img{ max-width:44px; }
 
-  .card{
-    padding:18px; /* 🔧 espace réduit mobile */
-  }
+  .card{ padding:18px; }
 
   h2{ font-size:1.25em; }
 }
 
-/* Très petit écran */
 @media (max-width: 480px){
-  .chart-host{
-    height:260px; /* 🔧 hauteur graphique mobile */
-  }
+  .chart-host{ height:260px; }
 }
