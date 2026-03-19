@@ -1,18 +1,30 @@
+/* =========================================================
+   1. RESET & BASE
+   ========================================================= */
 
-/* ===== RESET LÉGER ===== */
+/* Reset global */
 * { box-sizing: border-box; }
+
 html, body { height: 100%; }
-img { max-width: 100%; display: block; }
- 
- body{
+
+/* Empêche le scroll horizontal (corrige débordements) */
+body{
   margin:0;
-  font-family:Arial, sans-serif;
+  font-family: Arial, sans-serif;
   display:flex;
   background:#f5f6fa;
+  overflow-x: hidden; /* ✅ correction débordement */
+  line-height: 1.6;   /* ✅ amélioration lisibilité globale */
 }
 
+/* Images responsive */
+img{ max-width:100%; display:block; }
 
-/* SIDEBAR */
+/* =========================================================
+   2. LAYOUT GLOBAL
+   ========================================================= */
+
+/* SIDEBAR (menu gauche) */
 .sidebar{
   width:240px;
   background:#162d63;
@@ -21,24 +33,31 @@ img { max-width: 100%; display: block; }
   position:sticky;
   top:0;
   padding:20px 10px;
-  box-sizing:border-box;
   transition:width 0.25s;
-  overflow:visible;
   flex-shrink:0;
   z-index:1000;
 }
- 
-/* Mode réduit */
+
+/* Sidebar réduite */
 .sidebar.collapsed{ width:100px; }
 .sidebar.collapsed .text{ display:none; }
 .sidebar.collapsed .menu a{ justify-content:center; }
+
+/* Bouton toggle (flèche) */
+.toggle-btn{
+  background:none;
+  border:none;
+  color:white;
+  font-size:20px;
+  cursor:pointer;
+  margin-bottom:20px;
+}
 .toggle-btn i{ transition:transform 0.3s ease; }
-/* rotation quand menu réduit */
 .sidebar.collapsed .toggle-btn i{ transform:rotate(180deg); }
 
-/* TOOLTIP SIDEBAR mode réduit */
+/* Tooltip sidebar en mode réduit */
 .sidebar.collapsed .menu a{ position:relative; }
-.sidebar.collapsed .menu a:hover::after{
+.sidebar.collapsed .menu a::after{
   content:attr(data-title);
   position:absolute;
   left:90px;
@@ -48,42 +67,30 @@ img { max-width: 100%; display: block; }
   color:white;
   padding:6px 10px;
   border-radius:6px;
-  white-space:nowrap;
   font-size:14px;
-  z-index:9999;
-  box-shadow:0 4px 12px rgba(0,0,0,0.2);
+  white-space:nowrap;
+  opacity:0;
+  transition:0.15s;
 }
-.sidebar.collapsed .menu a::after{ opacity:0; transition:opacity 0.15s ease; }
 .sidebar.collapsed .menu a:hover::after{ opacity:1; }
-  
+
 /* LOGO */
 .logo{ text-align:center; margin-bottom:20px; }
 .logo img{
-  max-width: 140px;
-  transition: all 0.3s;
-  margin-inline: auto; /* <-- centre horizontalement l'image bloc */
+  max-width:140px;
+  margin-inline:auto;
+  transition:0.3s;
 }
-.sidebar.collapsed .logo img{
-  max-width: 50px;
-  margin-inline: auto; /* <-- garde le centrage quand la sidebar est réduite */
-}
-
-/* bouton */
-.toggle-btn{
-  background:none; border:none; color:white; font-size:20px; cursor:pointer; margin-bottom:20px;
-}
+.sidebar.collapsed .logo img{ max-width:50px; }
 
 /* MENU */
-/* structure du menu */
 .menu{
   display:flex;
   flex-direction:column;
   gap:4px;
   margin-top:10px;
 }
-
-/* boutons du menu */
-  .menu a{
+.menu a{
   display:flex;
   align-items:center;
   gap:10px;
@@ -97,491 +104,205 @@ img { max-width: 100%; display: block; }
 .menu a.active{
   background:#2e55c7;
   box-shadow: inset 4px 0 0 #ffffff;
-  font-weight:600;
 }
-.icon{ font-size:18px; width:30px; text-align:center; }
+
+.icon{ width:30px; text-align:center; }
+
+/* MAIN CONTENT */
+.main{
+  flex:1;
+  padding: clamp(16px, 4vw, 40px);
+  min-width:0; /* ✅ évite débordement en flex */
+}
 
 /* HEADER */
-header{ background:#1f3c88; color:white; padding:25px; margin-bottom:30px;border-radius: 12px; }
-header h1{ color:white; margin:0; }
+header{
+  background:#1f3c88;
+  color:white;
+  padding: clamp(14px, 3.5vw, 25px); /* 🔧 hauteur du header */
+  margin-bottom:30px;
+  border-radius:12px;
+}
+header h1{ margin:0; }
 
 /* SECTIONS */
-section{ margin-bottom:60px; scroll-margin-top:80px; }
+section{
+  margin-bottom:60px;
+  scroll-margin-top:80px;
+}
 
-/* GRAPH */
-.chart-container{ max-width:700px; }
+/* =========================================================
+   3. COMPONENTS
+   ========================================================= */
+
+/* CARDS (containers principaux) */
+.card{
+  background:white;
+  padding:28px; /* 🔧 espace interne du container */
+  border-radius:10px;
+  box-shadow:0 4px 14px rgba(0,0,0,0.08);
+  margin-bottom:35px;
+  border-left:6px solid #1f3c88;
+  transition:0.15s;
+  max-width:100%; /* ✅ évite débordement */
+}
 
 .card:hover{ transform:translateY(-2px); }
-.card table{ width:100%; border-collapse:collapse; margin-top:15px; font-size:14px; }
-.card th,
-.card td{ padding:10px; border-bottom:1px solid #ddd; text-align:left; }
-.card th{ background:#f3f5f8; font-weight:600; }
-.card table tr:hover{ background:#f8fafc; }
-  
-.metrics { display:flex; gap:20px; flex-wrap:wrap;}
-.metric-box { flex:1; min-width:220px; background:#eef2f7; padding:20px; border-radius:10px;}
-.metric-value { font-size:1.8em; font-weight:bold; margin-top:8px;}
-canvas { margin-top:20px;}
-footer { text-align:center; padding:30px; font-size:0.9em; color:#666;}
+
+/* Texte dans les cards → plus lisible */
+.card p{
+  line-height:1.7; /* 🔧 espacement lignes */
+  margin-bottom:12px;
+}
+
+/* Listes plus lisibles */
+.card ul{
+  padding-left:18px;
+  line-height:1.7;
+}
+.card li{ margin-bottom:6px; }
+
+/* Tables dans card */
+.card table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:15px;
+}
+.card th, .card td{
+  padding:10px;
+  border-bottom:1px solid #ddd;
+}
+
+/* METRICS */
+.metrics{ display:flex; gap:20px; flex-wrap:wrap; }
+
+.metric-box{
+  flex:1;
+  min-width:220px;
+  background:#eef2f7;
+  padding:20px;
+  border-radius:10px;
+}
+
+/* TYPOGRAPHIE */
 h2{
   color:#1f3c88;
-  margin-top:0;
   margin-bottom:15px;
   font-size:clamp(18px, 2vw, 22px);
   border-bottom:2px solid #e6e9ef;
   padding-bottom:6px;
 }
-h3{
-  color:#444;
-  font-size:1.2em;
-  margin-top:20px;
-}
-  
-/* ================= SHARE BUTTONS ================= */
-.share-links { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
-.share-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 8px; text-decoration: none; font-weight: 500; color: white; width: fit-content; transition: 0.2s; }
-.share-btn i { font-size: 18px; }
-.linkedin { background-color: #0077b5; }
-.facebook { background-color: #1877f2; }
-.share-btn:hover { opacity: 0.85; }
+h3{ color:#444; margin-top:20px; }
 
-/* ================= TABLE PRO STYLE ================= */
-.table-wrapper{ max-height:600px; overflow:auto; border:1px solid #ccc; border-radius:8px; }
-/* table base */
-.data-table{ width:100%; border-collapse:collapse; font-size:14px; }
-.data-table th, .data-table td{ padding:12px; border-bottom:1px solid #e6e6e6; text-align:left; }
-.data-table th{ background:#f1f4f8; font-weight:600; }
-.data-table tr:hover{ background:#f8fafc; }
-  
-/* headers */
-.data-table thead th{
-  position:sticky; top:0; background:#eef2f6; text-align:center; cursor:pointer; z-index:5; box-shadow:0 2px 10px rgba(0,0,0,0.15);
-}
-  
-/* cells */
-.data-table th, .data-table td{ padding:8px 10px; border-bottom:1px solid #e5e5e5; }
-
-/* zebra rows */
-.data-table tbody tr:nth-child(even){ background:#fafafa; }
-/* hover row */
-.data-table tbody tr:hover{ background:#eef6ff; }
-/* centered columns */
-.center{ text-align:center; }
-/* sticky first column */
-.sticky-col{ position:sticky; left:0; background:white; z-index:4; }
-/* total row */
-.total-row{ position:sticky; top:52px; background:#f6faff; font-weight:bold; z-index:3; }
-.total-row td{ font-weight:bold; }
-/* clear filter cross */
-.clear-filter{ position:absolute; right:6px; top:50%; transform:translateY(-50%); cursor:pointer; font-size:12px; color:#888; }
-.clear-filter:hover{ color:red; }
-
-/* ================= DARK MODE ================= */
-.dark-mode .data-table{ background:#1e1e1e; color:white; }
-.dark-mode .data-table thead th{ background:#2c2c2c; }
-.dark-mode .sticky-col{ background:#2c2c2c; }
-.dark-mode .data-table tbody tr:nth-child(even){ background:#252525; }
-.dark-mode .data-table tbody tr:hover{ background:#333; }
-.dark-mode .total-row{ background:#2a2aaa; }
-
-/* ===== INFO BOX ===== */
-.info-box{ background:#eef5ff; border-left:5px solid #1f3c88; padding:18px 22px; border-radius:10px; margin-bottom:30px; }
-.info-box h3{ margin-top:0; font-size:1.2em; }
-.info-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:15px; margin-top:12px; }
-.info-item{ background:white; padding:12px 14px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.05); font-size:0.9em; }
-
-/* ===== TOOLTIP ===== */
-.tooltip{ position:relative; display:inline-block; cursor:help; margin-left:6px; }
-.tooltip-icon{
-  display:inline-flex; align-items:center; justify-content:center; width:16px; height:16px; font-size:11px; border-radius:50%;
-  background:#1f3c88; color:white; font-weight:bold;
-}
-.tooltip { position: relative; cursor: help; }
-.tooltip::after {
-  content: attr(data-tip);
-  position: absolute;
-  bottom: 120%;
-  left: 0;
-  background: #1f3c88;
-  color: white;
-  padding: 8px 10px;
-  border-radius: 6px;
-  font-size: 0.5em; /* taille du texte dans les tooltip des titres*/
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(4px);
-  transition: 0.2s;
-}
-.tooltip:hover::after { opacity: 1; transform: translateY(0); }
-
-/* =================  BOUTON EXPORT ================= */
-.export-btn{ margin-top:15px; padding:8px 14px; border:none; background:#1f3c88; color:white; border-radius:6px; cursor:pointer; font-size:0.9em; }
-.export-btn:hover{ opacity:0.9; }
-
-/* ==================== DIMENSIONNEMENT DES CARTES ==================== */
-
-/* Variables */
-:root{
-  --page-gap: clamp(16px, 4vw, 56px);  /* marge/gouttière pour les cartes "normal" */
-  --narrow-max: 1200px;                /* largeur "fixe" max pour les cartes "narrow" */
+footer{
+  text-align:center;
+  padding:30px;
+  font-size:0.9em;
+  color:#666;
 }
 
-/* Base commune des cartes */
-.card{
-  background:white;
-  padding:28px;
-  border-radius:10px;
-  box-shadow:0 4px 14px rgba(0,0,0,0.08);
-  margin-bottom:35px;
-  border-left:6px solid #1f3c88;
-  transition:transform 0.15s ease;
-
-  /* IMPORTANT : pas de width:100% ici, pour laisser les marges piloter la largeur */
-  width: auto;
-  box-sizing: border-box;
-  overflow: visible;     /* évite tout débordement visuel (canvas, images, etc.) */
-}
-.card:hover{ transform:translateY(-2px); }
-
-/* 1) Carte "normal" : largeur = (largeur du main) - 2×gouttière, centrée par marges */
-.card--normal{
-  /* pas de max-width ; la largeur s'ajuste avec la gouttière */
-  margin-inline: 0;     /* comme sur Méthodologie : pas de gouttière */
-width: auto;
-max-width: none;
-}
-
-/* 2) Carte "narrow" : centrée, largeur "fixe" via max-width (pas de gouttière) */
-.card--narrow{
-  width: 100%;                  /* pleine largeur disponible, mais… */
-  max-width: var(--narrow-max); /* …limitée à la largeur cible */
-  margin-inline: auto;          /* centrage */
-}
-
-/* 3) Carte "full" : pleine largeur du .main */
-.card--full{
-  width: 100%;
-  max-width: none;
-  margin-inline: 0;
-}
-
-/* ==================== CANVAS & BLOCS CONTENUS ==================== */
-
-/* Laisse Chart.js gérer width/height du bitmap.
-   On ne force pas width/height sur LE CANVAS lui‑même. */
-.main .card canvas{
-  display: block;
-  margin-top: 20px;
-}
-
-/* C’est le CONTENEUR qui fixe la taille visuelle ; Chart.js s’y adapte avec
-   maintainAspectRatio:false (voir Correctif 3). */
-.chart-host{
-  position: relative;
-  width: 100%;
-  height: 420px;   /* choisis ta hauteur (420px est un bon point de départ) */
-}
-
-.table-wrapper{ max-width:100%; overflow:auto; }
-.chart-container{ width:100%; max-width:100%; margin-inline:auto; }
-
-/* ====== KPI (styles existants que tu veux garder) ====== */
-.kpis-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-  gap: 16px;
-}
-.metric-header { display:flex; justify-content:space-between; align-items:flex-end; gap:12px; }
-.metric-title { font-weight:600; line-height:1.2; }
-.metric-body { margin-top:8px; }
-.mini-legend { font-size:0.9em; margin-top:6px; color:#555; }
-.kpi-explain { margin-top:8px; font-size:0.95rem; color:#333; }
-
-/* ================= KPIs — grille "Souhaité" pleine hauteur ================= */
-:root{
-  /* écart unique qui sert à la fois en vertical et en horizontal */
-  --kpi-gap: 16px;
-}
-
-/* Grille 2 colonnes = 50/50 ; 2 lignes : (1) KPI1, (2) le reste */
-#containerKPIs .kpis-grid{
-  display: grid;
-  grid-template-columns: 1fr 1fr;  /* 50/50 */
-  grid-template-rows: auto 1fr;    /* L1 = hauteur de KPI1 ; L2 = tout le reste */
-  gap: var(--kpi-gap);             /* écart vertical = écart horizontal */
-  align-items: stretch;            /* les items s’étirent sur la hauteur de leur piste */
-}
-
-/* Placement des 3 éléments (3 enfants directs de .kpis-grid) */
-#containerKPIs .kpi1-chart{ grid-column: 1; grid-row: 1; }
-
-#containerKPIs .kpi1-text{
-  grid-column: 1; grid-row: 2;     /* sous KPI1 */
-  align-self: stretch;              /* la carte texte remplit toute la piste de ligne 2 */
-  display: flex; flex-direction: column; justify-content: center;
-  margin: 0;                        /* fond coloré plein, sans jour */
-  /* Justification & césures propres */
-  text-align: justify;
-  -webkit-hyphens: auto; -ms-hyphens: auto; hyphens: auto;
-  overflow-wrap: anywhere;
-  line-height: 1.45;
-}
-#containerKPIs .kpi1-text .kpi-explain{ margin: 0; } /* pas d’espace inutile */
-
-/* KPI2 s’étend sur 2 lignes = pleine hauteur à droite */
-#containerKPIs .kpi2-chart{
-  grid-column: 2; grid-row: 1 / span 2;
-  display: flex; flex-direction: column; align-self: stretch;
-}
-
-/* Responsive : on empile proprement */
-@media (max-width: 900px){
-  #containerKPIs .kpis-grid{
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto; /* KPI1, Texte, KPI2 */
-  }
-  #containerKPIs .kpi1-chart{ grid-column:1; grid-row:1; }
-  #containerKPIs .kpi1-text { grid-column:1; grid-row:2; }
-  #containerKPIs .kpi2-chart{ grid-column:1; grid-row:3; align-self:auto; }
-}
-
-/* === ⬇️ COLLER ICI le bloc d’overrides “Méthodologie” ⬇️ === */
- /* =========================================================
-   Responsive : sidebar, paddings, typographies, charts, tables
+/* =========================================================
+   4. TABLES
    ========================================================= */
 
-/* Paddings adaptatifs */
-.main{ padding: clamp(16px, 4vw, 40px); }
-header{ padding: clamp(14px, 3.5vw, 25px); }
-
-/* Sidebar : tailles à paliers + mode compact forcé en mobile */
-@media (max-width: 1200px){
-  .sidebar{ width: 200px; }
-  .sidebar.collapsed{ width: 80px; }
-}
-@media (max-width: 768px){
-  /* On force compact pour l’ergonomie (le JS garde la préférence au-delà) */
-  .sidebar{ width: 72px; }
-  .sidebar .text,
-  .sidebar .menu-title,
-  .sidebar .menu-items{ display:none !important; }
-  .logo img{ max-width: 44px; }
-}
-
-/* ===== Mobile/Tablet — overrides quand la sidebar est OUVERTE ===== */
-@media (max-width: 991.98px){
-  /* Quand le menu off-canvas est ouvert, on montre les libellés */
-  .sidebar.open .text{ 
-    display: inline !important; 
-  }
-  .sidebar.open .menu-title,
-  .sidebar.open .menu-items{
-    display: block !important;
-  }
-
-  /* Logo en grand quand la sidebar est ouverte */
-  .sidebar.open .logo img{
-    max-width: 140px !important; /* même taille qu’en desktop */
-    transition: all 0.2s ease;
-  }
-
-  /* Confort visuel : largeur et padding des liens quand ouvert */
-  .sidebar.open .menu a{
-    min-height: 44px;
-    padding: 12px 10px;
-    gap: 10px;
-  }
-
-  /* On garde la version “compacte” (icônes seules) quand la sidebar N’EST PAS open */
-  .sidebar:not(.open) .text,
-  .sidebar:not(.open) .menu-title,
-  .sidebar:not(.open) .menu-items{
-    display: none !important;
-  }
-}
- 
-/* Textes & cartes : lisibilité mobile */
-@media (max-width: 768px){
-  h2{ font-size: 1.25em; }
-  h3{ font-size: 1.05em; }
-  .card{ padding: 18px; }
-  .metric-box{ min-width: 160px; padding: 14px; }
-}
-
-/* KPI grid : s’empile bien (complète ta règle 900px existante) */
-.kpis-grid{
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-}
-
-/* Hauteurs des charts : plus modestes sur petits écrans */
-.chart-host{ height: 420px; }
-@media (max-width: 900px){
-  .chart-host{ height: 320px; }
-  #containerKPIs .kpi2-chart .chart-host{ min-height: 340px; }
-}
-@media (max-width: 480px){
-  .chart-host{ height: 260px; }
-}
-
-/* Bandeau d’orientation */
-.orientation-hint{
-  display:none;
-  background:#fff3cd;
-  color:#5c3c00;
-  border:1px solid #ffe69c;
-  border-left:4px solid #f59f00;
-  padding:10px 12px;
+.table-wrapper{
+  max-height:600px;
+  max-width:100%; /* ✅ évite débordement */
+  overflow:auto;
+  border:1px solid #ccc;
   border-radius:8px;
-  margin: 0 0 16px 0;
-  font-size:0.95em;
-}
-@media (max-width: 900px) and (orientation: portrait){
-  .orientation-hint{ display:block; }
 }
 
-/* Overlay d’orientation sur chaque chart en portrait mobile
-   (non bloquant : pointer-events:none) */
-@media (max-width: 900px) and (orientation: portrait){
-  .chart-host{
-    position: relative;
-  }
-  .chart-host::before{
-    content: "Basculer le téléphone en paysage pour mieux lire ce graphique";
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 10px 12px;
-    background: rgba(255,255,255,0.85);
-    color: #1f3c88;
-    font-weight: 600;
-    border: 1px dashed #1f3c88;
-    border-radius: 8px;
-    pointer-events: none;
-  }
+.data-table{
+  width:100%;
+  border-collapse:collapse;
+}
+.data-table th, .data-table td{
+  padding:8px 10px;
+  border-bottom:1px solid #e5e5e5;
 }
 
-/* Tables : confort mobile */
-@media (max-width: 768px){
-  .table-wrapper{ max-height: 60vh; overflow: auto; }
-  .data-table{ font-size: 13px; }
-  .data-table th, .data-table td{ padding: 8px; }
+.data-table thead th{
+  position:sticky;
+  top:0;
+  background:#eef2f6;
 }
 
-/* Réduction des gouttières et marges sur petits écrans */
-@media (max-width: 768px){
-  :root{
-    --kpi-gap: 12px;
-    --page-gap: 16px;
-  }
-}
+/* =========================================================
+   5. UI ELEMENTS
+   ========================================================= */
 
-/* ====== OVERRIDES ALIGNÉS SUR LA PAGE MÉTHODO ====== */
-:root{
-  --sidebar-w: 240px;
-  --sidebar-w-collapsed: 100px;
+/* TOOLTIP */
+.tooltip{
+  position:relative;
+  cursor:help;
 }
+.tooltip::after{
+  content: attr(data-tip);
+  position:absolute;
+  bottom:120%;
+  left:0;
+  background:#1f3c88;
+  color:white;
+  padding:8px 10px;
+  border-radius:6px;
+  font-size:0.75em;
+  opacity:0;
+  transition:0.2s;
+}
+.tooltip:hover::after{ opacity:1; }
 
-/* Header bar + hamburger + backdrop (styles de base) */
-.header-bar{
-  display:none;
-  align-items:center;
-  justify-content: space-between;
-  gap:12px;
-  margin-bottom: 16px;
-}
-.hamburger{
-  display:none;
-  background: #1f3c88;
-  color:#fff;
+/* BOUTON EXPORT */
+.export-btn{
+  margin-top:15px;
+  padding:8px 14px;
   border:none;
-  border-radius:10px;
-  padding:10px 12px;
-  font-size:18px;
-  min-height:44px;
-  line-height:1;
-}
-.hamburger i{ pointer-events:none; }
-
-.backdrop{
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.35);
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.25s ease;
-  z-index: 900;
+  background:#1f3c88;
+  color:white;
+  border-radius:6px;
 }
 
-/* --- Desktop (>= 992px) : sidebar FIXE + marge contenu --- */
-@media (min-width: 992px){
-  .sidebar{
-    position: fixed;         /* FIXE : ne défile plus */
-    left: 0; top: 0; bottom: 0;
-    height: 100dvh;
-    transform: none;         /* pas d’off-canvas en desktop */
-    width: var(--sidebar-w);
-    overflow-y: auto;        /* si le menu dépasse */
-    -webkit-overflow-scrolling: touch;
-    z-index: 1000;
-  }
-  .main{
-    margin-left: var(--sidebar-w);           /* décale le contenu */
-    transition: margin-left .25s ease;       /* glissement doux */
-  }
-  /* Quand collapsée, réduire la marge du contenu */
-  body.sidebar-collapsed .main{
-    margin-left: var(--sidebar-w-collapsed);
-  }
+/* =========================================================
+   6. CHARTS
+   ========================================================= */
+
+/* Container graphique → contrôle la taille */
+.chart-host{
+  position:relative;
+  width:100%;
+  height:420px; /* 🔧 hauteur graphique */
 }
 
-/* --- Mobile/Tablet (< 992px) : off-canvas --- */
-@media (max-width: 991.98px){
-  body{ overflow-x: hidden; }
+/* =========================================================
+   7. RESPONSIVE
+   ========================================================= */
+
+/* Tablette */
+@media (max-width: 1200px){
+  .sidebar{ width:200px; }
+}
+
+/* Mobile */
+@media (max-width: 768px){
 
   .sidebar{
-    position: fixed; /* off-canvas */
-    left: 0; top: 0; bottom: 0;
-    height: 100dvh;
-    transform: translateX(-100%);  /* cachée par défaut */
-    width: var(--sidebar-w);
-    border-right: 1px solid rgba(255,255,255,0.08);
-    z-index: 1000;
+    width:72px;
   }
-  .sidebar.open{ transform: translateX(0); } /* affichée quand .open */
-  .sidebar.collapsed{ width: var(--sidebar-w); } /* pas de collapse en mobile */
 
-  .toggle-btn{ display:none; }           /* bouton collapse desktop masqué en mobile */
-  .header-bar{ display:flex; }           /* barre mobile visible */
-  .hamburger{ display:inline-flex; align-items:center; gap:8px; }
+  .sidebar .text{ display:none !important; }
 
-  .main{ margin-left: 0; padding-left: 16px; padding-right: 16px; } /* pas de marge en mobile */
+  .logo img{ max-width:44px; }
 
-  /* Tooltips inutiles en mobile */
-  .sidebar .menu a:hover::after{ content:none !important; }
+  .card{
+    padding:18px; /* 🔧 espace réduit mobile */
+  }
+
+  h2{ font-size:1.25em; }
 }
 
-/* ===== Bouton flèche (desktop) — aligné sur Méthodologie ===== */
-@media (min-width: 992px){
-  .toggle-btn{
-    background: transparent;
-    border: 1px solid rgba(255,255,255,0.25);
-    color: #fff;
-    font-size: 18px;
-    cursor: pointer;
-    margin-bottom: 20px;
-    width: 100%;
-    border-radius: 8px;
-    padding: 8px 10px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+/* Très petit écran */
+@media (max-width: 480px){
+  .chart-host{
+    height:260px; /* 🔧 hauteur graphique mobile */
   }
-  .toggle-btn i{ transition: transform 0.3s ease; }
-  .sidebar.collapsed .toggle-btn i{ transform: rotate(180deg); }
 }
-
-
