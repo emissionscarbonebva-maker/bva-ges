@@ -1,527 +1,823 @@
+/* ==========================================================
+   PARTIE 1 — RESET + STRUCTURE + SIDEBAR
+   ----------------------------------------------------------
+   Cette section place toutes les bases : reset léger, 
+   structure flex, sidebar fixe ou mobile, responsive, 
+   tooltips, transitions, etc.
+   ========================================================== */
 
-/* ===== RESET LÉGER ===== */
+
+/* ==========================================================
+   RESET LÉGER — normalise quelques comportements par défaut
+   ========================================================== */
 * { box-sizing: border-box; }
-html, body { height: 100%; }
-img { max-width: 100%; display: block; }
- 
- body{
-  margin:0;
-  font-family:Arial, sans-serif;
-  display:flex;
-  background:#f5f6fa;
+
+html, body {
+  height: 100%;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* Body principal : layout en 2 colonnes (sidebar + main) */
+body {
+  margin: 0;
+  font-family: var(--font-family);
+  background: var(--color-bg);
+  display: flex;
 }
 
 
-/* SIDEBAR */
-.sidebar{
-  width:240px;
-  background:#162d63;
-  color:white;
-  height:100vh;
-  position:sticky;
-  top:0;
-  padding:20px 10px;
-  box-sizing:border-box;
-  transition:width 0.25s;
-  overflow:visible;
-  flex-shrink:0;
-  z-index:1000;
+/* ==========================================================
+   SIDEBAR (MENU LATÉRAL)
+   ----------------------------------------------------------
+   - Largeur variable (normal / réduit / mobile)
+   - Fonctionne en mode fixe (desktop) ou off-canvas (mobile)
+   - Couleurs et animations basées sur variables.css
+   ========================================================== */
+.sidebar {
+  width: var(--sidebar-width);
+  background: var(--color-sidebar);
+  color: white;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  padding: 20px 10px;
+  transition: width 0.25s ease;
+  overflow: visible;
+  flex-shrink: 0;
+  z-index: 1000;
 }
- 
-/* Mode réduit */
-.sidebar.collapsed{ width:100px; }
-.sidebar.collapsed .text{ display:none; }
-.sidebar.collapsed .menu a{ justify-content:center; }
-.toggle-btn i{ transition:transform 0.3s ease; }
-/* rotation quand menu réduit */
-.sidebar.collapsed .toggle-btn i{ transform:rotate(180deg); }
 
-/* TOOLTIP SIDEBAR mode réduit */
-.sidebar.collapsed .menu a{ position:relative; }
-.sidebar.collapsed .menu a:hover::after{
-  content:attr(data-title);
-  position:absolute;
-  left:90px;
-  top:50%;
-  transform:translateY(-50%);
-  background:#162d63;
-  color:white;
-  padding:6px 10px;
-  border-radius:6px;
-  white-space:nowrap;
-  font-size:14px;
-  z-index:9999;
-  box-shadow:0 4px 12px rgba(0,0,0,0.2);
+/* ----- Mode réduit (sidebar compacte) ----- */
+.sidebar.collapsed {
+  width: var(--sidebar-width-collapsed);
 }
-.sidebar.collapsed .menu a::after{ opacity:0; transition:opacity 0.15s ease; }
-.sidebar.collapsed .menu a:hover::after{ opacity:1; }
-  
-/* LOGO */
-.logo{ text-align:center; margin-bottom:20px; }
-.logo img{
+
+/* Cache les textes dans la sidebar compacte */
+.sidebar.collapsed .text {
+  display: none;
+}
+
+/* Centrage des icônes dans la sidebar réduite */
+.sidebar.collapsed .menu a {
+  justify-content: center;
+}
+
+/* Animation bouton collapse */
+.toggle-btn i {
+  transition: transform 0.3s ease;
+}
+.sidebar.collapsed .toggle-btn i {
+  transform: rotate(180deg);
+}
+
+
+/* ==========================================================
+   TOOLTIP LATÉRAL (sidebar réduite)
+   ----------------------------------------------------------
+   Affiche un tooltip lors du survol des éléments quand la 
+   sidebar est en mode compact.
+   ========================================================== */
+.sidebar.collapsed .menu a {
+  position: relative;
+}
+
+/* Apparition du tooltip */
+.sidebar.collapsed .menu a:hover::after {
+  content: attr(data-title);
+  position: absolute;
+  left: 90px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--color-sidebar);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  font-size: 14px;
+  z-index: 9999;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  opacity: 1;
+  transition: opacity 0.15s ease;
+}
+
+/* Masqué par défaut */
+.sidebar.collapsed .menu a::after {
+  opacity: 0;
+}
+
+
+/* ==========================================================
+   LOGO DANS LA SIDEBAR
+   ========================================================== */
+.logo {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Taille logo normale */
+.logo img {
   max-width: 140px;
-  transition: all 0.3s;
-  margin-inline: auto; /* <-- centre horizontalement l'image bloc */
+  transition: all 0.3s ease;
+  margin-inline: auto;
 }
-.sidebar.collapsed .logo img{
+
+/* Taille réduite en sidebar compacte */
+.sidebar.collapsed .logo img {
   max-width: 50px;
-  margin-inline: auto; /* <-- garde le centrage quand la sidebar est réduite */
 }
 
-/* bouton */
-.toggle-btn{
-  background:none; border:none; color:white; font-size:20px; cursor:pointer; margin-bottom:20px;
+
+/* ==========================================================
+   BOUTON COLLAPSE (desktop uniquement)
+   ========================================================== */
+.toggle-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.25);
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  width: 100%;
+  border-radius: 8px;
+  padding: 8px 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* MENU */
-/* structure du menu */
-.menu{
-  display:flex;
-  flex-direction:column;
-  gap:4px;
-  margin-top:10px;
+
+/* ==========================================================
+   MENU DE LA SIDEBAR
+   ========================================================== */
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 10px;
 }
 
-/* boutons du menu */
-  .menu a{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  color:white;
-  text-decoration:none;
-  padding:12px 10px;
-  border-radius:8px;
-  min-height:44px;
+/* Boutons du menu */
+.menu a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+  text-decoration: none;
+  padding: 12px 10px;
+  border-radius: 8px;
+  min-height: 44px;
 }
-.menu a:hover{ background:#1f3c88; }
-.menu a.active{
-  background:#2e55c7;
+
+/* Hover */
+.menu a:hover {
+  background: var(--color-primary-light);
+}
+
+/* Actif */
+.menu a.active {
+  background: var(--color-primary-light);
   box-shadow: inset 4px 0 0 #ffffff;
-  font-weight:600;
+  font-weight: 600;
 }
-.icon{ font-size:18px; width:30px; text-align:center; }
 
-/* MAIN */
-.main{ flex:1 1 auto; padding: 32px 40px;; min-width:0; }
-
-/* HEADER */
-header{ background:#1f3c88; color:white; padding:25px; margin-bottom:30px;border-radius: 12px; }
-header h1{ color:white; margin:0; }
-
-/* SECTIONS */
-section{ margin-bottom:60px; scroll-margin-top:80px; }
-
-/* GRAPH */
-.chart-container{ max-width:700px; }
-
-/* ===== CARDS ===== */
-.card{
-  background:white;
-  padding:28px;
-  border-radius:10px;
-  box-shadow:0 4px 14px rgba(0,0,0,0.08);
-  margin-bottom:30px;
-  border-left:6px solid #1f3c88;
-  transition:transform 0.15s ease;
+/* Icones */
+.icon {
+  font-size: 18px;
+  width: 30px;
+  text-align: center;
 }
-.card:hover{ transform:translateY(-2px); }
-.card table{ width:100%; border-collapse:collapse; margin-top:15px; font-size:14px; }
-.card th,
-.card td{ padding:10px; border-bottom:1px solid #ddd; text-align:left; }
-.card th{ background:#f3f5f8; font-weight:600; }
-.card table tr:hover{ background:#f8fafc; }
-  
-.metrics { display:flex; gap:20px; flex-wrap:wrap;}
-.metric-box { flex:1; min-width:220px; background:#eef2f7; padding:20px; border-radius:10px;}
-.metric-value { font-size:1.8em; font-weight:bold; margin-top:8px;}
-canvas { margin-top:20px;}
-footer { text-align:center; padding:30px; font-size:0.9em; color:#666;}
-h2{
-  color:#1f3c88;
-  margin-top:0;
-  margin-bottom:15px;
-  font-size:clamp(18px, 2vw, 22px);
-  border-bottom:2px solid #e6e9ef;
-  padding-bottom:6px;
+
+
+/* ==========================================================
+   LAYOUT GLOBAL — zone .main qui reçoit le contenu
+   ========================================================== */
+.main {
+  flex: 1 1 auto;
+  padding: var(--page-gap);
+  min-width: 0; /* évite les débordements */
 }
-h3{
-  color:#444;
-  font-size:1.2em;
-  margin-top:20px;
+
+
+/* ==========================================================
+   PARTIE 2 — HEADER, SECTIONS, CARDS, TABLES, TOOLTIPS, SHARE
+   ----------------------------------------------------------
+   Cette partie gère toute la mise en page des contenus dans
+   la zone principale : header, sections, cartes, tableaux,
+   infobox, tooltips, boutons de partage/export.
+   ========================================================== */
+
+
+/* ==========================================================
+   HEADER (bandeau titre en haut des pages)
+   ========================================================== */
+header {
+  background: var(--color-primary-light);
+  color: white;
+  padding: clamp(14px, 3.5vw, 25px); /* padding responsive */
+  margin-bottom: 30px;
+  border-radius: 12px;
 }
-  
-/* ================= SHARE BUTTONS ================= */
-.share-links { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
-.share-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 8px; text-decoration: none; font-weight: 500; color: white; width: fit-content; transition: 0.2s; }
-.share-btn i { font-size: 18px; }
-.linkedin { background-color: #0077b5; }
-.facebook { background-color: #1877f2; }
-.share-btn:hover { opacity: 0.85; }
 
-/* ================= TABLE PRO STYLE ================= */
-.table-wrapper{ max-height:600px; overflow:auto; border:1px solid #ccc; border-radius:8px; }
-/* table base */
-.data-table{ width:100%; border-collapse:collapse; font-size:14px; }
-.data-table th, .data-table td{ padding:12px; border-bottom:1px solid #e6e6e6; text-align:left; }
-.data-table th{ background:#f1f4f8; font-weight:600; }
-.data-table tr:hover{ background:#f8fafc; }
-  
-/* headers */
-.data-table thead th{
-  position:sticky; top:0; background:#eef2f6; text-align:center; cursor:pointer; z-index:5; box-shadow:0 2px 10px rgba(0,0,0,0.15);
+header h1 {
+  margin: 0;
+  color: white;
 }
-  
-/* cells */
-.data-table th, .data-table td{ padding:8px 10px; border-bottom:1px solid #e5e5e5; }
 
-/* zebra rows */
-.data-table tbody tr:nth-child(even){ background:#fafafa; }
-/* hover row */
-.data-table tbody tr:hover{ background:#eef6ff; }
-/* centered columns */
-.center{ text-align:center; }
-/* sticky first column */
-.sticky-col{ position:sticky; left:0; background:white; z-index:4; }
-/* total row */
-.total-row{ position:sticky; top:52px; background:#f6faff; font-weight:bold; z-index:3; }
-.total-row td{ font-weight:bold; }
-/* clear filter cross */
-.clear-filter{ position:absolute; right:6px; top:50%; transform:translateY(-50%); cursor:pointer; font-size:12px; color:#888; }
-.clear-filter:hover{ color:red; }
 
-/* ================= DARK MODE ================= */
-.dark-mode .data-table{ background:#1e1e1e; color:white; }
-.dark-mode .data-table thead th{ background:#2c2c2c; }
-.dark-mode .sticky-col{ background:#2c2c2c; }
-.dark-mode .data-table tbody tr:nth-child(even){ background:#252525; }
-.dark-mode .data-table tbody tr:hover{ background:#333; }
-.dark-mode .total-row{ background:#2a2aaa; }
-
-/* ===== INFO BOX ===== */
-.info-box{ background:#eef5ff; border-left:5px solid #1f3c88; padding:18px 22px; border-radius:10px; margin-bottom:30px; }
-.info-box h3{ margin-top:0; font-size:1.2em; }
-.info-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:15px; margin-top:12px; }
-.info-item{ background:white; padding:12px 14px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.05); font-size:0.9em; }
-
-/* ===== TOOLTIP ===== */
-.tooltip{ position:relative; display:inline-block; cursor:help; margin-left:6px; }
-.tooltip-icon{
-  display:inline-flex; align-items:center; justify-content:center; width:16px; height:16px; font-size:11px; border-radius:50%;
-  background:#1f3c88; color:white; font-weight:bold;
+/* ==========================================================
+   SECTIONS (espacement vertical entre blocs)
+   ========================================================== */
+section {
+  margin-bottom: 60px;
+  scroll-margin-top: 80px; /* ancre propre sous le header */
 }
-.tooltip { position: relative; cursor: help; }
+
+
+/* ==========================================================
+   TITRES H2 / H3
+   ========================================================== */
+h2 {
+  color: var(--color-primary);
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: clamp(18px, 2vw, 22px);
+  border-bottom: 2px solid var(--color-border);
+  padding-bottom: 6px;
+}
+
+h3 {
+  color: var(--color-text-light);
+  font-size: 1.2em;
+  margin-top: 20px;
+}
+
+
+/* ==========================================================
+   CARDS — cartes de données
+   ----------------------------------------------------------
+   - card = base commune
+   - card--normal = largeur auto, gouttière contrôlée
+   - card--narrow = centrée, largeur limitée
+   - card--full = pleine largeur
+   ========================================================== */
+
+/* ---- Base commune des cartes ---- */
+.card {
+  background: var(--color-card-bg);
+  padding: 28px;
+  border-radius: 10px;
+  margin-bottom: 35px;
+  border-left: 6px solid var(--color-primary);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+  transition: transform 0.15s ease;
+  width: auto; /* laisse la gouttière définir la largeur */
+  box-sizing: border-box;
+  overflow: visible; /* évite les débordements visuels */
+}
+
+/* Effet hover */
+.card:hover {
+  transform: translateY(-2px);
+}
+
+/* ---- Style spécifique pour les textes dans card--normal ---- */
+/* DEMANDE SPÉCIALE : augmenter line-height uniquement dans
+   les <p> contenus dans les cartes card--normal */
+.card--normal p {
+  line-height: var(--line-height-card-normal);
+}
+
+/* ---- card--normal : largeur variable contrôlée par gouttière ---- */
+.card--normal {
+  margin-inline: 0;
+  max-width: none;
+}
+
+/* ---- card--narrow : centrée, largeur max définie ---- */
+.card--narrow {
+  width: 100%;
+  max-width: var(--narrow-max);
+  margin-inline: auto;
+}
+
+/* ---- card--full : occupe toute la largeur ---- */
+.card--full {
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+}
+
+
+/* ==========================================================
+   TABLES — tables Pro avec sticky top
+   ========================================================== */
+
+/* Conteneur scrollable */
+.table-wrapper {
+  max-width: 100%;
+  max-height: 600px;
+  overflow: auto;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+/* Table de base */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  background: white;
+}
+
+.data-table th,
+.data-table td {
+  padding: 12px;
+  border-bottom: 1px solid #e5e5e5;
+  text-align: left;
+}
+
+/* En‑têtes sticky */
+.data-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--color-table-header);
+  cursor: pointer;
+  text-align: center;
+  z-index: 5;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+}
+
+/* Lignes zébrées */
+.data-table tbody tr:nth-child(even) {
+  background: var(--color-row-zebra);
+}
+
+/* Hover */
+.data-table tbody tr:hover {
+  background: var(--row-hover);
+}
+
+/* Colonne sticky */
+.sticky-col {
+  position: sticky;
+  left: 0;
+  background: white;
+  z-index: 4;
+}
+
+/* Ligne total sticky (sous l'en‑tête) */
+.total-row {
+  position: sticky;
+  top: 52px;
+  background: #f6faff;
+  font-weight: bold;
+  z-index: 3;
+}
+
+/* Croix de suppression filtre */
+.clear-filter {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 12px;
+  color: #888;
+}
+.clear-filter:hover {
+  color: red;
+}
+
+
+/* ==========================================================
+   INFO BOX (encadré explicatif)
+   ========================================================== */
+.info-box {
+  background: #eef5ff;
+  border-left: 5px solid var(--color-primary);
+  padding: 18px 22px;
+  border-radius: 10px;
+  margin-bottom: 30px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 15px;
+  margin-top: 12px;
+}
+
+.info-item {
+  background: white;
+  padding: 12px 14px;
+  font-size: 0.9em;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+
+/* ==========================================================
+   TOOLTIP STANDARD
+   ========================================================== */
+.tooltip {
+  position: relative;
+  cursor: help;
+  display: inline-block;
+}
+
+.tooltip-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  font-size: 11px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: white;
+  font-weight: bold;
+}
+
+/* bulle informative */
 .tooltip::after {
   content: attr(data-tip);
   position: absolute;
   bottom: 120%;
   left: 0;
-  background: #1f3c88;
+  background: var(--color-primary);
   color: white;
   padding: 8px 10px;
   border-radius: 6px;
-  font-size: 0.5em; /* taille du texte dans les tooltip des titres*/
+  font-size: 0.8em;
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
   transform: translateY(4px);
   transition: 0.2s;
 }
-.tooltip:hover::after { opacity: 1; transform: translateY(0); }
 
-/* =================  BOUTON EXPORT ================= */
-.export-btn{ margin-top:15px; padding:8px 14px; border:none; background:#1f3c88; color:white; border-radius:6px; cursor:pointer; font-size:0.9em; }
-.export-btn:hover{ opacity:0.9; }
-
-/* ==================== DIMENSIONNEMENT DES CARTES ==================== */
-
-/* Variables */
-:root{
-  --page-gap: clamp(16px, 4vw, 56px);  /* marge/gouttière pour les cartes "normal" */
-  --narrow-max: 1200px;                /* largeur "fixe" max pour les cartes "narrow" */
+.tooltip:hover::after {
+  opacity: 1;
+  transform: translateY(0);
 }
 
-/* Base commune des cartes */
-.card{
-  background:white;
-  padding:28px;
-  border-radius:10px;
-  box-shadow:0 4px 14px rgba(0,0,0,0.08);
-  margin-bottom:35px;
-  border-left:6px solid #1f3c88;
-  transition:transform 0.15s ease;
 
-  /* IMPORTANT : pas de width:100% ici, pour laisser les marges piloter la largeur */
-  width: auto;
-  box-sizing: border-box;
-  overflow: visible;     /* évite tout débordement visuel (canvas, images, etc.) */
+/* ==========================================================
+   BOUTON EXPORT (CSV, PNG…)
+   ========================================================== */
+.export-btn {
+  margin-top: 15px;
+  padding: 8px 14px;
+  border: none;
+  background: var(--color-primary);
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9em;
 }
-.card:hover{ transform:translateY(-2px); }
-
-/* 1) Carte "normal" : largeur = (largeur du main) - 2×gouttière, centrée par marges */
-.card--normal{
-  /* pas de max-width ; la largeur s'ajuste avec la gouttière */
-  margin-inline: 0;     /* comme sur Méthodologie : pas de gouttière */
-width: auto;
-max-width: none;
+.export-btn:hover {
+  opacity: 0.9;
 }
 
-/* 2) Carte "narrow" : centrée, largeur "fixe" via max-width (pas de gouttière) */
-.card--narrow{
-  width: 100%;                  /* pleine largeur disponible, mais… */
-  max-width: var(--narrow-max); /* …limitée à la largeur cible */
-  margin-inline: auto;          /* centrage */
+
+/* ==========================================================
+   BOUTONS DE PARTAGE (LinkedIn, Facebook)
+   ========================================================== */
+.share-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
 }
 
-/* 3) Carte "full" : pleine largeur du .main */
-.card--full{
-  width: 100%;
-  max-width: none;
-  margin-inline: 0;
+.share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  color: white;
+  width: fit-content;
+  transition: 0.2s;
 }
 
-/* ==================== CANVAS & BLOCS CONTENUS ==================== */
+.share-btn i {
+  font-size: 18px;
+}
 
-/* Laisse Chart.js gérer width/height du bitmap.
-   On ne force pas width/height sur LE CANVAS lui‑même. */
-.main .card canvas{
+.linkedin {
+  background-color: #0077b5;
+}
+
+.facebook {
+  background-color: #1877f2;
+}
+
+.share-btn:hover {
+  opacity: 0.85;
+}
+
+
+/* ==========================================================
+   PARTIE 3 — KPI GRID + CHARTS + CANVAS
+   ----------------------------------------------------------
+   Cette partie gère tous les graphiques, KPI, conteneurs de
+   charts, hauteurs responsives, textes explicatifs.
+   ========================================================== */
+
+
+/* ==========================================================
+   KPI GRID — mise en page des cartes d’indicateurs
+   ----------------------------------------------------------
+   Grilles automatiques, responsive, ratio adaptatif.
+   ========================================================== */
+.kpis-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: var(--kpi-gap);
+}
+
+/* Header d’un KPI (titre + chiffre) */
+.metric-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.metric-title {
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.metric-body {
+  margin-top: 8px;
+}
+
+.mini-legend {
+  font-size: 0.9em;
+  margin-top: 6px;
+  color: #555;
+}
+
+.kpi-explain {
+  margin-top: 8px;
+  font-size: 0.95rem;
+  color: var(--color-text);
+}
+
+
+/* ==========================================================
+   KPI GRID AVANCÉ (#containerKPIs)
+   ----------------------------------------------------------
+   Mise en page 2 colonnes :
+   - KPI1 au-dessus du texte à gauche
+   - KPI2 en pleine hauteur à droite
+   -> Puis layout se réorganise en mobile
+   ========================================================== */
+
+:root {
+  --kpi-gap: 16px; /* redéfini ici pour cohérence globale */
+}
+
+#containerKPIs .kpis-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 2 colonnes */
+  grid-template-rows: auto 1fr;   /* L1 = hauteur KPI1, L2 = tout le reste */
+  gap: var(--kpi-gap);
+  align-items: stretch;
+}
+
+/* KPI 1 (graphiques) */
+#containerKPIs .kpi1-chart {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+/* Bloc texte sous KPI 1 */
+#containerKPIs .kpi1-text {
+  grid-column: 1;
+  grid-row: 2;
+  align-self: stretch;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  margin: 0;
+
+  /* Justification & césures */
+  text-align: justify;
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
+  overflow-wrap: anywhere;
+  line-height: 1.45;
+}
+
+#containerKPIs .kpi1-text .kpi-explain {
+  margin: 0;
+}
+
+/* KPI 2 (graphe en pleine hauteur à droite) */
+#containerKPIs .kpi2-chart {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+}
+
+/* Le canvas s’étire en vertical */
+#containerKPIs .kpi2-chart .chart-host {
+  flex: 1 1 auto;
+  min-height: var(--chart-h-desktop);
+}
+
+
+/* ==========================================================
+   RESPONSIVE KPI GRID (#containerKPIs)
+   ----------------------------------------------------------
+   En dessous de 900px : empilement vertical complet
+   ========================================================== */
+@media (max-width: 900px) {
+  #containerKPIs .kpis-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto; /* KPI1 / Texte / KPI2 */
+  }
+
+  #containerKPIs .kpi1-chart {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  #containerKPIs .kpi1-text {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  #containerKPIs .kpi2-chart {
+    grid-column: 1;
+    grid-row: 3;
+    align-self: auto;
+  }
+}
+
+
+/* ==========================================================
+   CHARTS — conteneurs graphiques
+   ----------------------------------------------------------
+   - chart-host = conteneur du canvas
+   - canvas = géré par Chart.js
+   - hauteur responsive en fonction du viewport
+   ========================================================== */
+
+/* Canvas affiché comme bloc */
+.main .card canvas {
   display: block;
   margin-top: 20px;
 }
 
-/* C’est le CONTENEUR qui fixe la taille visuelle ; Chart.js s’y adapte avec
-   maintainAspectRatio:false (voir Correctif 3). */
-.chart-host{
+/* Conteneur visuel du graphique */
+.chart-host {
   position: relative;
   width: 100%;
-  height: 420px;   /* choisis ta hauteur (420px est un bon point de départ) */
+  height: var(--chart-h-desktop); /* hauteurs définies via variables.css */
 }
 
-.table-wrapper{ max-width:100%; overflow:auto; }
-.chart-container{ width:100%; max-width:100%; margin-inline:auto; }
-
-/* ====== KPI (styles existants que tu veux garder) ====== */
-.kpis-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-  gap: 16px;
-}
-.metric-header { display:flex; justify-content:space-between; align-items:flex-end; gap:12px; }
-.metric-title { font-weight:600; line-height:1.2; }
-.metric-body { margin-top:8px; }
-.mini-legend { font-size:0.9em; margin-top:6px; color:#555; }
-.kpi-explain { margin-top:8px; font-size:0.95rem; color:#333; }
-
-/* ================= KPIs — grille "Souhaité" pleine hauteur ================= */
-:root{
-  /* écart unique qui sert à la fois en vertical et en horizontal */
-  --kpi-gap: 16px;
+/* Conteneur alternatif utilisé sur certaines pages */
+.chart-container {
+  width: 100%;
+  max-width: 100%;
+  margin-inline: auto;
 }
 
-/* Grille 2 colonnes = 50/50 ; 2 lignes : (1) KPI1, (2) le reste */
-#containerKPIs .kpis-grid{
-  display: grid;
-  grid-template-columns: 1fr 1fr;  /* 50/50 */
-  grid-template-rows: auto 1fr;    /* L1 = hauteur de KPI1 ; L2 = tout le reste */
-  gap: var(--kpi-gap);             /* écart vertical = écart horizontal */
-  align-items: stretch;            /* les items s’étirent sur la hauteur de leur piste */
-}
 
-/* Placement des 3 éléments (3 enfants directs de .kpis-grid) */
-#containerKPIs .kpi1-chart{ grid-column: 1; grid-row: 1; }
-
-#containerKPIs .kpi1-text{
-  grid-column: 1; grid-row: 2;     /* sous KPI1 */
-  align-self: stretch;              /* la carte texte remplit toute la piste de ligne 2 */
-  display: flex; flex-direction: column; justify-content: center;
-  margin: 0;                        /* fond coloré plein, sans jour */
-  /* Justification & césures propres */
-  text-align: justify;
-  -webkit-hyphens: auto; -ms-hyphens: auto; hyphens: auto;
-  overflow-wrap: anywhere;
-  line-height: 1.45;
-}
-#containerKPIs .kpi1-text .kpi-explain{ margin: 0; } /* pas d’espace inutile */
-
-/* KPI2 s’étend sur 2 lignes = pleine hauteur à droite */
-#containerKPIs .kpi2-chart{
-  grid-column: 2; grid-row: 1 / span 2;
-  display: flex; flex-direction: column; align-self: stretch;
-}
-/* Le graphe remplit son conteneur (ajuste min-height si besoin) */
-#containerKPIs .kpi2-chart .chart-host{ flex: 1 1 auto; min-height: 420px; }
-
-/* Responsive : on empile proprement */
-@media (max-width: 900px){
-  #containerKPIs .kpis-grid{
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto; /* KPI1, Texte, KPI2 */
-  }
-  #containerKPIs .kpi1-chart{ grid-column:1; grid-row:1; }
-  #containerKPIs .kpi1-text { grid-column:1; grid-row:2; }
-  #containerKPIs .kpi2-chart{ grid-column:1; grid-row:3; align-self:auto; }
-}
-
-/* === ⬇️ COLLER ICI le bloc d’overrides “Méthodologie” ⬇️ === */
- /* =========================================================
-   Responsive : sidebar, paddings, typographies, charts, tables
-   ========================================================= */
-
-/* Paddings adaptatifs */
-.main{ padding: clamp(16px, 4vw, 40px); }
-header{ padding: clamp(14px, 3.5vw, 25px); }
-
-/* Sidebar : tailles à paliers + mode compact forcé en mobile */
-@media (max-width: 1200px){
-  .sidebar{ width: 200px; }
-  .sidebar.collapsed{ width: 80px; }
-}
-@media (max-width: 768px){
-  /* On force compact pour l’ergonomie (le JS garde la préférence au-delà) */
-  .sidebar{ width: 72px; }
-  .sidebar .text,
-  .sidebar .menu-title,
-  .sidebar .menu-items{ display:none !important; }
-  .logo img{ max-width: 44px; }
-}
-
-/* ===== Mobile/Tablet — overrides quand la sidebar est OUVERTE ===== */
-@media (max-width: 991.98px){
-  /* Quand le menu off-canvas est ouvert, on montre les libellés */
-  .sidebar.open .text{ 
-    display: inline !important; 
-  }
-  .sidebar.open .menu-title,
-  .sidebar.open .menu-items{
-    display: block !important;
+/* ==========================================================
+   RESPONSIVE — hauteur des charts
+   ========================================================== */
+@media (max-width: 900px) {
+  .chart-host {
+    height: var(--chart-h-tablet);
   }
 
-  /* Logo en grand quand la sidebar est ouverte */
-  .sidebar.open .logo img{
-    max-width: 140px !important; /* même taille qu’en desktop */
-    transition: all 0.2s ease;
-  }
-
-  /* Confort visuel : largeur et padding des liens quand ouvert */
-  .sidebar.open .menu a{
-    min-height: 44px;
-    padding: 12px 10px;
-    gap: 10px;
-  }
-
-  /* On garde la version “compacte” (icônes seules) quand la sidebar N’EST PAS open */
-  .sidebar:not(.open) .text,
-  .sidebar:not(.open) .menu-title,
-  .sidebar:not(.open) .menu-items{
-    display: none !important;
+  #containerKPIs .kpi2-chart .chart-host {
+    min-height: calc(var(--chart-h-tablet) + 20px);
   }
 }
- 
-/* Textes & cartes : lisibilité mobile */
-@media (max-width: 768px){
-  h2{ font-size: 1.25em; }
-  h3{ font-size: 1.05em; }
-  .card{ padding: 18px; }
-  .metric-box{ min-width: 160px; padding: 14px; }
+
+@media (max-width: 480px) {
+  .chart-host {
+    height: var(--chart-h-mobile);
+  }
 }
 
-/* KPI grid : s’empile bien (complète ta règle 900px existante) */
-.kpis-grid{
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-}
 
-/* Hauteurs des charts : plus modestes sur petits écrans */
-.chart-host{ height: 420px; }
-@media (max-width: 900px){
-  .chart-host{ height: 320px; }
-  #containerKPIs .kpi2-chart .chart-host{ min-height: 340px; }
-}
-@media (max-width: 480px){
-  .chart-host{ height: 260px; }
-}
-
-/* Bandeau d’orientation */
-.orientation-hint{
-  display:none;
-  background:#fff3cd;
-  color:#5c3c00;
-  border:1px solid #ffe69c;
-  border-left:4px solid #f59f00;
-  padding:10px 12px;
-  border-radius:8px;
+/* ==========================================================
+   INDICATION "Basculer en paysage"
+   ----------------------------------------------------------
+   Affichage d'un message semi-transparent sur les charts
+   lorsque l'écran est en portrait sur un petit device.
+   ========================================================== */
+.orientation-hint {
+  display: none;
+  background: #fff3cd;
+  color: #5c3c00;
+  border: 1px solid #ffe69c;
+  border-left: 4px solid #f59f00;
+  padding: 10px 12px;
+  border-radius: 8px;
   margin: 0 0 16px 0;
-  font-size:0.95em;
-}
-@media (max-width: 900px) and (orientation: portrait){
-  .orientation-hint{ display:block; }
+  font-size: 0.95em;
 }
 
-/* Overlay d’orientation sur chaque chart en portrait mobile
-   (non bloquant : pointer-events:none) */
-@media (max-width: 900px) and (orientation: portrait){
-  .chart-host{
+/* Activation en orientation portrait */
+@media (max-width: 900px) and (orientation: portrait) {
+  .orientation-hint {
+    display: block;
+  }
+
+  .chart-host {
     position: relative;
   }
-  .chart-host::before{
+
+  .chart-host::before {
     content: "Basculer le téléphone en paysage pour mieux lire ce graphique";
     position: absolute;
     inset: 0;
+
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
+
     padding: 10px 12px;
-    background: rgba(255,255,255,0.85);
-    color: #1f3c88;
+    background: rgba(255, 255, 255, 0.85);
+    color: var(--color-primary);
     font-weight: 600;
-    border: 1px dashed #1f3c88;
+
+    border: 1px dashed var(--color-primary);
     border-radius: 8px;
+    
     pointer-events: none;
   }
 }
 
-/* Tables : confort mobile */
-@media (max-width: 768px){
-  .table-wrapper{ max-height: 60vh; overflow: auto; }
-  .data-table{ font-size: 13px; }
-  .data-table th, .data-table td{ padding: 8px; }
-}
 
-/* Réduction des gouttières et marges sur petits écrans */
-@media (max-width: 768px){
-  :root{
-    --kpi-gap: 12px;
-    --page-gap: 16px;
-  }
-}
+/* ==========================================================
+   PARTIE 4 — RESPONSIVE + OFF‑CANVAS MOBILE + MÉTHODO OVERRIDES
+   ----------------------------------------------------------
+   Gère :
+   - sidebar fixe sur desktop
+   - sidebar off‑canvas sur mobile
+   - hamburger mobile
+   - backdrop
+   - optimisations responsive globales
+   ========================================================== */
 
-/* ====== OVERRIDES ALIGNÉS SUR LA PAGE MÉTHODO ====== */
-:root{
-  --sidebar-w: 240px;
-  --sidebar-w-collapsed: 100px;
-}
 
-/* Header bar + hamburger + backdrop (styles de base) */
-.header-bar{
-  display:none;
-  align-items:center;
+/* ==========================================================
+   BARRE MOBILE (header-bar + hamburger)
+   ----------------------------------------------------------
+   Visible uniquement en mobile/tablettes (< 992px)
+   ========================================================== */
+.header-bar {
+  display: none;
+  align-items: center;
   justify-content: space-between;
-  gap:12px;
+  gap: 12px;
   margin-bottom: 16px;
 }
-.hamburger{
-  display:none;
-  background: #1f3c88;
-  color:#fff;
-  border:none;
-  border-radius:10px;
-  padding:10px 12px;
-  font-size:18px;
-  min-height:44px;
-  line-height:1;
-}
-.hamburger i{ pointer-events:none; }
 
-.backdrop{
+/* Bouton hamburger */
+.hamburger {
+  display: none;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 18px;
+  min-height: 44px;
+  line-height: 1;
+}
+
+.hamburger i {
+  pointer-events: none;
+}
+
+
+/* ==========================================================
+   BACKDROP (pour mobile : clic pour fermer sidebar)
+   ========================================================== */
+.backdrop {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.35);
@@ -531,72 +827,211 @@ header{ padding: clamp(14px, 3.5vw, 25px); }
   z-index: 900;
 }
 
-/* --- Desktop (>= 992px) : sidebar FIXE + marge contenu --- */
-@media (min-width: 992px){
-  .sidebar{
-    position: fixed;         /* FIXE : ne défile plus */
-    left: 0; top: 0; bottom: 0;
+/* Visible quand la sidebar est ouverte */
+.backdrop.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+
+/* ==========================================================
+   DESKTOP — sidebar FIXE
+   ----------------------------------------------------------
+   Règles appliquées uniquement à partir de 992px
+   ========================================================== */
+@media (min-width: 992px) {
+
+  /* Sidebar toujours visible + fixe */
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
     height: 100dvh;
-    transform: none;         /* pas d’off-canvas en desktop */
-    width: var(--sidebar-w);
-    overflow-y: auto;        /* si le menu dépasse */
+    width: var(--sidebar-width);
+    transform: none;
+    overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    z-index: 1000;
   }
-  .main{
-    margin-left: var(--sidebar-w);           /* décale le contenu */
-    transition: margin-left .25s ease;       /* glissement doux */
+
+  /* Contenu décalé à droite */
+  .main {
+    margin-left: var(--sidebar-width);
+    transition: margin-left 0.25s ease;
   }
-  /* Quand collapsée, réduire la marge du contenu */
-  body.sidebar-collapsed .main{
-    margin-left: var(--sidebar-w-collapsed);
+
+  /* Quand le body porte .sidebar-collapsed, réduire la marge du main */
+  body.sidebar-collapsed .main {
+    margin-left: var(--sidebar-width-collapsed);
+  }
+
+  /* Bouton collapse visible uniquement en desktop */
+  .toggle-btn {
+    display: inline-flex;
   }
 }
 
-/* --- Mobile/Tablet (< 992px) : off-canvas --- */
-@media (max-width: 991.98px){
-  body{ overflow-x: hidden; }
 
-  .sidebar{
-    position: fixed; /* off-canvas */
-    left: 0; top: 0; bottom: 0;
+/* ==========================================================
+   MOBILE/TABLET — sidebar OFF‑CANVAS (< 992px)
+   ========================================================== */
+@media (max-width: 991.98px) {
+
+  body {
+    overflow-x: hidden;
+  }
+
+  /* Sidebar devient off‑canvas */
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+
     height: 100dvh;
-    transform: translateX(-100%);  /* cachée par défaut */
-    width: var(--sidebar-w);
+    width: var(--sidebar-width);
+
+    transform: translateX(-100%); /* cachée */
+    transition: transform 0.25s ease;
+
     border-right: 1px solid rgba(255,255,255,0.08);
-    z-index: 1000;
   }
-  .sidebar.open{ transform: translateX(0); } /* affichée quand .open */
-  .sidebar.collapsed{ width: var(--sidebar-w); } /* pas de collapse en mobile */
 
-  .toggle-btn{ display:none; }           /* bouton collapse desktop masqué en mobile */
-  .header-bar{ display:flex; }           /* barre mobile visible */
-  .hamburger{ display:inline-flex; align-items:center; gap:8px; }
+  /* Sidebar visible */
+  .sidebar.open {
+    transform: translateX(0);
+  }
 
-  .main{ margin-left: 0; padding-left: 16px; padding-right: 16px; } /* pas de marge en mobile */
+  /* On désactive collapsed en mobile (pas logique + ergonomie) */
+  .sidebar.collapsed {
+    width: var(--sidebar-width);
+  }
 
-  /* Tooltips inutiles en mobile */
-  .sidebar .menu a:hover::after{ content:none !important; }
-}
+  /* Bouton collapse desktop caché */
+  .toggle-btn {
+    display: none !important;
+  }
 
-/* ===== Bouton flèche (desktop) — aligné sur Méthodologie ===== */
-@media (min-width: 992px){
-  .toggle-btn{
-    background: transparent;
-    border: 1px solid rgba(255,255,255,0.25);
-    color: #fff;
-    font-size: 18px;
-    cursor: pointer;
-    margin-bottom: 20px;
-    width: 100%;
-    border-radius: 8px;
-    padding: 8px 10px;
+  /* Barre mobile activée */
+  .header-bar {
+    display: flex;
+  }
+
+  .hamburger {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
+    gap: 8px;
   }
-  .toggle-btn i{ transition: transform 0.3s ease; }
-  .sidebar.collapsed .toggle-btn i{ transform: rotate(180deg); }
+
+  /* Contenu ne pousse plus la sidebar */
+  .main {
+    margin-left: 0;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  /* Tooltips inutiles en mobile */
+  .sidebar .menu a:hover::after {
+    content: none !important;
+  }
+
+  /* Quand la sidebar est OUVERTE : montrer labels */
+  .sidebar.open .text {
+    display: inline !important;
+  }
+
+  .sidebar.open .menu-title,
+  .sidebar.open .menu-items {
+    display: block !important;
+  }
+
+  .sidebar.open .logo img {
+    max-width: 140px !important;
+    transition: all 0.2s ease;
+  }
+
+  .sidebar.open .menu a {
+    min-height: 44px;
+    padding: 12px 10px;
+    gap: 10px;
+  }
+
+  /* En mobile, quand LA SIDEBAR N'EST PAS OPEN :
+     on cache tout sauf les icônes */
+  .sidebar:not(.open) .text,
+  .sidebar:not(.open) .menu-title,
+  .sidebar:not(.open) .menu-items {
+    display: none !important;
+  }
 }
 
 
+/* ==========================================================
+   TYPO & SPACING MOBILE (optimisations lisibilité)
+   ========================================================== */
+@media (max-width: 768px) {
+
+  h2 {
+    font-size: 1.25em;
+  }
+
+  h3 {
+    font-size: 1.05em;
+  }
+
+  .card {
+    padding: 18px;
+  }
+
+  .metric-box {
+    min-width: 160px;
+    padding: 14px;
+  }
+
+  /* Tables compactes en mobile */
+  .table-wrapper {
+    max-height: 60vh;
+    overflow: auto;
+  }
+
+  .data-table {
+    font-size: 13px;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 8px;
+  }
+
+  /* Réduction des gouttières globales */
+  :root {
+    --kpi-gap: 12px;
+    --page-gap: 16px;
+  }
+}
+
+
+/* ==========================================================
+   DERNIERS OVERRIDES RESPONSIVE
+   (alignés avec tes besoins Méthodologie)
+   ========================================================== */
+@media (max-width: 1200px) {
+  .sidebar {
+    width: 200px;
+  }
+  .sidebar.collapsed {
+    width: 80px;
+  }
+}
+
+@media (max-width: 768px) {
+
+  /* Sidebar ultra‑compacte par défaut */
+  .sidebar {
+    width: var(--sidebar-width-mobile);
+  }
+
+  .logo img {
+    max-width: 44px;
+  }
+}
