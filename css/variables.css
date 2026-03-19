@@ -1,1 +1,58 @@
+/* ==========================================================
+   VARIABLES GLOBALES — couleurs, espacements, tailles
+   ========================================================== */
 
+/* ---------- Couleurs principales ---------- */
+:root {
+  --color-primary: #1f3c88;
+  --color-primary-light: #2e55c7;
+  --color-sidebar: #162d63;
+  --color-bg: #f5f6fa;
+  --color-card-bg: #ffffff;
+
+  --color-text: #333;
+  --color-text-light: #444;
+
+  --color-border: #e6e9ef;
+  --color-table-header: #eef2f6;
+  --color-row-hover: #eef6ff;
+  --color-row-zebra: #fafafa;
+}
+
+/* ---------- Typographie ---------- */
+:root {
+  --font-family: Arial, sans-serif;
+  --font-size-base: 16px;
+  --line-height-base: 1.5;
+  
+  /* line-height demandé pour card--normal > p */
+  --line-height-card-normal: 1.65;
+}
+
+/* ---------- Espacements ---------- */
+:root {
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 20px;
+  --space-xl: 32px;
+
+  --page-gap: clamp(16px, 4vw, 56px);
+  --kpi-gap: 16px;
+}
+
+/* ---------- Largeurs et dimensions ---------- */
+:root {
+  --sidebar-width: 240px;
+  --sidebar-width-collapsed: 100px;
+  --sidebar-width-mobile: 72px;
+
+  --narrow-max: 1200px;
+}
+
+/* ---------- Hauteurs graphiques ---------- */
+:root {
+  --chart-h-desktop: 420px;
+  --chart-h-tablet: 320px;
+  --chart-h-mobile: 260px;
+}
