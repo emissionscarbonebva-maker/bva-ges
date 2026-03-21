@@ -1,1 +1,182 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Émissions carbone – Aéroport Paris‑Beauvais</title>
 
+    <!-- Ton CSS existant -->
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- Chart.js si jamais tu en remets plus tard -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Tes scripts habituels (KPI dynamiques) -->
+    <script src="js/data_loader.js"></script>
+</head>
+
+<body>
+
+    <!-- SIDEBAR (inchangée) -->
+    <div class="sidebar">
+        <div class="logo">
+            <img src="img/logo.png" alt="Logo" />
+        </div>
+
+        <button class="toggle-btn"><i class="fas fa-chevron-left"></i></button>
+
+        <nav class="menu">
+            <a href="index.html" class="active" data-title="Accueil">
+                <span class="icon">🏠</span>
+                <span class="text">Accueil</span>
+            </a>
+            <a href="observer.html" data-title="Observer">
+                <span class="icon">📊</span>
+                <span class="text">Observer</span>
+            </a>
+            <a href="comprendre.html" data-title="Comprendre">
+                <span class="icon">🧠</span>
+                <span class="text">Comprendre</span>
+            </a>
+            <a href="anticiper.html" data-title="Anticiper">
+                <span class="icon">🔮</span>
+                <span class="text">Anticiper</span>
+            </a>
+            <a href="methodologie.html" data-title="Méthodologie">
+                <span class="icon">⚙️</span>
+                <span class="text">Méthodologie</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main">
+
+        <!-- HERO -->
+        <section class="card card--full" style="text-align:center; padding:48px 32px;">
+            <h1 style="font-size:2.4em; margin-bottom:10px;">
+                Combien émet réellement l’aéroport de Paris‑Beauvais ?
+            </h1>
+
+            <!-- Compteur dynamique conservé -->
+            <div id="kpi_total_emissions_2026"
+                 style="font-size:2em; font-weight:700; margin-top:18px;">
+                Chargement…
+            </div>
+
+            <p class="hero-subtext" style="margin-top:10px; font-size:1.1em; color:#555;">
+                La grande majorité des émissions provient des vols commerciaux.
+            </p>
+
+            <div style="margin-top:28px; display:flex; justify-content:center; gap:16px; flex-wrap:wrap;">
+                <a href="observer.html" class="btn-cta" style="
+                    background:#1f3c88; color:white; padding:12px 22px;
+                    border-radius:8px; text-decoration:none; font-weight:600;">
+                    📊 Observer les données
+                </a>
+                <a href="comprendre.html" class="btn-cta" style="
+                    background:#e67e22; color:white; padding:12px 22px;
+                    border-radius:8px; text-decoration:none; font-weight:600;">
+                    🧠 Comprendre les mécanismes
+                </a>
+                <a href="anticiper.html" class="btn-cta" style="
+                    background:#c0392b; color:white; padding:12px 22px;
+                    border-radius:8px; text-decoration:none; font-weight:600;">
+                    🔮 Explorer le futur
+                </a>
+            </div>
+        </section>
+
+        <!-- KPI -->
+        <section class="card card--narrow">
+            <h2>Quelques repères essentiels</h2>
+
+            <div class="kpis-grid">
+
+                <!-- KPI 1 - Part aéronefs -->
+                <div class="metric-box">
+                    <div class="metric-title">Part des émissions des aéronefs</div>
+                    <div class="metric-value" id="kpi_part_aeronefs">…</div>
+                </div>
+
+                <!-- KPI 2 - Scope 1 & 2 -->
+                <div class="metric-box">
+                    <div class="metric-title">Émissions scopes 1 & 2</div>
+                    <div class="metric-value" id="kpi_scope12">…</div>
+                </div>
+
+                <!-- KPI 3 - Comparaison puits carbone -->
+                <div class="metric-box">
+                    <div class="metric-title">Comparaison au puits carbone</div>
+                    <div class="metric-value" id="kpi_puits_carbone">…</div>
+                </div>
+
+                <!-- KPI 4 - Évolution depuis 2016 -->
+                <div class="metric-box">
+                    <div class="metric-title">Évolution 2016 → 2024</div>
+                    <div class="metric-value" id="kpi_evolution_historique">…</div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- MINI GRAPHIQUE -->
+        <section class="card card--narrow">
+            <h2>Des émissions qui suivent l’activité aérienne</h2>
+
+            <img src="img/graph_emissions_vs_traffic.png"
+                 alt="Graphique trafic vs émissions"
+                 style="margin-top:10px; border-radius:8px; width:100%;">
+
+            <p style="margin-top:12px; font-size:1em;">
+                Malgré les progrès technologiques, la hausse du trafic entraîne une hausse globale des émissions.
+            </p>
+        </section>
+
+        <!-- POURQUOI CE SITE -->
+        <section class="card card--narrow">
+            <h2>Pourquoi mesurer ces émissions ?</h2>
+            <p>
+                Pour comprendre l’impact climatique réel de l’aéroport, mettre en perspective les projets de développement
+                et alimenter le débat public avec des données transparentes, vérifiables et actualisées en continu.
+            </p>
+        </section>
+
+        <!-- 3 PARCOURS -->
+        <section class="card card--narrow">
+            <h2>Explorer les émissions carbone de l’aéroport</h2>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px,1fr)); gap:18px; margin-top:18px;">
+
+                <a href="observer.html" class="path-card" style="
+                    display:block; padding:20px; background:#eef2f7;
+                    border-radius:10px; text-decoration:none; color:#222;">
+                    <h3>📊 OBSERVER</h3>
+                    <p>Suivre les émissions 2026, analyser les compagnies, destinations et vols.</p>
+                </a>
+
+                <a href="comprendre.html" class="path-card" style="
+                    display:block; padding:20px; background:#eef2f7;
+                    border-radius:10px; text-decoration:none; color:#222;">
+                    <h3>🧠 COMPRENDRE</h3>
+                    <p>Découvrir pourquoi les émissions évoluent et les limites des solutions technologiques.</p>
+                </a>
+
+                <a href="anticiper.html" class="path-card" style="
+                    display:block; padding:20px; background:#eef2f7;
+                    border-radius:10px; text-decoration:none; color:#222;">
+                    <h3>🔮 ANTICIPER</h3>
+                    <p>Explorer les trajectoires d’émissions jusqu’en 2050 et les budgets carbone.</p>
+                </a>
+
+            </div>
+        </section>
+
+        <footer>
+            Observatoire citoyen indépendant – Contact : <a href="mailto:emissionscarbonebva@gmail.com">emissionscarbonebva@gmail.com</a>
+        </footer>
+
+    </div>
+
+</body>
+</html>
