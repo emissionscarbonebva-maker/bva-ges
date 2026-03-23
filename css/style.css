@@ -293,7 +293,7 @@ max-width: none;
 .chart-host{
   position: relative;
   width: 100%;
-  height: 420px;   /* choisis ta hauteur (420px est un bon point de départ) */
+ /* height: 420px;  <-- supprimer */
 }
 
 .table-wrapper{ max-width:100%; overflow:auto; }
