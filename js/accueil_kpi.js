@@ -643,7 +643,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             },
 
-            plugins: [pluginAeroLabels, pluginMissingData]
+            plugins: [pluginAeroLabels]
         });
 
     });
