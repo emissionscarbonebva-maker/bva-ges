@@ -24,21 +24,17 @@
      🔧 PATCH CSS : rapproche KPI 1 & KPI 4 (CORRECTION DÉFINITIVE)
 ======================================================================= -->
 <style>
-/* Conteneur KPI1 : suppression du gap invisible */
-.metric-box.kpi1-chart {
-    display: flex;
-    flex-direction: column;
-    gap: 0 !important;
-}
-
-/* Espacement minimal entre KPI1 et KPI4 */
+/* === Correction définitive : supprimer le margin-bottom entre KPI 1 et KPI 4 === */
 .metric-box.kpi1-chart > .metric-body {
-    margin-top: 2px !important;
-    margin-bottom: 0 !important;
-    padding: 0 !important;
+    margin-bottom: 0 !important;  /* neutralise la règle globale */
 }
 
-/* Neutraliser tout padding interne des chart-host */
+/* On rapproche encore un peu les barres */
+.metric-box.kpi1-chart > .metric-body + .metric-body {
+    margin-top: 4px !important;
+}
+
+/* On assure qu’il n’y a AUCUN padding parasite dans la zone KPI 1 */
 .metric-box.kpi1-chart .chart-host {
     padding: 0 !important;
     margin: 0 !important;
