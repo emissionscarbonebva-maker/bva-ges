@@ -302,20 +302,31 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                 ]
             },
-            options: {
-                indexAxis: "y",
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display:false },
-                    tooltip: {
-                        callbacks: {
-                            label: () => `Capacité : 41 400 t CO₂`
-                        }
-                    }
-                },
-                scales: {
-                    x: { min: 0, max: 1, display: false },
-                    y: { display: false }
+            
+options: {
+    indexAxis: "y",
+    maintainAspectRatio: false,
+
+    layout: {
+        padding: {
+            top: 0,
+            bottom: 0
+        }
+    },
+
+    plugins: {
+        legend: { display:false },
+        tooltip: {
+            callbacks: {
+                label: () => `Capacité : 41 400 t CO₂`
+            }
+        }
+    },
+
+    scales: {
+        x: { min: 0, max: 1, display: false },
+        y: { display: false }
+
                 }
             }
         });
