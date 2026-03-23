@@ -20,39 +20,14 @@
 
 <link rel="icon" type="image/png" href="Favicon/favicon.png">
 
+<!-- =======================================================================
+     🔧 PATCH CSS DÉFINITIF (LA SEULE RÈGLE NÉCESSAIRE)
+======================================================================= -->
 <style>
-/* === Correction définitive KPI1/KPI4 === */
-
-/* 1) Neutralise le margin-bottom global défini dans style.css */
+/* Supprime le margin-top global (.metric-body { margin-top:8px }) 
+   UNIQUEMENT entre KPI 1 et KPI 4 */
 .metric-box.kpi1-chart > .metric-body {
-    margin-bottom: 0 !important;
-}
-
-/* 2) Rapproche KPI1 et KPI4 par un margin-top contrôlé */
-.metric-box.kpi1-chart > .metric-body + .metric-body {
-    margin-top: 4px !important;
-}
-
-/* 3) Empêche TOUT espace interne créé par Chart.js */
-.metric-box.kpi1-chart .chart-host {
-    padding: 0 !important;
-    margin: 0 !important;
-}
-
-/* 4) Neutralise le GAP hérité d’un parent FLEX dans style.css */
-.metric-box.kpi1-chart {
-    gap: 0 !important;
-}
-
-/* 5) Neutralise également tout gap appliqué par .metrics ou .kpis-grid */
-.kpis-grid .metric-box.kpi1-chart {
-    row-gap: 0 !important;
-}
-
-/* 6) Neutralise les padding top/bottom “cachés” du conteneur .metric-body */
-.metric-box.kpi1-chart > .metric-body {
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
+    margin-top: 0 !important;
 }
 </style>
 
@@ -128,7 +103,6 @@
                 <!-- KPI 1 + KPI 2 -->
                 <div class="metric-box kpi1-chart">
 
-                    <!-- TITRE + KPI TOTAL -->
                     <div class="metric-header">
                         <div class="metric-title" id="kpi1-title">
                             Émissions totales 2026 au …
@@ -136,14 +110,14 @@
                         <div class="metric-value" id="kpiTotal">…</div>
                     </div>
 
-                    <!-- KPI 1 : BARRE EMPILÉE -->
+                    <!-- KPI 1 -->
                     <div class="metric-body">
                         <div class="chart-host" style="height:140px;">
                             <canvas id="kpiBreakdown"></canvas>
                         </div>
                     </div>
 
-                    <!-- KPI 4 : BARRE VERTE -->
+                    <!-- KPI 4 -->
                     <div class="metric-body" style="margin-top:3px;">
                         <div class="chart-host" style="height:56px;">
                             <canvas id="kpiPuits"></canvas>
