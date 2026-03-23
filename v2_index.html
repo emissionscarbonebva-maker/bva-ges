@@ -25,9 +25,24 @@
 ======================================================================= -->
 
 <style>
-/* Suppression du margin-top entre les .metric-body de KPI 1 et KPI 4 */
+/* === Correction définitive KPI1 / KPI4 === */
+/* On impose la hauteur réelle souhaitée pour les deux barres,
+   en écrasant la règle globale .chart-host { height:420px } */
+
+/* KPI 1 */
+.kpi1-chart .chart-host:first-of-type {
+    height: 140px !important;
+}
+
+/* KPI 4 */
+.kpi1-chart .chart-host:nth-of-type(2) {
+    height: 56px !important;
+}
+
+/* Supprime l'espace artificiel dû à margin-top global */
 .kpi1-chart .metric-body {
     margin-top: 0 !important;
+    margin-bottom: 0 !important;
 }
 </style>
 
