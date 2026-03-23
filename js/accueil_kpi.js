@@ -527,6 +527,41 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         };
 
+/***********************************************************
+ * Plugin : valeurs au-dessus des barres Scopes 1 & 2
+ ***********************************************************/
+const pluginS12Labels = {
+    id: "pluginS12Labels",
+    afterDatasetsDraw(chart) {
+        const { ctx } = chart;
+
+        ctx.save();
+        ctx.font = "11px Arial";
+        ctx.fillStyle = "#444";
+        ctx.textAlign = "center";
+
+        // Trouve le dataset “Scopes 1 & 2”
+        const dsIndex = chart.data.datasets.findIndex(ds =>
+            ds.label.includes("scope 1 & 2")
+        );
+        if (dsIndex === -1) return;
+
+        const meta = chart.getDatasetMeta(dsIndex);
+
+        meta.data.forEach((bar, i) => {
+            const value = chart.data.datasets[dsIndex].data[i];
+
+            if (!value || value === 0) return;   // si NM → ignoré ici
+
+            const { x, y } = bar.getProps(["x","y"], true);
+
+            ctx.fillText(formatTonsFR(value), x, y - 4);
+        });
+
+        ctx.restore();
+    }
+};
+        
         /***********************************************************
  * 4. Plugin Chart.js : étiquette "NM" (sans pastille jaune)
  ***********************************************************/
@@ -619,7 +654,7 @@ const pluginMissingData = {
                 }
             },
 
-            plugins: [pluginAeroLabels, pluginMissingData]
+            plugins: [pluginAeroLabels, pluginS12Labels, pluginMissingData]
         });
 
     });
