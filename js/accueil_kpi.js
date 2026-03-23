@@ -528,62 +528,38 @@ document.addEventListener("DOMContentLoaded", () => {
         };
 
         /***********************************************************
-         * 4. Plugin Chart.js : pastilles "NM"
-         ***********************************************************/
-        const pluginMissingData = {
-            id: "pluginMissingData",
-            afterDatasetsDraw(chart) {
-                const { ctx, chartArea, scales: { x } } = chart;
+ * 4. Plugin Chart.js : étiquette "NM" (sans pastille jaune)
+ ***********************************************************/
+const pluginMissingData = {
+    id: "pluginMissingData",
+    afterDatasetsDraw(chart) {
+        const { ctx } = chart;
 
-                ctx.save();
-                ctx.font = "11px Arial";
+        ctx.save();
+        ctx.font = "11px Arial";
+        ctx.fillStyle = "#555";     // couleur discrète
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
 
-                chart.data.datasets.forEach((ds, dsi) => {
-                    const missing = ds.missingLabels || [];
-                    const meta = chart.getDatasetMeta(dsi);
-                    if (!meta || meta.hidden) return;
+        chart.data.datasets.forEach((ds, dsi) => {
+            const missing = ds.missingLabels || [];
+            const meta = chart.getDatasetMeta(dsi);
 
-                    meta.data.forEach((bar, i) => {
-                        if (!missing[i]) return; // pas de pastille
+            if (!meta || meta.hidden) return;
 
-                        const text = missing[i];
-                        const { x: bx } = bar.getProps(["x"], true);
-                        const y = chartArea.bottom - 22;
+            meta.data.forEach((bar, i) => {
+                if (!missing[i]) return;     // pas NM -> rien à afficher
 
-                        // Pastille arrondie jaune
-                        const paddingX = 6;
-                        const h = 18;
-                        const w = Math.max(28, ctx.measureText(text).width + paddingX * 2);
-                        const left = bx - w / 2;
-                        const top  = y;
+                const { x, y } = bar.getProps(["x","y"], true);
 
-                        ctx.fillStyle = "#F6C96E";
-                        const r = 9;
+                // Affiche simplement "NM" discret au-dessus
+                ctx.fillText("NM", x, y - 6);
+            });
+        });
 
-                        ctx.beginPath();
-                        ctx.moveTo(left + r, top);
-                        ctx.lineTo(left + w - r, top);
-                        ctx.quadraticCurveTo(left + w, top, left + w, top + r);
-                        ctx.lineTo(left + w, top + h - r);
-                        ctx.quadraticCurveTo(left + w, top + h, left + w - r, top + h);
-                        ctx.lineTo(left + r, top + h);
-                        ctx.quadraticCurveTo(left, top + h, left, top + h - r);
-                        ctx.lineTo(left, top + r);
-                        ctx.quadraticCurveTo(left, top, left + r, top);
-                        ctx.closePath();
-                        ctx.fill();
-
-                        ctx.fillStyle = "#1B1D22";
-                        ctx.textAlign = "center";
-                        ctx.textBaseline = "middle";
-                        ctx.fillText(text, bx, top + h / 2);
-                    });
-                });
-
-                ctx.restore();
-            }
-        };
-
+        ctx.restore();
+    }
+};
         /***********************************************************
          * 5. Création du graphique KPI 3
          ***********************************************************/
@@ -643,7 +619,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             },
 
-            plugins: [pluginAeroLabels]
+            plugins: [pluginAeroLabels, pluginMissingData]
         });
 
     });
