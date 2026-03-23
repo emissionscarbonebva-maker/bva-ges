@@ -19,18 +19,40 @@
 <meta name="description" content="Observatoire indépendant des émissions de gaz à effet de serre de l’aéroport Paris‑Beauvais (BVA).">
 
 <link rel="icon" type="image/png" href="Favicon/favicon.png">
+
+<!-- =======================================================================
+     🔧 PATCH CSS : rapproche KPI 1 & KPI 4 (CORRECTION DÉFINITIVE)
+======================================================================= -->
+<style>
+/* Conteneur KPI1 : suppression du gap invisible */
+.metric-box.kpi1-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 0 !important;
+}
+
+/* Espacement minimal entre KPI1 et KPI4 */
+.metric-box.kpi1-chart > .metric-body {
+    margin-top: 2px !important;
+    margin-bottom: 0 !important;
+    padding: 0 !important;
+}
+
+/* Neutraliser tout padding interne des chart-host */
+.metric-box.kpi1-chart .chart-host {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+</style>
+
 </head>
 
 <body>
 
-<!-- =======================================================================
-     BACKDROP MOBILE
-======================================================================= -->
+<!-- BACKDROP MOBILE -->
 <div class="backdrop" id="backdrop" aria-hidden="true"></div>
 
-<!-- =======================================================================
-     SIDEBAR
-======================================================================= -->
+<!-- SIDEBAR -->
 <div class="sidebar" id="sidebar">
 
     <div class="logo">
@@ -67,9 +89,7 @@
 
 </div>
 
-<!-- =======================================================================
-     MAIN CONTENT
-======================================================================= -->
+<!-- MAIN CONTENT -->
 <div class="main">
 
     <!-- HEADER MOBILE -->
@@ -85,9 +105,7 @@
         <h1>Observatoire citoyen indépendant des émissions de GES de l’aéroport Paris‑Beauvais</h1>
     </header>
 
-    <!-- ===================================================================
-         SECTION KPI
-    ==================================================================== -->
+    <!-- SECTION KPI -->
     <section>
 
         <h2>Indicateurs clés</h2>
@@ -96,12 +114,10 @@
 
             <div class="kpis-grid">
 
-                <!-- ===========================================================
-                     KPI 1 + KPI 2 (colonne gauche)
-                ============================================================ -->
+                <!-- KPI 1 + KPI 2 -->
                 <div class="metric-box kpi1-chart">
 
-                    <!-- TITRE ET KPI 2 -->
+                    <!-- TITRE + KPI TOTAL -->
                     <div class="metric-header">
                         <div class="metric-title" id="kpi1-title">
                             Émissions totales 2026 au …
@@ -109,40 +125,34 @@
                         <div class="metric-value" id="kpiTotal">…</div>
                     </div>
 
-                    <!-- ===== KPI 1 : BARRE EMPILÉE ===== -->
+                    <!-- KPI 1 : BARRE EMPILÉE -->
                     <div class="metric-body">
                         <div class="chart-host" style="height:140px;">
                             <canvas id="kpiBreakdown"></canvas>
                         </div>
                     </div>
 
-                    <!-- ===== KPI 4 : BARRE VERTE ===== -->
+                    <!-- KPI 4 : BARRE VERTE -->
                     <div class="metric-body" style="margin-top:3px;">
                         <div class="chart-host" style="height:56px;">
                             <canvas id="kpiPuits"></canvas>
                         </div>
                     </div>
 
-                    <!-- ===== LÉGENDE KPI 1 ===== -->
+                    <!-- Légendes -->
                     <div id="kpiBreakdownLegend" class="mini-legend" style="margin-top:6px;"></div>
-
-                    <!-- ===== LÉGENDE KPI 4 ===== -->
                     <div id="kpiPuitsLegend" class="mini-legend" style="margin-top:6px;"></div>
 
                 </div>
 
-                <!-- ===========================================================
-                     TEXTE EXPLICATIF
-                ============================================================ -->
+                <!-- TEXTE EXPLICATIF -->
                 <div class="kpi1-text">
                     <div class="metric-box kpi1-text">
                         <div id="kpiS12AeroExplain" class="kpi-explain"></div>
                     </div>
                 </div>
 
-                <!-- ===========================================================
-                     KPI 3 (colonne droite)
-                ============================================================ -->
+                <!-- KPI 3 -->
                 <div class="metric-box kpi2-chart">
                     <div class="metric-title">Évolution des émissions “Location based (scope 1 & 2)” et “Aéronefs”</div>
                     <div class="chart-host">
@@ -155,9 +165,7 @@
         </div>
     </section>
 
-    <!-- ===================================================================
-         SECTION CARTES NAVIGATION
-    ==================================================================== -->
+    <!-- SECTION CARTES -->
     <section>
         <div class="card card--normal" style="display:flex; gap:20px; flex-wrap:wrap;">
 
@@ -179,9 +187,7 @@
         </div>
     </section>
 
-    <!-- ===================================================================
-         FOOTER
-    ==================================================================== -->
+    <!-- FOOTER -->
     <footer>
         Observatoire citoyen indépendant – Contact :
         <a href="mailto:emissionscarbonebva@gmail.com">emissionscarbonebva@gmail.com</a> —
@@ -190,9 +196,7 @@
 
 </div>
 
-<!-- =======================================================================
-     JS PRINCIPAL POUR ACCUEIL
-======================================================================= -->
+<!-- JS ACCUEIL -->
 <script src="js/accueil_kpi.js"></script>
 
 </body>
