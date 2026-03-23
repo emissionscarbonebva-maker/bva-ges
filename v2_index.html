@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -20,35 +21,12 @@
 
 <link rel="icon" type="image/png" href="Favicon/favicon.png">
 
-<!-- =======================================================================
-     🔧 PATCH CSS DÉFINITIF (LA SEULE RÈGLE NÉCESSAIRE)
-======================================================================= -->
-
-<style>
-/* === Correction définitive KPI1 / KPI4 === */
-/* On impose la hauteur réelle souhaitée pour les deux barres,
-   en écrasant la règle globale .chart-host { height:420px } */
-
-/* KPI 1 */
-.kpi1-chart .chart-host:first-of-type {
-    height: 140px !important;
-}
-
-/* KPI 4 */
-.kpi1-chart .chart-host:nth-of-type(2) {
-    height: 56px !important;
-}
-
-/* Supprime l'espace artificiel dû à margin-top global */
-.kpi1-chart .metric-body {
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-}
-</style>
+<!-- AUCUN PATCH CSS ICI — tu as choisi Option A (la bonne) -->
 
 </head>
 
 <body>
+
 
 <!-- BACKDROP MOBILE -->
 <div class="backdrop" id="backdrop" aria-hidden="true"></div>
