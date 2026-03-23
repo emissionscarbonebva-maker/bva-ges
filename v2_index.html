@@ -20,24 +20,39 @@
 
 <link rel="icon" type="image/png" href="Favicon/favicon.png">
 
-<!-- =======================================================================
-     🔧 PATCH CSS : rapproche KPI 1 & KPI 4 (CORRECTION DÉFINITIVE)
-======================================================================= -->
 <style>
-/* === Correction définitive : supprimer le margin-bottom entre KPI 1 et KPI 4 === */
+/* === Correction définitive KPI1/KPI4 === */
+
+/* 1) Neutralise le margin-bottom global défini dans style.css */
 .metric-box.kpi1-chart > .metric-body {
-    margin-bottom: 0 !important;  /* neutralise la règle globale */
+    margin-bottom: 0 !important;
 }
 
-/* On rapproche encore un peu les barres */
+/* 2) Rapproche KPI1 et KPI4 par un margin-top contrôlé */
 .metric-box.kpi1-chart > .metric-body + .metric-body {
     margin-top: 4px !important;
 }
 
-/* On assure qu’il n’y a AUCUN padding parasite dans la zone KPI 1 */
+/* 3) Empêche TOUT espace interne créé par Chart.js */
 .metric-box.kpi1-chart .chart-host {
     padding: 0 !important;
     margin: 0 !important;
+}
+
+/* 4) Neutralise le GAP hérité d’un parent FLEX dans style.css */
+.metric-box.kpi1-chart {
+    gap: 0 !important;
+}
+
+/* 5) Neutralise également tout gap appliqué par .metrics ou .kpis-grid */
+.kpis-grid .metric-box.kpi1-chart {
+    row-gap: 0 !important;
+}
+
+/* 6) Neutralise les padding top/bottom “cachés” du conteneur .metric-body */
+.metric-box.kpi1-chart > .metric-body {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
 }
 </style>
 
