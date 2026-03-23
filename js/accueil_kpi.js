@@ -287,21 +287,27 @@ document.addEventListener("DOMContentLoaded", () => {
         const cvPuits = document.getElementById("kpiPuits");
         if (window._kpiPuitsChart) window._kpiPuitsChart.destroy();
 
-        window._kpiPuitsChart = new Chart(cvPuits.getContext("2d"), {
-            type: "bar",
-            data: {
-                labels: [""],
-                datasets: [
-                    {
-                        label: "Capacité annuelle du puits carbone (41 400 t CO₂)",
-                        data: [widthKPI4],
-                        backgroundColor: "rgba(76, 175, 80, 0.70)",
-                        borderColor: "rgb(76, 175, 80)",
-                        borderWidth: 1,
-                        barThickness: 28
-                    }
-                ]
-            },
+        
+window._kpiPuitsChart = new Chart(cvPuits.getContext("2d"), {
+    type: "bar",
+    data: {
+        labels: [""],
+        datasets: [
+            {
+                label: "Capacité annuelle du puits carbone (41 400 t CO₂)",
+                data: [widthKPI4],
+                backgroundColor: "rgba(76, 175, 80, 0.70)",
+                borderColor: "rgb(76, 175, 80)",
+                borderWidth: 1,
+                barThickness: 28,
+
+                // 🚀 Ecart entre les deux histogramme KPI 1 et KPI 4
+                categoryPercentage: 1.0,
+                barPercentage: 1.0
+            }
+        ]
+    },
+
             
 options: {
     indexAxis: "y",
