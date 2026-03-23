@@ -1,84 +1,70 @@
 /***************************************************************
- *  js/accueil_kpi.js
- *  -----------------------------------------------
- *  Fichier JS dédié EXCLUSIVEMENT à la page d’accueil
- *  du site emissionscarbonebva.fr
- *
- *  Rôle :
- *    - Charger les données nécessaires aux 4 KPI de l’accueil
- *    - Construire :
- *         KPI 1 : Barre empilée (Aéronefs / S1-2 / Autres)
- *         KPI 2 : Total cumul 2026 (gros chiffre)
- *         KPI 4 : Barre verte capacité puits carbone
- *         KPI 3 : Graphique historique (S1-2 vs Aéronefs)
- *    - Générer les textes explicatifs associés
- *
- *  IMPORTANT :
- *    - Code allégé : aucune logique des anciens graphiques
- *    - Compatible avec style.css existant
- *    - Chart.js v3.9.1
+ *  js/accueil_kpi.js – PARTIE 1/3
+ *  ------------------------------------------------------------
+ *  Cette partie contient :
+ *    ✔ Utilitaires généraux (couleurs, formats)
+ *    ✔ parseCSV() – charge les CSV (séparateur auto)
+ *    ✔ displayName() – noms lisibles pour les colonnes
+ *    ✔ Helpers numériques robustes
+ *    ✔ Lecture du fichier EXPORT_update_time.csv
+ *  ------------------------------------------------------------
+ *  ❗ Aucune logique KPI ici : uniquement le socle commun.
  ***************************************************************/
 
 
 /***************************************************************
- *                 SECTION 1 — UTILITAIRES GÉNÉRAUX
+ * 🔧 1. Conversion RGB → RGBA
+ *    Permet d’ajouter de la transparence aux couleurs existantes.
  ***************************************************************/
-
-/**
- * Convertit un "rgb(r,g,b)" en "rgba(r,g,b,a)".
- * Permet de réutiliser tes couleurs existantes et d’ajouter de la transparence.
- */
 function toRGBA(rgb, a = 1) {
-    if (typeof rgb !== 'string') return rgb;
-    if (!rgb.startsWith('rgb(')) return rgb;
-    return rgb.replace('rgb(', 'rgba(').replace(')', `, ${a})`);
+    if (typeof rgb !== "string") return rgb;
+    if (!rgb.startsWith("rgb(")) return rgb;
+    return rgb.replace("rgb(", "rgba(").replace(")", `, ${a})`);
 }
 
 
-/**
- * parseCSV(url, callback)
- * -----------------------
- * Charge un CSV (soit ; soit ,) puis renvoie :
- *   - rows : tableau d’objets
- *   - headers : tableau des noms de colonnes
- *
- * C’est la même fonction que tu utilises dans ta version complète,
- * mais isolée ici pour ne charger que les fichiers nécessaires à l’accueil.
- */
+/***************************************************************
+ * 🔧 2. parseCSV(url, callback)
+ *    Charge un CSV avec ; ou , et renvoie :
+ *      - rows : tableau d’objets
+ *      - headers : tableau de noms de colonnes
+ *    → Version simplifiée adaptée à la homepage
+ ***************************************************************/
 function parseCSV(url, callback) {
     fetch(url)
         .then(r => r.text())
-        .then(data => {
-            const rows = data.split('\n').filter(r => r.trim() !== '');
-            const sep = rows[0].indexOf(';') !== -1 ? ';' : ',';
-            const headers = rows[0].split(sep).map(h => h.trim());
-            const result = [];
+        .then(text => {
+            const lines = text.split("\n").filter(l => l.trim() !== "");
+            const sep = lines[0].includes(";") ? ";" : ",";
+            const headers = lines[0].split(sep).map(h => h.trim());
+            const rows = [];
 
-            for (let i = 1; i < rows.length; i++) {
-                const cols = rows[i].split(sep);
+            for (let i = 1; i < lines.length; i++) {
+                const cols = lines[i].split(sep);
                 const obj = {};
-                headers.forEach((h, index) => {
-                    obj[h] = cols[index] ? cols[index].trim() : "";
+                headers.forEach((h, idx) => {
+                    obj[h] = cols[idx] ? cols[idx].trim() : "";
                 });
-                result.push(obj);
+                rows.push(obj);
             }
-            callback(result, headers);
+
+            callback(rows, headers);
         });
 }
 
 
-/**
- * displayName(key)
- * ----------------
- * Convertit les noms de colonnes CSV → libellés lisibles.
- * Ici, version simplifiée uniquement pour les KPI.
- */
+/***************************************************************
+ * 🔧 3. displayName()
+ *    Convertit les noms de colonnes techniques → libellés lisibles
+ *    (Version réduite pour KPI de la homepage)
+ ***************************************************************/
 const DISPLAY_LABELS = {
     "scope_vols": "Aéronefs (Scope 3)",
-    "scope_1_2": "Total S1 & S2",
+    "scope_1_2": "Scopes 1 & 2",
     "scope_acces_ind": "Accès individuels",
     "scope_acces_coll": "Accès collectifs",
     "scope_employes": "Accès employés",
+
     "cumul_vol": "Aéronefs",
     "cumul_scope_1_2": "Scopes 1 & 2",
     "cumul_acces_ind": "Accès individuels",
@@ -89,73 +75,65 @@ const DISPLAY_LABELS = {
 
 function displayName(k) {
     if (!k) return k;
-    const clean = k.replace(/\uFEFF/g, '').trim();
+    const clean = k.replace(/\uFEFF/g, "").trim();
     return DISPLAY_LABELS[clean] || clean;
 }
 
 
 /***************************************************************
- *       SECTION 2 — HELPERS NUMÉRIQUES (sécurité / nettoyage)
+ * 🔧 4. Helpers numériques robustes
+ *    Transforme "12 345,6" → 12345.6
+ *    Transforme "12.345,6" → 12345.6
+ *    Transforme "12,345.6" → 12345.6
  ***************************************************************/
-
-/**
- * Convertit un nombre sous forme texte vers un float propre.
- * Tolère :
- *   - virgules
- *   - espaces
- *   - mix ponctuel
- * Inspiré de ton code existant.
- */
 function _toNumberSmart(x) {
-    if (x === null || x === undefined || x === '') return 0;
+    if (x === null || x === undefined || x === "") return 0;
     let s = String(x).trim();
 
-    // formats "12 345,67", "12.345,67", "12345.67", etc.
+    // Format EU : 12.345,67
     if (/^\d{1,3}(\.\d{3})+(,\d+)?$/.test(s)) {
-        // format européen : "12.345,67"
-        s = s.replace(/\./g, '').replace(',', '.');
+        s = s.replace(/\./g, "").replace(",", ".");
     }
+    // Format US : 12,345.67
     else if (/^\d{1,3}(,\d{3})+(\.\d+)?$/.test(s)) {
-        // format US : "12,345.67"
-        s = s.replace(/,/g, '');
+        s = s.replace(/,/g, "");
     }
     else {
-        // fallback simple
-        s = s.replace(/\s+/g, '');
-        if (s.includes(',') && !s.includes('.')) s = s.replace(',', '.');
-        s = s.replace(/,/g, '');
+        s = s.replace(/\s+/g, "");
+        if (s.includes(",") && !s.includes(".")) s = s.replace(",", ".");
+        s = s.replace(/,/g, "");
     }
 
     const n = parseFloat(s);
     return isNaN(n) ? 0 : n;
 }
 
-/**
- * Formatte un nombre arrondi en "xx xxx" français.
- */
+
+/***************************************************************
+ * 🔧 5. formatTonsFR
+ *    Transforme un nombre → "12 345"
+ ***************************************************************/
 function formatTonsFR(n) {
-    return Math.round(n).toLocaleString('fr-FR');
+    return Math.round(n).toLocaleString("fr-FR");
 }
 
 
 /***************************************************************
- *     SECTION 3 — COMPORTEMENT DYNAMIQUE DE LA PAGE
- *           (mise à jour date "dernière mise à jour")
+ * 🔧 6. Mise à jour automatique :
+ *       "Dernière mise à jour le XX mois XXXX à HH:MM"
+ *    Source : data/EXPORT_update_time.csv
  ***************************************************************/
 document.addEventListener("DOMContentLoaded", () => {
 
-    /**
-     * Lecture du fichier EXPORT_update_time.csv
-     * pour afficher "dernière mise à jour le XX mois XXXX à HH:MM"
-     */
     fetch("data/EXPORT_update_time.csv")
         .then(r => r.text())
-        .then(txt => {
-            const lines = txt.trim().split(/\r?\n/);
+        .then(text => {
+            const lines = text.trim().split(/\r?\n/);
             if (lines.length < 2) return;
 
-            const [date, time] = lines[1].split(",").map(v => v.trim());
-            const d = new Date(`${date}T${time}`);
+            const [dateStr, timeStr] = lines[1].split(",").map(v => v.trim());
+            const d = new Date(`${dateStr}T${timeStr}`);
+
             const el = document.getElementById("update-date");
             if (!el) return;
 
@@ -183,113 +161,89 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /***************************************************************
- *                 SECTION 4 — KPI 1 / KPI 2 / KPI 4
- *  Lecture : EXPORT_cumul_scopes.csv
- *  Objectifs :
- *    - Extraire les données cumulées 2026
- *    - Construire :
- *        KPI 2 : total cumul (gros chiffre)
- *        KPI 1 : barre empilée (3 composantes)
- *        KPI 4 : barre verte = capacité puits carbone
- *    - Générer les textes explicatifs
+ *  js/accueil_kpi.js – PARTIE 2/3
+ *  ------------------------------------------------------------
+ *  KPI 1 : Barre empilée (Aéronefs / S1‑2 / Autres)
+ *  KPI 2 : Gros total cumulé 2026
+ *  KPI 4 : Barre verte = capacité annuelle des puits carbone
+ *  ------------------------------------------------------------
+ *  Source CSV : ./data/EXPORT_cumul_scopes.csv
  ***************************************************************/
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    // Charger le CSV principal pour les KPI cumulés
     parseCSV("./data/EXPORT_cumul_scopes.csv", (rows, headers) => {
 
-        /**********************************************
-         * 1. Trouver les colonnes pertinentes
-         **********************************************/
-        const K_DATE  = headers[0];  // première colonne = date
-        const K_TOT   = headers.find(h => /cumul_total/i.test(h));
-        const K_VOL   = headers.find(h => /cumul_vols?/i.test(h));
-        const K_S12   = headers.find(h => /cumul_scope_1_2/i.test(h));
-        const K_ACI   = headers.find(h => /cumul_acces_ind/i.test(h));
-        const K_ACC   = headers.find(h => /cumul_acces_coll/i.test(h));
-        const K_EMP   = headers.find(h => /cumul_employes/i.test(h));
+        /***********************************************************
+         * 1. Identification des colonnes CSV
+         ***********************************************************/
+        const K_DATE = headers[0];
+        const K_TOT  = headers.find(h => /cumul_total/i.test(h));
+        const K_VOL  = headers.find(h => /cumul_vols?/i.test(h));
+        const K_S12  = headers.find(h => /cumul_scope_1_2/i.test(h));
+        const K_ACI  = headers.find(h => /cumul_acces_ind/i.test(h));
+        const K_ACC  = headers.find(h => /cumul_acces_coll/i.test(h));
+        const K_EMP  = headers.find(h => /cumul_employes/i.test(h));
 
         if (!K_TOT || !K_VOL || !K_S12 || !K_ACI || !K_ACC || !K_EMP) {
-            console.error("CSV cumul — colonnes manquantes");
+            console.error("❌ Colonnes manquantes dans EXPORT_cumul_scopes.csv");
             return;
         }
 
-        /**********************************************
-         * 2. Choisir la ligne la plus récente
-         **********************************************/
-        const latest = rows[0]; // ton CSV a déjà la ligne la plus récente en premier
+        /***********************************************************
+         * 2. Ligne la plus récente (ton CSV est déjà trié)
+         ***********************************************************/
+        const latest = rows[0];
 
-        // extraction numérique propre
-        const total   = _toNumberSmart(latest[K_TOT]);
-        const aero    = _toNumberSmart(latest[K_VOL]);
-        const s12     = _toNumberSmart(latest[K_S12]);
-        const accesInd= _toNumberSmart(latest[K_ACI]);
-        const accesCol= _toNumberSmart(latest[K_ACC]);
-        const emp     = _toNumberSmart(latest[K_EMP]);
+        const total    = _toNumberSmart(latest[K_TOT]);
+        const aero     = _toNumberSmart(latest[K_VOL]);
+        const s12      = _toNumberSmart(latest[K_S12]);
+        const accesInd = _toNumberSmart(latest[K_ACI]);
+        const accesCol = _toNumberSmart(latest[K_ACC]);
+        const emp      = _toNumberSmart(latest[K_EMP]);
 
-        const autres  = accesInd + accesCol + emp;
+        const autres = accesInd + accesCol + emp;
 
-        if (!isFinite(total) || total <= 0) {
-            console.error("Total cumul invalide");
-            return;
-        }
+        if (!isFinite(total) || total <= 0) return;
 
-        /**********************************************
-         * 3. Mettre à jour le titre KPI 1
-         **********************************************/
+        /***********************************************************
+         * 3. Mise à jour du titre KPI 1 (date dynamique)
+         ***********************************************************/
         const d = new Date(latest[K_DATE]);
-        const moisFR = d.toLocaleDateString("fr-FR", { day:"numeric", month:"long" });
+        const moisFR = d.toLocaleDateString("fr-FR", { day: "numeric", month: "long" });
         document.getElementById("kpi1-title").textContent =
             `Émissions totales 2026 au ${moisFR}`;
 
-        /**********************************************
-         * 4. Mettre à jour le gros KPI 2
-         **********************************************/
+        /***********************************************************
+         * 4. KPI 2 — Gros total cumulé
+         ***********************************************************/
         document.getElementById("kpiTotal").textContent =
             `${formatTonsFR(total)} t éq CO₂`;
 
-        /**********************************************
-         * 5. Construire le KPI 1 (barre empilée)
-         **********************************************/
-        const cv1 = document.getElementById("kpiBreakdown");
+        /***********************************************************
+         * 5. KPI 1 — Construction de la barre empilée Chart.js
+         ***********************************************************/
+        const cvBreak = document.getElementById("kpiBreakdown");
         if (window._kpiBreakdownChart) window._kpiBreakdownChart.destroy();
 
-        // couleurs identiques à celles de ton site
         const colors = {
             aero:   "rgb(31, 120, 180)",   // bleu
             s12:    "rgb(148, 103, 189)",  // violet
             autres: "rgb(255, 127, 14)"    // orange
         };
 
-        window._kpiBreakdownChart = new Chart(cv1.getContext("2d"), {
+        window._kpiBreakdownChart = new Chart(cvBreak.getContext("2d"), {
             type: "bar",
             data: {
                 labels: [""],
                 datasets: [
-                    {
-                        label: "Aéronefs",
-                        data: [aero],
-                        backgroundColor: toRGBA(colors.aero, 0.85),
-                        stack: "stack"
-                    },
-                    {
-                        label: "Scopes 1 & 2",
-                        data: [s12],
-                        backgroundColor: toRGBA(colors.s12, 0.85),
-                        stack: "stack"
-                    },
-                    {
-                        label: "Autres émissions",
-                        data: [autres],
-                        backgroundColor: toRGBA(colors.autres, 0.85),
-                        stack: "stack"
-                    }
+                    { label: "Aéronefs",           data: [aero],     backgroundColor: toRGBA(colors.aero, 0.85),   stack: "S" },
+                    { label: "Scopes 1 & 2",       data: [s12],      backgroundColor: toRGBA(colors.s12, 0.85),    stack: "S" },
+                    { label: "Autres émissions",   data: [autres],   backgroundColor: toRGBA(colors.autres, 0.85), stack: "S" }
                 ]
             },
             options: {
                 indexAxis: "y",
-                responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
                     legend: { display: false },
@@ -298,47 +252,20 @@ document.addEventListener("DOMContentLoaded", () => {
                             label: (ctx) => {
                                 const v = ctx.parsed.x;
                                 const pct = (v / total) * 100;
-                                return `${ctx.dataset.label} : ${formatTonsFR(v)} t  (${pct.toFixed(1)}%)`;
+                                return `${ctx.dataset.label} : ${formatTonsFR(v)} t (${pct.toFixed(1)}%)`;
                             }
                         }
                     }
                 },
                 scales: {
-                    x: { stacked:true, display:false, max: total },
-                    y: { stacked:true, display:false }
+                    x: { stacked: true, display: false, max: total },
+                    y: { stacked: true, display: false }
                 }
             }
         });
 
-        /**********************************************
-         * 6. Légende KPI 1
-         **********************************************/
-        const pctA = (aero / total * 100).toFixed(1);
-        const pctS = (s12  / total * 100).toFixed(1);
-        const pctO = (autres / total * 100).toFixed(1);
-
-        document.getElementById("kpiBreakdownLegend").innerHTML = `
-            <span style="color:${colors.aero}">■</span> Aéronefs ${pctA}% &nbsp;&nbsp;
-            <span style="color:${colors.s12}">■</span> Scopes 1 & 2 ${pctS}% &nbsp;&nbsp;
-            <span style="color:${colors.autres}">■</span> Autres ${pctO}%
-        `;
-
         /***********************************************************
-         * 7. KPI 4 — Barre verte (capacité puits carbone)
-         *
-         * Règles données PAR TOI :
-         *    capacite = 41 400 tCO₂
-         *
-         * CAS 1 : total == capacite
-         *         KPI1 = 100% ; KPI4 = 100%
-         *
-         * CAS 2 : total < capacite
-         *         KPI4 = 100% (barre verte pleine)
-         *         KPI1 = total / capacite
-         *
-         * CAS 3 : total > capacite
-         *         KPI1 = 100%
-         *         KPI4 = capacite / total
+         * 6. KPI 4 — Calcul dynamique selon tes règles EXACTES
          ***********************************************************/
         const capacite = 41400;
         let widthKPI1, widthKPI4;
@@ -347,16 +274,16 @@ document.addEventListener("DOMContentLoaded", () => {
             widthKPI1 = 1;
             widthKPI4 = 1;
         } else if (total < capacite) {
-            widthKPI4 = 1;
             widthKPI1 = total / capacite;
+            widthKPI4 = 1;
         } else {
             widthKPI1 = 1;
             widthKPI4 = capacite / total;
         }
 
-        /**********************************************
-         * 8. Construction du KPI 4 (barre horizontale seule)
-         **********************************************/
+        /***********************************************************
+         * 7. KPI 4 — Barre verte
+         ***********************************************************/
         const cvPuits = document.getElementById("kpiPuits");
         if (window._kpiPuitsChart) window._kpiPuitsChart.destroy();
 
@@ -368,7 +295,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     {
                         label: "Capacité annuelle du puits carbone (41 400 t CO₂)",
                         data: [widthKPI4],
-                        backgroundColor: "rgba(76, 175, 80, 0.70)", // vert
+                        backgroundColor: "rgba(76, 175, 80, 0.70)",
                         borderColor: "rgb(76, 175, 80)",
                         borderWidth: 1,
                         barThickness: 28
@@ -377,142 +304,188 @@ document.addEventListener("DOMContentLoaded", () => {
             },
             options: {
                 indexAxis: "y",
-                responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { display: false },
+                    legend: { display:false },
                     tooltip: {
                         callbacks: {
-                            label: () =>
-                                `Capacité du puits : 41 400 t CO₂ (${(widthKPI4*100).toFixed(0)}% de la longueur)`
+                            label: () => `Capacité : 41 400 t CO₂`
                         }
                     }
                 },
                 scales: {
-                    x: {
-                        min: 0,
-                        max: 1,
-                        display: false
-                    },
-                    y: { display:false }
+                    x: { min: 0, max: 1, display: false },
+                    y: { display: false }
                 }
             }
         });
 
-        /**********************************************
+        /***********************************************************
+         * 8. Légende KPI 1 (ordre exact demandé)
+         ***********************************************************/
+        const pctA = (aero / total * 100).toFixed(1);
+        const pctS = (s12  / total * 100).toFixed(1);
+        const pctO = (autres / total * 100).toFixed(1);
+
+        document.getElementById("kpiBreakdownLegend").innerHTML = `
+            <span style="color:${colors.aero}">■</span> Aéronefs ${pctA}% &nbsp;&nbsp;
+            <span style="color:${colors.s12}">■</span> Scopes 1 & 2 ${pctS}% &nbsp;&nbsp;
+            <span style="color:${colors.autres}">■</span> Autres ${pctO}%
+        `;
+
+        /***********************************************************
          * 9. Légende KPI 4
-         **********************************************/
+         ***********************************************************/
         document.getElementById("kpiPuitsLegend").innerHTML = `
-            <span style="color:rgb(76, 175, 80)">■</span>
-            Capacité annuelle du stockage naturel du Beauvaisis : <b>41 400 t éq CO₂</b>
+            <span style="color:rgb(76,175,80)">■</span>
+            Capacité annuelle de stockage des milieux naturels du Beauvaisis : <strong>41 400 t éq CO₂</strong>
         `;
 
-        /**********************************************
-         * 10. Texte explicatif (ACA 4 + ratios)
-         **********************************************/
-        const exp = document.getElementById("kpiS12AeroExplain");
+        /***********************************************************
+         * 10. Bloc "Ordre de grandeur" EXACTEMENT comme ton image
+         ***********************************************************/
+        const pctTerritoire = ((total / capacite) * 100).toFixed(1);
 
-        const partAero = (aero / total * 100).toFixed(1);
-        const ratioTerritoire = (total / capacite * 100).toFixed(1);
+        const now = new Date(latest[K_DATE]);
+        const startYear = new Date(now.getFullYear(), 0, 1);
+        const endYear   = new Date(now.getFullYear(), 11, 31);
+        const pctYear   = ((now - startYear) / (endYear - startYear) * 100).toFixed(1);
 
-        exp.innerHTML = `
-            <p><b>Ordre de grandeur :</b>  
-            Ces émissions représentent <b>${ratioTerritoire}%</b> de la capacité annuelle de stockage des milieux naturels du Beauvaisis  
-            estimée à <b>41 400 t éq CO₂ / an</b> par le PCAET.</p>
+        const ordreHTML = `
+            <div style="
+                margin-top:12px;
+                padding:14px 18px;
+                background:#eef5ff;
+                border-left:5px solid #1f3c88;
+                border-radius:10px;
+                font-size:0.95rem;
+                line-height:1.45;">
+                
+                <p style="margin:0 0 6px 0;">
+                    <span style="color:#1f3c88; font-weight:bold;">🟢 Ordre de grandeur :</span>
+                </p>
 
-            <p>L’accréditation ACA 4 mise en avant concerne uniquement les émissions de GES directes de l’aéroport (scopes 1 & 2),  
-            qui représentent une part limitée des émissions lorsque l’on intègre les transports passagers (aériens et routiers)  
-            dans le périmètre d’analyse.</p>
-
-            <p>Les émissions pour l’année 2025 seront ajoutées lorsque l’ensemble des sources nécessaires à leur estimation seront disponibles.</p>
+                <p style="margin:0;">
+                    Ces émissions représentent <strong>${pctTerritoire}%</strong>  
+                    de la capacité annuelle de stockage de carbone des milieux naturels  
+                    du Beauvaisis 🌲 estimée à <strong>41 400 t éq CO₂ / an</strong> par le PCAET.
+                    <br>
+                    Et elles ont été générées en seulement <strong>${pctYear}%</strong>  
+                    de l’année 2026 ⏱️.
+                </p>
+            </div>
         `;
+
+        // On place ce bloc EXACTEMENT sous les deux légendes
+        document.getElementById("kpiPuitsLegend")
+            .insertAdjacentHTML("afterend", ordreHTML);
+
+        /***********************************************************
+         * 11. Texte explicatif complet EXACTEMENT comme ta page
+         ***********************************************************/
+        const explainHTML = `
+            <p>
+                L’accréditation ACA 4 mise en avant concerne uniquement les émissions  
+                de GES directes de l’aéroport (“Location based” ou “scopes 1 & 2”)  
+                qui représentent une part limitée des émissions de l’aéroport  
+                dès lors que l’on intègre les transports passagers (aériens et routiers)  
+                dans le périmètre d’analyse.
+            </p>
+
+            <p>
+                Quand bien même ces émissions “Location based” ont été réduites de 20%  
+                entre 2017 et 2024, ceci n’a aucune incidence puisque dans le même temps  
+                les émissions des aéronefs ont <strong>augmenté de 72.5%</strong>.
+            </p>
+
+            <p>
+                Les émissions pour l’année 2025 seront ajoutées lorsque l’ensemble  
+                des sources nécessaires à leur estimation seront disponibles.
+            </p>
+        `;
+
+        document.getElementById("kpiS12AeroExplain").innerHTML = explainHTML;
+
     });
 
 });
 
 /***************************************************************
- *                 SECTION 5 — KPI 3 : Émissions historiques
- *  Lecture : EXPORT_yearly_total.csv
+ *  js/accueil_kpi.js – PARTIE 3/3
+ *  ------------------------------------------------------------
+ *  KPI 3 : Historique annuel des émissions
+ *          “Location based (scope 1 & 2)” vs “Aéronefs”
+ *
  *  Objectifs :
- *    - Afficher les émissions annuelles 2010 → 2024 (ou plus)
- *    - Dessiner un histogramme groupé :
- *         - Barres "Location based (scope 1 & 2)"
- *         - Barres "Aéronefs"
- *    - Gestion des valeurs manquantes (étiquettes "NM")
- *    - Ajout des valeurs au-dessus des barres (Aéronefs)
+ *    ✔ Reproduire le graphe de ta page actuelle
+ *    ✔ Barres groupées par année
+ *    ✔ Valeurs affichées au-dessus des barres Aéronefs
+ *    ✔ Pastilles “NM” sur données manquantes
+ *    ✔ Même couleurs, même logique, même style
+ *
+ *  Source CSV : ./data/EXPORT_yearly_total.csv
  ***************************************************************/
 
 document.addEventListener("DOMContentLoaded", () => {
 
     parseCSV("./data/EXPORT_yearly_total.csv", (rows, headers) => {
 
-        /**********************************************
-         * 1. Identifier les colonnes pertinentes
-         **********************************************/
+        /***********************************************************
+         * 1. Identifier les colonnes
+         ***********************************************************/
         const K_YEAR = headers.find(h => /année/i.test(h)) || headers[0];
         const K_S12  = headers.find(h => /scope_1_2/i.test(h));
         const K_AERO = headers.find(h => /aeronefs/i.test(h));
 
         if (!K_YEAR || !K_S12 || !K_AERO) {
-            console.error("CSV annuel — colonnes manquantes");
+            console.error("❌ Colonnes manquantes dans EXPORT_yearly_total.csv");
             return;
         }
 
-        /**********************************************
-         * 2. Préparer les données annuelles
-         **********************************************/
-        const data = rows.map(r => {
-            const year = Number(String(r[K_YEAR]).replace(/[^\d]/g, ""));
-            const s12  = _toNumberSmart(r[K_S12]);
-            const aero = _toNumberSmart(r[K_AERO]);
+        /***********************************************************
+         * 2. Formater les données pour Chart.js
+         ***********************************************************/
+        const data = rows
+            .map(r => ({
+                year: Number(String(r[K_YEAR]).replace(/[^\d]/g, "")),
+                s12 : _toNumberSmart(r[K_S12])  || null,
+                aero: _toNumberSmart(r[K_AERO]) || null
+            }))
+            .filter(r => r.year)
+            .sort((a,b) => a.year - b.year);
 
-            return {
-                year,
-                s12:  s12  > 0 ? s12  : null,
-                aero: aero > 0 ? aero : null
-            };
-        }).filter(r => r.year).sort((a,b) => a.year - b.year);
+        const years = data.map(r => r.year);
+        const valsS12  = data.map(r => r.s12  ?? 0);
+        const valsAero = data.map(r => r.aero ?? 0);
 
-        const years     = data.map(r => r.year);
-        const valsS12   = data.map(r => r.s12  ?? 0);
-        const valsAero  = data.map(r => r.aero ?? 0);
         const missingS12  = data.map(r => r.s12  === null ? "NM" : "");
         const missingAero = data.map(r => r.aero === null ? "NM" : "");
 
-        /**********************************************
-         * 3. Plugins Chart.js pour :
-         *     a) dessiner les valeurs sur barres Aéronefs
-         *     b) afficher pastilles "NM"
-         ***********************************************/
-
-        /** a) Valeurs au-dessus des barres Aéronefs */
+        /***********************************************************
+         * 3. Plugin Chart.js : valeurs au-dessus des barres Aéronefs
+         ***********************************************************/
         const pluginAeroLabels = {
             id: "pluginAeroLabels",
-            afterDatasetsDraw(chart, args, opts) {
-                const {
-                    ctx,
-                    chartArea: { top },
-                    scales: { x, y }
-                } = chart;
-
+            afterDatasetsDraw(chart) {
+                const { ctx } = chart;
                 ctx.save();
                 ctx.font = "11px Arial";
                 ctx.fillStyle = "#222";
                 ctx.textAlign = "center";
 
-                const dsIndex = chart.data.datasets.findIndex(ds => ds.label.includes("Aéronefs"));
-                if (dsIndex === -1) return;
+                const dsA = chart.data.datasets.findIndex(ds =>
+                    ds.label && ds.label.includes("Aéronefs")
+                );
+                if (dsA === -1) return;
 
-                const meta = chart.getDatasetMeta(dsIndex);
+                const meta = chart.getDatasetMeta(dsA);
                 meta.data.forEach((bar, i) => {
+                    if (missingAero[i]) return; // pas d’étiquette si NM
+
                     const val = valsAero[i];
                     if (val > 0) {
-                        const { x: bx, y: by } = bar.getProps(["x","y"], true);
-                        ctx.fillText(
-                            formatTonsFR(val),
-                            bx,
-                            by - 4
-                        );
+                        const { x, y } = bar.getProps(["x","y"], true);
+                        ctx.fillText(formatTonsFR(val), x, y - 4);
                     }
                 });
 
@@ -520,54 +493,56 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         };
 
-        /** b) Pastilles NM */
+        /***********************************************************
+         * 4. Plugin Chart.js : pastilles "NM"
+         ***********************************************************/
         const pluginMissingData = {
             id: "pluginMissingData",
             afterDatasetsDraw(chart) {
-                const {
-                    ctx,
-                    chartArea,
-                    scales: { x, y }
-                } = chart;
+                const { ctx, chartArea, scales: { x } } = chart;
 
                 ctx.save();
-                ctx.font = "10px Arial";
-                ctx.fillStyle = "#000";
+                ctx.font = "11px Arial";
 
                 chart.data.datasets.forEach((ds, dsi) => {
+                    const missing = ds.missingLabels || [];
                     const meta = chart.getDatasetMeta(dsi);
                     if (!meta || meta.hidden) return;
 
-                    const missing = ds.missingLabels || [];
                     meta.data.forEach((bar, i) => {
-                        if (!missing[i]) return;
-                        const { x: bx, y: by } = bar.getProps(["x","y"], true);
+                        if (!missing[i]) return; // pas de pastille
 
-                        // pastille rect arrondie
                         const text = missing[i];
-                        const w = ctx.measureText(text).width + 10;
-                        const h = 16;
-                        const px = bx - w/2;
-                        const py = chartArea.bottom - 22;
+                        const { x: bx } = bar.getProps(["x"], true);
+                        const y = chartArea.bottom - 22;
 
-                        ctx.fillStyle = "#F6C96E"; // jaune
+                        // Pastille arrondie jaune
+                        const paddingX = 6;
+                        const h = 18;
+                        const w = Math.max(28, ctx.measureText(text).width + paddingX * 2);
+                        const left = bx - w / 2;
+                        const top  = y;
+
+                        ctx.fillStyle = "#F6C96E";
+                        const r = 9;
+
                         ctx.beginPath();
-                        const r = 6;
-                        ctx.moveTo(px+r, py);
-                        ctx.lineTo(px+w-r, py);
-                        ctx.quadraticCurveTo(px+w, py, px+w, py+r);
-                        ctx.lineTo(px+w, py+h-r);
-                        ctx.quadraticCurveTo(px+w, py+h, px+w-r, py+h);
-                        ctx.lineTo(px+r, py+h);
-                        ctx.quadraticCurveTo(px, py+h, px, py+h-r);
-                        ctx.lineTo(px, py+r);
-                        ctx.quadraticCurveTo(px, py, px+r, py);
+                        ctx.moveTo(left + r, top);
+                        ctx.lineTo(left + w - r, top);
+                        ctx.quadraticCurveTo(left + w, top, left + w, top + r);
+                        ctx.lineTo(left + w, top + h - r);
+                        ctx.quadraticCurveTo(left + w, top + h, left + w - r, top + h);
+                        ctx.lineTo(left + r, top + h);
+                        ctx.quadraticCurveTo(left, top + h, left, top + h - r);
+                        ctx.lineTo(left, top + r);
+                        ctx.quadraticCurveTo(left, top, left + r, top);
                         ctx.closePath();
                         ctx.fill();
 
                         ctx.fillStyle = "#1B1D22";
+                        ctx.textAlign = "center";
                         ctx.textBaseline = "middle";
-                        ctx.fillText(text, bx, py + h/2);
+                        ctx.fillText(text, bx, top + h / 2);
                     });
                 });
 
@@ -575,13 +550,13 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         };
 
-        /**********************************************
-         * 4. Construction du graphique KPI 3
-         **********************************************/
-        const cv3 = document.getElementById("kpiScope12");
+        /***********************************************************
+         * 5. Création du graphique KPI 3
+         ***********************************************************/
+        const cv = document.getElementById("kpiScope12");
         if (window._chartKPI3) window._chartKPI3.destroy();
 
-        window._chartKPI3 = new Chart(cv3.getContext("2d"), {
+        window._chartKPI3 = new Chart(cv.getContext("2d"), {
             type: "bar",
             data: {
                 labels: years,
@@ -613,8 +588,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     tooltip: {
                         callbacks: {
                             label: (ctx) => {
-                                const v = ctx.raw ?? 0;
-                                return `${ctx.dataset.label} : ${formatTonsFR(v)} t éq CO₂`;
+                                const val = ctx.raw ?? 0;
+                                return `${ctx.dataset.label} : ${formatTonsFR(val)} t éq CO₂`;
                             }
                         }
                     }
@@ -637,6 +612,6 @@ document.addEventListener("DOMContentLoaded", () => {
             plugins: [pluginAeroLabels, pluginMissingData]
         });
 
-    }); // end parseCSV EXPORT_yearly_total
+    });
 
-}); // end DOMContentLoaded
+});
