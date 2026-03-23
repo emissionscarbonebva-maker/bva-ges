@@ -499,19 +499,9 @@ document.getElementById("kpiS12AeroExplain").innerHTML = explainHTML;
  *  ------------------------------------------------------------
  *  KPI 3 : Historique annuel des émissions
  *          “Location based (scope 1 & 2)” vs “Aéronefs”
- *
- *  Objectifs :
- *    ✔ Reproduire le graphe de ta page actuelle
- *    ✔ Barres groupées par année
- *    ✔ Valeurs affichées au-dessus des barres Aéronefs
- *    ✔ Pastilles “NM” sur données manquantes
- *    ✔ Même couleurs, même logique, même style
- *
- *  Source CSV : ./data/EXPORT_yearly_total.csv
  ***************************************************************/
 
 document.addEventListener("DOMContentLoaded", () => {
-
     parseCSV("./data/EXPORT_yearly_total.csv", (rows, headers) => {
 
         /***********************************************************
@@ -527,7 +517,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         /***********************************************************
-         * 2. Formater les données pour Chart.js
+         * 2. Formater les données
          ***********************************************************/
         const data = rows
             .map(r => ({
@@ -546,7 +536,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const missingAero = data.map(r => r.aero === null ? "NM" : "");
 
         /***********************************************************
-         * 3. Plugin Chart.js : valeurs au-dessus des barres Aéronefs
+         * Plugins : valeurs + NM
          ***********************************************************/
         const pluginAeroLabels = {
             id: "pluginAeroLabels",
@@ -554,97 +544,177 @@ document.addEventListener("DOMContentLoaded", () => {
                 const { ctx } = chart;
                 ctx.save();
                 ctx.font = "11px Arial";
-                ctx.fillStyle = "#222";
                 ctx.textAlign = "center";
+                ctx.fillStyle = "#222";
 
-                const dsA = chart.data.datasets.findIndex(ds =>
-                    ds.label && ds.label.includes("Aéronefs")
+                const dsIndex = chart.data.datasets.findIndex(ds =>
+                    ds.label.includes("Aéronefs")
                 );
-                if (dsA === -1) return;
+                if (dsIndex === -1) return;
 
-                const meta = chart.getDatasetMeta(dsA);
+                const meta = chart.getDatasetMeta(dsIndex);
                 meta.data.forEach((bar, i) => {
-                    if (missingAero[i]) return; // pas d’étiquette si NM
-
+                    if (missingAero[i]) return;
                     const val = valsAero[i];
-                    if (val > 0) {
-                        const { x, y } = bar.getProps(["x","y"], true);
-                        ctx.fillText(formatTonsFR(val), x, y - 4);
-                    }
+                    if (!val) return;
+                    const { x, y } = bar.getProps(["x","y"], true);
+                    ctx.fillText(formatTonsFR(val), x, y - 4);
                 });
 
                 ctx.restore();
             }
         };
 
-/***********************************************************
- * Plugin : valeurs au-dessus des barres Scopes 1 & 2
- ***********************************************************/
-const pluginS12Labels = {
-    id: "pluginS12Labels",
-    afterDatasetsDraw(chart) {
-        const { ctx } = chart;
+        const pluginS12Labels = {
+            id: "pluginS12Labels",
+            afterDatasetsDraw(chart) {
+                const { ctx } = chart;
+                ctx.save();
+                ctx.font = "11px Arial";
+                ctx.textAlign = "center";
+                ctx.fillStyle = "#444";
 
-        ctx.save();
-        ctx.font = "11px Arial";
-        ctx.fillStyle = "#444";
-        ctx.textAlign = "center";
+                const dsIndex = chart.data.datasets.findIndex(ds =>
+                    ds.label.includes("scope 1 & 2")
+                );
+                if (dsIndex === -1) return;
 
-        // Trouve le dataset “Scopes 1 & 2”
-        const dsIndex = chart.data.datasets.findIndex(ds =>
-            ds.label.includes("scope 1 & 2")
-        );
-        if (dsIndex === -1) return;
+                const meta = chart.getDatasetMeta(dsIndex);
+                meta.data.forEach((bar, i) => {
+                    const val = valsS12[i];
+                    if (!val) return;
+                    const { x, y } = bar.getProps(["x","y"], true);
+                    ctx.fillText(formatTonsFR(val), x, y - 4);
+                });
 
-        const meta = chart.getDatasetMeta(dsIndex);
+                ctx.restore();
+            }
+        };
 
-        meta.data.forEach((bar, i) => {
-            const value = chart.data.datasets[dsIndex].data[i];
+        const pluginMissingData = {
+            id: "pluginMissingData",
+            afterDatasetsDraw(chart) {
+                const { ctx } = chart;
+                ctx.save();
+                ctx.font = "11px Arial";
+                ctx.textAlign = "center";
+                ctx.fillStyle = "#666";
 
-            if (!value || value === 0) return;   // si NM → ignoré ici
+                chart.data.datasets.forEach((ds, dsi) => {
+                    const missing = ds.missingLabels || [];
+                    const meta = chart.getDatasetMeta(dsi);
+                    if (!meta) return;
 
-            const { x, y } = bar.getProps(["x","y"], true);
+                    meta.data.forEach((bar, i) => {
+                        if (!missing[i]) return;
+                        const { x, y } = bar.getProps(["x","y"], true);
+                        ctx.fillText("NM", x, y - 6);
+                    });
+                });
 
-            ctx.fillText(formatTonsFR(value), x, y - 4);
-        });
+                ctx.restore();
+            }
+        };
 
-        ctx.restore();
-    }
-};
-        
         /***********************************************************
- * 4. Plugin Chart.js : étiquette "NM" (sans pastille jaune)
- ***********************************************************/
-const pluginMissingData = {
-    id: "pluginMissingData",
-    afterDatasetsDraw(chart) {
-        const { ctx } = chart;
+         * 3. Dessiner le graphique KPI 3
+         ***********************************************************/
+        const cv = document.getElementById("kpiScope12");
+        if (window._chartKPI3) window._chartKPI3.destroy();
 
-        ctx.save();
-        ctx.font = "11px Arial";
-        ctx.fillStyle = "#555";     // couleur discrète
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-
-        chart.data.datasets.forEach((ds, dsi) => {
-            const missing = ds.missingLabels || [];
-            const meta = chart.getDatasetMeta(dsi);
-
-            if (!meta || meta.hidden) return;
-
-            meta.data.forEach((bar, i) => {
-                if (!missing[i]) return;     // pas NM -> rien à afficher
-
-                const { x, y } = bar.getProps(["x","y"], true);
-
-                // Affiche simplement "NM" discret au-dessus
-                ctx.fillText("NM", x, y - 6);
-            });
+        window._chartKPI3 = new Chart(cv.getContext("2d"), {
+            type: "bar",
+            data: {
+                labels: years,
+                datasets: [
+                    {
+                        label: "Location based (scope 1 & 2) (t éq CO₂)",
+                        data: valsS12,
+                        backgroundColor: toRGBA("#9467bd", 0.70),
+                        borderColor: "#9467bd",
+                        borderWidth: 1,
+                        missingLabels: missingS12
+                    },
+                    {
+                        label: "Aéronefs (t éq CO₂)",
+                        data: valsAero,
+                        backgroundColor: toRGBA("#1f78b4", 0.70),
+                        borderColor: "#1f78b4",
+                        borderWidth: 1,
+                        missingLabels: missingAero
+                    }
+                ]
+            },
+            plugins: [pluginAeroLabels, pluginS12Labels, pluginMissingData],
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: "top" }
+                },
+                scales: {
+                    x: { ticks: { autoSkip: false, maxRotation: 0 } },
+                    y: { beginAtZero: true }
+                }
+            }
         });
 
-        ctx.restore();
-    }
-};
+        /***********************************************************
+         * 4. Texte explicatif dynamique (ton ancien code)
+         ***********************************************************/
+        const mapClean = new Map();
+        data.forEach(r => mapClean.set(r.year, r));
+
+        const y2017 = mapClean.get(2017);
+        const y2024 = mapClean.get(2024);
+
+        const total2017 = y2017 ? (y2017.s12 + y2017.aero) : null;
+        const total2024 = y2024 ? (y2024.s12 + y2024.aero) : null;
+
+        let YY = null, ZZ = null;
+
+        if (total2017 && total2017 > 0 && total2024 !== null)
+            YY = ((total2024 / total2017) - 1) * 100;
+
+        if (y2017 && y2017.s12 > 0 && y2024)
+            ZZ = ((y2024.s12 / y2017.s12) - 1) * 100;
+
+        const XX = window._kpi1_shareS12 ?? null;
+        const textePart = (XX !== null)
+            ? `représentent seulement <strong>${XX.toFixed(1)}%</strong> des émissions de l'aéroport`
+            : `représentent une part limitée des émissions de l'aéroport`;
+
+        let texteZZ;
+        if (ZZ === null) texteZZ = `la variation des scopes 1 & 2 est « n.d. » faute de données complètes`;
+        else if (ZZ < 0) texteZZ = `ces émissions "Location based" ont été réduites de ${Math.abs(ZZ).toFixed(1)}% entre 2017 et 2024`;
+        else if (ZZ > 0) texteZZ = `l’augmentation de ${Math.abs(ZZ).toFixed(1)}% sur les scopes 1 & 2 n'a aucune influence`;
+        else texteZZ = `la stabilité des scopes 1 & 2 n'a aucune influence`;
+
+        const texteYY = (YY === null)
+            ? `les émissions totales (S1&2 + aéronefs) entre 2017 et 2024 sont « n.d. » faute de données complètes`
+            : `les émissions des aéronefs ont <strong>${YY >= 0 ? 'augmenté' : 'diminué'} de ${Math.abs(YY).toFixed(1)}%</strong>`;
+
+        const explainHTML = `
+            <p>
+            L'accréditation ACA 4 mise en avant concerne uniquement les émissions de GES directes  
+            de l'aéroport ("Location based" ou "scopes 1 & 2") qui ${textePart}  
+            dès lors que l’on intègre les transports passagers (aériens et routiers) dans le périmètre d’analyse.
+            </p>
+
+            <p>
+            Quand bien même ${texteZZ}, ceci n'a aucune incidence puisque dans le même temps ${texteYY}.
+            </p>
+
+            <p>
+            Les émissions pour l'année 2025 seront ajoutées lorsque l'ensemble des sources nécessaires  
+            à leur estimation seront disponibles.
+            </p>
+        `;
+
+        document.getElementById("kpiS12AeroExplain").innerHTML = explainHTML;
+
+    });
+});
         /***********************************************************
          * 5. Création du graphique KPI 3
          ***********************************************************/
