@@ -599,4 +599,10 @@ header{ padding: clamp(14px, 3.5vw, 25px); }
   .sidebar.collapsed .toggle-btn i{ transform: rotate(180deg); }
 }
 
+/* === Correction finale : rapprocher KPI 1 et KPI 4 === */
+
+/* Supprime le margin-top global appliqué aux canvas Chart.js */
+.kpi1-chart canvas {
+    margin-top: 0 !important;
+}
 
