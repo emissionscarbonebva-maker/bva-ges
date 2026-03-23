@@ -243,25 +243,42 @@ document.addEventListener("DOMContentLoaded", () => {
                 ]
             },
             options: {
-                indexAxis: "y",
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            label: (ctx) => {
-                                const v = ctx.parsed.x;
-                                const pct = (v / total) * 100;
-                                return `${ctx.dataset.label} : ${formatTonsFR(v)} t (${pct.toFixed(1)}%)`;
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    x: { stacked: true, display: false, max: total },
-                    y: { stacked: true, display: false }
+    indexAxis: "y",
+    maintainAspectRatio: false,
+
+    // 🚀 SUPPRESSION DU PADDING INTERNE AUTOMATIQUE
+    layout: {
+        padding: {
+            top: 0,
+            bottom: 0
+        }
+    },
+
+    plugins: {
+        legend: { display: false },
+        tooltip: {
+            callbacks: {
+                label: (ctx) => {
+                    const v = ctx.parsed.x;
+                    const pct = (v / total) * 100;
+                    return `${ctx.dataset.label} : ${formatTonsFR(v)} t (${pct.toFixed(1)}%)`;
                 }
             }
+        }
+    },
+
+    scales: {
+        x: { stacked: true, display: false, max: total },
+
+        // 🚀 ON FORCE LA BARRE À PRENDRE TOUTE LA HAUTEUR DISPONIBLE
+        y: {
+            stacked: true,
+            display: false,
+            categoryPercentage: 1.0,
+            barPercentage: 1.0
+        }
+    }
+}
         });
 
         /***********************************************************
