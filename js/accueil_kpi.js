@@ -355,20 +355,20 @@ document.addEventListener("DOMContentLoaded", () => {
             <div style="
                 margin-top:12px;
                 padding:14px 18px;
-                background:#eef5ff;
-                border-left:5px solid #1f3c88;
+                background:#e6ffe6;
+                border-left:5px solid #2e7d32;
                 border-radius:10px;
                 font-size:0.95rem;
                 line-height:1.45;">
                 
                 <p style="margin:0 0 6px 0;">
-                    <span style="color:#1f3c88; font-weight:bold;">🟢 Ordre de grandeur :</span>
+                    <span style="color:#1f3c88; font-weight:bold;"> 🌍📊 <stong>Ordre de grandeur</strong> :</span>
                 </p>
 
                 <p style="margin:0;">
                     Ces émissions représentent <strong>${pctTerritoire}%</strong>  
                     de la capacité annuelle de stockage de carbone des milieux naturels  
-                    du Beauvaisis 🌲 estimée à <strong>41 400 t éq CO₂ / an</strong> par le PCAET.
+                    du Beauvaisis 🌱🌳 estimée à <strong>41 400 t éq CO₂ / an</strong> par le PCAET.
                     <br>
                     Et elles ont été générées en seulement <strong>${pctYear}%</strong>  
                     de l’année 2026 ⏱️.
