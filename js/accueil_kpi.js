@@ -389,7 +389,7 @@ options: {
             <div style="
                 margin-top:12px;
                 padding:14px 18px;
-                background:#2e7d32;
+                background:#cdf3d6;
                 border-left:5px solid #2e7d32;
                 border-radius:10px;
                 font-size:0.95rem;
