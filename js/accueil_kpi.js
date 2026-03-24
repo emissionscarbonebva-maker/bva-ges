@@ -423,6 +423,7 @@ options: {
  ***************************************************************/
 
 document.addEventListener("DOMContentLoaded", () => {
+
     parseCSV("./data/EXPORT_yearly_total.csv", (rows, headers) => {
 
         /***********************************************************
@@ -457,8 +458,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const missingAero = data.map(r => r.aero === null ? "NM" : "");
 
         /***********************************************************
-         * Plugins : valeurs + NM
+         * 3. Plugins Chart.js
          ***********************************************************/
+
+        // Valeurs au-dessus des barres aéronefs
         const pluginAeroLabels = {
             id: "pluginAeroLabels",
             afterDatasetsDraw(chart) {
@@ -471,6 +474,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const dsIndex = chart.data.datasets.findIndex(ds =>
                     ds.label.includes("Aéronefs")
                 );
+
                 if (dsIndex === -1) return;
 
                 const meta = chart.getDatasetMeta(dsIndex);
@@ -486,6 +490,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         };
 
+        // Valeurs au-dessus des barres Scopes 1 & 2
         const pluginS12Labels = {
             id: "pluginS12Labels",
             afterDatasetsDraw(chart) {
@@ -498,6 +503,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const dsIndex = chart.data.datasets.findIndex(ds =>
                     ds.label.includes("scope 1 & 2")
                 );
+
                 if (dsIndex === -1) return;
 
                 const meta = chart.getDatasetMeta(dsIndex);
@@ -512,6 +518,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         };
 
+        // NM pour données manquantes
         const pluginMissingData = {
             id: "pluginMissingData",
             afterDatasetsDraw(chart) {
@@ -524,6 +531,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 chart.data.datasets.forEach((ds, dsi) => {
                     const missing = ds.missingLabels || [];
                     const meta = chart.getDatasetMeta(dsi);
+
                     if (!meta) return;
 
                     meta.data.forEach((bar, i) => {
@@ -538,7 +546,7 @@ document.addEventListener("DOMContentLoaded", () => {
         };
 
         /***********************************************************
-         * 3. Dessiner le graphique KPI 3
+         * 4. Dessiner KPI 3
          ***********************************************************/
         const cv = document.getElementById("kpiScope12");
         if (window._chartKPI3) window._chartKPI3.destroy();
@@ -581,7 +589,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         /***********************************************************
-         * 4. Texte explicatif dynamique (ton ancien code)
+         * 5. Texte explicatif dynamique
          ***********************************************************/
         const mapClean = new Map();
         data.forEach(r => mapClean.set(r.year, r));
@@ -601,6 +609,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ZZ = ((y2024.s12 / y2017.s12) - 1) * 100;
 
         const XX = window._kpi1_shareS12 ?? null;
+
         const textePart = (XX !== null)
             ? `représentent seulement <strong>${XX.toFixed(1)}%</strong> des émissions de l'aéroport`
             : `représentent une part limitée des émissions de l'aéroport`;
@@ -617,8 +626,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const explainHTML = `
             <p>
-            L'accréditation ACA 4 mise en avant concerne uniquement les émissions de GES directes  
-            de l'aéroport ("Location based" ou "scopes 1 & 2") qui ${textePart}  
+            L'accréditation ACA 4 mise en avant concerne uniquement les émissions de GES directes 
+            de l'aéroport ("Location based" ou "scopes 1 & 2") qui ${textePart} 
             dès lors que l’on intègre les transports passagers (aériens et routiers) dans le périmètre d’analyse.
             </p>
 
@@ -627,7 +636,7 @@ document.addEventListener("DOMContentLoaded", () => {
             </p>
 
             <p>
-            Les émissions pour l'année 2025 seront ajoutées lorsque l'ensemble des sources nécessaires  
+            Les émissions pour l'année 2025 seront ajoutées lorsque l'ensemble des sources nécessaires 
             à leur estimation seront disponibles.
             </p>
         `;
@@ -635,5 +644,5 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("kpiS12AeroExplain").innerHTML = explainHTML;
 
     });
+
 });
-        
