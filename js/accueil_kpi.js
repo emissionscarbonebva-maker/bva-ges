@@ -413,7 +413,8 @@ options: {
         // On place ce bloc EXACTEMENT sous les deux légendes
         document.getElementById("kpiPuitsLegend")
             .insertAdjacentHTML("afterend", ordreHTML);
-
+        });
+    });
 
 /***************************************************************
  *  js/accueil_kpi.js – PARTIE 3/3
