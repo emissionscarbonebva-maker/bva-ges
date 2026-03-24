@@ -237,9 +237,9 @@ document.addEventListener("DOMContentLoaded", () => {
             data: {
                 labels: [""],
                 datasets: [
-                    { label: "Aéronefs",           data: [aero],     backgroundColor: toRGBA(colors.aero, 0.85),   stack: "S" },
-                    { label: "Scopes 1 & 2",       data: [s12],      backgroundColor: toRGBA(colors.s12, 0.85),    stack: "S" },
-                    { label: "Autres émissions",   data: [autres],   backgroundColor: toRGBA(colors.autres, 0.85), stack: "S" }
+                    { label: "Aéronefs :",           data: [aero],     backgroundColor: toRGBA(colors.aero, 0.85),   stack: "S" },
+                    { label: "Scopes 1 & 2 :",       data: [s12],      backgroundColor: toRGBA(colors.s12, 0.85),    stack: "S" },
+                    { label: "Autres émissions :",   data: [autres],   backgroundColor: toRGBA(colors.autres, 0.85), stack: "S" }
                 ]
             },
             options: {
@@ -639,8 +639,7 @@ document.addEventListener("DOMContentLoaded", () => {
             </p>
 
             <p>
-            Les émissions pour l'année 2025 seront ajoutées lorsque l'ensemble des sources nécessaires 
-            à leur estimation seront disponibles.
+            <strong>➡️ Les émissions liées aux vols représentent l’essentiel de l’impact climatique de l’aéroport.</strong>
             </p>
         `;
 
