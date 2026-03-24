@@ -1,3 +1,12 @@
+document.addEventListener("DOMContentLoaded", () => {
+
+  const sidebar   = document.getElementById("sidebar");
+  const toggle    = document.getElementById("toggleSidebar");
+  const hamburger = document.getElementById("hamburger");
+  const backdrop  = document.getElementById("backdrop");
+
+  if (!sidebar) return;
+
 /* ===== STATE alignée sur Méthodologie ===== */
 const sidebar   = document.getElementById("sidebar");
 const toggle    = document.getElementById("toggleSidebar");
