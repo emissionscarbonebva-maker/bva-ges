@@ -393,7 +393,9 @@ options: {
                 border-left:5px solid #2e7d32;
                 border-radius:10px;
                 font-size:0.95rem;
-                line-height:1.45;">
+                line-height:1.45;
+                color:#333333;
+                ">
                 
                 <p style="margin:0 0 6px 0;">
                     <span style="color:#1f3c88; font-weight:bold;"> 🌍📊 <strong>Ordre de grandeur</strong> :</span>
