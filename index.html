@@ -737,7 +737,11 @@ const dateKey = headers[0]; // la 1ère colonne est la date dans ce CSV
     const K_EMP = findHeader(/cumul_employes/i);
 
     // On force l'utilisation de la 2e ligne du CSV (index 1)
-    const rowIndex = 1;
+    const sorted = rowsCumul
+    .filter(r => r[dateKey])
+    .sort((a, b) => new Date(b[dateKey]) - new Date(a[dateKey]));
+
+    const r = sorted[0];
 
     // Garde-fous
     if (!rowsCumul || rowsCumul.length <= rowIndex || !K_TOT || !K_VOL || !K_S12 || !K_ACI || !K_ACC || !K_EMP) {
