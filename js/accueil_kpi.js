@@ -615,7 +615,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const textePart = (XX !== null)
             ? `représentent seulement <strong>${XX.toFixed(1)}%</strong> des émissions de l'aéroport`
-            : `représentent une part limitée des émissions de l'aéroport`;
+            : `représentent seulement <strong>0,1%</strong> des émissions de l'aéroport`;
 
         let texteZZ;
         if (ZZ === null) texteZZ = `la variation des scopes 1 & 2 est « n.d. » faute de données complètes`;
