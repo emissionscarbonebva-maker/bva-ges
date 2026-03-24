@@ -611,7 +611,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (y2017 && y2017.s12 > 0 && y2024)
             ZZ = ((y2024.s12 / y2017.s12) - 1) * 100;
 
-        const XX = window._kpi1_shareS12 ?? null;
+        const XX = (typeof window._kpi1_shareS12 === 'number') ? window._kpi1_shareS12 : null;
 
         const textePart = (XX !== null)
             ? `représentent seulement <strong>${XX.toFixed(1)}%</strong> des émissions de l'aéroport`
