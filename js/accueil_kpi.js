@@ -639,7 +639,7 @@ document.addEventListener("DOMContentLoaded", () => {
             </p>
 
             <p>
-            <strong>➡️ Les émissions liées aux vols représentent l’essentiel de l’impact climatique de l’aéroport.</strong>
+            <strong>➡️ Les émissions liées aux vols représentent donc l’essentiel de l’impact climatique de l’aéroport.</strong>
             </p>
         `;
 
