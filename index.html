@@ -751,8 +751,6 @@ if (!r || !K_TOT || !K_VOL || !K_S12 || !K_ACI || !K_ACC || !K_EMP) {
   return;
 }
 
-    const r = rowsCumul[rowIndex] || {};
-
     // Extraction des valeurs (ligne 2)
     const tot = _toNumberSmart(r[K_TOT]);
     const vols = _toNumberSmart(r[K_VOL]);
