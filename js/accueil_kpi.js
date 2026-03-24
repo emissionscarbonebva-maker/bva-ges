@@ -193,7 +193,9 @@ document.addEventListener("DOMContentLoaded", () => {
         /***********************************************************
          * 2. Ligne la plus récente (ton CSV est déjà trié)
          ***********************************************************/
-        const latest = rows[0];
+        const latest = rows.reduce((max, row) => {
+    return (!max || new Date(row[K_DATE]) > new Date(max[K_DATE])) ? row : max;
+}, null);
 
         const total    = _toNumberSmart(latest[K_TOT]);
         const aero     = _toNumberSmart(latest[K_VOL]);
