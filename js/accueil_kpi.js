@@ -396,7 +396,7 @@ options: {
                 line-height:1.45;">
                 
                 <p style="margin:0 0 6px 0;">
-                    <span style="color:#1f3c88; font-weight:bold;"> 🌍📊 <stong>Ordre de grandeur</strong> :</span>
+                    <span style="color:#1f3c88; font-weight:bold;"> 🌍📊 <strong>Ordre de grandeur</strong> :</span>
                 </p>
 
                 <p style="margin:0;">
