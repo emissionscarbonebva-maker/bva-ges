@@ -736,20 +736,20 @@ const dateKey = headers[0]; // la 1ère colonne est la date dans ce CSV
     const K_ACC = findHeader(/cumul_acces_coll/i);
     const K_EMP = findHeader(/cumul_employes/i);
 
-    // On force l'utilisation de la 2e ligne du CSV (index 1)
-    const r = rowsCumul.reduce((max, row) => {
-    const d = parseISODate(row[dateKey]);
-    const dm = max ? parseISODate(max[dateKey]) : null;
-    return (!max || (d && dm && d > dm)) ? row : max;
-    }, null);
+    // 🔥 On prend la ligne la plus récente (robuste)
+const r = rowsCumul.reduce((max, row) => {
+  const d = parseISODate(row[dateKey]);
+  const dm = max ? parseISODate(max[dateKey]) : null;
+  return (!max || (d && d > dm)) ? row : max;
+}, null);
 
-    // Garde-fous
-    if (!rowsCumul || rowsCumul.length <= rowIndex || !K_TOT || !K_VOL || !K_S12 || !K_ACI || !K_ACC || !K_EMP) {
-      elTotal.innerText = 'données indisponibles';
-      elLegend.innerText = '';
-      const ctx = cv.getContext('2d'); ctx.clearRect(0, 0, cv.width, cv.height);
-      return;
-    }
+// Garde-fous
+if (!r || !K_TOT || !K_VOL || !K_S12 || !K_ACI || !K_ACC || !K_EMP) {
+  elTotal.innerText = 'données indisponibles';
+  elLegend.innerText = '';
+  const ctx = cv.getContext('2d'); ctx.clearRect(0, 0, cv.width, cv.height);
+  return;
+}
 
     const r = rowsCumul[rowIndex] || {};
 
