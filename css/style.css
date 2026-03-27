@@ -9,6 +9,7 @@ img { max-width: 100%; display: block; }
   font-family:Arial, sans-serif;
   display:flex;
   background:#f5f6fa;
+  color:#333333; 
 }
 
 /* ===== LIENS ===== */
