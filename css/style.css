@@ -348,7 +348,7 @@ max-width: none;
     margin-top: 0;
     margin-bottom: 10px;
     font-size: 1.15em;
-    color: #1f3c88;
+    color: #2e55c7;  /* 🔵 Couleur sécurisée */
     border-bottom: 2px solid #e6e9ef;
     padding-bottom: 6px;
 }
@@ -357,12 +357,6 @@ max-width: none;
 .mini-card:hover {
     transform: translateY(-6px);
     box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-}
-
-/* 🔒 Sécurisation du style interne */
-.mini-card h2,
-.mini-card h3 {
-    color:  #2e55c7;
 }
 
 .mini-card:hover h2 {
