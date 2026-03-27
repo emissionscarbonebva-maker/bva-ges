@@ -117,7 +117,8 @@ section{ margin-bottom:60px; scroll-margin-top:80px; }
 /* ===== CARDS ===== */
 .card{
   background:white;
-  padding:28px;
+  padding-top:10px;
+  padding-bottom:20px;
   border-radius:10px;
   box-shadow:0 4px 14px rgba(0,0,0,0.08);
   margin-bottom:30px;
@@ -243,7 +244,8 @@ h3{
 /* Base commune des cartes */
 .card{
   background:white;
-  padding:28px;
+  padding-top:10px;
+  padding-bottom:20px;
   border-radius:10px;
   box-shadow:0 4px 14px rgba(0,0,0,0.08);
   margin-bottom:35px;
