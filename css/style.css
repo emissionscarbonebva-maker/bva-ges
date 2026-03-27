@@ -6,7 +6,7 @@ img { max-width: 100%; display: block; }
  
  body{
   margin:0;
-  font-family: "Noto Sans", sans-serif;
+  font-family: "Arial", sans-serif;
   display:flex;
   background:#f5f6fa;
   color:#2c2c2c;
