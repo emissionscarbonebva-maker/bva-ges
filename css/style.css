@@ -11,6 +11,21 @@ img { max-width: 100%; display: block; }
   background:#f5f6fa;
 }
 
+/* ===== LIENS ===== */
+a {
+  color: #1f3c88;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: #2e55c7;
+  text-decoration: underline;
+}
+
+a:visited {
+  color: #1f3c88;
+}
 
 /* SIDEBAR */
 .sidebar{
@@ -325,6 +340,20 @@ max-width: none;
 .mini-card:hover {
     transform: translateY(-6px);
     box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+
+/* 🔒 Sécurisation du style interne */
+.mini-card h2,
+.mini-card h3 {
+    color: #1f3c88;
+}
+
+.mini-card:hover h2 {
+    text-decoration: underline;
+}
+
+.mini-card p {
+    color: #333;
 }
 
 /* RESPONSIVE */
