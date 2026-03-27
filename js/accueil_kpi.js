@@ -277,7 +277,7 @@ document.addEventListener("DOMContentLoaded", () => {
             stacked: true,
             display: false,
             categoryPercentage: 1.0,
-            barPercentage: 1.0
+            barPercentage: 1.0,
             barThickness: 55
         }
     }
