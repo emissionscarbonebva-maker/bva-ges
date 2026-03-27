@@ -102,10 +102,3 @@ document.querySelectorAll(".menu a").forEach(link => {
     link.classList.add("active");
   }
 });
-
-/* (on conserve les listeners d'alignement de hauteur) */
-window.addEventListener('load', matchContainerSizeOnce);
-window.addEventListener('resize', () => {
-  clearTimeout(window.__matchKPITimer);
-  window.__matchKPITimer = setTimeout(matchContainerSizeOnce, 120);
-});
