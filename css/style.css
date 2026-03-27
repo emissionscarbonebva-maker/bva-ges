@@ -283,6 +283,28 @@ max-width: none;
   margin-inline: 0;
 }
 
+/* 4) Carte "mini" pour la navigation dans le site */
+.cards-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.mini-card {
+  flex: 1;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+  border-left: 6px solid #1f3c88;
+  text-decoration: none;
+  color: inherit;
+}
+.mini-card:hover {
+  transform: translateY(-2px);
+}
+
+
 /* ==================== CANVAS & BLOCS CONTENUS ==================== */
 
 /* Laisse Chart.js gérer width/height du bitmap.
