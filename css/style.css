@@ -463,7 +463,12 @@ max-width: none;
    ========================================================= */
 
 /* Paddings adaptatifs */
-.main{ padding: clamp(16px, 4vw, 60px); }   /* principe du padding : https://www.zonecss.fr/proprietes-css/padding-css.html ; ici deux valeurs = marges au-dessus et marges latérales  */
+.main {
+  padding-top: 20px;
+  padding-left: clamp(16px, 4vw, 60px);
+  padding-right: clamp(16px, 4vw, 60px);
+  padding-bottom: 32px;
+}
 header{ padding: clamp(14px, 3.5vw, 25px); }
 
 /* Sidebar : tailles à paliers + mode compact forcé en mobile */
