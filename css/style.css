@@ -6,7 +6,7 @@ img { max-width: 100%; display: block; }
  
  body{
   margin:0;
-  font-family: 'Orbitron', sans-serif;
+  font-family: 'Fira Mono', monospace;
   display:flex;
   background:#f5f6fa;
   color:#2c2c2c;
