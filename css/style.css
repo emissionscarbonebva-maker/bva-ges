@@ -9,7 +9,23 @@ img { max-width: 100%; display: block; }
   font-family:Arial, sans-serif;
   display:flex;
   background:#f5f6fa;
-  color:#333333; 
+  color:#2c2c2c;
+}
+
+/* --- TEXTE SECONDAIRE --- */
+.small-text,
+footer,
+.mini-legend {
+  color:#555;
+}
+
+* --- TITRES --- */
+h2 {
+  color:#1f3c88;
+}
+
+h3 {
+  color:#2e55c7;
 }
 
 /* ===== LIENS ===== */
@@ -20,12 +36,12 @@ a {
 }
 
 a:hover {
-  color: #2e55c7;
+  color: #1f3c88;
   text-decoration: underline;
 }
 
 a:visited {
-  color: #1f3c88;
+  color: #2e55c7;
 }
 
 /* SIDEBAR */
