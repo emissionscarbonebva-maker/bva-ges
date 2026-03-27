@@ -107,6 +107,11 @@ img { max-width: 100%; display: block; }
 /* HEADER */
 header{ background:#1f3c88; color:white; padding:25px; margin-bottom:30px;border-radius: 12px; }
 header h1{ color:white; margin:0; }
+header .subtitle {
+  margin-top: 10px;
+  font-size: 1.1em;
+  opacity: 0.95;
+}
 
 /* SECTIONS */
 section{ margin-bottom:60px; scroll-margin-top:80px; }
