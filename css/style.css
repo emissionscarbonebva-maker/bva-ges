@@ -713,3 +713,12 @@ header{ padding: clamp(14px, 3.5vw, 25px); }
 .kpi1-chart canvas {
     margin-top: 0 !important;
 }
+
+/* Ajuster la hauteur du KPI 1 à l'épaisseur du chartbar */
+
+/* Désactive la hauteur imposée au conteneur de KPI 1 */
+.kpi1-chart .chart-host {
+    height: auto !important;
+    min-height: 0 !important;
+}
+
