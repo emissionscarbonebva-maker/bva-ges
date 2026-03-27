@@ -13,7 +13,7 @@ img { max-width: 100%; display: block; }
 
 /* ===== LIENS ===== */
 a {
-  color: #1f3c88;
+  color: #2e55c7;
   text-decoration: none;
   transition: color 0.2s ease;
 }
@@ -345,7 +345,7 @@ max-width: none;
 /* 🔒 Sécurisation du style interne */
 .mini-card h2,
 .mini-card h3 {
-    color: #1f3c88;
+    color:  #2e55c7;
 }
 
 .mini-card:hover h2 {
@@ -353,7 +353,7 @@ max-width: none;
 }
 
 .mini-card p {
-    color: #333;
+    color:  #2e55c7;
 }
 
 /* RESPONSIVE */
