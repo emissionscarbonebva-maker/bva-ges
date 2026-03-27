@@ -285,26 +285,28 @@ max-width: none;
 
 /* 4) Carte "mini" pour la navigation dans le site */
 .cards-row {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 20px;
 }
 
 .mini-card {
-  flex: 1;
-  background: white;
-  padding:25px;            /*Marge latérale*/
-  padding-top:10px;        /*Marge haute*/
-  padding-bottom:20px;     /*Marge basse*/
-  border-radius: 10px;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-  border-left: 6px solid #1f3c88;
-  text-decoration: none;
-  color: inherit;
+    flex: 1;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: transform 0.15s ease;
 }
+
 .mini-card:hover {
-  transform: translateY(-2px);
+    transform: translateY(-2px);
 }
+
+.mini-card {
+    max-width: 400px;
+}
+
 
 
 /* ==================== CANVAS & BLOCS CONTENUS ==================== */
@@ -481,6 +483,13 @@ header{ padding: clamp(14px, 3.5vw, 25px); }
 }
 @media (max-width: 900px) and (orientation: portrait){
   .orientation-hint{ display:block; }
+}
+
+/* Traitement des 3 cards de navigation */
+@media (max-width: 900px){
+    .cards-row {
+        flex-direction: column;
+    }
 }
 
 /* Overlay d’orientation sur chaque chart en portrait mobile
