@@ -272,7 +272,7 @@ document.addEventListener("DOMContentLoaded", () => {
     scales: {
         x: { stacked: true, display: false, max: total },
 
-        // 🚀 ON FORCE LA BARRE À PRENDRE TOUTE LA HAUTEUR DISPONIBLE
+        // 🚀 On fixe l'épaisseur de la barre avec barthickness
         y: {
             stacked: true,
             display: false,
