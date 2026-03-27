@@ -115,16 +115,15 @@ section{ margin-bottom:60px; scroll-margin-top:80px; }
 .chart-container{ max-width:700px; }
 
 /* ===== CARDS ===== */
-/* Base commune des cartes */
 .card{
   background:white;
-  padding:15px;
-  margin-bottom:25px;
+  padding:28px;
   border-radius:10px;
   box-shadow:0 4px 14px rgba(0,0,0,0.08);
+  margin-bottom:30px;
   border-left:6px solid #1f3c88;
   transition:transform 0.15s ease;
-
+}
 .card:hover{ transform:translateY(-2px); }
 .card table{ width:100%; border-collapse:collapse; margin-top:15px; font-size:14px; }
 .card th,
@@ -240,6 +239,16 @@ h3{
   --page-gap: clamp(16px, 4vw, 56px);  /* marge/gouttière pour les cartes "normal" */
   --narrow-max: 1200px;                /* largeur "fixe" max pour les cartes "narrow" */
 }
+
+/* Base commune des cartes */
+.card{
+  background:white;
+  padding:28px;
+  border-radius:10px;
+  box-shadow:0 4px 14px rgba(0,0,0,0.08);
+  margin-bottom:35px;
+  border-left:6px solid #1f3c88;
+  transition:transform 0.15s ease;
 
   /* IMPORTANT : pas de width:100% ici, pour laisser les marges piloter la largeur */
   width: auto;
@@ -596,4 +605,3 @@ header{ padding: clamp(14px, 3.5vw, 25px); }
 .kpi1-chart canvas {
     margin-top: 0 !important;
 }
-
