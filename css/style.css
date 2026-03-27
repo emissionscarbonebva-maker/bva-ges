@@ -283,7 +283,7 @@ max-width: none;
   margin-inline: 0;
 }
 
-/* 4) Carte "mini" pour la navigation dans le site */
+/* ===== CONTAINER FLEX ===== */
 .cards-row {
     display: flex;
     gap: 20px;
@@ -291,23 +291,43 @@ max-width: none;
     margin-top: 20px;
 }
 
+/* ===== MINI CARDS ===== */
 .mini-card {
     flex: 1;
+    min-width: 280px;
+    padding: 24px;
+    background: white;
+    border-radius: 12px;
+    border-left: 6px solid #1f3c88;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
     text-decoration: none;
     color: inherit;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
     display: block;
-    transition: transform 0.15s ease;
 }
 
+/* TITRE */
+.mini-card h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1.15em;
+    color: #1f3c88;
+    border-bottom: 2px solid #e6e9ef;
+    padding-bottom: 6px;
+}
+
+/* HOVER — STYLE PREMIUM */
 .mini-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-6px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
 }
 
-.mini-card {
-    max-width: 400px;
+/* RESPONSIVE */
+@media (max-width: 900px) {
+    .cards-row {
+        flex-direction: column;
+    }
 }
-
-
 
 /* ==================== CANVAS & BLOCS CONTENUS ==================== */
 
