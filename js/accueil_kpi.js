@@ -278,7 +278,7 @@ document.addEventListener("DOMContentLoaded", () => {
             display: false,
             categoryPercentage: 1.0,
             barPercentage: 1.0,
-            barThickness: 55
+            barThickness: 40
         }
     }
 }
