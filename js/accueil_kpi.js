@@ -276,7 +276,7 @@ document.addEventListener("DOMContentLoaded", () => {
         y: {
             stacked: true,
             display: false,
-            barThickness: 40
+            barThickness: 25
         }
     }
 }
