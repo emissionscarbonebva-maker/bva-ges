@@ -88,10 +88,8 @@ function parseCSV(url, callback){
       callback(result, headers);
     });
 }
-</script>
 
 <!-- ========== JS PRINCIPAL (construction des graphiques) ========== -->
-<script>
 document.addEventListener("DOMContentLoaded", function(){
 
   /* ========= Utils Périodes & Contrôles ========= */
@@ -1863,10 +1861,10 @@ Les émissions pour l'année 2025 seront ajoutées lorsque l'ensemble des source
   });
 
 }); // DOMContentLoaded
-</script>
+
 
 <!-- ========== JS : Mise à jour "dernière mise à jour" + sidebar + alignement containers ========== -->
-<script>
+
 // Date de mise à jour
 fetch("data/EXPORT_update_time.csv")
 .then(response => response.text())
