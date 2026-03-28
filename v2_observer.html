@@ -1,1 +1,357 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
 
+<title>Émissions carbone Aéroport Paris‑Beauvais (BVA) – Observer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- ===== CSS PRINCIPAL ===== -->
+<link rel="stylesheet" href="css/style.css">
+
+<!-- ===== Chart.js ===== -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
+
+<!-- ===== Icons ===== -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<!-- ===== SEO ===== -->
+<meta name="description" content="Observatoire indépendant des émissions de gaz à effet de serre de l’aéroport Paris‑Beauvais (BVA).">
+
+<link rel="icon" type="image/png" href="Favicon/favicon.png">
+
+<!-- ===== POLICE ===== -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- AUCUN PATCH CSS ICI — tu as choisi Option A (la bonne) -->
+
+</head>
+
+<body>
+
+
+<!-- BACKDROP MOBILE -->
+<div class="backdrop" id="backdrop" aria-hidden="true"></div>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+
+    <div class="logo">
+        <img src="logo-bva.png" alt="Logo BVA">
+    </div>
+
+    <button id="toggleSidebar" class="toggle-btn">
+        <i class="fa-solid fa-angle-left"></i>
+    </button>
+
+    <nav class="menu">
+
+        <a href="index.html" data-title="Accueil">
+            <span class="icon">🏠</span>
+            <span class="text">Accueil</span>
+        </a>
+
+        <a href="observer" data-title="Observer">
+            <span class="icon">📊</span>
+            <span class="text">Observer</span>
+        </a>
+
+        <a href="comprendre/index.html" data-title="Comprendre">
+            <span class="icon">🧠</span>
+            <span class="text">Comprendre</span>
+        </a>
+
+        <a href="anticiper/index.html" data-title="Anticiper">
+            <span class="icon">🔮</span>
+            <span class="text">Anticiper</span>
+        </a>
+
+    </nav>
+
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+    <!-- Barre header mobile (hamburger + espace titre) -->
+  <div class="header-bar">
+    <button class="hamburger" id="hamburger" type="button"
+            aria-label="Ouvrir le menu"
+            aria-controls="sidebar"
+            aria-expanded="false">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+    <div style="flex:1"></div>
+  </div>
+
+    <!-- HERO -->
+    <header>
+  <h1>Observer les émissions en 2026</h1>
+  <p class="subtitle">
+    Suivre l’activité aérienne et les émissions de gaz à effet de serre 
+    de l’aéroport Paris-Beauvais au quotidien.
+  </p>
+</header>
+
+ <!-- EXPLICATION -->
+<section> 
+
+<h2>Pourquoi ce site ?</h2>
+
+<div class="card card--normal"> 
+<p>
+L’aéroport de Paris-Beauvais a connu une forte croissance de son trafic ces dernières années.
+Un projet de modernisation vise aujourd’hui à porter l’activité à 45 000 mouvements annuels,
+soit <strong>+15%</strong> par rapport à la situation actuelle et près du <strong>double</strong> par rapport à 2017.
+</p>
+
+<p>
+Les premières analyses indiquent que <strong>les émissions de l’aéroport progressent 
+à un rythme incompatible</strong> avec la capacité de stockage carbone du territoire, 
+ainsi qu’avec les objectifs climatiques locaux et nationaux.
+</p>
+
+<p>
+Dans ce contexte de hausse du trafic et d’impact climatique croissant, et en l’absence de communication 
+claire et transparente de l'ensemble des émissions carbone de l'aéroport, cet observatoire 
+citoyen indépendant propose un suivi régulier des émissions, ainsi qu’une mise en perspective historique 
+et une analyse des trajectoires d'émissions possibles à horizon 2050 :
+</p>
+
+<ul>
+<li>
+<strong>Observer :</strong> suivre l’évolution des émissions, analyser l’activité des vols, les compagnies et les destinations.
+</li>
+
+<li>
+<strong>Comprendre :</strong> expliquer les mécanismes du bilan carbone d’un aéroport et les limites des solutions technologiques.
+</li>
+
+<li>
+<strong>Anticiper :</strong> explorer les trajectoires d’émissions à long terme et les niveaux de trafic compatibles avec les objectifs climatiques.
+</li>
+</ul>
+
+<p>
+Ces constats rendent nécessaire une lecture chiffrée et objectivée des émissions.
+</p>
+    
+</div>
+    
+</section>
+   
+    <!-- SECTION KPI -->
+    <section>
+
+        <h2>Indicateurs clés</h2>
+
+        <div id="containerKPIs" class="card card--normal">
+
+<p>
+Les données montrent un déséquilibre majeur :
+les émissions liées aux vols et aux accès terrestres des passagers représentent l’essentiel de l’impact climatique,
+tandis que les émissions directement contrôlées par l’aéroport restent marginales.
+</p>
+
+<h3><br>🔎 Que représentent concrètement ces émissions ?</h3>  
+           
+            <div class="kpis-grid">
+
+                <!-- KPI 1 + KPI 2 -->
+                <div class="metric-box kpi1-chart">
+
+                    <div class="metric-header">
+                        <div class="metric-title" id="kpi1-title">
+                            Émissions totales 2026 au …
+                        </div>
+                        <div class="metric-value" id="kpiTotal">…</div>
+                    </div>
+
+                    <!-- KPI 1 -->
+                    <div class="metric-body">
+                        <div class="chart-host" style="height:90px;">
+                            <canvas id="kpiBreakdown"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- KPI 4 -->
+                    <div class="metric-body" style="margin-top:3px;">
+                        <div class="chart-host" style="height:56px;">
+                            <canvas id="kpiPuits"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Légendes -->
+                    <div id="kpiBreakdownLegend" class="mini-legend" style="margin-top:6px;"></div>
+                    <div id="kpiPuitsLegend" class="mini-legend" style="margin-top:6px;"></div>
+
+                </div>
+
+                <!-- TEXTE EXPLICATIF -->
+                <div class="kpi1-text">
+                    <div class="metric-box kpi1-text">
+                        <div id="kpiS12AeroExplain" class="kpi-explain"></div>
+                    </div>
+                </div>
+
+                <!-- KPI 3 -->
+                <div class="metric-box kpi2-chart">
+                    <div class="metric-title">Évolution des émissions “Location based (scope 1 & 2)” et “Aéronefs”</div>
+                    <div class="chart-host">
+                        <canvas id="kpiScope12"></canvas>
+                    </div>
+                </div>
+
+            </div>
+<p style="font-size:0.65em; color:#666; margin-top:10px;">
+Analyse indépendante basée sur des données de trafic aérien et des facteurs d’émission spécifiques aux compagnies opérant à Beauvais.
+</p>
+
+<h3><br>📈 Ce que racontent ces données</h3>
+
+    <p>
+    Les émissions liées aux vols dominent très largement l’impact climatique de la plateforme.
+    Les émissions directement contrôlées par l’aéroport ne représentent qu’une part marginale.
+    </p>
+
+    <p>
+    Cela signifie que les leviers d’action ne se situent pas uniquement dans l’efficacité énergétique
+    des infrastructures, <strong>mais principalement dans le niveau de trafic aérien lui-même</strong>.
+    </p>
+            
+        </div>
+       
+    </section>
+
+    <!-- SECTION CARTES -->
+    <section>
+
+        <h2>
+          Approfondir l’analyse 
+        </h2>
+           
+<div class="cards-row">
+
+            <a href="observer/activite-2026.html" class="mini-card">
+                <h2>📊 Observer</h2>
+                <p>
+                   Suivre les émissions en temps réel, explorer l’activité des vols, 
+                    la répartition par compagnies et les destinations.
+                </p>
+            </a>
+
+             <a href="comprendre/index.html" class="mini-card">
+                <h2>🧠 Comprendre</h2>
+                <p>
+                    Comprendre le bilan carbone d’un aéroport, 
+                    le rôle du trafic aérien et les limites des solutions technologiques.
+                </p>
+            </a>
+
+            <a href="anticiper/index.html" class="mini-card">
+                <h2>🔮 Anticiper</h2>
+                <p>
+                    Explorer les trajectoires d’émissions à horizon 2050, les budgets carbone 
+                    et les niveaux de trafic compatibles avec les objectifs climatiques.
+                </p>
+            </a>
+        </div>
+    </section>
+
+<section>
+
+    <h2>Ressources &amp; Partage</h2>
+    
+    <div class="card card--normal">
+  
+  <p><strong>Partagez ce site :</strong></p>
+
+  <div class="share-buttons">
+    <a class="share-btn linkedin" 
+       href="https://www.linkedin.com/sharing/share-offsite/?url=https://emissionscarbonebva-maker.github.io/bva-ges/" 
+       target="_blank">
+      <i class="fab fa-linkedin"></i>
+      LinkedIn
+    </a>
+
+    <a class="share-btn facebook" 
+       href="https://www.facebook.com/sharer/sharer.php?u=https://emissionscarbonebva-maker.github.io/bva-ges/" 
+       target="_blank">
+      <i class="fab fa-facebook"></i>
+      Facebook
+    </a>
+  </div>
+
+  <p>
+    Liens utiles :
+    <br>• <a href="https://adera-association.com/ADERA" target="_blank">ADERA – Association pour l’environnement</a>
+    <br>• <a href="https://concertation.aeroportparisbeauvais.com/fr" target="_blank">Concertation Aéroport Paris-Beauvais</a>
+    <br>• <a href="https://www.aeroportparisbeauvais.com/professionnels/developpement-durable/le-bulletin-de-lenvironnement" target="_blank">
+      Bulletin de l'environnement de l'aéroport de Paris-Beauvais
+    </a>
+  </p>
+</div>
+</section>
+
+    
+<section>
+
+     <h2>Mentions légales</h2>
+    
+<div class="card card--normal" id="mentions">
+   
+    <p>
+      Ce site constitue une initiative citoyenne indépendante visant à informer le public 
+      sur les émissions estimées de gaz à effet de serre liées à l’activité de l’aéroport Paris-Beauvais, 
+        ainsi que sur le projet de modernisation et d'agrandissement de l'aéroport.
+    </p>
+
+    <p>
+      Il ne constitue pas un site officiel et n’est affilié ni à l’exploitant de l’aéroport 
+      ni aux compagnies aériennes mentionnées.
+    </p>
+
+    <p>
+    Les résultats présentés correspondent à une reconstitution analytique des émissions basée 
+        sur des facteurs d’émission et des hypothèses méthodologiques explicités dans la <a href="https://emissionscarbonebva-maker.github.io/bva-ges/methodologie.html">page dédiée</a>. 
+    Ils visent à contribuer au débat public en apportant un éclairage indépendant.
+    </p>
+
+    <p>
+      Conformément à la liberté d’expression et d’information, ce site participe au débat public 
+      sur les enjeux environnementaux locaux, notamment dans le cadre du projet d’agrandissement 
+      de l’aéroport et de la révision du PCAET du Beauvaisis.
+    </p>
+
+    <p>
+      Les informations publiées sont fournies à titre informatif. 
+      Malgré le soin apporté à leur élaboration, les auteurs ne sauraient être tenus responsables d’éventuelles erreurs, omissions ou interprétations faites à partir des données présentées.
+    </p>
+
+    <p>
+      Les contenus, analyses et visualisations produits sur ce site peuvent être librement cités sous réserve de mentionner la source.
+    </p>
+
+   <p>
+       Contact : <a href="mailto:emissionscarbonebva@gmail.com">emissionscarbonebva@gmail.com</a>.
+    </p>
+</div>
+    
+ </section>
+    
+    <!-- FOOTER -->
+    <footer>
+        Observatoire citoyen indépendant – Contact :
+        <a href="mailto:emissionscarbonebva@gmail.com">emissionscarbonebva@gmail.com</a> —
+        Hébergement : GitHub Pages
+    </footer>
+
+</div>
+
+<!-- JS ACCUEIL -->
+<script src="js/sidebar.js"></script>
+<script src="js/accueil_kpi.js"></script>
+
+</body>
+</html>
