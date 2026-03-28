@@ -164,78 +164,73 @@ les émissions "locations based", liées aux activités directement opérées pa
  <!-- Graphiques -->
 <section>
 
-    <div class="card card--narrow">
       <h2 class="tooltip" data-tip="Émissions quotidiennes de GES réparties selon les différents scopes (1 & 2 : émissions directes & électricité aérooprt, 3 : émissions indirectes : aéronefs, transports terrestres passagers et employés )">
         Émissions journalières par scope ⓘ
       </h2>
-      <canvas id="chartDaily"></canvas>
-
+    <div class="card card--narrow">
+        <canvas id="chartDaily"></canvas>
       <button class="export-btn" onclick="exportChartCSV('chartDaily','emissions_journalieres_scopes.csv')">
         <i class="fa fa-download"></i> Exporter
       </button>
     </div>
 
-    <div class="card card--narrow">
-      <h2 class="tooltip" data-tip="Total des émissions de GES depuis le 1er janvier selon les différents scopes (1 & 2 : émissions directes & électricité aérooprt, 3 : émissions indirectes : aéronefs, transports terrestres passagers et employés )">
+    <h2 class="tooltip" data-tip="Total des émissions de GES depuis le 1er janvier selon les différents scopes (1 & 2 : émissions directes & électricité aérooprt, 3 : émissions indirectes : aéronefs, transports terrestres passagers et employés )">
         Total des émissions par scope depuis le 1er janvier 2026 ⓘ
       </h2>
-      <canvas id="chartCumul"></canvas>
-
+    <div class="card card--narrow">
+        <canvas id="chartCumul"></canvas>
       <button class="export-btn" onclick="exportChartCSV('chartCumul','cumul_annuel_scopes.csv')">
         <i class="fa fa-download"></i> Exporter
       </button>
     </div>
-  
-    <div class="card card--narrow">
-     <h2 class="tooltip" data-tip="Emissions des GES du scope 3 ''Aéronefs'' (APU, décollage-atterrissage, vol 1/2 croisière) générées par les différentes compagnies opérants sur l'aéroport">
+
+    <h2 class="tooltip" data-tip="Emissions des GES du scope 3 ''Aéronefs'' (APU, décollage-atterrissage, vol 1/2 croisière) générées par les différentes compagnies opérants sur l'aéroport">
         Émissions journalières par compagnie ⓘ 
      </h2>
-      <canvas id="chartAirlines"></canvas>
-
+    <div class="card card--narrow">
+        <canvas id="chartAirlines"></canvas>
       <button class="export-btn" onclick="exportChartCSV('chartAirlines','emissions_compagnies.csv')">
         <i class="fa fa-download"></i> Exporter
       </button>
     </div>
 
-    <div class="card card--narrow">
-      <h2 class="tooltip" data-tip="Nombre de mouvements (atterrissages et décollages) effectués chaque jour par compagnie">
+    <h2 class="tooltip" data-tip="Nombre de mouvements (atterrissages et décollages) effectués chaque jour par compagnie">
         Mouvements journaliers par compagnie ⓘ
       </h2>
-      <canvas id="chartRotations"></canvas>
-
+    <div class="card card--narrow">
+        <canvas id="chartRotations"></canvas>
       <button class="export-btn" onclick="exportChartCSV('chartRotations','rotations_compagnies.csv')">
         <i class="fa fa-download"></i> Exporter
       </button>
     </div>
 
-    <div class="card card--narrow">
-      <h2 class="tooltip" data-tip="Emissions de GES du scope ''Aéronefs'' et nombre de mouvements (atterrissages et décollages) selon la destination ou l'origine pour l'année 2026">
+     <h2 class="tooltip" data-tip="Emissions de GES du scope ''Aéronefs'' et nombre de mouvements (atterrissages et décollages) selon la destination ou l'origine pour l'année 2026">
         Émissions et nombre de vols par destination depuis le 1er janvier 2026 ⓘ
       </h2>
-      <canvas id="chartDestination"></canvas>
+    <div class="card card--narrow">
+        <canvas id="chartDestination"></canvas>
 
       <button class="export-btn" onclick="exportChartCSV('chartDestination','emissions_destinations.csv')">
         <i class="fa fa-download"></i> Exporter
       </button>
-  
-      <p style="font-size:0.85em;color:#666;margin-top:10px;">
+        <p style="font-size:0.85em;color:#666;margin-top:10px;">
         Les principales destinations représentant au moins 90% des émissions de GES ou 90% des mouvements sont affichées.
         Les autres sont regroupées dans « Autres destinations ».
       </p>
     </div>
   
-    <div class="card card--narrow">
-      <h2 class="tooltip" data-tip="Liste détaillée des vols au départ avec distance et émissions estimées">
+   <h2 class="tooltip" data-tip="Liste détaillée des vols au départ avec distance et émissions estimées">
         Vols au départ depuis le 1er janvier 2026 ⓘ
       </h2>
-      <div id="tableDepartures"></div>
+    <div class="card card--narrow">
+        <div id="tableDepartures"></div>
     </div>
 
-    <div class="card card--narrow">
-      <h2 class="tooltip" data-tip="Liste détaillée des vols à l'arrivée avec distance et émissions estimées">
+    <h2 class="tooltip" data-tip="Liste détaillée des vols à l'arrivée avec distance et émissions estimées">
         Vols à l'arrivée depuis le 1er janvier 2026 ⓘ
       </h2>
-      <div id="tableArrivals"></div>
+    <div class="card card--narrow">
+        <div id="tableArrivals"></div>
     </div>
 
   </div>
