@@ -96,10 +96,10 @@
 
  <!-- EXPLICATION -->
 <section>
-  <div class="card card--normal">
+  <h2>Que montre cette page ?</h2>
 
-    <h2>Que montre cette page ?</h2>
-
+    <div class="card card--normal">
+        
     <p>
       Cette page présente une évaluation des émissions de gaz à effet de serre 
       associées à l’activité quotidienne de l’aéroport Paris-Beauvais en 2026.
@@ -132,88 +132,34 @@ les émissions "locations based", liées aux activités directement opérées pa
   </div>
 </section>
    
-    <!-- SECTION KPI -->
-    <section>
+    <!-- 🔎 INTERPRÉTATION -->
+   <section>
 
-        <h2>Indicateurs clés</h2>
-
-        <div id="containerKPIs" class="card card--normal">
-
-<p>
-Les données montrent un déséquilibre majeur :
-les émissions liées aux vols et aux accès terrestres des passagers représentent l’essentiel de l’impact climatique,
-tandis que les émissions directement contrôlées par l’aéroport restent marginales.
-</p>
-
-<h3><br>🔎 Que représentent concrètement ces émissions ?</h3>  
-           
-            <div class="kpis-grid">
-
-                <!-- KPI 1 + KPI 2 -->
-                <div class="metric-box kpi1-chart">
-
-                    <div class="metric-header">
-                        <div class="metric-title" id="kpi1-title">
-                            Émissions totales 2026 au …
-                        </div>
-                        <div class="metric-value" id="kpiTotal">…</div>
-                    </div>
-
-                    <!-- KPI 1 -->
-                    <div class="metric-body">
-                        <div class="chart-host" style="height:90px;">
-                            <canvas id="kpiBreakdown"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- KPI 4 -->
-                    <div class="metric-body" style="margin-top:3px;">
-                        <div class="chart-host" style="height:56px;">
-                            <canvas id="kpiPuits"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- Légendes -->
-                    <div id="kpiBreakdownLegend" class="mini-legend" style="margin-top:6px;"></div>
-                    <div id="kpiPuitsLegend" class="mini-legend" style="margin-top:6px;"></div>
-
-                </div>
-
-                <!-- TEXTE EXPLICATIF -->
-                <div class="kpi1-text">
-                    <div class="metric-box kpi1-text">
-                        <div id="kpiS12AeroExplain" class="kpi-explain"></div>
-                    </div>
-                </div>
-
-                <!-- KPI 3 -->
-                <div class="metric-box kpi2-chart">
-                    <div class="metric-title">Évolution des émissions “Location based (scope 1 & 2)” et “Aéronefs”</div>
-                    <div class="chart-host">
-                        <canvas id="kpiScope12"></canvas>
-                    </div>
-                </div>
-
-            </div>
-<p style="font-size:0.65em; color:#666; margin-top:10px;">
-Analyse indépendante basée sur des données de trafic aérien et des facteurs d’émission spécifiques aux compagnies opérant à Beauvais.
-</p>
-
-<h3><br>📈 Ce que racontent ces données</h3>
-
-    <p>
-    Les émissions liées aux vols dominent très largement l’impact climatique de la plateforme.
-    Les émissions directement contrôlées par l’aéroport ne représentent qu’une part marginale.
-    </p>
-
-    <p>
-    Cela signifie que les leviers d’action ne se situent pas uniquement dans l’efficacité énergétique
-    des infrastructures, <strong>mais principalement dans le niveau de trafic aérien lui-même</strong>.
-    </p>
-            
-        </div>
+    <h2>Lecture des résultats</h2>
        
-    </section>
+  <div class="card card--highlight">
+
+    <h3>Une domination écrasante des émissions liées aux vols</h3>
+    <p>
+      Les émissions des aéronefs représentent l’essentiel de l’impact climatique.
+      Les émissions directes de l’aéroport (scope 1 & 2) restent marginales.
+    </p>
+
+    <h3>Une croissance portée par l’augmentation du trafic</h3>
+    <p>
+      L’évolution des émissions suit directement celle du nombre de vols,
+      ce qui souligne le rôle central du trafic dans la dynamique globale.
+    </p>
+
+    <h3>Des marges de réduction limitées hors régulation du trafic</h3>
+    <p>
+      Les gains technologiques ou d’efficacité énergétique ne suffisent pas
+      à compenser la hausse du trafic à moyen terme.
+    </p>
+
+  </div>
+
+</section>
 
     <!-- SECTION CARTES -->
     <section>
