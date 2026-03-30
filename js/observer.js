@@ -1,3 +1,10 @@
+  // Convertit "rgb(r,g,b)" -> "rgba(r,g,b,a)" (alpha entre 0 et 1)
+function toRGBA(rgb, a = 1) {
+  if (typeof rgb !== 'string') return rgb;
+  if (!rgb.startsWith('rgb(')) return rgb;
+  return rgb.replace('rgb(', 'rgba(').replace(')', `, ${a})`);
+}
+
 /* ===== EXPORT CSV DES GRAPHIQUES ===== */
 function exportChartCSV(chartId, filename){
   const chart = Chart.getChart(chartId);
