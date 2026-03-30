@@ -96,76 +96,87 @@
 
  <!-- EXPLICATION -->
 <section>
-  <h2>Que montre cette page ?</h2>
+  <h2>Que mesure cette page ?</h2>
 
-    <div class="card card--normal">
-        
+  <div class="card card--normal">
+
     <p>
-      Cette page présente une évaluation des émissions de gaz à effet de serre 
-      associées à l’activité quotidienne de l’aéroport Paris-Beauvais en 2026.
+      Cette page propose une estimation des émissions de gaz à effet de serre 
+      associées à l’activité de l’aéroport Paris-Beauvais en 2026, à partir 
+      de l’analyse détaillée des vols (type d’appareil, distance, compagnie) 
+      et de facteurs d’émission spécifiques.
     </p>
 
     <p>
-      Les résultats reposent sur l’analyse des vols opérés, des types d’appareils, 
-      des distances parcourues et de facteurs d’émission spécifiques aux compagnies.
-    Mais l'analyse ne se limitent pas qu'aux vols, puisque sont également pris en compte ici :
+      L’évaluation ne se limite pas aux seuls vols. Elle intègre également 
+      l’ensemble des activités directement ou indirectement liées au fonctionnement 
+      de la plateforme :
+    </p>
+
     <ul>
-<li>
-le transport terrestres des passagers pour accéder/quitter la plateforme aéroportuaire : navettes officielles et non officielles, véhicules particuliers, taxis, ...
-</li>
-
-<li>
-le transport terrestres des employers entre leur domicile et la plateforme aéroportuaire
-</li>
-
-<li>
-les émissions "locations based", liées aux activités directement opérées par l'aéroport sur la plateforme aéroportuaire : chauffage, consommation d'électricité, appareils de pistes, ...
-</li>
-</ul>
-    </p>
+      <li>
+        <strong>Vols :</strong> émissions des aéronefs sur l’ensemble des trajets opérés
+      </li>
+      <li>
+        <strong>Accès passagers :</strong> déplacements terrestres (navettes, voitures, taxis…)
+      </li>
+      <li>
+        <strong>Déplacements des employés :</strong> trajets domicile–travail
+      </li>
+      <li>
+        <strong>Activités aéroportuaires (scope 1 & 2) :</strong> énergie, chauffage, équipements de piste
+      </li>
+    </ul>
 
     <p>
-      La présentation des résultats permet de démontrer que les émissions liées aux vols représentent la très grande majorité de l’impact climatique (environ 88%),
-      loin devant les émissions liées au transports terrestres des passagers et employers (environ 12%), alors que les émissions directement contrôlées par l’aéroport apparaissent dérisoire (de l'ordre de 0,1%)
+      Cette approche permet de restituer une vision globale de l’impact climatique 
+      de la plateforme, en distinguant les différentes sources d’émissions.
     </p>
 
-     <p>
-        <strong>Données :</strong>
-        <span id="update-date">chargement...</span>
-     </p>
-        
+    <p style="font-size:0.9em; color:#666;">
+      Données mises à jour le : <span id="update-date">chargement...</span>
+    </p>
+
   </div>
 </section>
    
     <!-- 🔎 INTERPRÉTATION -->
    <section>
+  <h2>Ce que montrent les résultats</h2>
 
-    <h2>Lecture des résultats</h2>
-       
   <div class="card card--highlight">
 
-    <h3>Une domination écrasante des émissions liées aux vols</h3>
     <p>
-      Les émissions des aéronefs représentent l’essentiel de l’impact climatique.
-      Les émissions directes de l’aéroport (scope 1 & 2) restent marginales.
+      Les résultats mettent en évidence un déséquilibre majeur dans la répartition 
+      des émissions de gaz à effet de serre associées à l’activité aéroportuaire.
     </p>
 
-    <h3>Une croissance portée par l’augmentation du trafic</h3>
-    <p>
-      L’évolution des émissions suit directement celle du nombre de vols,
-      ce qui souligne le rôle central du trafic dans la dynamique globale.
-    </p>
+    <ul>
+      <li>
+        Les émissions liées aux <strong>vols</strong> représentent la très grande majorité 
+        de l’impact climatique (environ 88 %).
+      </li>
 
-    <h3>Des marges de réduction limitées hors régulation du trafic</h3>
+      <li>
+        Les <strong>transports terrestres</strong> des passagers et des employés 
+        contribuent de manière secondaire (environ 12 %).
+      </li>
+
+      <li>
+        Les émissions directement contrôlées par l’aéroport 
+        (<strong>scope 1 & 2</strong>) restent marginales 
+        (de l’ordre de 0,1 %).
+      </li>
+    </ul>
+
     <p>
-      Les gains technologiques ou d’efficacité énergétique ne suffisent pas
-      à compenser la hausse du trafic à moyen terme.
+      Cette structure des émissions est déterminante pour comprendre les dynamiques 
+      à l’œuvre et les leviers d’action disponibles.
     </p>
 
   </div>
-
 </section>
-
+    
  <!-- Graphiques -->
 <section>
 
@@ -310,53 +321,7 @@ les émissions "locations based", liées aux activités directement opérées pa
     </a>
   </p>
 </div>
-</section>
-
-    
-<section>
-
-     <h2>Mentions légales</h2>
-    
-<div class="card card--normal" id="mentions">
-   
-    <p>
-      Ce site constitue une initiative citoyenne indépendante visant à informer le public 
-      sur les émissions estimées de gaz à effet de serre liées à l’activité de l’aéroport Paris-Beauvais, 
-        ainsi que sur le projet de modernisation et d'agrandissement de l'aéroport.
-    </p>
-
-    <p>
-      Il ne constitue pas un site officiel et n’est affilié ni à l’exploitant de l’aéroport 
-      ni aux compagnies aériennes mentionnées.
-    </p>
-
-    <p>
-    Les résultats présentés correspondent à une reconstitution analytique des émissions basée 
-        sur des facteurs d’émission et des hypothèses méthodologiques explicités dans la <a href="https://emissionscarbonebva-maker.github.io/bva-ges/methodologie.html">page dédiée</a>. 
-    Ils visent à contribuer au débat public en apportant un éclairage indépendant.
-    </p>
-
-    <p>
-      Conformément à la liberté d’expression et d’information, ce site participe au débat public 
-      sur les enjeux environnementaux locaux, notamment dans le cadre du projet d’agrandissement 
-      de l’aéroport et de la révision du PCAET du Beauvaisis.
-    </p>
-
-    <p>
-      Les informations publiées sont fournies à titre informatif. 
-      Malgré le soin apporté à leur élaboration, les auteurs ne sauraient être tenus responsables d’éventuelles erreurs, omissions ou interprétations faites à partir des données présentées.
-    </p>
-
-    <p>
-      Les contenus, analyses et visualisations produits sur ce site peuvent être librement cités sous réserve de mentionner la source.
-    </p>
-
-   <p>
-       Contact : <a href="mailto:emissionscarbonebva@gmail.com">emissionscarbonebva@gmail.com</a>.
-    </p>
-</div>
-    
- </section>
+</section>  
     
     <!-- FOOTER -->
     <footer>
