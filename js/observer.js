@@ -449,7 +449,7 @@ if (reg) {
                     borderColor: "#1f77b4",
                     pointRadius: 5,
                     pointHoverRadius: 8
-                  }
+                  },
                     {
                     type: "line",
                     label: "Régression linéaire",
