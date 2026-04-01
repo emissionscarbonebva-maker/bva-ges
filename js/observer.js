@@ -332,7 +332,7 @@ const regressionLabelPlugin = {
         ctx.restore();
     }
 };
-  
+  Chart.register(regressionLabelPlugin);
   
   /* ======================================================
      === KPIs MAJ ===
