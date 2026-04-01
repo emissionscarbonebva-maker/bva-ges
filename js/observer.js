@@ -277,6 +277,39 @@ function ensureMvtsGesControls(canvasId, onChange) {
     return saved;
 }
 
+
+  /* ====== Fonction pour le calcul des régression linéaire GES = f(mvts) ====== */
+function linearRegression(points) {
+    const n = points.length;
+    if (n < 2) return null;
+
+    let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
+
+    points.forEach(p => {
+        sumX += p.x;
+        sumY += p.y;
+        sumXY += p.x * p.y;
+        sumXX += p.x * p.x;
+    });
+
+    const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+    const intercept = (sumY - slope * sumX) / n;
+
+    const r2 = (() => {
+        let ssTot = 0, ssRes = 0;
+        const meanY = sumY / n;
+        points.forEach(p => {
+            const pred = slope * p.x + intercept;
+            ssRes += Math.pow(p.y - pred, 2);
+            ssTot += Math.pow(p.y - meanY, 2);
+        });
+        return 1 - ssRes / ssTot;
+    })();
+
+    return { slope, intercept, r2 };
+}
+
+  
   
   /* ======================================================
      === KPIs MAJ ===
@@ -353,7 +386,6 @@ const valueLabelsPlugin = {
 };
 
 
-/* ======= GRAPHIQUE CORRELATION : Mouvements vs GES ====== */
 /* ======= GRAPHIQUE CORRELATION : Mouvements vs GES — Daily & Annual ====== */
 
 let mvtsDaily = null;
@@ -386,6 +418,22 @@ function buildMvtsGesChart(mode = "daily") {
 
     const labels = points.map(p => p.label);
 
+// Calcul régression
+const reg = linearRegression(points);
+let regLine = [];
+
+if (reg) {
+    // On prend minX et maxX pour tracer une ligne propre
+    const xs = points.map(p => p.x);
+    const xMin = Math.min(...xs);
+    const xMax = Math.max(...xs);
+
+    regLine = [
+        { x: xMin, y: reg.slope * xMin + reg.intercept },
+        { x: xMax, y: reg.slope * xMax + reg.intercept }
+    ];
+}
+  
     window._chartMvtsGes = new Chart(
         document.getElementById("chartMvtsVsGES"),
         {
@@ -401,6 +449,16 @@ function buildMvtsGesChart(mode = "daily") {
                     borderColor: "#1f77b4",
                     pointRadius: 5,
                     pointHoverRadius: 8
+                  }
+                    {
+                    type: "line",
+                    label: "Régression linéaire",
+                    data: regLine,
+                    borderColor: "red",
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    pointRadius: 0,
+                    fill: false
                 }]
             },
             options: {
