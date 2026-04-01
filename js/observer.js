@@ -288,7 +288,82 @@ const valueLabelsPlugin = {
     ctx.restore();
   }
 };
- 
+
+
+/* ======= GRAPHIQUE CORRELATION : Mouvements vs GES ====== */
+parseCSV('./data/EXPORT_daily_scopes.csv', (data, headers) => {
+
+    // On repère les colonnes utiles
+    const dateKey = headers[0];
+    const mvtsKey = "total_mvts";
+    const gesKey  = "total_scopes";
+
+    // Nettoyage + conversion numérique
+    const points = data.map(row => {
+        const mvts = parseFloat(String(row[mvtsKey] ?? "0").replace(",", "."));
+        const ges  = parseFloat(String(row[gesKey] ?? "0").replace(",", "."));
+        return {
+            x: isNaN(mvts) ? 0 : mvts,
+            y: isNaN(ges)  ? 0 : ges,
+            date: row[dateKey]
+        };
+    });
+
+    // Tri par date
+    points.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    // Création du graphique
+    const ctx = document.getElementById("chartMvtsVsGES");
+
+    new Chart(ctx, {
+        type: "scatter",
+        data: {
+            datasets: [{
+                label: "Corrélation mouvements vs émissions",
+                data: points,
+                backgroundColor: "rgba(31, 119, 180, 0.6)",
+                borderColor: "#1f77b4",
+                pointRadius: 5,
+                pointHoverRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: "top" },
+                tooltip: {
+                    callbacks: {
+                        label: (ctx) => {
+                            const p = ctx.raw;
+                            return [
+                                `Mouvements : ${p.x}`,
+                                `GES : ${p.y.toFixed(1)} t CO₂`,
+                                `Date : ${p.date}`
+                            ];
+                        }
+                    }
+                },
+                zoom: {
+                    pan: { enabled: true, mode: 'xy' },
+                    zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'xy' }
+                }
+            },
+            scales: {
+                x: {
+                    title: { display: true, text: "Nombre de mouvements (quotidien)" },
+                    beginAtZero: true
+                },
+                y: {
+                    title: { display: true, text: "Émissions GES (t éq CO₂ / jour)" },
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+});
+
+  
   /* ====== 1. Émissions journalières par scope ====== */
   parseCSV('./data/EXPORT_daily_scopes.csv', (data,headers) => {
     data.sort((a,b) => new Date(a[headers[0]]) - new Date(b[headers[0]]));
