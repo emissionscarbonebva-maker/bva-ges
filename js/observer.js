@@ -315,52 +315,46 @@ parseCSV('./data/EXPORT_daily_scopes.csv', (data, headers) => {
     // Création du graphique
     const ctx = document.getElementById("chartMvtsVsGES");
 
-    new Chart(ctx, {
-        type: "scatter",
-        data: {
-            datasets: [{
-                label: "Corrélation mouvements vs émissions",
-                data: points,
-                backgroundColor: "rgba(31, 119, 180, 0.6)",
-                borderColor: "#1f77b4",
-                pointRadius: 5,
-                pointHoverRadius: 8
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { position: "top" },
-                tooltip: {
-                    callbacks: {
-                        label: (ctx) => {
-                            const p = ctx.raw;
-                            return [
-                                `Mouvements : ${p.x}`,
-                                `GES : ${p.y.toFixed(1)} t CO₂`,
-                                `Date : ${p.date}`
-                            ];
-                        }
+    new Chart(document.getElementById("chartMvtsVsGES"), {
+    type: "scatter",
+    data: {
+        labels: points.map(p => p.date), // important pour export CSV
+        datasets: [{
+            label: "Corrélation mouvements vs émissions",
+            data: points.map(p => ({ x: p.x, y: p.y })),
+            backgroundColor: "rgba(31, 119, 180, 0.6)",
+            borderColor: "#1f77b4",
+            pointRadius: 5,
+            pointHoverRadius: 8
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: "top" },
+            tooltip: {
+                callbacks: {
+                    label: (ctx) => {
+                        const p = points[ctx.dataIndex];
+                        return [
+                            `Mouvements : ${p.x}`,
+                            `GES : ${p.y.toFixed(1)} t CO₂`,
+                            `Date : ${p.date}`
+                        ];
                     }
-                },
-                zoom: {
-                    pan: { enabled: true, mode: 'xy' },
-                    zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'xy' }
-                }
-            },
-            scales: {
-                x: {
-                    title: { display: true, text: "Nombre de mouvements (quotidien)" },
-                    beginAtZero: true
-                },
-                y: {
-                    title: { display: true, text: "Émissions GES (t éq CO₂ / jour)" },
-                    beginAtZero: true
                 }
             }
+        },
+        scales: {
+            x: {
+                title: { display: true, text: "Nombre de mouvements (quotidien)" }
+            },
+            y: {
+                title: { display: true, text: "Émissions GES (t éq CO₂ / jour)" }
+            }
         }
-    });
-
+    }
+});
 });
 
   
