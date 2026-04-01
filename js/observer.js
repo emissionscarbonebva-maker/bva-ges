@@ -361,6 +361,7 @@ parseCSV('./data/EXPORT_daily_scopes.csv', (data, headers) => {
             }
         }
     }
+    }
 });
 });
 
