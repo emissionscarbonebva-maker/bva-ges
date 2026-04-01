@@ -212,12 +212,15 @@
 <section>
 
 
-<h2 class="tooltip" data-tip="Emissions quotidienne de gaz à effet de serre en fonction du nombre de mouvement quotidien de mouvements aériens">
-        Correlation entre trafic aérien et émissions de GES ⓘ
-      </h2>
-    <div class="card card--narrow">
-  <canvas id="chartMvtsVsGES"></canvas>
-    </div>
+<h2 class="tooltip" data-tip="Corrélation entre trafic aérien et émissions de GES">
+    Corrélation entre trafic aérien & émissions de GES ⓘ
+</h2>
+<div class="card card--narrow">
+    <canvas id="chartMvtsVsGES"></canvas>
+    <button class="export-btn" onclick="exportChartCSV('chartMvtsVsGES','correlation_mvts_ges.csv')">
+        <i class="fa fa-download"></i> Exporter
+    </button>
+</div>
     
       <h2 class="tooltip" data-tip="Émissions quotidiennes de GES réparties selon les différents scopes (1 & 2 : émissions directes & électricité aérooprt, 3 : émissions indirectes : aéronefs, transports terrestres passagers et employés )">
         Émissions journalières par scope ⓘ
