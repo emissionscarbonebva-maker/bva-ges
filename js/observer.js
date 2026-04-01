@@ -215,6 +215,69 @@ document.addEventListener("DOMContentLoaded", function(){
     return saved;
   }
 
+/* ====== Contrôles Daily / Annual pour Mvts vs GES ====== */
+function ensureMvtsGesControls(canvasId, onChange) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    if (canvas._mvtsControls) return canvas._mvtsControls.value;
+
+    const holder = document.createElement("div");
+    holder.className = "period-controls";
+    holder.style.display = "flex";
+    holder.style.alignItems = "center";
+    holder.style.gap = "8px";
+    holder.style.margin = "8px 0 4px 0";
+
+    const strong = document.createElement("strong");
+    strong.textContent = "Vue :";
+
+    const mkBtn = (label, value) => {
+        const b = document.createElement("button");
+        b.textContent = label;
+        b.dataset.value = value;
+        b.className = "btn-period";
+        Object.assign(b.style, {
+            padding: "6px 10px",
+            border: "1px solid #cbd5e1",
+            borderRadius: "6px",
+            background: "#f8fafc",
+            cursor: "pointer"
+        });
+        b.addEventListener("click", () => {
+            setActive(value);
+            localStorage.setItem(`agg_${canvasId}_mvts`, value);
+            onChange?.(value);
+        });
+        return b;
+    };
+
+    const btnDaily = mkBtn("Quotidienne", "daily");
+    const btnAnnual = mkBtn("Annuelle", "annual");
+
+    holder.appendChild(strong);
+    holder.appendChild(btnDaily);
+    holder.appendChild(btnAnnual);
+
+    canvas.parentElement.insertBefore(holder, canvas);
+
+    function setActive(val) {
+        [btnDaily, btnAnnual].forEach(b => {
+            const active = b.dataset.value === val;
+            b.style.background = active ? "#e2e8f0" : "#f8fafc";
+            b.style.borderColor = active ? "#94a3b8" : "#cbd5e1";
+            b.style.fontWeight = active ? "600" : "500";
+        });
+        canvas._mvtsControls.value = val;
+    }
+
+    canvas._mvtsControls = { setActive, value: "daily" };
+
+    const saved = localStorage.getItem(`agg_${canvasId}_mvts`) || "daily";
+    setActive(saved);
+    return saved;
+}
+
+  
   /* ======================================================
      === KPIs MAJ ===
      KPI 1 : bascule sur EXPORT_cumul_scopes.csv (ligne la + récente)
@@ -291,79 +354,100 @@ const valueLabelsPlugin = {
 
 
 /* ======= GRAPHIQUE CORRELATION : Mouvements vs GES ====== */
-parseCSV('./data/EXPORT_daily_scopes.csv', (data, headers) => {
+/* ======= GRAPHIQUE CORRELATION : Mouvements vs GES — Daily & Annual ====== */
 
-    // On repère les colonnes utiles
-    const dateKey = headers[0];
-    const mvtsKey = "total_mvts";
-    const gesKey  = "total_scopes";
+let mvtsDaily = null;
+let mvtsAnnual = null;
 
-    // Nettoyage + conversion numérique
-    const points = data.map(row => {
-        const mvts = parseFloat(String(row[mvtsKey] ?? "0").replace(",", "."));
-        const ges  = parseFloat(String(row[gesKey] ?? "0").replace(",", "."));
-        return {
-            x: isNaN(mvts) ? 0 : mvts,
-            y: isNaN(ges)  ? 0 : ges,
-            date: row[dateKey]
-        };
-    });
+// Charger données quotidiennes
+parseCSV('./data/EXPORT_daily_scopes.csv', rows => {
+    mvtsDaily = rows;
+});
 
-    // Tri par date
-    points.sort((a, b) => new Date(a.date) - new Date(b.date));
+// Charger données annuelles
+parseCSV('./data/EXPORT_yearly_total.csv', rows => {
+    mvtsAnnual = rows.filter(r => r.année && r.mvt_total && r.emissons_totales);
+});
 
-    // Création du graphique
-    const ctx = document.getElementById("chartMvtsVsGES");
+function buildMvtsGesChart(mode = "daily") {
+    if (window._chartMvtsGes) window._chartMvtsGes.destroy();
 
-    new Chart(document.getElementById("chartMvtsVsGES"), {
-    type: "scatter",
-    data: {
-        labels: points.map(p => p.date), // important pour export CSV
-        datasets: [{
-            label: "Corrélation mouvements vs émissions",
-            data: points.map(p => ({ x: p.x, y: p.y })),
-            backgroundColor: "rgba(31, 119, 180, 0.6)",
-            borderColor: "#1f77b4",
-            pointRadius: 5,
-            pointHoverRadius: 8
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            legend: { position: "top" },
-            tooltip: {
-                callbacks: {
-                    label: (ctx) => {
-                        const p = points[ctx.dataIndex];
-                        return [
-                            `Mouvements : ${p.x}`,
-                            `GES : ${p.y.toFixed(1)} t CO₂`,
-                            `Date : ${p.date}`
-                        ];
+    const points = (mode === "daily")
+        ? mvtsDaily.map(r => ({
+            x: parseFloat((r.total_mvts || "0").replace(",", ".")),
+            y: parseFloat((r.total_scopes || "0").replace(",", ".")),
+            label: r.date
+        }))
+        : mvtsAnnual.map(r => ({
+            x: parseFloat((r.mvt_total || "0").replace(",", ".")),
+            y: parseFloat((r.emissons_totales || "0").replace(",", ".")),
+            label: r.année
+        }));
+
+    const labels = points.map(p => p.label);
+
+    window._chartMvtsGes = new Chart(
+        document.getElementById("chartMvtsVsGES"),
+        {
+            type: "scatter",
+            data: {
+                labels,
+                datasets: [{
+                    label: mode === "daily"
+                        ? "Corrélation quotidienne (2026)"
+                        : "Corrélation annuelle (2016–2024)",
+                    data: points.map(p => ({ x: p.x, y: p.y })),
+                    backgroundColor: "rgba(31,119,180,0.6)",
+                    borderColor: "#1f77b4",
+                    pointRadius: 5,
+                    pointHoverRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: "top" },
+                    tooltip: {
+                        callbacks: {
+                            label: ctx => {
+                                const p = points[ctx.dataIndex];
+                                return [
+                                    `Mouvements : ${p.x}`,
+                                    `GES : ${p.y.toFixed(1)} tCO₂`,
+                                    mode === "daily"
+                                        ? `Date : ${p.label}`
+                                        : `Année : ${p.label}`
+                                ];
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: mode === "daily"
+                                ? "Mouvements quotidiens"
+                                : "Mouvements annuels"
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: "Émissions GES (t éq CO₂)"
+                        }
                     }
                 }
             }
-        },
-    scales: {
-        x: {
-            beginAtZero: true,
-            title: {
-                display: true,
-                text: "Nombre de mouvements (quotidien)"
-            }
-        },
-        y: {
-            beginAtZero: true,
-            title: {
-                display: true,
-                text: "Émissions GES (t éq CO₂ / jour)"
-            }
         }
-    }
-    }
-});
-});
+    );
+}
+
+// Création automatique des contrôles et affichage initial
+const mvtsInitMode = ensureMvtsGesControls("chartMvtsVsGES", buildMvtsGesChart);
+setTimeout(() => buildMvtsGesChart(mvtsInitMode), 400);
 
   
   /* ====== 1. Émissions journalières par scope ====== */
