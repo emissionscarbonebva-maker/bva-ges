@@ -345,12 +345,19 @@ parseCSV('./data/EXPORT_daily_scopes.csv', (data, headers) => {
                 }
             }
         },
-        scales: {
-            x: {
-                title: { display: true, text: "Nombre de mouvements (quotidien)" }
-            },
-            y: {
-                title: { display: true, text: "Émissions GES (t éq CO₂ / jour)" }
+    scales: {
+        x: {
+            beginAtZero: true,
+            title: {
+                display: true,
+                text: "Nombre de mouvements (quotidien)"
+            }
+        },
+        y: {
+            beginAtZero: true,
+            title: {
+                display: true,
+                text: "Émissions GES (t éq CO₂ / jour)"
             }
         }
     }
