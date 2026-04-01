@@ -509,14 +509,12 @@ if (reg) {
                             }
                         }
                     },
-                  regressionLabelPlugin: {
-                        display: true,
-                        x: 20,
-                        y: 30,
-                        color: "#444",
-                        text: [
-                              reg ? `y = ${reg.slope.toFixed(3)}x + ${reg.intercept.toFixed(1)}` : "",
-                              reg ? `R² = ${(reg.r2).toFixed(3)}` : ""
+                  regressionLabelPlugin: {                  
+                      display: true,           // active l’affichage
+                      color: "#444",           // couleur du texte
+                      text: [
+                          reg ? `y = ${reg.slope.toFixed(3)}x + ${reg.intercept.toFixed(1)}` : "",
+                          reg ? `R² = ${(reg.r2).toFixed(3)}` : ""
                           ]
                     },
                 },
