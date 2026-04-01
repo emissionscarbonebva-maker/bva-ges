@@ -309,6 +309,29 @@ function linearRegression(points) {
     return { slope, intercept, r2 };
 }
 
+  /* ===== Plugin Chart.js : affichage équation + R² ===== */
+const regressionLabelPlugin = {
+    id: "regressionLabelPlugin",
+    afterDatasetsDraw(chart, args, options) {
+        if (!options?.display) return;
+
+        const ctx = chart.ctx;
+        ctx.save();
+        ctx.font = "13px Arial";
+        ctx.fillStyle = options.color || "#333";
+
+        const textLines = options.text || [];
+        const x = options.x || 20;
+        const y = options.y || 30;
+        const lineHeight = 16;
+
+        textLines.forEach((line, i) => {
+            ctx.fillText(line, x, y + i * lineHeight);
+        });
+
+        ctx.restore();
+    }
+};
   
   
   /* ======================================================
@@ -479,6 +502,16 @@ if (reg) {
                             }
                         }
                     }
+                  regressionLabelPlugin: {
+                        display: true,
+                        x: 20,
+                        y: 30,
+                        color: "#444",
+                        text: [
+                              reg ? `y = ${reg.slope.toFixed(3)}x + ${reg.intercept.toFixed(1)}` : "",
+                              reg ? `R² = ${(reg.r2).toFixed(3)}` : ""
+                          ]
+                    },
                 },
                 scales: {
                     x: {
