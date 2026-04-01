@@ -328,7 +328,7 @@ const regressionLabelPlugin = {
         const paddingX = 10;
         const paddingY = 10;
 
-        const x = chartArea.right - paddingX - 120;  // décalage horizontal (ajuste si besoin)
+        const x = chartArea.right - paddingX - 180;  // décalage horizontal (ajuste si besoin)
         const y = chartArea.top + paddingY;
 
         textLines.forEach((line, i) => {
@@ -511,7 +511,7 @@ if (reg) {
                     },
                   regressionLabelPlugin: {                  
                       display: true,           // active l’affichage
-                      color: "#444",           // couleur du texte
+                      color: "#FF0000",           // couleur du texte
                       text: [
                           reg ? `y = ${reg.slope.toFixed(3)}x + ${reg.intercept.toFixed(1)}` : "",
                           reg ? `R² = ${(reg.r2).toFixed(3)}` : ""
