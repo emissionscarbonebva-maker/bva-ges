@@ -53,7 +53,7 @@ const DISPLAY_LABELS = {
   "cumul_employes": "Accès employés (Scope 3)",
   "cumul_scope_1_2": "Emissions directes aéroport BVA (Scope 1 &amp; 2)",
   "cumul_total": "Cumul total",
-  "cumul_mvts": "Nombre total de mouvements d'aéronefs"
+  "cumul_mvts": "Nombre total de mouvements d'aéronefs",
 
   // 6) Émissions par destination
   "vols": "Nombre de vols (YTD)",
