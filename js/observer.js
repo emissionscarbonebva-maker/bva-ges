@@ -315,15 +315,21 @@ const regressionLabelPlugin = {
     afterDatasetsDraw(chart, args, options) {
         if (!options?.display) return;
 
-        const ctx = chart.ctx;
+        const { ctx, chartArea } = chart;
+
         ctx.save();
         ctx.font = "13px Arial";
         ctx.fillStyle = options.color || "#333";
 
         const textLines = options.text || [];
-        const x = options.x || 20;
-        const y = options.y || 30;
         const lineHeight = 16;
+
+        // Position automatiquement dans le coin haut‑droite du CHART AREA
+        const paddingX = 10;
+        const paddingY = 10;
+
+        const x = chartArea.right - paddingX - 120;  // décalage horizontal (ajuste si besoin)
+        const y = chartArea.top + paddingY;
 
         textLines.forEach((line, i) => {
             ctx.fillText(line, x, y + i * lineHeight);
@@ -332,7 +338,8 @@ const regressionLabelPlugin = {
         ctx.restore();
     }
 };
-  Chart.register(regressionLabelPlugin);
+
+Chart.register(regressionLabelPlugin);
   
   /* ======================================================
      === KPIs MAJ ===
