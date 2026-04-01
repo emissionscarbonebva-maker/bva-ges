@@ -524,15 +524,15 @@ if (reg) {
                         title: {
                             display: true,
                             text: mode === "daily"
-                                ? "Mouvements quotidiens"
-                                : "Mouvements annuels"
+                                ? "Nombre de mouvements quotidiens"
+                                : "Nombre de mouvements annuels"
                         }
                     },
                     y: {
                         beginAtZero: true,
                         title: {
                             display: true,
-                            text: "Émissions GES (t éq CO₂)"
+                            text: "Émissions de gaz à effet de serre (t éq CO₂)"
                         }
                     }
                 }
