@@ -501,7 +501,7 @@ if (reg) {
                                 ];
                             }
                         }
-                    }
+                    },
                   regressionLabelPlugin: {
                         display: true,
                         x: 20,
