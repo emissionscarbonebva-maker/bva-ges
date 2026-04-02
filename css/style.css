@@ -715,10 +715,19 @@ header{ padding: clamp(14px, 3.5vw, 25px); }
 }
 
 
-/* ===== ALIGNEMENT DES TITRES SUR LES CARDS NARROW ===== */
+/* ===== TITRES ALIGNÉS COMME LES CARDS NARROW ===== */
 
 .h2--align-narrow {
-    max-width: var(--narrow-max);  /* même largeur max que .card--narrow */
-    margin-inline: auto;           /* même centrage */
-    width: 100%;
+  max-width: var(--narrow-max);
+  margin-inline: auto;
+
+  /* ⬇️ clé du fix */
+  padding-left: 0;
+  padding-right: 0;
+}
+/* On sort le h2 du padding visuel de .main */
+.main > h2.h2--align-narrow {
+  position: relative;
+  left: calc(-1 * clamp(16px, 4vw, 60px));
+  width: calc(100% + 2 * clamp(16px, 4vw, 60px));
 }
