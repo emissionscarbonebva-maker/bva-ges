@@ -715,20 +715,16 @@ header{ padding: clamp(14px, 3.5vw, 25px); }
 }
 
 
-/* ===== ALIGNEMENT AUTOMATIQUE DES TITRES H2 SUR LA LARGEUR DE LA CARD ===== */
 
-/* Cas où un élément intermédiaire se trouve entre <h2> et .card */
-h2:has(+ * + .card),
-h2:has(+ * + .card--narrow),
-h2:has(+ * + .card--normal),
-h2:has(+ * + .card--full),
-/* Cas idéal si un jour h2 devient adjacent */
-h2:has(+ .card),
-h2:has(+ .card--narrow),
-h2:has(+ .card--normal),
-h2:has(+ .card--full) {
-    display: block;
-    max-width: var(--narrow-max);
-    margin-inline: auto;
+/* ===== ALIGNEMENT RÉEL DES TITRES H2 SUR LA CARD SUIVANTE ===== */
+
+/* Cas : H2 suivi d'un bloc de contrôles puis d'une card narrow */
+h2:has(+ .period-controls + .card--narrow),
+/* Cas : H2 directement suivi d'une card narrow */
+h2:has(+ .card--narrow) {
+    max-width: var(--narrow-max) !important;
+    margin-inline: auto !important;
     width: 100%;
+    padding-left: 0;
+    padding-right: 0;
 }
