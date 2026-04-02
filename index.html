@@ -1288,6 +1288,8 @@ Les émissions pour l'année 2025 seront ajoutées lorsque l'ensemble des source
     buildChartDaily(initDailyPeriod);
   });
 
+
+ 
   /* ====== 2. Cumul annuel par scope ====== */
   parseCSV('./data/EXPORT_cumul_scopes.csv', (data,headers) => {
     if(!data || data.length === 0) return;
@@ -1299,8 +1301,9 @@ Les émissions pour l'année 2025 seront ajoutées lorsque l'ensemble des source
     function buildChartCumul(period) {
       const dateKey  = headers[0];
       const totalKey = headers.find(h => h === "cumul_total");
-      const scopeCols = headers.filter(h => h !== dateKey && h !== totalKey);
-
+      const excluded = ["cumul_total", "cumul_mvts"];
+      const scopeCols = headers.filter(h =>  h !== dateKey && !excluded.includes(h));
+     
       const periodLastRow = {};
       data.forEach(row => {
         const pkey = makePeriodKey(row[dateKey], period);
