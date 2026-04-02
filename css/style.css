@@ -713,17 +713,3 @@ header{ padding: clamp(14px, 3.5vw, 25px); }
 .kpi1-chart canvas {
     margin-top: 0 !important;
 }
-
-/* ===== ALIGNEMENT TITRE <h2> AVEC LA CARD SUIVANTE ===== */
-
-.section-block {
-    /* Limite la largeur du titre au même espace que la card */
-    max-width: var(--narrow-max);     
-    margin-inline: auto;              /* Centre le bloc, comme les cards narrow */
-    width: 100%;
-}
-
-/* On retire la bordure sous le h2 qui était trop large */
-.section-block > h2 {
-    width: 100%;
-}
