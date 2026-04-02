@@ -715,30 +715,20 @@ header{ padding: clamp(14px, 3.5vw, 25px); }
 }
 
 
-* ===== ALIGNEMENT AUTOMATIQUE DES TITRES H2 SUR LA LARGEUR DE LA CARD ===== */
+/* ===== ALIGNEMENT AUTOMATIQUE DES TITRES H2 SUR LA LARGEUR DE LA CARD ===== */
 
-/* 1) On détecte les h2 qui sont suivis d’une card */
+/* Cas où un élément intermédiaire se trouve entre <h2> et .card */
+h2:has(+ * + .card),
+h2:has(+ * + .card--narrow),
+h2:has(+ * + .card--normal),
+h2:has(+ * + .card--full),
+/* Cas idéal si un jour h2 devient adjacent */
 h2:has(+ .card),
 h2:has(+ .card--narrow),
 h2:has(+ .card--normal),
 h2:has(+ .card--full) {
     display: block;
-
-    /* On va caler le H2 sur la même largeur que la card--narrow */
     max-width: var(--narrow-max);
-
-    /* On centre comme les cards narrow */
     margin-inline: auto;
-
-    /* Pour éviter que le H2 s’étale sur toute la largeur du .main */
     width: 100%;
 }
-
-/* 2) On ajuste si une card est NOT narrow (optionnel)
-   → h2 s’aligne sur la card qui suit, quelle qu’elle soit */
-h2:has(+ .card--normal),
-h2:has(+ .card--full) {
-    max-width: 100%;
-    margin-inline: 0;
-}
-
