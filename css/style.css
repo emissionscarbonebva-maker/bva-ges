@@ -184,12 +184,24 @@ h2{
   border-bottom:2px solid #e6e9ef;
   padding-bottom:6px;
 }
+
 h3{
   color:#1f3c88;
   font-size:1em;
   margin-top:20px;
 }
-  
+
+
+* ===== CARD TRANSPARENTE POUR ALIGNER LES H2 sur card--narrow ===== */
+.card--narrow-header {
+    max-width: var(--narrow-max); /* même largeur max que les cards narrow */
+    margin-inline: auto;          /* centrage parfait */
+    padding: 0;                   /* pas de marge interne */
+    border: none;
+    background: transparent;
+    box-shadow: none;
+}
+
 /* ================= SHARE BUTTONS ================= */
 .share-links { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
 .share-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 8px; text-decoration: none; font-weight: 500; color: white; width: fit-content; transition: 0.2s; }
