@@ -697,7 +697,10 @@ setTimeout(() => buildMvtsGesChart(mvtsInitMode), 400);
     function buildChartCumul(period) {
       const dateKey  = headers[0];
       const totalKey = headers.find(h => h === "cumul_total");
-      const scopeCols = headers.filter(h => h !== dateKey && h !== totalKey);
+      const excluded = ["cumul_total", "cumul_mvts"];
+      const scopeCols = headers.filter(h => h !== dateKey && !excluded.includes(h));
+
+
 
       const periodLastRow = {};
       data.forEach(row => {
