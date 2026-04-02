@@ -713,3 +713,12 @@ header{ padding: clamp(14px, 3.5vw, 25px); }
 .kpi1-chart canvas {
     margin-top: 0 !important;
 }
+
+
+/* ===== ALIGNEMENT DES TITRES SUR LES CARDS NARROW ===== */
+
+.h2--align-narrow {
+    max-width: var(--narrow-max);  /* même largeur max que .card--narrow */
+    margin-inline: auto;           /* même centrage */
+    width: 100%;
+}
