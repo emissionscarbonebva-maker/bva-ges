@@ -713,21 +713,3 @@ header{ padding: clamp(14px, 3.5vw, 25px); }
 .kpi1-chart canvas {
     margin-top: 0 !important;
 }
-
-
-/* ===== TITRES ALIGNÉS COMME LES CARDS NARROW ===== */
-
-.h2--align-narrow {
-  max-width: var(--narrow-max);
-  margin-inline: auto;
-
-  /* ⬇️ clé du fix */
-  padding-left: 0;
-  padding-right: 0;
-}
-/* On sort le h2 du padding visuel de .main */
-.main > h2.h2--align-narrow {
-  position: relative;
-  left: calc(-1 * clamp(16px, 4vw, 60px));
-  width: calc(100% + 2 * clamp(16px, 4vw, 60px));
-}
