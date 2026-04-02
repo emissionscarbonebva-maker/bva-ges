@@ -713,18 +713,3 @@ header{ padding: clamp(14px, 3.5vw, 25px); }
 .kpi1-chart canvas {
     margin-top: 0 !important;
 }
-
-
-
-/* ===== ALIGNEMENT RÉEL DES TITRES H2 SUR LA CARD SUIVANTE ===== */
-
-/* Cas : H2 suivi d'un bloc de contrôles puis d'une card narrow */
-h2:has(+ .period-controls + .card--narrow),
-/* Cas : H2 directement suivi d'une card narrow */
-h2:has(+ .card--narrow) {
-    max-width: var(--narrow-max) !important;
-    margin-inline: auto !important;
-    width: 100%;
-    padding-left: 0;
-    padding-right: 0;
-}
