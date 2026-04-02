@@ -330,7 +330,7 @@ max-width: none;
     margin-top: 20px;
 }
 
-* ===== CARD TRANSPARENTE POUR ALIGNER LES H2 sur card--narrow ===== */
+/* ===== CARD TRANSPARENTE POUR ALIGNER LES H2 sur card--narrow ===== */
 .card--narrow-header {
     max-width: var(--narrow-max); /* même largeur max que les cards narrow */
     margin-inline: auto;          /* centrage parfait */
