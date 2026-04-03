@@ -250,7 +250,7 @@
     <h3>Que montre ce graphique ?</h3>
         <p>
                 Les émissions quotidiennes varient fortement en fonction du niveau d’activité de l’aéroport, 
-                avec des cycles réguliers liés au rythme des vols. Les émissions des aéronefs dominent très largement, tandis que les autres sources restent marginales et relativement stables.
+                avec des cycles hebdomadaires liés au rythme des vols. Les émissions des aéronefs dominent très largement, tandis que les autres sources restent marginales et relativement stables.
             <br>Cette dynamique montre de nouveau que le niveau d’émissions est directement déterminé par le trafic aérien : 
                 les pics et les creux d’activité se traduisent immédiatement dans les émissions observées. Une légère tendance à la hausse apparaît également sur la période présentée.
         </p>  
@@ -266,6 +266,17 @@
       <button class="export-btn" onclick="exportChartCSV('chartCumul','cumul_annuel_scopes.csv')">
         <i class="fa fa-download"></i> Exporter
       </button>
+    <h3>Que montre ce graphique ?</h3>
+        <p>
+            Ce graphique présente l’évolution cumulée des émissions de gaz à effet de serre depuis le début de l’année.
+            <br>Contrairement au graphique quotidien, les variations d’activité disparaissent ici au profit d’une tendance continue : 
+            les émissions augmentent de manière régulière au fil du temps, traduisant l’accumulation progressive de l’impact climatique.
+            <br>Les émissions liées aux opérations aériennes (en bleu) représentent l’essentiel du total cumulé.
+            Leur progression quasi linéaire montre que chaque journée d’activité contribue de manière significative à l’augmentation globale des émissions.
+            <br>Les autres postes (transports terrestres et activités aéroportuaires) suivent également une progression continue, mais restent très largement minoritaires dans le cumul total.
+            <br> Cette représentation met en évidence un point clé : <strong>en l’absence de réduction du trafic ou de transformation structurelle du secteur, 
+            les émissions ne se stabilisent pas, elles s’accumulent jour après jour, renforçant l’empreinte carbone globale de la plateforme</strong>.
+        </p>  
     </div>
 
     <div class="card--narrow-header">
@@ -278,6 +289,7 @@
       <button class="export-btn" onclick="exportChartCSV('chartAirlines','emissions_compagnies.csv')">
         <i class="fa fa-download"></i> Exporter
       </button>
+    
     </div>
 
     <div class="card--narrow-header">
