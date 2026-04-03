@@ -511,8 +511,8 @@ if (mode === "daily") {
             backgroundColor: COLORS_12[m] + "33",    // remplissage pastel ("33" = 20% alpha)
 
             borderWidth: 2,
-            pointRadius: 3,
-            pointHoverRadius: 5
+            pointRadius: 4,
+            pointHoverRadius: 6
         });
     }
 }
@@ -589,7 +589,18 @@ if (reg) {
                 ]
             },
             options: {
-                responsive: true,
+                responsive: true,  
+                animation: {
+                    duration: 600,             // durée de la transition
+                    easing: "easeInOutQuart"   // animation premium fluide
+                },
+                transitions: {
+                    active: {
+                        animation: {
+                            duration: 300
+                        }
+                    }
+                },
                 plugins: {
                     legend: { position: "top" },
                       zoom: {
