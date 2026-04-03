@@ -217,28 +217,31 @@
  <!-- Graphiques -->
 <section>
 
-        <div class="card--narrow-header">
-            <h2 class="tooltip" data-tip="Corrélation entre trafic aérien et émissions de GES">
-                Corrélation entre trafic aérien & émissions de GES ⓘ
-            </h2>
-        </div>
-        <div class="card card--narrow">  
-            <canvas id="chartMvtsVsGES"></canvas>
-            
-                                    <class="chart-buttons">
-                                        <button class="export-btn"
-                                            onclick="exportChartCSV('chartMvtsVsGES','correlation_mvts_ges.csv')">
-                                            <i class="fa fa-download"></i> Exporter
-                                        </button>
-                                    
-                                        <button class="export-btn"
-                                            onclick="resetZoomChart('chartMvtsVsGES')" class="export-btn">
-                                            Réinitialiser le zoom
-                                        </button>
+        
+<div class="card--narrow-header">
+    <h2 class="tooltip" data-tip="Corrélation entre trafic aérien et émissions de GES">
+        Corrélation entre trafic aérien & émissions de GES ⓘ
+    </h2>
+</div>
 
+<div class="card card--narrow">
+    <canvas id="chartMvtsVsGES"></canvas>
 
-            
-        <h3>Que montre ce graphique ?</h3>
+    <!-- ✅ Wrapper correct pour placer les boutons -->
+    <div class="chart-buttons">
+        <button class="export-btn"
+            onclick="exportChartCSV('chartMvtsVsGES','correlation_mvts_ges.csv')">
+            <i class="fa fa-download"></i> Exporter
+        </button>
+
+        <button class="export-btn"
+            onclick="resetZoomChart('chartMvtsVsGES')">
+            Réinitialiser le zoom
+        </button>
+    </div>
+
+    <h3>Que montre ce graphique ?</h3>
+
         <p style="font-size: 0.9375rem; line-height: 1.6;">
             Ce graphique illustre la relation entre les émissions de gaz à effet de serre et le trafic aérien, en représentation quotidienne ou annuelle selon la vue sélectionnée.
             <br>L’analyse met en évidence une relation quasi linéaire entre le nombre de mouvements aériens et les émissions de gaz à effet de serre : 
