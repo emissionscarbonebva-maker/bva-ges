@@ -723,4 +723,20 @@ header{ padding: clamp(14px, 3.5vw, 25px); }
 /* Supprime le margin-top global appliqué aux canvas Chart.js */
 .kpi1-chart canvas {
     margin-top: 0 !important;
+
+
+ 
+/* ===== BOUTONS GRAPH : EXPORT À GAUCHE / RESET À DROITE ===== */
+.chart-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    gap: 12px;
+}
+
+.chart-buttons .export-btn {
+    margin: 0;
+}
+
 }
