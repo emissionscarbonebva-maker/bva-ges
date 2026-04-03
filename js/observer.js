@@ -590,17 +590,6 @@ if (reg) {
             },
             options: {
                 responsive: true,  
-                animation: {
-                    duration: 600,             // durée de la transition
-                    easing: "easeInOutQuart"   // animation premium fluide
-                },
-                transitions: {
-                    active: {
-                        animation: {
-                            duration: 300
-                        }
-                    }
-                },
                 plugins: {
                     legend: { position: "top" },
                       zoom: {
