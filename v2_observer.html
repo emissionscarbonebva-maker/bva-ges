@@ -259,15 +259,26 @@
     <h2 class="tooltip" data-tip="Émissions quotidiennes de GES réparties selon les différents scopes (1 & 2 : émissions directes & électricité aérooprt, 3 : émissions indirectes : aéronefs, transports terrestres passagers et employés )">
         Émissions journalières par scope ⓘ
       </h2>
-<!-- Card -->
     </div>
+<!-- Card -->
     <div class="card card--narrow">
+<!-- Graph -->
         <canvas id="chartDaily"></canvas>
-      <button class="export-btn" onclick="exportChartCSV('chartDaily','emissions_journalieres_scopes.csv')">
-        <i class="fa fa-download"></i> Exporter
-      </button>
-    <h3>Que montre ce graphique ?</h3>
-        <p>
+<!-- Boutons export & reset zoom -->
+    <div class="chart-buttons">
+        <button class="export-btn"
+            onclick="exportChartCSV('chartDaily','correlation_mvts_ges.csv')">
+            <i class="fa fa-download"></i> Exporter
+        </button>
+
+        <button class="export-btn"
+            onclick="resetZoomChart('chartDaily')">
+            Réinitialiser le zoom
+        </button>
+    </div>
+<!-- Explication -->
+        <h3>Que montre ce graphique ?</h3>
+        <p style="font-size: 0.9375rem; line-height: 1.6;">
                 Les émissions quotidiennes varient fortement en fonction du niveau d’activité de l’aéroport, 
                 avec des cycles hebdomadaires liés au rythme des vols. Les émissions des aéronefs dominent très largement, tandis que les autres sources restent marginales et relativement stables.
             <br>Cette dynamique montre de nouveau que le niveau d’émissions est directement déterminé par le trafic aérien : 
