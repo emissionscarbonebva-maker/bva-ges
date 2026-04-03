@@ -475,42 +475,56 @@ function buildMvtsGesChart(mode = "daily") {
   // === Construction dynamique des datasets selon la vue ===
         let scatterDatasets = [];
 
-            if (mode === "daily") {
-                const monthNames = [
-                    "Janvier","Février","Mars","Avril","Mai","Juin",
-                    "Juillet","Août","Septembre","Octobre","Novembre","Décembre"
-                ];
+if (mode === "daily") {
+    const monthNames = [
+        "Janvier","Février","Mars","Avril","Mai","Juin",
+        "Juillet","Août","Septembre","Octobre","Novembre","Décembre"
+    ];
 
-                    for (let m = 0; m < 12; m++) {
-                        scatterDatasets.push({
-                            type: "scatter",
-                            label: monthNames[m],
-                            data: points
-                                .filter(p => new Date(p.label).getMonth() === m)
-                                .map(p => ({ x: p.x, y: p.y })),
-                            backgroundColor: COLORS_12[m],
-                            borderColor: COLORS_12[m],
-                            pointRadius: 6,
-                            pointHoverRadius: 9
-                        });
-                    }
-                }
+    for (let m = 0; m < 12; m++) {
 
-          if (mode === "annual") {
-              for (let y = 2016; y <= 2025; y++) {
-                  scatterDatasets.push({
-                      type: "scatter",
-                      label: y.toString(),
-                      data: points
-                          .filter(p => parseInt(p.label) === y)
-                          .map(p => ({ x: p.x, y: p.y })),
-                      backgroundColor: COLORS_10[y - 2016],
-                      borderColor: COLORS_10[y - 2016],
-                      pointRadius: 7,
-                      pointHoverRadius: 10
-                  });
-              }
-          }
+        // ✅ On récupère uniquement les points DU MOIS m
+        const monthPoints = points
+            .filter(p => new Date(p.label).getMonth() === m)
+            .map(p => ({ x: p.x, y: p.y }));
+
+        // ✅ On ignore les mois *vides*
+        if (monthPoints.length === 0) continue;
+
+        scatterDatasets.push({
+            type: "scatter",
+            label: monthNames[m],
+            data: monthPoints,
+            backgroundColor: COLORS_12[m],
+            borderColor: COLORS_12[m],
+            pointRadius: 6,
+            pointHoverRadius: 9
+        });
+    }
+}
+
+if (mode === "annual") {
+    for (let y = 2016; y <= 2025; y++) {
+
+        // ✅ On récupère uniquement les points DE L’ANNÉE y
+        const yearPoints = points
+            .filter(p => parseInt(p.label) === y)
+            .map(p => ({ x: p.x, y: p.y }));
+
+        // ✅ On ignore les années *vides*
+        if (yearPoints.length === 0) continue;
+
+        scatterDatasets.push({
+            type: "scatter",
+            label: y.toString(),
+            data: yearPoints,
+            backgroundColor: COLORS_10[y - 2016],
+            borderColor: COLORS_10[y - 2016],
+            pointRadius: 7,
+            pointHoverRadius: 10
+        });
+    }
+}
   
     const labels = points.map(p => p.label);
 
