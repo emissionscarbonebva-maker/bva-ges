@@ -472,29 +472,90 @@ function buildMvtsGesChart(mode = "daily") {
             label: r.année
         }));
 
+        let scatterDatasets = [];
 
-// 🎨 Couleurs selon le mode (daily = mois / annual = années)
-let pointColors = [];
+            if (mode === "daily") {
+                const monthNames = [
+                    "Janvier","Février","Mars","Avril","Mai","Juin",
+                    "Juillet","Août","Septembre","Octobre","Novembre","Décembre"
+                ];
+
+                    for (let m = 0; m < 12; m++) {
+                        scatterDatasets.push({
+                            type: "scatter",
+                            label: monthNames[m],
+                            data: points
+                                .filter(p => new Date(p.label).getMonth() === m)
+                                .map(p => ({ x: p.x, y: p.y })),
+                            backgroundColor: COLORS_12[m],
+                            borderColor: COLORS_12[m],
+                            pointRadius: 6,
+                            pointHoverRadius: 9
+                        });
+                    }
+                }
+
+          if (mode === "annual") {
+              for (let y = 2016; y <= 2025; y++) {
+                  scatterDatasets.push({
+                      type: "scatter",
+                      label: y.toString(),
+                      data: points
+                          .filter(p => parseInt(p.label) === y)
+                          .map(p => ({ x: p.x, y: p.y })),
+                      backgroundColor: COLORS_10[y - 2016],
+                      borderColor: COLORS_10[y - 2016],
+                      pointRadius: 7,
+                      pointHoverRadius: 10
+                  });
+              }
+          }
+
+
+
+// === Construction dynamique des datasets selon la vue ===
+let scatterDatasets = [];
 
 if (mode === "daily") {
-    // Couleurs par mois (0 = Janvier, 11 = Décembre)
-    pointColors = points.map(p => {
-        const m = new Date(p.label).getMonth(); // extrait le mois
-        return COLORS_12[m]; // palette à 12 couleurs
-    });
+    const monthNames = [
+        "Janvier","Février","Mars","Avril","Mai","Juin",
+        "Juillet","Août","Septembre","Octobre","Novembre","Décembre"
+    ];
+
+    for (let m = 0; m < 12; m++) {
+        scatterDatasets.push({
+            type: "scatter",
+            label: monthNames[m],
+            data: points
+                .filter(p => new Date(p.label).getMonth() === m)
+                .map(p => ({ x: p.x, y: p.y })),
+            backgroundColor: COLORS_12[m],
+            borderColor: COLORS_12[m],
+            pointRadius: 5,
+            pointHoverRadius: 8
+        });
+    }
 }
 
 if (mode === "annual") {
-    // Couleurs par année (2016 → index 0, 2024 → index 8)
-    pointColors = points.map(p => {
-        const year = parseInt(p.label);
-        const idx = year - 2016; // adapté à tes données annuelles
-        return COLORS_10[idx] || "#444"; // fallback couleur neutre
-    });
+    for (let y = 2016; y <= 2025; y++) {
+        scatterDatasets.push({
+            type: "scatter",
+            label: y.toString(),
+            data: points
+                .filter(p => parseInt(p.label) === y)
+                .map(p => ({ x: p.x, y: p.y })),
+            backgroundColor: COLORS_10[y - 2016],
+            borderColor: COLORS_10[y - 2016],
+            pointRadius: 6,
+            pointHoverRadius: 9
+        });
+    }
 }
   
     const labels = points.map(p => p.label);
 
+  
 // Calcul régression
 
 const xs = points.map(p => p.x);
@@ -517,26 +578,22 @@ if (reg) {
             type: "scatter",
             data: {
                 labels,
-                datasets: [{
-                    label: mode === "daily"
-                        ? "Corrélation quotidienne (2026)"
-                        : "Corrélation annuelle (2016–2024)",
-                    data: points.map(p => ({ x: p.x, y: p.y })),
-                    backgroundColor: pointColors,
-                    borderColor: pointColors,
-                    pointRadius: 5,
-                    pointHoverRadius: 8
-                  },
+                datasets: [
+                    // === Datasets dynamiques par mois (daily) ou par année (annual) ===
+                    ...scatterDatasets,
+                
+                    // === Ligne de régression linéaire ===
                     {
-                    type: "line",
-                    label: "Régression linéaire",
-                    data: regLine,
-                    borderColor: "red",
-                    borderWidth: 2,
-                    borderDash: [5, 5],
-                    pointRadius: 0,
-                    fill: false
-                }]
+                        type: "line",
+                        label: "Régression linéaire",
+                        data: regLine,
+                        borderColor: "red",
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        pointRadius: 0,
+                        fill: false
+                    }
+                ]
             },
             options: {
                 responsive: true,
