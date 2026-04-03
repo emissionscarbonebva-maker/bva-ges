@@ -1742,5 +1742,11 @@ function matchContainerSizeOnce() {
   }
 }   
 
+/* ===== RESET ZOOM GRAPHIQUE ===== */
+function resetZoomChartMvtsGes() {
+    if (window._chartMvtsGes) {
+        window._chartMvtsGes.resetZoom();
+    }
+}
 
 
