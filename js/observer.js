@@ -505,6 +505,10 @@ if (reg) {
                 responsive: true,
                 plugins: {
                     legend: { position: "top" },
+                    zoom: {
+                      pan:  { enabled: true, mode: 'x' },
+                      zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }
+                    },
                     tooltip: {
                         callbacks: {
                             label: ctx => {
