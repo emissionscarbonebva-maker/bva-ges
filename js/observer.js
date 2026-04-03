@@ -473,7 +473,7 @@ function buildMvtsGesChart(mode = "daily") {
         }));
 
 
-/ 🎨 Couleurs selon le mode (daily = mois / annual = années)
+// 🎨 Couleurs selon le mode (daily = mois / annual = années)
 let pointColors = [];
 
 if (mode === "daily") {
