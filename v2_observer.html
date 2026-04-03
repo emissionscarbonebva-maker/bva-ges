@@ -393,23 +393,44 @@
         </p>  
     </div>
 
+                 <!-- Émissions et nombre de vols par destination depuis le 1er janvier -->
+<!-- Titre -->
     <div class="card--narrow-header">
      <h2 class="tooltip" data-tip="Emissions de GES du scope ''Aéronefs'' et nombre de mouvements (atterrissages et décollages) selon la destination ou l'origine pour l'année 2026">
         Émissions et nombre de vols par destination depuis le 1er janvier 2026 ⓘ
       </h2>
     </div>
+<!-- Card -->
     <div class="card card--narrow">
+<!-- Graph -->
         <canvas id="chartDestination"></canvas>
-
-      <button class="export-btn" onclick="exportChartCSV('chartDestination','emissions_destinations.csv')">
-        <i class="fa fa-download"></i> Exporter
-      </button>
-        <p style="font-size:0.85em;color:#666;margin-top:10px;">
+    <p style="font-size:0.75em;color:#777;margin-top:10px;">
         Les principales destinations représentant au moins 90% des émissions de GES ou 90% des mouvements sont affichées.
         Les autres sont regroupées dans « Autres destinations ».
       </p>
+<!-- Boutons export & reset zoom -->
+       <div class="chart-buttons">
+        <button class="export-btn"
+            onclick="exportChartCSV('chartDestination','destinations_emissions.csv')">
+            <i class="fa fa-download"></i> Exporter
+        </button>
+
+        <button class="export-btn"
+            onclick="resetZoomChart('chartDestination')">
+            Réinitialiser le zoom
+        </button>
+    </div>
+<!-- Explication -->
+    <h3>Que montre ce graphique ?</h3>
+        <p style="font-size: 0.9375rem; line-height: 1.6;">/
+            Ce graphique compare, pour chaque destination, les émissions de gaz à effet de serre (barres) et le nombre de vols (courbe).
+            <br>On observe une corrélation globale entre les deux : les destinations les plus fréquentées sont aussi celles qui génèrent le plus d’émissions. 
+            Cependant, des écarts apparaissent selon les destinations, liés notamment aux distances parcourues puisqu'à nombre de vols équivalent, les trajets plus longs émettent davantage.
+            <br><strong>Cela montre que l’impact climatique ne dépend pas uniquement du volume de trafic, mais aussi de la structure du réseau de destinations (courtes vs longues distances).</strong>
+        </p>  
     </div>
 
+    
     <div class="card--narrow-header">
    <h2 class="tooltip" data-tip="Liste détaillée des vols au départ avec distance et émissions estimées">
         Vols au départ depuis le 1er janvier 2026 ⓘ
