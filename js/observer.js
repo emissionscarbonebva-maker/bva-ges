@@ -579,7 +579,7 @@ if (reg) {
                       tooltip: {
                         callbacks: {
                             label: ctx => {
-                                const p = points[ctx.dataIndex];
+                                const p = ctx.dataset.data[ctx.dataIndex];
                                 return [
                                     `Mouvements : ${p.x}`,
                                     `GES : ${p.y.toFixed(1)} tCO₂`,
