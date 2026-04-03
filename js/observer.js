@@ -523,20 +523,10 @@ if (reg) {
                 plugins: {
                     legend: { position: "top" },
                       zoom: {
-                          pan: {
-                              enabled: true,
-                              mode: 'x',
-                              threshold: 5,
-                                onPanComplete({chart}) {
-                                            if(chart.scales.x.min < 0) {
-                                                chart.scales.x.options.min = 0;
-                                                chart.update();
-                                  }
-                              }
+                          pan:  { enabled: true, mode: 'x' },
+                          zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }
                           },
-                      zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }
-                    },
-                    tooltip: {
+                      tooltip: {
                         callbacks: {
                             label: ctx => {
                                 const p = points[ctx.dataIndex];
