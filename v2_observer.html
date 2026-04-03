@@ -422,7 +422,7 @@
     </div>
 <!-- Explication -->
     <h3>Que montre ce graphique ?</h3>
-        <p style="font-size: 0.9375rem; line-height: 1.6;">/
+        <p style="font-size: 0.9375rem; line-height: 1.6;">
             Ce graphique compare, pour chaque destination, les émissions de gaz à effet de serre (barres) et le nombre de vols (courbe).
             <br>On observe une corrélation globale entre les deux : les destinations les plus fréquentées sont aussi celles qui génèrent le plus d’émissions. 
             Cependant, des écarts apparaissent selon les destinations, liés notamment aux distances parcourues puisqu'à nombre de vols équivalent, les trajets plus longs émettent davantage.
@@ -430,23 +430,48 @@
         </p>  
     </div>
 
-    
+                <!-- Vols au départ depuis le 1er janvier 2026 -->
+<!-- Titre --> 
     <div class="card--narrow-header">
    <h2 class="tooltip" data-tip="Liste détaillée des vols au départ avec distance et émissions estimées">
         Vols au départ depuis le 1er janvier 2026 ⓘ
       </h2>
     </div>
+<!-- Card --> 
     <div class="card card--narrow">
+<!-- Tableau --> 
         <div id="tableDepartures"></div>
+<!-- Explication -->
+    <h3>Que montre ce tableau ?</h3>
+        <p style="font-size: 0.9375rem; line-height: 1.6;">
+            Ce tableau présente l’ensemble des vols au départ de l’aéroport de Paris-Beauvais depuis le 1er janvier 2026, 
+            avec pour chacun les principales informations : date, numéro du vol, nom de la compagnie, type d’aéronef, destination, distance parcourue et émissions associées.
+            <br>Il permet d’explorer les données au niveau le plus fin, vol par vol, et de comprendre concrètement comment se construisent les résultats agrégés présentés dans les graphiques.
+            <br>La colonne <em>“Distance 1/2 croisière” </em>em> correspond à une distance équivalente représentant l’ensemble du vol (roulage, décollage, croisière, atterrissage), mais répartie entre les deux aéroports.
+            Autrement dit, chaque vol est comptabilisé pour moitié à Beauvais et pour moitié à l’aéroport de destination, afin d’éviter de compter deux fois les mêmes émissions.
+        </p>  
     </div>
 
+                <!-- Vols à l'arrivée depuis le 1er janvier 2026 -->
+<!-- Titre --> 
     <div class="card--narrow-header">
     <h2 class="tooltip" data-tip="Liste détaillée des vols à l'arrivée avec distance et émissions estimées">
         Vols à l'arrivée depuis le 1er janvier 2026 ⓘ
       </h2>
     </div>
+<!-- Card --> 
     <div class="card card--narrow">
+<!-- Tableau --> 
         <div id="tableArrivals"></div>
+<!-- Explication -->
+    <h3>Que montre ce tableau ?</h3>
+        <p style="font-size: 0.9375rem; line-height: 1.6;">
+            Ce tableau présente l’ensemble des vols à l'arrivée de l’aéroport de Paris-Beauvais depuis le 1er janvier 2026, 
+            avec pour chacun les principales informations : date, numéro du vol, nom de la compagnie, type d’aéronef, provenance, distance parcourue et émissions associées.
+            <br>Il permet d’explorer les données au niveau le plus fin, vol par vol, et de comprendre concrètement comment se construisent les résultats agrégés présentés dans les graphiques.
+            <br>La colonne <em>“Distance 1/2 croisière” </em>em> correspond à une distance équivalente représentant l’ensemble du vol (roulage, décollage, croisière, atterrissage), mais répartie entre les deux aéroports.
+            Autrement dit, chaque vol est comptabilisé pour moitié à Beauvais et pour moitié à l’aéroport de destination, afin d’éviter de compter deux fois les mêmes émissions.
+        </p>  
     </div>
      
 </section>
