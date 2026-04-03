@@ -282,7 +282,8 @@
                 Les émissions quotidiennes varient fortement en fonction du niveau d’activité de l’aéroport, 
                 avec des cycles hebdomadaires liés au rythme des vols. Les émissions des aéronefs dominent très largement, tandis que les autres sources restent marginales et relativement stables.
             <br>Cette dynamique montre de nouveau que le niveau d’émissions est directement déterminé par le trafic aérien : 
-                les pics et les creux d’activité se traduisent immédiatement dans les émissions observées. Une légère tendance à la hausse apparaît également sur la période présentée.
+                les pics et les creux d’activité se traduisent immédiatement dans les émissions observées. Une légère tendance à la hausse apparaît également sur la période présentée, 
+            et le début du mois d'avril montre une augmentation soudaine du trafic.
         </p>  
     </div>
 
@@ -300,7 +301,7 @@
     <!-- Boutons export & reset zoom -->
       <div class="chart-buttons">
         <button class="export-btn"
-            onclick="exportChartCSV('chartMvtsVsGES','correlation_mvts_ges.csv')">
+            onclick="exportChartCSV('chartCumul','correlation_mvts_ges.csv')">
             <i class="fa fa-download"></i> Exporter
         </button>
 
@@ -311,7 +312,7 @@
     </div>
     <!-- Explication -->
     <h3>Que montre ce graphique ?</h3>
-        <p>
+        <p style="font-size: 0.9375rem; line-height: 1.6;">
             Ce graphique présente l’évolution cumulée des émissions de gaz à effet de serre depuis le début de l’année.
             <br>Contrairement au graphique quotidien, les variations d’activité disparaissent ici au profit d’une tendance continue : 
             les émissions augmentent de manière régulière au fil du temps, traduisant l’accumulation progressive de l’impact climatique.
