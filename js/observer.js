@@ -528,8 +528,6 @@ if (reg) {
                 },
                  scales: {
                     x: {
-                        min: 0,
-                        max: xMax,
                         beginAtZero: true,
                         title: {
                             display: true,
