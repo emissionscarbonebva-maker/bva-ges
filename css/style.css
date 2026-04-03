@@ -278,7 +278,7 @@ h3{
 /* Variables */
 :root{
   --page-gap: clamp(16px, 4vw, 56px);  /* marge/gouttière pour les cartes "normal" */
-  --narrow-max: 1100px;                /* largeur "fixe" max pour les cartes "narrow" */
+  --narrow-max: 1140px;                /* largeur "fixe" max pour les cartes "narrow" */
 }
 
 /* Base commune des cartes */
