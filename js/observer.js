@@ -35,31 +35,6 @@ function exportChartCSV(chartId, filename){
 Chart.register(ChartZoom);
 
 
-const lockScatterX = {
-  id: "lockScatterX",
-  beforeUpdate(chart, args, opts) {
-
-    const scale = chart.scales.x;
-    if (!scale) return;
-
-    // ✅ Empêche tout min < 0
-    if (scale.min < opts.min) {
-      scale.options.min = opts.min;
-      scale.min = opts.min;
-    }
-
-    // ✅ Empêche le zoom-out de dépasser max
-    if (scale.max > opts.max) {
-      scale.options.max = opts.max;
-      scale.max = opts.max;
-    }
-  }
-};
-
-Chart.register(lockScatterX);
-
-
-
 /* ======================
    MAPPING DES LIBELLÉS
    ====================== */
@@ -550,18 +525,11 @@ if (reg) {
                           reg ? `R² = ${(reg.r2).toFixed(3)}` : ""
                           ]
                     },
-                    lockScatterX: {
-                            min: 0,
-                            max: xMax + 15   // ✅ marge haute automatique
-                        }
                 },
-                scales: {
+                 scales: {
                     x: {
-                        type: 'linear',
-                            min: 0,          // ✅ borne basse fixe                         
-                            max: xMax +15,     // ✅ borne haute fixe
-                            suggestedMax: xMax,  // ✅ borne haute conseillée
-
+                        min: 0,
+                        max: xMax,
                         beginAtZero: true,
                         title: {
                             display: true,
