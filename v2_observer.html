@@ -267,7 +267,7 @@
 <!-- Boutons export & reset zoom -->
     <div class="chart-buttons">
         <button class="export-btn"
-            onclick="exportChartCSV('chartDaily','correlation_mvts_ges.csv')">
+            onclick="exportChartCSV('chartDaily','daily_emissions.csv')">
             <i class="fa fa-download"></i> Exporter
         </button>
 
@@ -301,7 +301,7 @@
 <!-- Boutons export & reset zoom -->
       <div class="chart-buttons">
         <button class="export-btn"
-            onclick="exportChartCSV('chartCumul','correlation_mvts_ges.csv')">
+            onclick="exportChartCSV('chartCumul','cumul_emissions.csv')">
             <i class="fa fa-download"></i> Exporter
         </button>
 
@@ -338,7 +338,7 @@
 <!-- Boutons export & reset zoom -->
        <div class="chart-buttons">
         <button class="export-btn"
-            onclick="exportChartCSV('chartAirlines','correlation_mvts_ges.csv')">
+            onclick="exportChartCSV('chartAirlines','compagnies_emissions.csv')">
             <i class="fa fa-download"></i> Exporter
         </button>
 
@@ -359,16 +359,38 @@
         </p>  
     </div>
 
+                 <!-- Mouvements journaliers/hebdomadaires/mensuels par compagnie -->
+<!-- Titre -->
     <div class="card--narrow-header">
     <h2 class="tooltip" data-tip="Nombre de mouvements (atterrissages et décollages) effectués chaque jour par compagnie">
-        Mouvements journaliers par compagnie ⓘ
+        Mouvements journaliers/hebdomadaires/mensuels par compagnie ⓘ
       </h2>
     </div>
+<!-- Card -->
     <div class="card card--narrow">
+<!-- Graph -->
         <canvas id="chartRotations"></canvas>
-      <button class="export-btn" onclick="exportChartCSV('chartRotations','rotations_compagnies.csv')">
-        <i class="fa fa-download"></i> Exporter
-      </button>
+<!-- Boutons export & reset zoom -->
+       <div class="chart-buttons">
+        <button class="export-btn"
+            onclick="exportChartCSV('chartRotations','compagnies_mvts.csv')">
+            <i class="fa fa-download"></i> Exporter
+        </button>
+
+        <button class="export-btn"
+            onclick="resetZoomChart('chartRotations')">
+            Réinitialiser le zoom
+        </button>
+    </div>
+<!-- Explication -->
+    <h3>Que montre ce graphique ?</h3>
+        <p style="font-size: 0.9375rem; line-height: 1.6;">
+            Dans la continuité du graphique précédent, ce graphique montre le nombre de mouvements quotidiennes par compagnie.
+            <br>On observe une correspondance directe entre activité et émissions : les compagnies les plus émettrices sont aussi celles qui opèrent le plus de vols. 
+            Ryanair domine très largement le trafic, suivie par Wizz Air, tandis que les autres compagnies restent marginales.
+            <br>La saisonnalité hebdomadaire est également visible, avec des creux réguliers de trafic les mardi et mercredi, en correlation avec les niveaux d'émissions. Mais cette tendance semble évoluer avec le début du mois d'avril.
+            <br><strong>Cela confirme de nouveau que le niveau d’émissions dépend avant tout du volume de vols opérés.</strong>
+        </p>  
     </div>
 
     <div class="card--narrow-header">
