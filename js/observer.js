@@ -31,6 +31,20 @@ function exportChartCSV(chartId, filename){
   link.click();
 }
 
+
+/* ===== Couleurs pour le graph GES/mvts ===== */
+const COLORS_12 = [
+    "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728",
+    "#9467bd", "#8c564b", "#e377c2", "#7f7f7f",
+    "#bcbd22", "#17becf", "#1f3c88", "#ffa600"
+];
+
+const COLORS_9 = [
+    "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728",
+    "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#17becf"
+];
+
+
 /* ===== ZOOM GRAPHIQUE ===== */
 Chart.register(ChartZoom);
 
@@ -450,6 +464,27 @@ function buildMvtsGesChart(mode = "daily") {
             label: r.année
         }));
 
+
+/ 🎨 Couleurs selon le mode (daily = mois / annual = années)
+let pointColors = [];
+
+if (mode === "daily") {
+    // Couleurs par mois (0 = Janvier, 11 = Décembre)
+    pointColors = points.map(p => {
+        const m = new Date(p.label).getMonth(); // extrait le mois
+        return COLORS_12[m]; // palette à 12 couleurs
+    });
+}
+
+if (mode === "annual") {
+    // Couleurs par année (2016 → index 0, 2024 → index 8)
+    pointColors = points.map(p => {
+        const year = parseInt(p.label);
+        const idx = year - 2016; // adapté à tes données annuelles
+        return COLORS_9[idx] || "#444"; // fallback couleur neutre
+    });
+}
+  
     const labels = points.map(p => p.label);
 
 // Calcul régression
@@ -479,8 +514,8 @@ if (reg) {
                         ? "Corrélation quotidienne (2026)"
                         : "Corrélation annuelle (2016–2024)",
                     data: points.map(p => ({ x: p.x, y: p.y })),
-                    backgroundColor: "rgba(31,119,180,0.6)",
-                    borderColor: "#1f77b4",
+                    backgroundColor: pointColors,
+                    borderColor: pointColors,
                     pointRadius: 5,
                     pointHoverRadius: 8
                   },
