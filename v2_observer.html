@@ -257,7 +257,7 @@
  <!-- Titre -->
     <div class="card--narrow-header">  
     <h2 class="tooltip" data-tip="Émissions quotidiennes de GES réparties selon les différents scopes (1 & 2 : émissions directes & électricité aérooprt, 3 : émissions indirectes : aéronefs, transports terrestres passagers et employés )">
-        Émissions journalières par scope ⓘ
+        Émissions journalières/hebdomadaires/mensuelles par scope ⓘ
       </h2>
     </div>
 <!-- Card -->
@@ -294,11 +294,11 @@
         Total des émissions par scope depuis le 1er janvier 2026 ⓘ
       </h2>
     </div>
-    <!-- Card -->
+<!-- Card -->
     <div class="card card--narrow">
-    <!-- Graph -->
+<!-- Graph -->
         <canvas id="chartCumul"></canvas>
-    <!-- Boutons export & reset zoom -->
+<!-- Boutons export & reset zoom -->
       <div class="chart-buttons">
         <button class="export-btn"
             onclick="exportChartCSV('chartCumul','correlation_mvts_ges.csv')">
@@ -310,11 +310,11 @@
             Réinitialiser le zoom
         </button>
     </div>
-    <!-- Explication -->
+<!-- Explication -->
     <h3>Que montre ce graphique ?</h3>
         <p style="font-size: 0.9375rem; line-height: 1.6;">
             Ce graphique présente l’évolution cumulée des émissions de gaz à effet de serre depuis le début de l’année.
-            <br>Contrairement au graphique quotidien, les variations d’activité disparaissent ici au profit d’une tendance continue : 
+            <br>Contrairement au graphique précédent, les variations périodeiques d’activité disparaissent ici au profit d’une tendance continue : 
             les émissions augmentent de manière régulière au fil du temps, traduisant l’accumulation progressive de l’impact climatique.
             <br>Les émissions liées aux opérations aériennes (en bleu) représentent l’essentiel du total cumulé.
             Leur progression quasi linéaire montre que chaque journée d’activité contribue de manière significative à l’augmentation globale des émissions.
@@ -324,18 +324,39 @@
         </p>  
     </div>
 
-    
+                 <!-- Émissions journalières/hebdomadaires/mensuelles par compagnie -->
+<!-- Titre -->
     <div class="card--narrow-header">
     <h2 class="tooltip" data-tip="Emissions des GES du scope 3 ''Aéronefs'' (APU, décollage-atterrissage, vol 1/2 croisière) générées par les différentes compagnies opérants sur l'aéroport">
-        Émissions journalières par compagnie ⓘ 
+        Émissions journalières/hebdomadaires/mensuelles par compagnie ⓘ 
      </h2>
     </div>
+<!-- Card -->
     <div class="card card--narrow">
+<!-- Graph -->
         <canvas id="chartAirlines"></canvas>
-      <button class="export-btn" onclick="exportChartCSV('chartAirlines','emissions_compagnies.csv')">
-        <i class="fa fa-download"></i> Exporter
-      </button>
-    
+<!-- Boutons export & reset zoom -->
+       <div class="chart-buttons">
+        <button class="export-btn"
+            onclick="exportChartCSV('chartAirlines','correlation_mvts_ges.csv')">
+            <i class="fa fa-download"></i> Exporter
+        </button>
+
+        <button class="export-btn"
+            onclick="resetZoomChart('chartAirlines')">
+            Réinitialiser le zoom
+        </button>
+    </div>
+<!-- Explication -->
+    <h3>Que montre ce graphique ?</h3>
+        <p style="font-size: 0.9375rem; line-height: 1.6;">
+            Comme vu précédemment, les émissions liées aux aéronefs constituent l’essentiel (près de 90%) de l’impact climatique de la plateforme.
+            Le graphique ci-dessus en propose une lecture plus détaillée en présentant leur répartition par compagnie aérienne.
+            <br>On observe que les émissions sont très largement dominées par un acteur, Ryanair, dont l’activité structure l’essentiel des variations observées.
+            Les autres compagnies (Wizz Air, HiSky, SkyUp, Volotea…) contribuent de manière plus ponctuelle et à des niveaux nettement inférieurs.
+            <br>Cette lecture met en évidence une forte concentration des émissions : une part majoritaire de l’impact climatique repose sur un nombre très limité d’opérateurs, Ryanair principalement, et Wizz Air ensuite.
+            Elle souligne également que la dynamique globale des émissions dépend en grande partie des stratégies commerciales et du niveau d’activité de ces compagnies.
+        </p>  
     </div>
 
     <div class="card--narrow-header">
