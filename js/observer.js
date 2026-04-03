@@ -486,7 +486,7 @@ if (mode === "daily") {
         // ✅ On récupère uniquement les points DU MOIS m
         const monthPoints = points
             .filter(p => new Date(p.label).getMonth() === m)
-            .map(p => ({ x: p.x, y: p.y }));
+            .map(p => ({ x: p.x, y: p.y, label: p.label }));
 
         // ✅ On ignore les mois *vides*
         if (monthPoints.length === 0) continue;
@@ -509,7 +509,7 @@ if (mode === "annual") {
         // ✅ On récupère uniquement les points DE L’ANNÉE y
         const yearPoints = points
             .filter(p => parseInt(p.label) === y)
-            .map(p => ({ x: p.x, y: p.y }));
+            .map(p => ({ x: p.x, y: p.y, label: p.label }));
 
         // ✅ On ignore les années *vides*
         if (yearPoints.length === 0) continue;
