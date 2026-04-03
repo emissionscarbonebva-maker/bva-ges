@@ -505,8 +505,17 @@ if (reg) {
                 responsive: true,
                 plugins: {
                     legend: { position: "top" },
-                    zoom: {
-                      pan:  { enabled: true, mode: 'x' },
+                      zoom: {
+                          pan: {
+                              enabled: true,
+                              mode: 'x',
+                              threshold: 5,
+                              onPan: ({chart}) => {
+                                  if(chart.scales.x.min < 0){
+                                      chart.scales.x.options.min = 0;
+                                  }
+                              }
+                          },
                       zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }
                     },
                     tooltip: {
