@@ -34,22 +34,19 @@ function exportChartCSV(chartId, filename){
 /* ===== ZOOM GRAPHIQUE ===== */
 Chart.register(ChartZoom);
 
+
 const lockScalePlugin = {
-  id: 'lockScalePlugin',
-  beforeUpdate(chart) {
-    const xScale = chart.scales.x;
-
-    // ⚠️ Chart.js override min/max automatiquement dans les scatter
-    // ➜ On réinjecte nos bornes fixes ici
-    if (xScale.options.min !== undefined)
-      xScale.min = xScale.options.min;
-
-    if (xScale.options.max !== undefined)
-      xScale.max = xScale.options.max;
-  }
+    id: 'lockScalePlugin',
+    afterDataLimits(scale) {
+        if (scale.id === 'x') {
+            if (scale.options.min !== undefined) scale.min = scale.options.min;
+            if (scale.options.max !== undefined) scale.max = scale.options.max;
+        }
+    }
 };
 
 Chart.register(lockScalePlugin);
+
 
 // Fonction reset zoom des graphiques
 function resetZoomChart(canvasId) {
@@ -476,15 +473,15 @@ function buildMvtsGesChart(mode = "daily") {
     const labels = points.map(p => p.label);
 
 // Calcul régression
+
+const xs = points.map(p => p.x);
+const xMin = Math.min(...xs);
+const xMax = Math.max(...xs);
+
 const reg = linearRegression(points);
 let regLine = [];
 
 if (reg) {
-    // On prend minX et maxX pour tracer une ligne propre
-    const xs = points.map(p => p.x);
-    const xMin = Math.min(...xs);
-    const xMax = Math.max(...xs);
-
     regLine = [
         { x: xMin, y: reg.slope * xMin + reg.intercept },
         { x: xMax, y: reg.slope * xMax + reg.intercept }
@@ -553,16 +550,12 @@ if (reg) {
                     x: {
                         type: 'linear',
                         
-                        // ✅ Empêche le zoom-out d'aller dans le négatif
-                        suggestedMin: 0,
+                            min: 0,          // ✅ borne basse fixe
+                            suggestedMin: 0, // ✅ borne basse conseillée (pour zoom-out)
                         
-                        // ✅ Bornes haute cohérente
-                        suggestedMax: xMax,
-                        
-                        // ✅ IMPORTANT : empêche Chart.js d'étendre l'axe automatiquement
-                        min: 0,
-                        max: xMax,
-                     
+                            max: xMax,           // ✅ borne haute fixe
+                            suggestedMax: xMax,  // ✅ borne haute conseillée
+
                         beginAtZero: true,
                         title: {
                             display: true,
