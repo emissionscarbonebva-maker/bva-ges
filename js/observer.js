@@ -472,6 +472,7 @@ function buildMvtsGesChart(mode = "daily") {
             label: r.année
         }));
 
+  // === Construction dynamique des datasets selon la vue ===
         let scatterDatasets = [];
 
             if (mode === "daily") {
@@ -510,48 +511,6 @@ function buildMvtsGesChart(mode = "daily") {
                   });
               }
           }
-
-
-
-// === Construction dynamique des datasets selon la vue ===
-let scatterDatasets = [];
-
-if (mode === "daily") {
-    const monthNames = [
-        "Janvier","Février","Mars","Avril","Mai","Juin",
-        "Juillet","Août","Septembre","Octobre","Novembre","Décembre"
-    ];
-
-    for (let m = 0; m < 12; m++) {
-        scatterDatasets.push({
-            type: "scatter",
-            label: monthNames[m],
-            data: points
-                .filter(p => new Date(p.label).getMonth() === m)
-                .map(p => ({ x: p.x, y: p.y })),
-            backgroundColor: COLORS_12[m],
-            borderColor: COLORS_12[m],
-            pointRadius: 5,
-            pointHoverRadius: 8
-        });
-    }
-}
-
-if (mode === "annual") {
-    for (let y = 2016; y <= 2025; y++) {
-        scatterDatasets.push({
-            type: "scatter",
-            label: y.toString(),
-            data: points
-                .filter(p => parseInt(p.label) === y)
-                .map(p => ({ x: p.x, y: p.y })),
-            backgroundColor: COLORS_10[y - 2016],
-            borderColor: COLORS_10[y - 2016],
-            pointRadius: 6,
-            pointHoverRadius: 9
-        });
-    }
-}
   
     const labels = points.map(p => p.label);
 
