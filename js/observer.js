@@ -491,22 +491,28 @@ if (mode === "daily") {
 
     for (let m = 0; m < 12; m++) {
 
-        // ✅ On récupère uniquement les points DU MOIS m
         const monthPoints = points
             .filter(p => new Date(p.label).getMonth() === m)
-            .map(p => ({ x: p.x, y: p.y, label: p.label }));
+            .map(p => ({
+                x: p.x,
+                y: p.y,
+                label: p.label
+            }));
 
-        // ✅ On ignore les mois *vides*
         if (monthPoints.length === 0) continue;
 
         scatterDatasets.push({
             type: "scatter",
             label: monthNames[m],
             data: monthPoints,
-            backgroundColor: COLORS_12[m],
-            borderColor: COLORS_12[m],
-            pointRadius: 6,
-            pointHoverRadius: 9
+
+            // ✅ Couleur thème + pastel
+            borderColor: COLORS_12[m],               // contour
+            backgroundColor: COLORS_12[m] + "33",    // remplissage pastel ("33" = 20% alpha)
+
+            borderWidth: 2,
+            pointRadius: 3,
+            pointHoverRadius: 5
         });
     }
 }
@@ -514,22 +520,28 @@ if (mode === "daily") {
 if (mode === "annual") {
     for (let y = 2016; y <= 2025; y++) {
 
-        // ✅ On récupère uniquement les points DE L’ANNÉE y
         const yearPoints = points
             .filter(p => parseInt(p.label) === y)
-            .map(p => ({ x: p.x, y: p.y, label: p.label }));
+            .map(p => ({
+                x: p.x,
+                y: p.y,
+                label: p.label
+            }));
 
-        // ✅ On ignore les années *vides*
         if (yearPoints.length === 0) continue;
 
         scatterDatasets.push({
             type: "scatter",
             label: y.toString(),
             data: yearPoints,
-            backgroundColor: COLORS_10[y - 2016],
+
+            // ✅ Couleur thème + pastel
             borderColor: COLORS_10[y - 2016],
-            pointRadius: 7,
-            pointHoverRadius: 10
+            backgroundColor: COLORS_10[y - 2016] + "33",
+
+            borderWidth: 2,
+            pointRadius: 5,
+            pointHoverRadius: 8
         });
     }
 }
