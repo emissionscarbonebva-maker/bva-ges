@@ -31,6 +31,16 @@ function exportChartCSV(chartId, filename){
   link.click();
 }
 
+/* ===== ZOOM GRAPHIQUE ===== */
+Chart.register(ChartZoom);
+
+// Fonction reset zoom des graphiques
+function resetZoomChart(canvasId) {
+    const chart = Chart.getChart(canvasId);
+    if(chart) chart.resetZoom();
+}
+
+
 /* ======================
    MAPPING DES LIBELLÉS
    ====================== */
@@ -98,7 +108,7 @@ function parseCSV(url, callback){
     });
 }
 
-<!-- ========== JS PRINCIPAL (construction des graphiques) ========== -->
+//<!-- ========== JS PRINCIPAL (construction des graphiques) ========== -->//
 document.addEventListener("DOMContentLoaded", function(){
 
   /* ========= Utils Périodes & Contrôles ========= */
@@ -1674,7 +1684,7 @@ setTimeout(() => buildMvtsGesChart(mvtsInitMode), 400);
 }); // DOMContentLoaded
 
 
-<!-- ========== JS : Mise à jour "dernière mise à jour" + sidebar + alignement containers ========== -->
+//<!-- ========== JS : Mise à jour "dernière mise à jour" + sidebar + alignement containers ========== -->//
 
 // Date de mise à jour
 fetch("data/EXPORT_update_time.csv")
@@ -1733,4 +1743,6 @@ function matchContainerSizeOnce() {
     window._kpiS12AeroGrouped.resize();
   }
 }   
+
+
 
