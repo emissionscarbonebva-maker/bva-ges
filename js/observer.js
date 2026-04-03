@@ -1391,7 +1391,7 @@ setTimeout(() => buildMvtsGesChart(mvtsInitMode), 400);
                 grid: { drawOnChartArea: false },
                 title: { display: true, text: "Nombre de vols (cumul depuis le 1er janvier)" },
                 ticks: {
-                  stepSize: 1,
+                  stepSize: 100,
                   callback: (v) => Number.isInteger(v) ? v : ""
                 }
               }
