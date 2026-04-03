@@ -1743,10 +1743,9 @@ function matchContainerSizeOnce() {
 }   
 
 /* ===== RESET ZOOM GRAPHIQUE ===== */
-function resetZoomChartMvtsGes() {
-    if (window._chartMvtsGes) {
-        window._chartMvtsGes.resetZoom();
-    }
+function resetZoomChart(canvasId) {
+    const chart = Chart.getChart(canvasId);
+    if(chart) chart.resetZoom();
 }
 
 
