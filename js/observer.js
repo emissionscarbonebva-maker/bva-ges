@@ -34,24 +34,32 @@ function exportChartCSV(chartId, filename){
 
 /* ===== Couleurs pour le graph GES/mvts ===== */
 const COLORS_12 = [
-    "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728",
-    "#9467bd", "#8c564b", "#e377c2", "#7f7f7f",
-    "#bcbd22", "#17becf", "#1f3c88", "#ffa600"
+    "#1f77b4", // Janvier - bleu BVA
+    "#ff7f0e", // Février - orange
+    "#2ca02c", // Mars - vert
+    "#9467bd", // Avril - violet
+    "#d62728", // Mai - rouge
+    "#17becf", // Juin - turquoise
+    "#8c564b", // Juillet - brun doux
+    "#e377c2", // Août - rose pastel
+    "#7f7f7f", // Septembre - gris
+    "#bcbd22", // Octobre - vert olive
+    "#1f3c88", // Novembre - bleu nuit
+    "#ff9d00"  // Décembre - orange ambré (plus doux)
 ];
 
 const COLORS_10 = [
-    "#1f77b4", // 2016
-    "#ff7f0e", // 2017
-    "#2ca02c", // 2018
-    "#d62728", // 2019
-    "#9467bd", // 2020
-    "#8c564b", // 2021
-    "#e377c2", // 2022
-    "#7f7f7f", // 2023
-    "#17becf", // 2024
-    "#2ca7d8"  // 2025 (nouvelle couleur)
+    "#1f77b4", // 2016 - bleu
+    "#6a8ad7", // 2017 - bleu lavande
+    "#9467bd", // 2018 - violet
+    "#c17ecb", // 2019 - violet clair
+    "#e377c2", // 2020 - rose
+    "#ff7f0e", // 2021 - orange
+    "#ffb55a", // 2022 - orange clair
+    "#2ca02c", // 2023 - vert
+    "#8bc34a", // 2024 - vert clair
+    "#dfba2f"  // 2025 - doré (Ryanair)
 ];
-
 
 /* ===== ZOOM GRAPHIQUE ===== */
 Chart.register(ChartZoom);
