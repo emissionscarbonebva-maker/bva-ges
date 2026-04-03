@@ -489,7 +489,7 @@ if (mode === "annual") {
     pointColors = points.map(p => {
         const year = parseInt(p.label);
         const idx = year - 2016; // adapté à tes données annuelles
-        return COLORS_9[idx] || "#444"; // fallback couleur neutre
+        return COLORS_10[idx] || "#444"; // fallback couleur neutre
     });
 }
   
