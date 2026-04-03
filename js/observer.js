@@ -510,9 +510,10 @@ if (reg) {
                               enabled: true,
                               mode: 'x',
                               threshold: 5,
-                              onPan: ({chart}) => {
-                                  if(chart.scales.x.min < 0){
-                                      chart.scales.x.options.min = 0;
+                                onPanComplete({chart}) {
+                                            if(chart.scales.x.min < 0) {
+                                                chart.scales.x.options.min = 0;
+                                                chart.update();
                                   }
                               }
                           },
@@ -544,7 +545,7 @@ if (reg) {
                 scales: {
                     x: {
                         min: 0,
-                        max: xMax,
+                        //max: xMax,
                         beginAtZero: true,
                         title: {
                             display: true,
