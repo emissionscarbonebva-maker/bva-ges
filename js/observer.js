@@ -534,6 +534,7 @@ if (reg) {
                 },
                 scales: {
                     x: {
+                        min: 0,
                         beginAtZero: true,
                         title: {
                             display: true,
