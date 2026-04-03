@@ -224,13 +224,18 @@
         </div>
         <div class="card card--narrow">  
             <canvas id="chartMvtsVsGES"></canvas>
-            <button class="export-btn" onclick="exportChartCSV('chartMvtsVsGES','correlation_mvts_ges.csv')">
-                <i class="fa fa-download"></i> Exporter
-            </button>
             
-<button onclick="resetZoomChart('chartMvtsVsGES')" class="export-btn">
-   Réinitialiser le zoom
-</button>
+                                    <class="chart-buttons">
+                                        <button class="export-btn"
+                                            onclick="exportChartCSV('chartMvtsVsGES','correlation_mvts_ges.csv')">
+                                            <i class="fa fa-download"></i> Exporter
+                                        </button>
+                                    
+                                        <button class="export-btn"
+                                            onclick="resetZoomChartMvtsGes()">
+                                            Réinitialiser le zoom
+                                        </button>
+
 
             
         <h3>Que montre ce graphique ?</h3>
