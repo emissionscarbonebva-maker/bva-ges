@@ -34,6 +34,23 @@ function exportChartCSV(chartId, filename){
 /* ===== ZOOM GRAPHIQUE ===== */
 Chart.register(ChartZoom);
 
+const lockScalePlugin = {
+  id: 'lockScalePlugin',
+  beforeUpdate(chart) {
+    const xScale = chart.scales.x;
+
+    // ⚠️ Chart.js override min/max automatiquement dans les scatter
+    // ➜ On réinjecte nos bornes fixes ici
+    if (xScale.options.min !== undefined)
+      xScale.min = xScale.options.min;
+
+    if (xScale.options.max !== undefined)
+      xScale.max = xScale.options.max;
+  }
+};
+
+Chart.register(lockScalePlugin);
+
 // Fonction reset zoom des graphiques
 function resetZoomChart(canvasId) {
     const chart = Chart.getChart(canvasId);
@@ -544,8 +561,18 @@ if (reg) {
                 },
                 scales: {
                     x: {
+                        type: 'linear',
+                        
+                        // ✅ Empêche le zoom-out d'aller dans le négatif
+                        suggestedMin: 0,
+                        
+                        // ✅ Bornes haute cohérente
+                        suggestedMax: xMax,
+                        
+                        // ✅ IMPORTANT : empêche Chart.js d'étendre l'axe automatiquement
                         min: 0,
                         max: xMax,
+                     
                         beginAtZero: true,
                         title: {
                             display: true,
