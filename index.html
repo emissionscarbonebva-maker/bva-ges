@@ -2299,7 +2299,7 @@ Les émissions pour l'année 2025 seront ajoutées lorsque l'ensemble des source
 // ================================
 
 // ---------- Constantes ----------
-const HEATMAP_DAYS = ["LUN", "MAR", "MER", "JEU", "VEN", "SAM", "DIM"];
+const HEATMAP_DAYS = ["lun.", "mar.", "mer.", "jeu.", "ven.", "sam.", "dim."];
 const HEATMAP_DAY_LABELS = [
   "Lundi", "Mardi", "Mercredi",
   "Jeudi", "Vendredi", "Samedi", "Dimanche"
@@ -2447,14 +2447,28 @@ function createHeatmapChart(ctx, dataset, maxValue) {
   });
 }
 
+
+function mkBtnSafe(label, value) {
+  if (typeof mkBtn === "function") {
+    return mkBtn(label, value);
+  }
+
+  // fallback sécurisé
+  const btn = document.createElement("button");
+  btn.textContent = label;
+  btn.dataset.value = value;
+  btn.className = "btn-toggle";
+  return btn;
+}
+ 
 // ---------- Boutons (mkBtn EXISTANT) ----------
 function createHeatmapControls(onChange) {
   const container = document.getElementById("heatmap-controls");
   container.innerHTML = "";
 
-  const btnAll = mkBtn("Moyenne", "all");
-  const btnBefore = mkBtn("Avant le 30 mars", "before");
-  const btnAfter = mkBtn("Après le 30 mars", "after");
+  const btnAll = mkBtnSafe("Moyenne", "all");
+  const btnBefore = mkBtnSafe("Avant le 30 mars", "before");
+  const btnAfter = mkBtnSafe("Après le 30 mars", "after");
 
   btnAll.classList.add("active");
 
