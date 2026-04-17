@@ -2410,8 +2410,13 @@ function createHeatmapChart(ctx, dataset, maxValue) {
         },
         borderWidth: 1,
         borderColor: "rgba(255,255,255,0.6)",
-        width: ({ chart }) => chart.chartArea.width / 8,
-        height: ({ chart }) => chart.chartArea.height / 7
+        
+        width: ({ chart }) =>
+           chart.chartArea ? chart.chartArea.width / 8 : 0,
+
+        height: ({ chart }) =>
+           chart.chartArea ? chart.chartArea.height / 7 : 0
+
       }]
     },
     options: {
