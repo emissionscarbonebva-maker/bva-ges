@@ -2405,7 +2405,7 @@ function createHeatmapChart(ctx, dataset, maxValue) {
         data: dataset,
         backgroundColor(ctx) {
           const v = ctx.dataset.data[ctx.dataIndex].v;
-          const alpha = v / maxValue;
+          const alpha = Math.sqrt(v / maxValue);
           return `rgba(30,136,229,${Math.max(0.05, Math.min(alpha, 1))})`;
         },
         borderWidth: 1,
