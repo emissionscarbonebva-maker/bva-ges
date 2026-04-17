@@ -2294,7 +2294,7 @@ Les émissions pour l'année 2025 seront ajoutées lorsque l'ensemble des source
 }); // DOMContentLoaded
 
 
- // ================================
+// ================================
 // HEAT MAP - ACTIVITÉ DES VOLS
 // ================================
 
@@ -2318,11 +2318,13 @@ const HEATMAP_TIME_SLOTS = [
 
 const HEATMAP_CUTOFF_DATE = new Date("2026-03-30");
 
-// ---------- Chargement CSV (parseCSV existant) ----------
-async function loadFlightsCSV(url) {
-  const response = await fetch(url);
-  const text = await response.text();
-  return parseCSV(text);
+// ✅ même chemin que les autres graphiques
+const DATA_PATH = "data/";
+
+// ---------- Chargement CSV (parseCSV EXISTANT) ----------
+function loadFlightsCSV(url) {
+  // parseCSV fait déjà le fetch chez toi
+  return parseCSV(url);
 }
 
 // ---------- Utilitaires ----------
@@ -2433,7 +2435,7 @@ function createHeatmapChart(ctx, dataset, maxValue) {
   });
 }
 
-// ---------- Boutons (mkBtn existant) ----------
+// ---------- Boutons (mkBtn EXISTANT) ----------
 function createHeatmapControls(onChange) {
   const container = document.getElementById("heatmap-controls");
   container.innerHTML = "";
@@ -2461,8 +2463,8 @@ function createHeatmapControls(onChange) {
 
 // ---------- Initialisation ----------
 async function initHeatmapFlights() {
-  const arrivals = await loadFlightsCSV("EXPORT_arrivals_YTD.csv");
-  const departures = await loadFlightsCSV("EXPORT_departures_YTD.csv");
+  const arrivals = await loadFlightsCSV(`data/EXPORT_arrivals_YTD.csv`);
+  const departures = await loadFlightsCSV(`data/EXPORT_departures_YTD.csv`);
 
   const flights = arrivals.concat(departures);
 
@@ -2490,7 +2492,6 @@ async function initHeatmapFlights() {
 
 // Lancement
 initHeatmapFlights();
-
  
 </script>
 
