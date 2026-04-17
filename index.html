@@ -2420,6 +2420,7 @@ function createHeatmapChart(ctx, dataset, maxValue) {
       }]
     },
     options: {
+     animation: false,
       maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
@@ -2431,18 +2432,32 @@ function createHeatmapChart(ctx, dataset, maxValue) {
           }
         }
       },
-      scales: {
-        x: {
-          type: "category",
-          labels: HEATMAP_TIME_SLOTS.map(t => t.label),
-          title: { display: true, text: "Tranches horaires" }
-        },
-        y: {
-          type: "category",
-          labels: HEATMAP_DAY_LABELS,
-          title: { display: true, text: "Jour de la semaine" }
-        }
-      }
+scales: {
+  x: {
+    type: "linear",
+    min: 0,
+    max: HEATMAP_TIME_SLOTS.length,
+    ticks: {
+      stepSize: 1,
+      callback: value =>
+        HEATMAP_TIME_SLOTS[value]
+          ? HEATMAP_TIME_SLOTS[value].label
+          : ""
+    },
+    title: { display: true, text: "Tranches horaires" }
+  },
+  y: {
+    type: "linear",
+    min: 0,
+    max: HEATMAP_DAY_LABELS.length,
+    ticks: {
+      stepSize: 1,
+      callback: value =>
+        HEATMAP_DAY_LABELS[value] || ""
+    },
+    title: { display: true, text: "Jour de la semaine" }
+  }
+}
     }
   });
 }
