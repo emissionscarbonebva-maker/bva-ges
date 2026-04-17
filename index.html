@@ -2435,25 +2435,28 @@ function createHeatmapChart(ctx, dataset, maxValue) {
 scales: {
   x: {
     type: "linear",
-    min: 0,
-    max: HEATMAP_TIME_SLOTS.length,
+    min: -0.5,
+    max: HEATMAP_TIME_SLOTS.length - 0.5,
     ticks: {
       stepSize: 1,
-      callback: value =>
-        HEATMAP_TIME_SLOTS[value]
-          ? HEATMAP_TIME_SLOTS[value].label
+      callback: v =>
+        Number.isInteger(v) && HEATMAP_TIME_SLOTS[v]
+          ? HEATMAP_TIME_SLOTS[v].label
           : ""
     },
     title: { display: true, text: "Tranches horaires" }
   },
   y: {
     type: "linear",
-    min: 0,
-    max: HEATMAP_DAY_LABELS.length,
+    min: -0.5,
+    max: HEATMAP_DAY_LABELS.length - 0.5,
+    reverse: true,
     ticks: {
       stepSize: 1,
-      callback: value =>
-        HEATMAP_DAY_LABELS[value] || ""
+      callback: v =>
+        Number.isInteger(v) && HEATMAP_DAY_LABELS[v]
+          ? HEATMAP_DAY_LABELS[v]
+          : ""
     },
     title: { display: true, text: "Jour de la semaine" }
   }
