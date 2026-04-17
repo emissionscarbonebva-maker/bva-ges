@@ -2323,8 +2323,15 @@ const DATA_PATH = "data/";
 
 // ---------- Chargement CSV (parseCSV EXISTANT) ----------
 function loadFlightsCSV(url) {
-  // parseCSV fait déjà le fetch chez toi
-  return parseCSV(url);
+  return new Promise((resolve, reject) => {
+    try {
+      parseCSV(url, data => {
+        resolve(data);
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
 }
 
 // ---------- Utilitaires ----------
