@@ -93,6 +93,8 @@ const DISPLAY_LABELS = {
   "vols": "Nombre de vols (YTD)",
 
   // 7) Vols départ — EXPORT_departures_YTD.csv
+  "jour_semaine": "Jour",
+  "heure_départ": "Heure de départ",
   "numero_vol": "Numéro du vol",
   "compagnie": "Compagnie aérienne",
   "type_avion": "Type d'aéronef",
@@ -101,6 +103,7 @@ const DISPLAY_LABELS = {
   "emissions": "Emissions GES (t éq CO2)",
 
   // 8) Vols arrivées — EXPORT_arrivals_YTD.csv
+  "heure_arrivée": "Heure d'arrivée", 
   "origine": "Provenance"
 };
 
