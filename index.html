@@ -1031,7 +1031,7 @@ const s12SimpleLabelsPlugin = {
     }
 
     // === Axe X étendu jusqu'à 2025
-    const years = [2010, 2015, ...Array.from({length:(2024-2016+1)}, (_,i) => 2016+i)];
+    const years = [2010, 2015, ...Array.from({length:(2025-2016+1)}, (_,i) => 2016+i)];
 
     // Accès aux valeurs brutes (pour repérer "NC"/"À venir") et nettes (numériques)
     const mapRaw   = new Map(rows.map(r => [Number(String(r[K_YEAR]).replace(/[^\d]/g,'')), r]));
