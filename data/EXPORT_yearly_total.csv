@@ -1,4 +1,4 @@
-﻿année,pax_total,mvt_total,emissions_scope_1_2,emissions_aeronefs,emissons_totales,intensite_aéronef_scope_1_2,intensite_aéronef_pax,intensite_aéronefs_mvt,source
+﻿année,pax_total,mvt_total,emissions_scope_1_2,emissions_aeronefs,emissions_totales,intensite_aéronef_scope_1_2,intensite_aéronef_pax,intensite_aéronefs_mvt,source
 2010,2900000,20500,NC,195160,,,,,DGAC (uniquement aéronefs)
 2015,4291098,27712,NC,282030,,,,,DGAC (uniquement aéronefs)
 2016,3955896,25224,1020,235110.193,276918.5422,0.257842977,59.43,9320.89,Calculs auteurs
