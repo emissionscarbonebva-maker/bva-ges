@@ -465,7 +465,7 @@ parseCSV('./data/EXPORT_daily_scopes.csv', rows => {
 
 // Charger données annuelles
 parseCSV('./data/EXPORT_yearly_total.csv', rows => {
-    mvtsAnnual = rows.filter(r => r.année && r.mvt_total && r.emissions_aeronefs);
+    mvtsAnnual = rows.filter(r => r.année && r.mvt_total && r.emissions_totales);
 });
 
 function buildMvtsGesChart(mode = "daily") {
@@ -479,7 +479,7 @@ function buildMvtsGesChart(mode = "daily") {
         }))
         : mvtsAnnual.map(r => ({
             x: parseFloat((r.mvt_total || "0").replace(",", ".")),
-            y: parseFloat((r.emissions_aeronefs || "0").replace(",", ".")),
+            y: parseFloat((r.emissions_totales || "0").replace(",", ".")),
             label: r.année
         }));
 
