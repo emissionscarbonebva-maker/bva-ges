@@ -1847,7 +1847,7 @@ Les émissions pour 2025 sont une première estimation, qui devront être confir
         let otherCount = 0;
 
         destinationArray.forEach(item => {
-          if (filteredDestinations.length < 50 && (totalEmissions === 0 ? 0 : (cumulative / totalEmissions)) < 0.90) {
+          if (filteredDestinations.length < 50 && (totalEmissions === 0 ? 0 : (cumulative / totalEmissions)) < 0.92) {
             filteredDestinations.push(item);
             cumulative += item.emission;
           } else {
