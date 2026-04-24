@@ -1,4 +1,4 @@
-﻿date,heure_arrivée,numero_vol,compagnie,type_avion,provenance,distance_km,emissions
+﻿date,heure_arrivée,numero_vol,compagnie,type_avion,origine,distance_km,emissions
 2026-04-23,23:25,FR2844,Ryanair,B738,Nador,893.375,13.66849765
 2026-04-23,22:32,FR24,Ryanair,B38M,Dublin,405.4769231,4.972660097
 2026-04-23,22:21,FR4831,Ryanair,B38M,Cagliari,680.3947368,8.344178338
