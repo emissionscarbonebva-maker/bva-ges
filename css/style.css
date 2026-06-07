@@ -763,19 +763,26 @@ header{ padding: clamp(14px, 3.5vw, 25px); }
 
 /* Carte texte PCAET (bandeau bleu comme ta capture) */
 .kpi-pcaet-text {
-  background: #cfe8f3; /* bleu clair comme ton visuel */
-  border-radius: 12px;
+  background: #eef2f7;              /* ✅ même fond que KPI */
+  border-left: 6px solid #1f3c88;  /* ✅ même code couleur */
+  border-radius: 10px;
   padding: 20px;
-  text-align: center;
-  font-size: 1.05em;
-  line-height: 1.4;
+  font-size: 0.95rem;
+  color: #333;
+  line-height: 1.45;
+
+  /* ✅ alignement comme KPI texte */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: justify;
 }
 
-/* Mise en valeur des chiffres */
 #pcaetText b {
-  color: #d32f2f;
+  color: #c62828;   /* rouge KPI cohérent */
   font-weight: 700;
 }
+
 
 /* Responsive : hauteur réduite sur mobile */
 @media (max-width: 900px){
