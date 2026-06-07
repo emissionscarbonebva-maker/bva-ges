@@ -1321,7 +1321,27 @@ async function loadPCAET() {
                 },
                 x: {
                     ticks: {
-                        maxTicksLimit: 10
+                        autoSkip: false,
+                        callback: function(value, index, ticks) {
+                
+                            const date = this.getLabelForValue(value);
+                
+                            // On extrait jour (DD)
+                            const day = parseInt(date.slice(8, 10));
+                
+                            // ✅ afficher :
+                            // - tous les 1, 10, 20
+                            // - ET toujours le dernier point
+                
+                            const isSpecialDay = (day === 1 || day === 10 || day === 20);
+                            const isLast = (index === ticks.length - 1);
+                
+                            if (isSpecialDay || isLast) {
+                                return date;
+                            }
+                
+                            return ""; // sinon on n'affiche rien
+                        }
                     }
                 }
             }
