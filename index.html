@@ -1266,7 +1266,7 @@ async function loadPCAET() {
                 {
                     label: "Emissions GES aéroports BVA",
                     data: bvaCumul,
-                    borderColor: "#d32f2f",
+                    borderColor: "#1f78b4",
                     backgroundColor: "transparent",
                     borderWidth: 2,
                     tension: 0.2
@@ -1281,6 +1281,9 @@ async function loadPCAET() {
                     backgroundColor: "transparent",
                     borderWidth: 2,
                     tension: 0.2
+                    pointRadius: 0,          // ✅ supprime les points
+                    pointHoverRadius: 3
+
                 }
             ]
         },
