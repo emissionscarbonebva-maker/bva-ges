@@ -1255,6 +1255,73 @@ async function loadPCAET() {
 
     if (window._pcaetChart) window._pcaetChart.destroy();
 
+                 // ======================================================
+                 // 🔴 Plugin flèche + zone rouge (écart PCAET)
+                 // ======================================================
+                 
+                 const pcaetGapPlugin = {
+                     id: 'pcaetGapPlugin',
+                 
+                     afterDatasetsDraw(chart) {
+                 
+                         const { ctx, scales: { x, y } } = chart;
+                 
+                         const datasetBVA = chart.data.datasets[0].data;
+                         const datasetPCAET = chart.data.datasets[1].data;
+                 
+                         const lastIndex = datasetBVA.length - 1;
+                 
+                         const xPos = x.getPixelForValue(lastIndex);
+                         const yBVA = y.getPixelForValue(datasetBVA[lastIndex]);
+                         const yPCAET = y.getPixelForValue(datasetPCAET[lastIndex]);
+                 
+                         const diff = datasetBVA[lastIndex] - datasetPCAET[lastIndex];
+                         const pct = datasetPCAET[lastIndex] > 0 ? (diff / datasetPCAET[lastIndex]) * 100 : 0;
+                 
+                         ctx.save();
+                 
+                         // 🔴 zone rouge verticale (écart)
+                         ctx.fillStyle = "rgba(211, 47, 47, 0.1)";
+                         ctx.fillRect(
+                             xPos - 8,
+                             Math.min(yBVA, yPCAET),
+                             16,
+                             Math.abs(yPCAET - yBVA)
+                         );
+                 
+                         // 🔴 ligne verticale
+                         ctx.strokeStyle = "#d32f2f";
+                         ctx.lineWidth = 2;
+                 
+                         ctx.beginPath();
+                         ctx.moveTo(xPos, yBVA);
+                         ctx.lineTo(xPos, yPCAET);
+                         ctx.stroke();
+                 
+                         // 🔴 flèche en haut
+                         ctx.beginPath();
+                         ctx.moveTo(xPos - 6, yBVA - 6);
+                         ctx.lineTo(xPos + 6, yBVA - 6);
+                         ctx.lineTo(xPos, yBVA - 14);
+                         ctx.closePath();
+                         ctx.fillStyle = "#d32f2f";
+                         ctx.fill();
+                 
+                         // 🔴 texte "+XX%"
+                         ctx.fillStyle = "#d32f2f";
+                         ctx.font = "bold 14px Arial";
+                         ctx.textAlign = "left";
+                 
+                         ctx.fillText(
+                             `+${pct.toFixed(0)}%`,
+                             xPos + 10,
+                             (yBVA + yPCAET) / 2
+                         );
+                 
+                         ctx.restore();
+                     }
+                 };
+                 
     window._pcaetChart = new Chart(canvas.getContext("2d"), {
         type: "line",
         data: {
@@ -1269,7 +1336,7 @@ async function loadPCAET() {
                     borderColor: "#1f78b4",
                     backgroundColor: "transparent",
                     borderWidth: 2,
-                    tension: 0.6
+                    tension: 0.2
                 },
 
                 // ⚫ Trajectoire PCAET
@@ -1280,7 +1347,7 @@ async function loadPCAET() {
                     borderDash: [6, 4],
                     backgroundColor: "transparent",
                     borderWidth: 2,
-                    tension: 0.6,
+                    tension: 0.2,
                     pointRadius: 0,          // ✅ supprime les points
                     pointHoverRadius: 3
 
@@ -1306,6 +1373,8 @@ async function loadPCAET() {
                    }
                }
            },
+
+         plugins: [pcaetGapPlugin],
 
             scales: {            
                 y: {
