@@ -739,3 +739,54 @@ header{ padding: clamp(14px, 3.5vw, 25px); }
 .chart-buttons .export-btn {
     margin: 0;
 }
+
+/* ================= KPI PCAET (nouvelle ligne sous KPI existants) ================= */
+
+/* Conteneur de la ligne PCAET */
+.kpi-pcaet-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto;
+  gap: var(--kpi-gap);
+  margin-top: 20px;
+}
+
+/* Carte graphique (pleine largeur) */
+.kpi-pcaet-chart {
+  width: 100%;
+}
+
+/* On donne une vraie hauteur au graphe PCAET */
+.kpi-pcaet-chart .chart-host {
+  height: 420px;
+}
+
+/* Carte texte PCAET (bandeau bleu comme ta capture) */
+.kpi-pcaet-text {
+  background: #cfe8f3; /* bleu clair comme ton visuel */
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  font-size: 1.05em;
+  line-height: 1.4;
+}
+
+/* Mise en valeur des chiffres */
+#pcaetText b {
+  color: #d32f2f;
+  font-weight: 700;
+}
+
+/* Responsive : hauteur réduite sur mobile */
+@media (max-width: 900px){
+  .kpi-pcaet-chart .chart-host {
+    height: 320px;
+  }
+}
+
+@media (max-width: 480px){
+  .kpi-pcaet-chart .chart-host {
+    height: 260px;
+  }
+}
+``
