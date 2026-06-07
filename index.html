@@ -1241,9 +1241,9 @@ async function loadPCAET() {
 
     if (elText) {
         elText.innerHTML =
-            `Au ${dateFR}, les émissions sont supérieures de 
+            `Au ${dateFR}, les émissions générées par les aéronefs sont supérieures de 
             <b>${Math.round(diff).toLocaleString("fr-FR")} t éq CO₂</b>,
-            soit <b>${pct.toFixed(0)} %</b> par rapport à la trajectoire PCAET.`;
+            soit <b>${pct.toFixed(0)} %</b> par rapport à la trajectoire fixée par le PCAET de 2016.`;
     }
 
     // ======================================================
