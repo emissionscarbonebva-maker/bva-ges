@@ -1280,14 +1280,33 @@ async function loadPCAET() {
                  
                          ctx.save();
                  
-                         // 🔴 zone rouge verticale (écart)
-                         ctx.fillStyle = "rgba(211, 47, 47, 0.1)";
-                         ctx.fillRect(
-                             xPos - 8,
-                             Math.min(yBVA, yPCAET),
-                             16,
-                             Math.abs(yPCAET - yBVA)
-                         );
+                         // 🔴 zone rouge entre les deux courbes (sur toute la série)
+                         
+                         ctx.beginPath();
+                         
+                         // ✅ démarrer sur courbe BVA
+                         datasetBVA.forEach((value, i) => {
+                             const xPoint = x.getPixelForValue(i);
+                             const yPoint = y.getPixelForValue(value);
+                         
+                             if (i === 0) ctx.moveTo(xPoint, yPoint);
+                             else ctx.lineTo(xPoint, yPoint);
+                         });
+                         
+                         // ✅ redescendre via PCAET (dans l'autre sens)
+                         for (let i = datasetPCAET.length - 1; i >= 0; i--) {
+                             const xPoint = x.getPixelForValue(i);
+                             const yPoint = y.getPixelForValue(datasetPCAET[i]);
+                         
+                             ctx.lineTo(xPoint, yPoint);
+                         }
+                         
+                         // ✅ fermer la zone
+                         ctx.closePath();
+                         
+                         // ✅ remplissage rouge léger
+                         ctx.fillStyle = "rgba(211, 47, 47, 0.08)";
+                         ctx.fill();
                  
                          // 🔴 ligne verticale
                          ctx.strokeStyle = "#d32f2f";
@@ -1311,10 +1330,12 @@ async function loadPCAET() {
                          ctx.fillStyle = "#d32f2f";
                          ctx.font = "bold 14px Arial";
                          ctx.textAlign = "left";
-                 
+                                          
+                         ctx.textAlign = "right";   // ✅ texte aligné à droite
+                         
                          ctx.fillText(
                              `+${pct.toFixed(0)}%`,
-                             xPos + 10,
+                             xPos - 10,              // ✅ décalé à gauche de la ligne
                              (yBVA + yPCAET) / 2
                          );
                  
