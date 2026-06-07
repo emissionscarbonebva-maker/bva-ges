@@ -763,13 +763,22 @@ header{ padding: clamp(14px, 3.5vw, 25px); }
 
 /* Carte texte PCAET (bandeau bleu comme ta capture) */
 .kpi-pcaet-text {
-  background: #eef2f7;              /* ✅ même fond que KPI */
-  border-left: 6px solid #1f3c88;  /* ✅ même code couleur */
+  background: #eef2f7;              /* ✅ même fond KPI */
   border-radius: 10px;
   padding: 20px;
+
+  /* ✅ suppression du bandeau bleu */
+  border-left: none;
+
+  /* ✅ alignement à gauche */
+  text-align: left;
+
+  /* ✅ cohérence texte KPI */
   font-size: 0.95rem;
   color: #333;
   line-height: 1.45;
+}
+
 
   /* ✅ alignement comme KPI texte */
   display: flex;
