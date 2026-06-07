@@ -1170,6 +1170,150 @@ Quand bien même ${texteZZ}, ceci n'a aucun incidence puisque dans le même temp
 Les émissions pour 2025 sont une première estimation, qui devront être confirmées lorsque les compagnies Ryanair et Wizz Air publieront leurs rapports annuels 2026 (courant mai-juin).`;
   })();
 });
+
+/* ======================================================
+     KPI PCAET : Trajectoire vs émissions réelles
+     - Source : EXPORT_pcaet.csv
+     - PCAET = cumul (déjà prêt)
+     - BVA = journalier → on calcule le cumul côté JS
+     - Affiche :
+         1. Courbes (réel vs trajectoire)
+         2. KPI texte : écart absolu + %
+====================================================== */
+
+async function loadPCAET() {
+
+    // 🔹 Chargement du CSV (depuis ton repo GitHub)
+    const response = await fetch("/data/EXPORT_pcaet.csv");
+    const text = await response.text();
+
+    // 🔹 Parsing simple
+    const rows = text.trim().split("\n").slice(1);
+
+    let dates = [];
+    let pcaet = [];
+    let bvaCumul = [];
+
+    let cumul = 0; // 🔴 cumul des émissions BVA
+
+    rows.forEach(row => {
+
+        const cols = row.split(",");
+
+        if (cols.length >= 3) {
+
+            const date = cols[0];
+            const valPCAET = _toNumberSmart(cols[1]);
+            const valBVA = _toNumberSmart(cols[2]);
+
+            // ✅ données PCAET (déjà cumulées)
+            dates.push(date);
+            pcaet.push(valPCAET);
+
+            // ✅ cumul des émissions BVA (CRUCIAL)
+            cumul += valBVA;
+            bvaCumul.push(cumul);
+        }
+    });
+
+    // ======================================================
+    // 🔹 KPI FINAL (écart vs trajectoire)
+    // ======================================================
+
+    const lastPCAET = pcaet[pcaet.length - 1];
+    const lastBVA = bvaCumul[bvaCumul.length - 1];
+
+    const diff = lastBVA - lastPCAET;
+    const pct = lastPCAET > 0 ? (diff / lastPCAET) * 100 : 0;
+
+    // 🔹 Format date affichée
+    const lastDate = new Date(dates[dates.length - 1]);
+    const dateFR = lastDate.toLocaleDateString("fr-FR", {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+    });
+
+    // 🔹 Injection du texte KPI
+    const elText = document.getElementById("pcaetText");
+
+    if (elText) {
+        elText.innerHTML =
+            `Au ${dateFR}, les émissions sont supérieures de 
+            <b>${Math.round(diff).toLocaleString("fr-FR")} t éq CO₂</b>,
+            soit <b>${pct.toFixed(0)} %</b> par rapport à la trajectoire PCAET.`;
+    }
+
+    // ======================================================
+    // 🔹 GRAPHIQUE (Chart.js)
+    // ======================================================
+
+    const canvas = document.getElementById("pcaetChart");
+    if (!canvas) return;
+
+    if (window._pcaetChart) window._pcaetChart.destroy();
+
+    window._pcaetChart = new Chart(canvas.getContext("2d"), {
+        type: "line",
+        data: {
+            labels: dates,
+
+            datasets: [
+
+                // 🔴 Courbe réelle (BVA cumul)
+                {
+                    label: "Emissions GES aéroports BVA",
+                    data: bvaCumul,
+                    borderColor: "#d32f2f",
+                    backgroundColor: "transparent",
+                    borderWidth: 2,
+                    tension: 0.2
+                },
+
+                // ⚫ Trajectoire PCAET
+                {
+                    label: "Trajectoire PCAET 2026",
+                    data: pcaet,
+                    borderColor: "#333",
+                    borderDash: [6, 4],
+                    backgroundColor: "transparent",
+                    borderWidth: 2,
+                    tension: 0.2
+                }
+            ]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            plugins: {
+                legend: {
+                    position: "bottom"
+                }
+            },
+
+            scales: {
+                y: {
+                    title: {
+                        display: true,
+                        text: "t éq CO₂"
+                    }
+                },
+                x: {
+                    ticks: {
+                        maxTicksLimit: 10
+                    }
+                }
+            }
+        }
+    });
+
+}
+
+// ✅ Lancement du KPI PCAET
+loadPCAET();
+
  
   /* ====== 1. Émissions journalières par scope ====== */
   parseCSV('./data/EXPORT_daily_scopes.csv', (data,headers) => {
