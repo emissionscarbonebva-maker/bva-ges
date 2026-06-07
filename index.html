@@ -1293,10 +1293,19 @@ async function loadPCAET() {
             maintainAspectRatio: false,
 
             plugins: {
-                legend: {
-                    position: "bottom"
-                }
-            },
+               legend: {
+                   position: "bottom"
+               },
+           
+               tooltip: {
+                   callbacks: {
+                       label: function(ctx) {
+                           const v = ctx.parsed.y ?? 0;
+                           return `${ctx.dataset.label} : ${Math.round(v).toLocaleString("fr-FR")} t éq CO₂`;
+                       }
+                   }
+               }
+           },
 
             scales: {
                 y: {
