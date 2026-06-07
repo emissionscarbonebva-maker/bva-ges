@@ -1307,8 +1307,13 @@ async function loadPCAET() {
                }
            },
 
-            scales: {
+            scales: {            
                 y: {
+                    ticks: {
+                        callback: function(value) {
+                            return Math.round(value).toLocaleString("fr-FR");
+                        }
+                    },
                     title: {
                         display: true,
                         text: "t éq CO₂"
