@@ -803,6 +803,60 @@ if (!r || !K_TOT || !K_VOL || !K_S12 || !K_ACI || !K_ACC || !K_EMP) {
     const total = tot;
     elTotal.innerText = `${formatTonsFR(total)} t éq CO₂`;
 
+// ======================================================
+// ✅ KPI V2 : barre capacité carbone (verte)
+// ======================================================
+
+const cvPuits = document.getElementById("kpiPuits");
+
+if (cvPuits) {
+
+    const capacite = 41400;    // valeur PCAET (fixe ou CSV si tu veux)
+    const total = tot;         // déjà calculé dans ton code KPI1
+
+    // 👉 ratio visuel
+    const ratio = total / capacite;
+
+    // 👉 on limite la largeur à 100% pour éviter overflow visuel
+    const widthValue = Math.min(total, capacite);
+
+    if (window._kpiPuitsChart) window._kpiPuitsChart.destroy();
+
+    window._kpiPuitsChart = new Chart(cvPuits.getContext("2d"), {
+        type: "bar",
+        data: {
+            labels: [""],
+            datasets: [{
+                data: [widthValue],
+                backgroundColor: "rgba(76, 175, 80, 0.7)",
+                borderColor: "rgb(76, 175, 80)",
+                borderWidth: 1
+            }]
+        },
+        options: {
+            indexAxis: "y",
+            responsive: true,
+            maintainAspectRatio: false,
+
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: () => {
+                            return `Capacité annuelle : ${formatTonsFR(capacite)} t éq CO₂`;
+                        }
+                    }
+                }
+            },
+
+            scales: {
+                x: { display: false },
+                y: { display: false }
+            }
+        }
+    });
+}
+   
     // 2) Histogramme empilé horizontal (en dessous)
     const valuesKPI = [vols, s12, oth];
     const labelsKPI = [
@@ -921,63 +975,6 @@ Capacité annuelle de stockage des milieux naturels du Beauvaisis :
  
   })();
 });
-
-
-// ======================================================
-// ✅ KPI V2 : barre capacité carbone (verte)
-// ======================================================
-
-const cvPuits = document.getElementById("kpiPuits");
-
-if (cvPuits) {
-
-    const capacite = 41400;    // valeur PCAET (fixe ou CSV si tu veux)
-    const total = tot;         // déjà calculé dans ton code KPI1
-
-    // 👉 ratio visuel
-    const ratio = total / capacite;
-
-    // 👉 on limite la largeur à 100% pour éviter overflow visuel
-    const widthValue = Math.min(total, capacite);
-
-    if (window._kpiPuitsChart) window._kpiPuitsChart.destroy();
-
-    window._kpiPuitsChart = new Chart(cvPuits.getContext("2d"), {
-        type: "bar",
-        data: {
-            labels: [""],
-            datasets: [{
-                data: [widthValue],
-                backgroundColor: "rgba(76, 175, 80, 0.7)",
-                borderColor: "rgb(76, 175, 80)",
-                borderWidth: 1
-            }]
-        },
-        options: {
-            indexAxis: "y",
-            responsive: true,
-            maintainAspectRatio: false,
-
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        label: () => {
-                            return `Capacité annuelle : ${formatTonsFR(capacite)} t éq CO₂`;
-                        }
-                    }
-                }
-            },
-
-            scales: {
-                x: { display: false },
-                y: { display: false }
-            }
-        }
-    });
-}
-
-
  
 /* ---------- KPI 2 : S1&2 vs Aéronefs (EXPORT_yearly_total.csv) ---------- */
 parseCSV('./data/EXPORT_yearly_total.csv', (rows, rawHeaders) => {
