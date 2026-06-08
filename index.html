@@ -960,29 +960,7 @@ window._kpiPuitsChart = new Chart(cvPuits.getContext("2d"), {
       `<span style="color:${colors.s12}">■</span> Location based (scopes 1 & 2) ${pS}%&nbsp;&nbsp;` +
       `<span style="color:${colors.autres}">■</span> Autres émissions ${pO}%`;
 
-// === Équivalent forêt (AU BON ENDROIT) ===
-const absorptionParHa = 6.5;
-
-const boisParcHa = 800;
-const hezHa = 2800;
-
-const boisCapacite = boisParcHa * absorptionParHa;
-const hezCapacite = hezHa * absorptionParHa;
-
-const ratioBois = total / boisCapacite;
-const ratioHez = total / hezCapacite;
-
-const now = new Date();
-const start = new Date(now.getFullYear(), 0, 1);
-const end = new Date(now.getFullYear(), 11, 31);
-
-const pctAnnee = ((now - start) / (end - start) * 100).toFixed(1);
-   
-const capaciteTerritoire = 7400 + 34000;
-const ratioTerritoire = (total / capaciteTerritoire) * 100;
-
-const equivalenceHTML = 
-  
+const equivalenceHTML = `
 <div style="
     margin-top:12px;
     padding:12px 16px;
@@ -1005,20 +983,8 @@ Et elles ont été générées en seulement
 <strong>${pctAnnee}%</strong> de l’année ${now.getFullYear()} ⏱️.
 
 </div>
-
-;
-
-// Injection sous la légende
-
-elLegend.innerHTML +=
-<br>
-<span style="color:rgb(76,175,80)">■</span>
-Capacité annuelle de stockage des milieux naturels du Beauvaisis :
-<b>41 400 t éq CO₂</b>
-;
- 
-  })();
-});
+`;
+``
  
 /* ---------- KPI 2 : S1&2 vs Aéronefs (EXPORT_yearly_total.csv) ---------- */
 parseCSV('./data/EXPORT_yearly_total.csv', (rows, rawHeaders) => {
