@@ -821,12 +821,11 @@ if (!r || !K_TOT || !K_VOL || !K_S12 || !K_ACI || !K_ACC || !K_EMP) {
 const cvPuits = document.getElementById("kpiPuits");
 
 if (cvPuits) {
- 
-    // 👉 ratio visuel
-    const ratio = total / capacite;
 
-const capacite = 41400;    // valeur PCAET (fixe ou CSV si tu veux)
-const total = tot;         // déjà calculé dans ton code KPI1
+    // 👉 ratio visuel
+ const capacite = 41400;    // valeur PCAET (fixe ou CSV si tu veux)
+ const total = tot;         // déjà calculé dans ton code KPI1
+ const ratio = total / capacite;
 
 // ❗ clé : on garde la même échelle que le graphique principal
 const widthValue = capacite;
@@ -985,7 +984,9 @@ Et elles ont été générées en seulement
 </div>
 `;
 ``
- 
+})();   // ferme renderKPI1_fromCumul
+});     // ferme parseCSV('./data/EXPORT_cumul_scopes.csv', ...)
+   
 /* ---------- KPI 2 : S1&2 vs Aéronefs (EXPORT_yearly_total.csv) ---------- */
 parseCSV('./data/EXPORT_yearly_total.csv', (rows, rawHeaders) => {
   const headers = (rawHeaders || []).map(h => String(h).trim());
