@@ -201,30 +201,46 @@
        pour positionner les 3 éléments en CSS Grid -->
 <div class="metrics kpis-grid">
 
-  <!-- KPI 1 : histogramme horizontal (colonne gauche, ligne 1) -->
-  <div class="metric-body">
+ <!-- KPI 1 : histogramme horizontal (colonne gauche, ligne 1) -->
+<div class="kpi1-chart">
 
-  <!-- ✅ 1. Barre principale -->
-  <div class="chart-host" style="height: 140px;">
-    <canvas id="kpiBreakdown"></canvas>
-  </div>
+  <div class="metric-box">
 
-  <!-- ✅ 2. LÉGENDE (immédiatement après la barre principale) -->
-  <div id="kpiBreakdownLegend" class="mini-legend"></div>
+    <div class="metric-header">
+      <div class="metric-title">
+        Emissions totales 2026 au 7 juin
+      </div>
+      <div id="kpiTotal" class="metric-value"></div>
+    </div>
 
-  <!-- ✅ 3. Barre verte (séparée, en dessous) -->
-  <div class="chart-host" style="height: 30px; margin-top: 8px;">
-    <canvas id="kpiPuits"></canvas>
+    <div class="metric-body">
+
+      <!-- ✅ 1. Barre principale -->
+      <div class="chart-host" style="height: 140px;">
+        <canvas id="kpiBreakdown"></canvas>
+      </div>
+
+      <!-- ✅ 2. LÉGENDE -->
+      <div id="kpiBreakdownLegend" class="mini-legend"></div>
+
+      <!-- ✅ 3. Barre verte -->
+      <div class="chart-host" style="height: 30px; margin-top: 8px;">
+        <canvas id="kpiPuits"></canvas>
+      </div>
+
+    </div>
+
   </div>
 
 </div>
 
-  <!-- TEXTE (ce qui était sous KPI2) => passe sous KPI1 (colonne gauche, ligne 2) -->
-  <div class="kpi1-text">
-    <div class="metric-box kpi1-text">
-      <div id="kpiS12AeroExplain" class="kpi-explain"></div>
-    </div>
+<!-- ✅ TEXTE KPI 1 (colonne gauche, ligne 2) -->
+<div class="kpi1-text">
+  <div class="metric-box">
+    <div id="kpiS12AeroExplain" class="kpi-explain"></div>
   </div>
+</div>
+``
 
   <!-- KPI 2 : histogramme vertical (colonne droite, s'étend sur 2 lignes) -->
   <div class="metric-box kpi2-chart">
