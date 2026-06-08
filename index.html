@@ -201,46 +201,30 @@
        pour positionner les 3 éléments en CSS Grid -->
 <div class="metrics kpis-grid">
 
- <!-- KPI 1 : histogramme horizontal (colonne gauche, ligne 1) -->
-<div class="kpi1-chart">
-
-  <div class="metric-box">
-
+  <!-- KPI 1 : histogramme horizontal (colonne gauche, ligne 1) -->
+  <div class="metric-box kpi1-chart">
     <div class="metric-header">
       <div class="metric-title">
-        Emissions totales <span id="kpi1-year">2026</span> au <span id="kpi1-date-ddmois">1er janvier</span>
+        Emissions totales <span id="kpi1-year">2026</span> au <span id="kpi1-date-ddmois">11 mars</span>
       </div>
-      <div id="kpiTotal" class="metric-value"></div>
+      <div id="kpiTotal" class="metric-value">…</div>
     </div>
 
     <div class="metric-body">
-     
-     <!-- ✅ 1. Barre principale -->
-       <div class="chart-host" style="height: 140px;">
-         <canvas id="kpiBreakdown"></canvas>
-       </div>
-     
-       <!-- ✅ 2. Barre verte (juste sous la barre principale) -->
-       <div class="chart-host" style="height: 30px; margin-top: 6px;">
-         <canvas id="kpiPuits"></canvas>
-       </div>
-     
-       <!-- ✅ 3. LÉGENDE -->
-       <div id="kpiBreakdownLegend" class="mini-legend"></div>
-
+      <!-- On enveloppe le canvas dans un conteneur dimensionné -->
+      <div class="chart-host" style="height: 140px;">
+        <canvas id="kpiBreakdown"></canvas>
+      </div>
+      <div id="kpiBreakdownLegend" class="mini-legend"></div>
     </div>
-
   </div>
 
-</div>
-
-<!-- ✅ TEXTE KPI 1 (colonne gauche, ligne 2) -->
-<div class="kpi1-text">
-  <div class="metric-box">
-    <div id="kpiS12AeroExplain" class="kpi-explain"></div>
+  <!-- TEXTE (ce qui était sous KPI2) => passe sous KPI1 (colonne gauche, ligne 2) -->
+  <div class="kpi1-text">
+    <div class="metric-box kpi1-text">
+      <div id="kpiS12AeroExplain" class="kpi-explain"></div>
+    </div>
   </div>
-</div>
-``
 
   <!-- KPI 2 : histogramme vertical (colonne droite, s'étend sur 2 lignes) -->
   <div class="metric-box kpi2-chart">
@@ -814,92 +798,6 @@ if (!r || !K_TOT || !K_VOL || !K_S12 || !K_ACI || !K_ACC || !K_EMP) {
     const total = tot;
     elTotal.innerText = `${formatTonsFR(total)} t éq CO₂`;
 
-// ======================================================
-// ✅ KPI V2 : barre capacité carbone (verte)
-// ======================================================
-
-const cvPuits = document.getElementById("kpiPuits");
-
-if (cvPuits) {
-
-    // 👉 ratio visuel
- const capacite = 41400;    // valeur PCAET (fixe ou CSV si tu veux)
- const total = tot;         // déjà calculé dans ton code KPI1
- const ratio = total / capacite;
-
-// ❗ clé : on garde la même échelle que le graphique principal
-const widthValue = capacite;
-
-if (window._kpiPuitsChart) window._kpiPuitsChart.destroy();
-
-window._kpiPuitsChart = new Chart(cvPuits.getContext("2d"), {
-    type: "bar",
-    data: {
-        labels: [""],
-        datasets: [{
-            data: [widthValue],
-            backgroundColor: "rgba(76, 175, 80, 0.7)",
-            borderColor: "rgb(76, 175, 80)",
-            borderWidth: 1
-        }]
-    },
-    options: {
-        indexAxis: "y",
-        responsive: true,
-        maintainAspectRatio: false,
-
-        plugins: {
-            legend: { display: false }
-        },
-
-        scales: {
-            x: {
-                display: false,
-                max: total   // ✅ CRUCIAL → même échelle que KPI principal
-            },
-            y: { display: false }
-        }
-    }
-});
-
-
-    if (window._kpiPuitsChart) window._kpiPuitsChart.destroy();
-
-    window._kpiPuitsChart = new Chart(cvPuits.getContext("2d"), {
-        type: "bar",
-        data: {
-            labels: [""],
-            datasets: [{
-                data: [widthValue],
-                backgroundColor: "rgba(76, 175, 80, 0.7)",
-                borderColor: "rgb(76, 175, 80)",
-                borderWidth: 1
-            }]
-        },
-        options: {
-            indexAxis: "y",
-            responsive: true,
-            maintainAspectRatio: false,
-
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        label: () => {
-                            return `Capacité annuelle : ${formatTonsFR(capacite)} t éq CO₂`;
-                        }
-                    }
-                }
-            },
-
-            scales: {
-                x: { display: false },
-                y: { display: false }
-            }
-        }
-    });
-}
-   
     // 2) Histogramme empilé horizontal (en dessous)
     const valuesKPI = [vols, s12, oth];
     const labelsKPI = [
@@ -959,33 +857,42 @@ window._kpiPuitsChart = new Chart(cvPuits.getContext("2d"), {
       `<span style="color:${colors.s12}">■</span> Location based (scopes 1 & 2) ${pS}%&nbsp;&nbsp;` +
       `<span style="color:${colors.autres}">■</span> Autres émissions ${pO}%`;
 
+// === Équivalent forêt (AU BON ENDROIT) ===
+const absorptionParHa = 6.5;
+
+const boisParcHa = 800;
+const hezHa = 2800;
+
+const boisCapacite = boisParcHa * absorptionParHa;
+const hezCapacite = hezHa * absorptionParHa;
+
+const ratioBois = total / boisCapacite;
+const ratioHez = total / hezCapacite;
+
+const now = new Date();
+const start = new Date(now.getFullYear(), 0, 1);
+const end = new Date(now.getFullYear(), 11, 31);
+
+const pctAnnee = ((now - start) / (end - start) * 100).toFixed(1);
+   
+const capaciteTerritoire = 7400 + 34000;
+const ratioTerritoire = (total / capaciteTerritoire) * 100;
+
 const equivalenceHTML = `
-<div style="
-    margin-top:12px;
-    padding:12px 16px;
-    background:#e6f4ea;
-    border-left:5px solid #2e7d32;
-    border-radius:8px;
-    font-size:1em;
-    line-height:1.5;
-">
-
-🌍 <strong>Ordre de grandeur :</strong><br>
-
-Ces émissions représentent <strong>${ratioTerritoire.toFixed(1)}%</strong> 
-de la capacité annuelle de stockage carbone du Beauvaisis 🌲🌱 
-estimée à <strong>41 400 t éq CO₂ / an</strong> dans le PCAET.
-
-<br>
-
-Et elles ont été générées en seulement 
-<strong>${pctAnnee}%</strong> de l’année ${now.getFullYear()} ⏱️.
-
-</div>
+  <div style="margin-top:12px; padding:10px 12px; background:#f5f7f5; border-left:4px solid #2e7d32; font-size:1em; line-height:1.4;">
+    
+    🌍 <strong>Ordre de grandeur :</strong><br>
+    Ces émissions représentent <strong>${ratioTerritoire.toFixed(1)}%</strong> 
+    de la capacité annuelle de stockage de carbone des milieux naturels du Beauvaisis 🌲🌱 estimée à <strong>41 400 t éq CO₂ / an</strong> par le PCAET.
+    <br>Et elles ont été générées en seulement <strong>${pctAnnee}%</strong> de l’année ${now.getFullYear()} ⏱️.
+    </div>
 `;
-``
-})();   // ferme renderKPI1_fromCumul
-});     // ferme parseCSV('./data/EXPORT_cumul_scopes.csv', ...)
+
+// Injection sous la légende
+elLegend.innerHTML += equivalenceHTML;
+ 
+  })();
+});
    
 /* ---------- KPI 2 : S1&2 vs Aéronefs (EXPORT_yearly_total.csv) ---------- */
 parseCSV('./data/EXPORT_yearly_total.csv', (rows, rawHeaders) => {
