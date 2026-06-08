@@ -202,27 +202,22 @@
 <div class="metrics kpis-grid">
 
   <!-- KPI 1 : histogramme horizontal (colonne gauche, ligne 1) -->
-  <div class="metric-box kpi1-chart">
-    <div class="metric-header">
-      <div class="metric-title">
-        Emissions totales <span id="kpi1-year">2026</span> au <span id="kpi1-date-ddmois">11 mars</span>
-      </div>
-      <div id="kpiTotal" class="metric-value">…</div>
-    </div>
+  <div class="metric-body">
 
-    <div class="metric-body">
-      <!-- On enveloppe le canvas dans un conteneur dimensionné -->
-      <div class="chart-host" style="height: 140px;">
-        <canvas id="kpiBreakdown"></canvas>
-       
-          <div class="chart-host" style="height: 40px; margin-top: 10px;">
-            <canvas id="kpiPuits"></canvas>
-          </div>
-
-      </div>
-      <div id="kpiBreakdownLegend" class="mini-legend"></div>
-    </div>
+  <!-- ✅ 1. Barre principale -->
+  <div class="chart-host" style="height: 140px;">
+    <canvas id="kpiBreakdown"></canvas>
   </div>
+
+  <!-- ✅ 2. LÉGENDE (immédiatement après la barre principale) -->
+  <div id="kpiBreakdownLegend" class="mini-legend"></div>
+
+  <!-- ✅ 3. Barre verte (séparée, en dessous) -->
+  <div class="chart-host" style="height: 30px; margin-top: 8px;">
+    <canvas id="kpiPuits"></canvas>
+  </div>
+
+</div>
 
   <!-- TEXTE (ce qui était sous KPI2) => passe sous KPI1 (colonne gauche, ligne 2) -->
   <div class="kpi1-text">
