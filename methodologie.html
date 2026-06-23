@@ -107,9 +107,9 @@
         <p>
           <strong>1. Facteur d’émission pour la pahse de vol</strong><br>
           Les facteurs d’émission utilisés pour les vols au départ et à l'arrivée de l'aéroport de Paris-Beauvais sont exprimés en kg éq CO₂ / appareil.km.
-          Contrairement aux FE classiques basés sur le passager.km, ceux-ci se fondent sur la performance carbone par appareil permettant ainsi de s'affranchir du paramètre du paramètre "nombre de passager" qui n'est connu qu'a postériori.
+          Contrairement aux FE classiques basés sur le passager.km, ceux-ci se fondent sur la performance carbone par appareil permettant ainsi de s'affranchir du paramètre "nombre de passager" qui n'est connu qu'a postériori.
           <br>
-          Les compagnies Ryanair et Wizz Air (qui représentent ensemble plus de 96% du trafic) publient leurs émissions annuelles GES "Scope 1" correspondant à l'usage des aéronefs.
+          Les compagnies Ryanair et Wizz Air (qui représentent ensemble plus de 98% du trafic) publient leurs émissions annuelles GES "Scope 1" correspondant à l'usage des aéronefs.
           Ces émissions sont alors rapportées aux caractéristiques opérationnelles :
           <br>• nombre de vols annuels (sectors flown),
           <br>• distance moyenne parcourue par vol (average sector length),
@@ -119,7 +119,7 @@
           À partir de ces données, il est alors possible de calculer les facteurs d'émissions par km pour chaque type d'aéronefs :
           FE&nbsp;du type d'aéronef (kg&nbsp;CO₂&nbsp;/&nbsp;km) = (Emissions GES&nbsp;totales * % de vol du type d'aéronef)&nbsp;/ (Nb&nbsp;de&nbsp;vols total * Distance&nbsp;moyenne)
           <br>
-          Pour les autres compagnies opérants sur l'aéroport (et qui représentent donc environ 4% de l'activité), ces données ne sont pas disponibles.
+          Pour les autres compagnies opérants sur l'aéroport (et qui représentent donc environ 2% de l'activité), ces données ne sont pas disponibles.
           Le facteur d'émissions par avion.km est donc calculé à partir des données disponibles dans la Base Empreinte de l'ADEME pour les aéronefs de 101 à 220 sièges 
           parcourant 1000 à 2000 km (3,16 kg éq CO₂ / kg de fuel et 0,026 kg de fuel / péq), ajustée selon le modèle de l'aéronef.
         </p>
@@ -127,7 +127,7 @@
         <p>
           <strong>2. Facteur d’émission pour l'approvisionnement du carburant d'aviation</strong><br>
           Pour l'approvisionnement en carburant d'aviation, les rapports annuels des compagnies aériennes ne présentent pas de valeurs spécifiques.
-          <br> Par conséquent le facteur d'émissions retenu est celui proposé par la Base Empreinte de l'ADEME, soit 18,3 g éq CO₂ pour 83 g éq CO₂ émis en phase de vol (soit 220 g éq CO₂ / kg éq CO₂).
+          <br> Par conséquent le facteur d'émissions retenu est celui proposé par la Base Empreinte de l'ADEME, soit 18,3 g éq CO₂ pour 83 g éq CO₂ émis en phase de vol (soit 220 g éq CO₂ / kg éq CO₂ émis en phase de vol).
         </p>
 
         <p>
@@ -153,7 +153,7 @@
               </thead>
               <tbody>
                 <tr>
-                  <td>Ryanair</td><td>B737-800</td><td>189</td><td>12,48</td><td>2,75</td><td>0,0682</td>
+                  <td>Ryanair</td><td>B737-800 NG</td><td>189</td><td>12,48</td><td>2,75</td><td>0,0682</td>
                 </tr>
                 <tr>
                   <td>&nbsp;</td><td>B737-Max 8</td><td>197</td><td>9,99</td><td>2,20</td><td>0,0711</td>
@@ -241,10 +241,10 @@
 
         <p><strong>4. Répartition des usages</strong><br>
           Pour chaque vols au départ ou à destination de l'aéroport de Paris-Beauvais, une répartition des voyageurs entre les différents modes de transport a été réalisée.
-          <br>• Nombre de passagers par vol : ... (85% de taux d’emport).
-          <br>• Usage des navettes officielles "Aérobus" : ... (40%).
-          <br>• Usage des autres navettes : ... (11%).
-          <br>• Usage des véhicules individuels : ... (49%, dont 99% thermiques, 1% électriques).
+          <br>• Nombre de passagers par vol : 85% de taux d’emport
+          <br>• Usage des navettes officielles "Aérobus" : 40%
+          <br>• Usage des autres navettes : 11%
+          <br>• Usage des véhicules individuels : 49% (dont 99% thermiques, 1% électriques)
         </p>
 
         <p><strong>5. Source de données</strong><br>
@@ -321,7 +321,7 @@ Comme pour le transport des employés, ce post a été évalué à partir des do
         <h2>Exemple d'application</h2>
         <p>
           Afin d'expliciter au mieux le principe d'évaluation des émissions de gaz à effet de serre, un exemple est proposé ici en s'appuyant sur l'analyse d'un vol 
-  Paris-Beauvais -> Porto au moyen d'un B737-800 de la compagnie Ryanair.
+  Paris-Beauvais -> Porto au moyen d'un B737-800 NG de la compagnie Ryanair.
         </p>
 
         <p><strong>1. Emissions liées à l'aéronef</strong></p>
@@ -408,9 +408,9 @@ Comme pour le transport des employés, ce post a été évalué à partir des do
         <p>
           Une attention particulière a été porté à la qualité des données utilisées, notamment pour le scope "Aéronefs".
           <br> Un travail d'adaptation a été fait afin de s'appuyer au maximum sur les données des compagnies aériennes lorsque celles-ci étaient disponibles, plutôt que de recourir à des facteurs d'émissions "moyens", 
-            quand bien même ceux-ci sont issus de base de données reconnus.
-          <br> Pour le moment, les facteurs d'émissions calculés sont basés sur les données disponibles documents publiés en 2025 et représentatif de l'année 2024. Ces facteurs d'émissions seront mis à jour à la publication 
-            des documents 2026 et représentatif de l'année 2025. Dans un contexte important d'objectif de décarbonation et de déploiement des carburant d'aviation durable SAF, la mise à jour et l'utilisation des données les plus
+            quand bien même ceux-ci sont issus de bases de données reconnues.
+          <br> Pour le moment, les facteurs d'émissions calculés sont basés sur les données disponibles dans les documents publiés en 2025 et représentatif de l'année 2024. Ces facteurs d'émissions seront mis à jour à la publication 
+            des documents 2026 et représentatifs de l'année 2025. Dans un contexte important d'objectif de décarbonation et de déploiement des carburant d'aviation durable SAF, la mise à jour et l'utilisation des données les plus
             récentes est primordiale afin d'assurer la meilleure fiabilité possible des résultats.
           <br> De plus, un travail approfondi et constant est réalisé afin d'assurer la meilleure représentativité possible des distances de vol.
           <br><br> Pour les autres scopes, les facteurs d'émissions sont issus d'une base reconnue, et les données utilisées sont basées au maximum sur des documents et publications spécifiques. 
