@@ -2015,7 +2015,7 @@ loadPCAET();
                   const pct = totalAtIndex > 0 ? (v / totalAtIndex) * 100 : 0;
                   const pctStr = pct.toLocaleString('fr-FR', { maximumFractionDigits: 1 });
 
-                  return `${ctx.dataset.label} : ${Math.round(v).toLocaleString('fr-FR')} rotations ; soit ${pctStr} %`;
+                  return `${ctx.dataset.label} : ${Math.round(v).toLocaleString('fr-FR')} mouvements ; soit ${pctStr} %`;
                 },
                 footer: (items) => {
                   if (!items?.length) return '';
@@ -2036,7 +2036,7 @@ loadPCAET();
                     if (!isNaN(num)) totalAtIndex += num;
                   });
 
-                  return `Total : ${Math.round(totalAtIndex).toLocaleString('fr-FR')} rotations`;
+                  return `Total : ${Math.round(totalAtIndex).toLocaleString('fr-FR')} mouvements`;
                 }
               }
             }
@@ -2051,7 +2051,7 @@ loadPCAET();
             y: {
               beginAtZero: true,
               stacked: (period !== "day"),
-              title: { display: true, text: "Nombre de rotations" }
+              title: { display: true, text: "Nombre de mouvements" }
             }
           }
         }
