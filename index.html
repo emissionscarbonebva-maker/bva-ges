@@ -333,17 +333,20 @@
     </div>
 
    
-   
-   <h3>Activité en horaires sensibles ⓘ</h3>
+   <div class="card card--normal">
+    <h2 class="tooltip" data-tip="Nombre de vols ayant atterris avant 7h et décollés après 22h">
+        Activité en horaires sensibles ⓘ
+    </h2>
    
    <div id="night-summary"></div>
-   
+   </div>
+    
    <h4>Mouvements avant 7h et après 22h</h4>
    <div id="sensitive-flights"></div>
    
    <h4>Mouvements en cœur de nuit (avant 5h et après minuit)</h4>
    <div id="core-night-flights"></div>
-
+   </div>
 
    
    
@@ -2650,7 +2653,7 @@ loadPCAET();
 //Tableau horaire-vols
  function renderNightSummary(stats){
 
-    const html = `
+    const html = 
     <table>
         <thead>
             <tr>
@@ -2690,7 +2693,7 @@ loadPCAET();
             </tr>
         </tbody>
     </table>
-    `;
+    ;
 
     document.getElementById("night-summary").innerHTML = html;
 }
@@ -2725,7 +2728,7 @@ loadPCAET();
         (a.date + a.heure).localeCompare(b.date + b.heure)
     );
 
-    let html = `
+    let html = 
     <table>
     <thead>
         <tr>
@@ -2750,7 +2753,7 @@ loadPCAET();
             <td>${f.compagnie}</td>
             <td>${f.ville}</td>
         </tr>
-        `;
+        ;
     });
 
     html += "</tbody></table>";
