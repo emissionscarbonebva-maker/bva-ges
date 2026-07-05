@@ -170,10 +170,10 @@
 
       <p>
         Sont incluses :
-        <br>• Les émissions directes de l'aéroports : chauffage, consommation d'électricité, consommation de carburant pour les engins de pistes, ... (scope 1 & 2, dit "Location Based")
+        <br>• Les émissions directes du de l'aéroports : chauffage, consommation d'électricité, consommation de carburant pour les engins de pistes, ... (scope 1 & 2, dit "Location Based")
         <br>• Les émissions liées aux transports terrestres des employés pour accéder à l'aéroport (Scope 3)
         <br>• Les émissions liées au transports terrestres collectifs et individuels des passagers pour accéder à l'aéroport (Scope 3)
-        <br>• Les émissions liées aux opérations des aéronefs : APU, roulage, décollage/atterrissage, vol demi-croisère, ainsi que la production et l'approvisionnement en carburant d'aviation et l'amortissement des aéronefs (Scope 3)
+        <br>• Les émissions liées aux opérations des aéronefs : APU, roulage, décollage/atterrisage, vol demi-croisère, ainsi que la production et l'approvisionnement en carburant d'aviatione et l'amortissement des aéronefs (Scope 3)
       </p>
 
       <p>
@@ -332,24 +332,20 @@
       <div id="tableArrivals"></div>
     </div>
 
-   
-   <div class="card card--normal">
-    <h2 class="tooltip" data-tip="Nombre de vols ayant atterris avant 7h et décollés après 22h">
-        Activité en horaires sensibles ⓘ
-    </h2>
-   
-   <div id="night-summary"></div>
-   </div>
-    
-   <h4>Mouvements avant 7h et après 22h</h4>
-   <div id="sensitive-flights"></div>
-   
-   <h4>Mouvements en cœur de nuit (avant 5h et après minuit)</h4>
-   <div id="core-night-flights"></div>
-   </div>
+    <div class="card card--normal">
+     <h2 class="tooltip" data-tip="-">
+      Activité en horaires sensibles ⓘ
+     </h2>
+     <div id="tableSensitiveFlights"></div>
+    </div>
 
-   
-   
+    <div class="card card--normal">
+     <h2 class="tooltip" data-tip="-">
+      Mouvements en cœur de nuit ⓘ
+     </h2>
+     <div id="tableCoreNightFlights"></div>
+    </div>
+  
   </div>
 
   <div class="card card--normal">
@@ -402,7 +398,7 @@
 
     <p>
       Les calculs reposent sur des hypothèses méthodologiques explicitées dans la <a href="https://emissionscarbonebva-maker.github.io/bva-ges/methodologie.html">page dédiée</a>.
-      Les résultats doivent être considérés comme des estimations destinées 
+      Les résultats doivent être considérnés comme des estimations destinées 
       à alimenter le débat public.
     </p>
 
@@ -547,70 +543,6 @@ document.addEventListener("DOMContentLoaded", function(){
 
   /* ========= Utils Périodes & Contrôles ========= */
 
-
- /* ========= Fonction pour calcul horaire des vols ========= */
-
-function parseHour(timeStr) {
-    const [h, m] = timeStr.split(':').map(Number);
-    return h + m / 60;
-}
-
-function isBefore7(timeStr) {
-    return parseHour(timeStr) < 7;
-}
-
-function isAfter22(timeStr) {
-    return parseHour(timeStr) >= 22;
-}
-
-function isBefore5(timeStr) {
-    return parseHour(timeStr) < 5;
-}
-
-function isAfterMidnight(timeStr) {
-    return parseHour(timeStr) < 1; // 00:00 à 00:59
-}
-
-function analyseSensitiveFlights(arrivals, departures){
-
-    const before7Arrivals =
-        arrivals.filter(r => isBefore7(r.heure_arrivée));
-
-    const before7Departures =
-        departures.filter(r => isBefore7(r.heure_départ));
-
-    const after22Arrivals =
-        arrivals.filter(r => isAfter22(r.heure_arrivée));
-
-    const after22Departures =
-        departures.filter(r => isAfter22(r.heure_départ));
-
-    const before5Arrivals =
-        arrivals.filter(r => isBefore5(r.heure_arrivée));
-
-    const before5Departures =
-        departures.filter(r => isBefore5(r.heure_départ));
-
-    const afterMidnightArrivals =
-        arrivals.filter(r => isAfterMidnight(r.heure_arrivée));
-
-    const afterMidnightDepartures =
-        departures.filter(r => isAfterMidnight(r.heure_départ));
-
-    return {
-        before7Arrivals,
-        before7Departures,
-        after22Arrivals,
-        after22Departures,
-        before5Arrivals,
-        before5Departures,
-        afterMidnightArrivals,
-        afterMidnightDepartures
-    };
-}
-``
- 
- 
   // 0.1 Fallback ISO week si date-fns n'est pas dispo
   function _isoWeek(d){
     const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
@@ -2649,117 +2581,92 @@ loadPCAET();
 
 }); // DOMContentLoaded
 
- 
-//Tableau horaire-vols
- function renderNightSummary(stats){
+  /* ====== 8 & 9. HEURE VOLS ====== */
+Promise.all([
+  fetch('./data/EXPORT_departures_YTD.csv').then(r => r.text()),
+  fetch('./data/EXPORT_arrivals_YTD.csv').then(r => r.text())
+]).then(([depCsv, arrCsv]) => {
 
-    const html = 
-    <table>
-        <thead>
-            <tr>
-                <th>Catégorie</th>
-                <th>Départs</th>
-                <th>Arrivées</th>
-                <th>Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Avant 7h</td>
-                <td>${stats.before7Departures.length}</td>
-                <td>${stats.before7Arrivals.length}</td>
-                <td>${stats.before7Departures.length + stats.before7Arrivals.length}</td>
-            </tr>
+  const departures = Papa.parse(depCsv, {
+    header: true,
+    skipEmptyLines: true
+  }).data;
 
-            <tr>
-                <td>Après 22h</td>
-                <td>${stats.after22Departures.length}</td>
-                <td>${stats.after22Arrivals.length}</td>
-                <td>${stats.after22Departures.length + stats.after22Arrivals.length}</td>
-            </tr>
+  const arrivals = Papa.parse(arrCsv, {
+    header: true,
+    skipEmptyLines: true
+  }).data;
 
-            <tr>
-                <td>Avant 5h</td>
-                <td>${stats.before5Departures.length}</td>
-                <td>${stats.before5Arrivals.length}</td>
-                <td>${stats.before5Departures.length + stats.before5Arrivals.length}</td>
-            </tr>
+  function getHour(timeStr){
+    return parseInt(timeStr.split(':')[0],10);
+  }
 
-            <tr>
-                <td>Après minuit</td>
-                <td>${stats.afterMidnightDepartures.length}</td>
-                <td>${stats.afterMidnightArrivals.length}</td>
-                <td>${stats.afterMidnightDepartures.length + stats.afterMidnightArrivals.length}</td>
-            </tr>
-        </tbody>
-    </table>
-    ;
+  const sensitiveFlights = [];
+  const coreNightFlights = [];
 
-    document.getElementById("night-summary").innerHTML = html;
-}
+  // Départs
+  departures.forEach(f => {
 
- function renderCoreNightFlights(stats){
+    const h = getHour(f.heure_départ);
 
-    const flights = [];
+    const row = {
+      date: f.date,
+      heure: f.heure_départ,
+      type: "Départ",
+      numero_vol: f.numero_vol,
+      compagnie: f.compagnie,
+      destination: f.destination
+    };
 
-    stats.before5Arrivals.forEach(f => {
-        flights.push({
-            date: f.date,
-            heure: f.heure_arrivée,
-            type: "Arrivée",
-            vol: f.numero_vol,
-            compagnie: f.compagnie,
-            ville: f.origine
-        });
-    });
+    if(h < 7 || h >= 22){
+      sensitiveFlights.push(row);
+    }
 
-    stats.before5Departures.forEach(f => {
-        flights.push({
-            date: f.date,
-            heure: f.heure_départ,
-            type: "Départ",
-            vol: f.numero_vol,
-            compagnie: f.compagnie,
-            ville: f.destination
-        });
-    });
+    if(h < 5 || h === 0){
+      coreNightFlights.push(row);
+    }
+  });
 
-    flights.sort((a,b) =>
-        (a.date + a.heure).localeCompare(b.date + b.heure)
-    );
+  // Arrivées
+  arrivals.forEach(f => {
 
-    let html = 
-    <table>
-    <thead>
-        <tr>
-            <th>Date</th>
-            <th>Heure</th>
-            <th>Type</th>
-            <th>Vol</th>
-            <th>Compagnie</th>
-            <th>Origine / Destination</th>
-        </tr>
-    </thead>
-    <tbody>
-    `;
+    const h = getHour(f.heure_arrivée);
 
-    flights.forEach(f => {
-        html += `
-        <tr>
-            <td>${f.date}</td>
-            <td>${f.heure}</td>
-            <td>${f.type}</td>
-            <td>${f.vol}</td>
-            <td>${f.compagnie}</td>
-            <td>${f.ville}</td>
-        </tr>
-        ;
-    });
+    const row = {
+      date: f.date,
+      heure: f.heure_arrivée,
+      type: "Arrivée",
+      numero_vol: f.numero_vol,
+      compagnie: f.compagnie,
+      origine: f.origine
+    };
 
-    html += "</tbody></table>";
+    if(h < 7 || h >= 22){
+      sensitiveFlights.push(row);
+    }
 
-    document.getElementById("core-night-flights").innerHTML = html;
-}
+    if(h < 5 || h === 0){
+      coreNightFlights.push(row);
+    }
+  });
+
+  createTable(
+    "tableSensitiveFlights",
+    sensitiveFlights.sort((a,b) =>
+      (b.date + b.heure).localeCompare(a.date + a.heure)
+    )
+  );
+
+  createTable(
+    "tableCoreNightFlights",
+    coreNightFlights.sort((a,b) =>
+      (b.date + b.heure).localeCompare(a.date + a.heure)
+    )
+  );
+
+});
+
+
 
 </script>
 
