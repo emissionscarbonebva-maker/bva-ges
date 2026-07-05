@@ -2198,7 +2198,12 @@ document.getElementById("nightSummary").innerHTML = `
     <div class="night-card">
       <div class="night-number">${sensitiveArrivals.toLocaleString('fr-FR')}</div>
       <div class="night-label">Arrivées avant 7h ou après 22h</div>
-    </div>
+    </div>:
+
+    <div class="night-card">
+    <div class="night-number">${sensitiveDays}</div>
+    <div class="night-label">Jours concernés</div>
+  </div>
 
   </div>
 `;
