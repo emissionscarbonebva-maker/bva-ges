@@ -332,20 +332,6 @@
       <div id="tableArrivals"></div>
     </div>
 
-    <div class="card card--normal">
-     <h2 class="tooltip" data-tip="-">
-      Activité en horaires sensibles ⓘ
-     </h2>
-     <div id="tableSensitiveFlights"></div>
-    </div>
-
-    <div class="card card--normal">
-     <h2 class="tooltip" data-tip="-">
-      Mouvements en cœur de nuit ⓘ
-     </h2>
-     <div id="tableCoreNightFlights"></div>
-    </div>
-  
   </div>
 
   <div class="card card--normal">
@@ -2580,94 +2566,6 @@ loadPCAET();
   });
 
 }); // DOMContentLoaded
-
-  /* ====== 8 & 9. HEURE VOLS ====== */
-Promise.all([
-  fetch('./data/EXPORT_departures_YTD.csv').then(r => r.text()),
-  fetch('./data/EXPORT_arrivals_YTD.csv').then(r => r.text())
-]).then(([depCsv, arrCsv]) => {
-
-  const departures = Papa.parse(depCsv, {
-    header: true,
-    skipEmptyLines: true
-  }).data;
-
-  const arrivals = Papa.parse(arrCsv, {
-    header: true,
-    skipEmptyLines: true
-  }).data;
-
-  function getHour(timeStr){
-    return parseInt(timeStr.split(':')[0],10);
-  }
-
-  const sensitiveFlights = [];
-  const coreNightFlights = [];
-
-  // Départs
-  departures.forEach(f => {
-
-    const h = getHour(f.heure_départ);
-
-    const row = {
-      date: f.date,
-      heure: f.heure_départ,
-      type: "Départ",
-      numero_vol: f.numero_vol,
-      compagnie: f.compagnie,
-      destination: f.destination
-    };
-
-    if(h < 7 || h >= 22){
-      sensitiveFlights.push(row);
-    }
-
-    if(h < 5 || h === 0){
-      coreNightFlights.push(row);
-    }
-  });
-
-  // Arrivées
-  arrivals.forEach(f => {
-
-    const h = getHour(f.heure_arrivée);
-
-    const row = {
-      date: f.date,
-      heure: f.heure_arrivée,
-      type: "Arrivée",
-      numero_vol: f.numero_vol,
-      compagnie: f.compagnie,
-      origine: f.origine
-    };
-
-    if(h < 7 || h >= 22){
-      sensitiveFlights.push(row);
-    }
-
-    if(h < 5 || h === 0){
-      coreNightFlights.push(row);
-    }
-  });
-
-  createTable(
-    "tableSensitiveFlights",
-    sensitiveFlights.sort((a,b) =>
-      (b.date + b.heure).localeCompare(a.date + a.heure)
-    )
-  );
-
-  createTable(
-    "tableCoreNightFlights",
-    coreNightFlights.sort((a,b) =>
-      (b.date + b.heure).localeCompare(a.date + a.heure)
-    )
-  );
-
-});
-
-
-
 </script>
 
 <!-- ========== JS : Mise à jour "dernière mise à jour" + sidebar + alignement containers ========== -->
