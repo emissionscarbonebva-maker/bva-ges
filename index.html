@@ -332,6 +332,18 @@
       <div id="tableArrivals"></div>
     </div>
 
+
+
+<h3>Activité en horaires sensibles ⓘ</h3>
+
+<div id="tableSensitiveFlights"></div>
+
+<h3>Mouvements en cœur de nuit ⓘ</h3>
+
+<div id="tableCoreNightFlights"></div>
+
+
+   
   </div>
 
   <div class="card card--normal">
@@ -2063,6 +2075,98 @@ loadPCAET();
   });
 
   /* ====== 5. Emissions par destination (Départs + Arrivées) ====== */
+
+/* Partie pour le calcul des horaires sensibles et horaire de nuit */
+let departuresData = [];
+let arrivalsData = [];
+
+function buildNightTables(){
+
+  if(departuresData.length === 0 || arrivalsData.length === 0){
+    return;
+  }
+
+  const sensitiveFlights = [];
+  const coreNightFlights = [];
+
+  // Départs
+  departuresData.forEach(f => {
+
+    const hour = parseInt(
+      f["heure_départ"].split(":")[0],
+      10
+    );
+
+    const row = {
+      date: f.date,
+      heure: f["heure_départ"],
+      type: "Départ",
+      numero_vol: f.numero_vol,
+      compagnie: f.compagnie,
+      lieu: f.destination
+    };
+
+    // avant 7h ou après 22h
+    if(hour < 7 || hour >= 22){
+      sensitiveFlights.push(row);
+    }
+
+    // avant 5h ou après minuit
+    if(hour < 5 || hour === 0){
+      coreNightFlights.push(row);
+    }
+
+  });
+
+  // Arrivées
+  arrivalsData.forEach(f => {
+
+    const hour = parseInt(
+      f["heure_arrivée"].split(":")[0],
+      10
+    );
+
+    const row = {
+      date: f.date,
+      heure: f["heure_arrivée"],
+      type: "Arrivée",
+      numero_vol: f.numero_vol,
+      compagnie: f.compagnie,
+      lieu: f.origine
+    };
+
+    // avant 7h ou après 22h
+    if(hour < 7 || hour >= 22){
+      sensitiveFlights.push(row);
+    }
+
+    // avant 5h ou après minuit
+    if(hour < 5 || hour === 0){
+      coreNightFlights.push(row);
+    }
+
+  });
+
+  sensitiveFlights.sort((a,b) =>
+    (b.date + b.heure).localeCompare(a.date + a.heure)
+  );
+
+  coreNightFlights.sort((a,b) =>
+    (b.date + b.heure).localeCompare(a.date + a.heure)
+  );
+
+  createTable(
+    "tableSensitiveFlights",
+    sensitiveFlights
+  );
+
+  createTable(
+    "tableCoreNightFlights",
+    coreNightFlights
+  );
+}
+/* Fin partie horaire */
+ 
   parseCSV('./data/EXPORT_departures_YTD.csv', function (departures) {
     parseCSV('./data/EXPORT_arrivals_YTD.csv', function (arrivals) {
 
@@ -2558,12 +2662,17 @@ loadPCAET();
   `;
   document.head.appendChild(style);
 
-  parseCSV('./data/EXPORT_departures_YTD.csv', function(data){
-    createTable("tableDepartures", data);
-  });
-  parseCSV('./data/EXPORT_arrivals_YTD.csv', function(data){
-    createTable("tableArrivals", data);
-  });
+parseCSV('./data/EXPORT_departures_YTD.csv', function(data){
+  departuresData = data;
+  createTable("tableDepartures", data);
+  buildNightTables();
+});
+
+parseCSV('./data/EXPORT_arrivals_YTD.csv', function(data){
+  arrivalsData = data;
+  createTable("tableArrivals", data);
+  buildNightTables();
+});
 
 }); // DOMContentLoaded
 </script>
