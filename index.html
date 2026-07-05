@@ -346,6 +346,9 @@
       <h2 class="tooltip" data-tip="Liste détaillée des vols ayant atterris ou décollés avant 5h et après 0h">
         Mouvements en cœur de nuit ⓘ
       </h2>
+
+     <div id="coreNightSummary"></div>
+     
       <div id="tableCoreNightFlights"></div>
     </div>
 
@@ -2176,6 +2179,9 @@ const sensitiveArrivals =
 const impactedDays =
   [...new Set(coreNightFlights.map(f => f.date))].length;
 
+const sensitiveDays =
+  [...new Set(sensitiveFlights.map(f => f.date))].length;
+
 document.getElementById("nightSummary").innerHTML = `
   <div class="night-cards">
 
@@ -2194,19 +2200,25 @@ document.getElementById("nightSummary").innerHTML = `
       <div class="night-label">Arrivées avant 7h ou après 22h</div>
     </div>
 
-    <div class="night-card">
-      <div class="night-number">${totalCoreNight.toLocaleString('fr-FR')}</div>
-      <div class="night-label">Mouvements en cœur de nuit</div>
-    </div>
-
-    <div class="night-card">
-      <div class="night-number">${impactedDays}</div>
-      <div class="night-label">Nuits concernées</div>
-    </div>
-
   </div>
 `;
 
+
+document.getElementById("coreNightSummary").innerHTML = `
+<div class="night-cards">
+
+  <div class="night-card">
+    <div class="night-number">${totalCoreNight}</div>
+    <div class="night-label">Mouvements en cœur de nuit</div>
+  </div>
+
+  <div class="night-card">
+    <div class="night-number">${impactedDays}</div>
+    <div class="night-label">Nuits concernées</div>
+  </div>
+
+</div>
+`;
 
 
  
