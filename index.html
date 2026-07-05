@@ -2182,28 +2182,59 @@ const impactedDays =
 const sensitiveDays =
   [...new Set(sensitiveFlights.map(f => f.date))].length;
 
+ const before7 =
+  sensitiveFlights.filter(f => {
+    const h = parseInt(f.heure.split(":")[0],10);
+    return h < 7;
+  }).length;
+
+ const after22 =
+  sensitiveFlights.filter(f => {
+    const h = parseInt(f.heure.split(":")[0],10);
+    return h >= 22;
+  }).length;
+
+ const avgPerDay =
+  (totalSensitive / sensitiveDays).toFixed(1);
+
+ const totalMovements =
+  departuresData.length + arrivalsData.length;
+
+ const sensitivePct =
+  ((totalSensitive / totalMovements) * 100).toFixed(1);
+
 document.getElementById("nightSummary").innerHTML = `
   <div class="night-cards">
 
     <div class="night-card">
-      <div class="night-number">${totalSensitive.toLocaleString('fr-FR')}</div>
-      <div class="night-label">Mouvements en horaires sensibles</div>
-    </div>
+  <div class="night-number">${totalSensitive.toLocaleString('fr-FR')}</div>
+  <div class="night-label">Mouvements en horaires sensibles</div>
+</div>
 
-    <div class="night-card">
-      <div class="night-number">${sensitiveDepartures.toLocaleString('fr-FR')}</div>
-      <div class="night-label">Départs avant 7h ou après 22h</div>
-    </div>
+<div class="night-card">
+  <div class="night-number">${sensitiveDays}</div>
+  <div class="night-label">Jours concernés</div>
+</div>
 
-    <div class="night-card">
-      <div class="night-number">${sensitiveArrivals.toLocaleString('fr-FR')}</div>
-      <div class="night-label">Arrivées avant 7h ou après 22h</div>
-    </div>:
+<div class="night-card">
+  <div class="night-number">${before7.toLocaleString('fr-FR')}</div>
+  <div class="night-label">Mouvements avant 7h</div>
+</div>
 
-    <div class="night-card">
-    <div class="night-number">${sensitiveDays}</div>
-    <div class="night-label">Jours concernés</div>
-  </div>
+<div class="night-card">
+  <div class="night-number">${after22.toLocaleString('fr-FR')}</div>
+  <div class="night-label">Mouvements après 22h</div>
+</div>
+
+<div class="night-card">
+  <div class="night-number">${avgPerDay}</div>
+  <div class="night-label">Mvts / jour concerné</div>
+</div>
+
+<div class="night-card">
+  <div class="night-number">${sensitivePct}&nbsp;%</div>
+  <div class="night-label">Du trafic total</div>
+</div>
 
   </div>
 `;
