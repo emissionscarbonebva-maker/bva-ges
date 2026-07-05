@@ -2193,6 +2193,16 @@ const sensitiveDays =
     const h = parseInt(f.heure.split(":")[0],10);
     return h >= 22;
   }).length;
+ 
+const firstDate = new Date(new Date().getFullYear(), 0, 1);
+
+const today = new Date();
+
+const daysElapsed =
+  Math.floor((today - firstDate) / (1000 * 60 * 60 * 24)) + 1;
+
+const sensitiveDaysPct =
+  ((sensitiveDays / daysElapsed) * 100).toFixed(1);
 
  const avgPerDay =
   (totalSensitive / sensitiveDays).toFixed(1);
@@ -2214,6 +2224,11 @@ document.getElementById("nightSummary").innerHTML = `
 <div class="night-card">
   <div class="night-number">${sensitiveDays}</div>
   <div class="night-label">Jours concernés</div>
+</div>
+
+<div class="night-card">
+  <div class="night-number">${sensitiveDaysPct}&nbsp;%</div>
+  <div class="night-label">Des jours depuis le 1er janvier</div>
 </div>
 
 <div class="night-card">
