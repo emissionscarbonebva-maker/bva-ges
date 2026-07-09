@@ -2181,6 +2181,12 @@ const sensitiveArrivals =
 const impactedDays =
   [...new Set(coreNightFlights.map(f => f.date))].length;
 
+const coreNightDepartures =
+  coreNightFlights.filter(f => f.type === "Départ").length;
+
+const coreNightArrivals =
+  coreNightFlights.filter(f => f.type === "Arrivée").length;
+
 const sensitiveDays =
   [...new Set(sensitiveFlights.map(f => f.date))].length;
 
@@ -2268,6 +2274,16 @@ document.getElementById("coreNightSummary").innerHTML = `
   <div class="night-card">
     <div class="night-number">${impactedDays}</div>
     <div class="night-label">Nuits concernées</div>
+  </div>
+
+  <div class="night-card">
+    <div class="night-number">${coreNightDepartures}</div>
+    <div class="night-label">Départs en cœur de nuit</div>
+  </div>
+
+  <div class="night-card">
+    <div class="night-number">${coreNightArrivals}</div>
+    <div class="night-label">Arrivées en cœur de nuit</div>
   </div>
 
 </div>
