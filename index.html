@@ -337,7 +337,7 @@
     </div>
 
     <div class="card card--normal">
-      <h2 class="tooltip" data-tip="Liste détaillée des vols ayant atterris ou décollés avant 7h et après 22h">
+      <h2 class="tooltip" data-tip="Liste détaillée des vols ayant atterris ou décollés avant 6h et après 22h">
         Mouvements en horaires sensibles ⓘ
       </h2>
 
@@ -2117,8 +2117,8 @@ function buildNightTables(){
       lieu: f.destination
     };
 
-    // avant 7h ou après 22h
-    if(hour < 7 || hour >= 22){
+    // avant 6h ou après 22h
+    if(hour < 6 || hour > 22){
       sensitiveFlights.push(row);
     }
 
@@ -2146,8 +2146,8 @@ function buildNightTables(){
       lieu: f.origine
     };
 
-    // avant 7h ou après 22h
-    if(hour < 7 || hour >= 22){
+    // avant 6h ou après 22h
+    if(hour < 6 || hour > 22){
       sensitiveFlights.push(row);
     }
 
@@ -2190,10 +2190,10 @@ const coreNightArrivals =
 const sensitiveDays =
   [...new Set(sensitiveFlights.map(f => f.date))].length;
 
- const before7 =
+ const before6 =
   sensitiveFlights.filter(f => {
     const h = parseInt(f.heure.split(":")[0],10);
-    return h < 7;
+    return h < 6;
   }).length;
 
  const after22 =
@@ -2240,8 +2240,8 @@ document.getElementById("nightSummary").innerHTML = `
 </div>
 
 <div class="night-card">
-  <div class="night-number">${before7.toLocaleString('fr-FR')}</div>
-  <div class="night-label">Mouvements avant 7h</div>
+  <div class="night-number">${before6.toLocaleString('fr-FR')}</div>
+  <div class="night-label">Mouvements avant -h</div>
 </div>
 
 <div class="night-card">
