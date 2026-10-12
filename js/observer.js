@@ -1,30 +1,30 @@
   // Convertit "rgb(r,g,b)" -> "rgba(r,g,b,a)" (alpha entre 0 et 1)
-function obs_toRGBA(rgb, a = 1) {
+function toRGBA(rgb, a = 1) {
   if (typeof rgb !== 'string') return rgb;
   if (!rgb.startsWith('rgb(')) return rgb;
   return rgb.replace('rgb(', 'rgba(').replace(')', `, ${a})`);
 }
 
-/* ===== EXPORT obs_csv DES GRAPHIQUES ===== */
-function obs_exportChartobs_csv(chartId, filename){
+/* ===== EXPORT CSV DES GRAPHIQUES ===== */
+function exportChartCSV(chartId, filename){
   const chart = Chart.getChart(chartId);
   if(!chart){
     alert("Graphique non disponible");
     return;
   }
 
-  const obs_csv = [];
-  const obs_obs_header = ["Date"];
-  chart.data.datasets.forEach(ds => { obs_header.push(ds.label); });
-  obs_csv.push(obs_header.join(";"));
+  const csv = [];
+  const header = ["Date"];
+  chart.data.datasets.forEach(ds => { header.push(ds.label); });
+  csv.push(header.join(";"));
 
   chart.data.labels.forEach((label,i) => {
     const row = [label];
     chart.data.datasets.forEach(ds => { row.push(ds.data[i]); });
-    obs_csv.push(row.join(";"));
+    csv.push(row.join(";"));
   });
 
-  const blob = new Blob([obs_csv.join("\n")], { type:"text/obs_csv;charset=utf-8;" });
+  const blob = new Blob([csv.join("\n")], { type:"text/csv;charset=utf-8;" });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
   link.download = filename;
@@ -68,11 +68,11 @@ Chart.register(ChartZoom);
 /* ======================
    MAPPING DES LIBELLÉS
    ====================== */
-const obs_DISPLAY_LABELS = {
+const DISPLAY_LABELS = {
   // Commun
   "date": "Date",
 
-  // 1) Émissions journalières par scope — EXPORT_daily_scopes.obs_csv
+  // 1) Émissions journalières par scope — EXPORT_daily_scopes.csv
   "scope_vols": "Opérations aéronefs (Scope 3)",
   "scope_acces_ind": "Accès terrestre individuels passagers (Scope 3)",
   "scope_acces_coll": "Accès terrestre collectifs passagers (Scope 3)",
@@ -80,7 +80,7 @@ const obs_DISPLAY_LABELS = {
   "scope_1_2": "Emissions directes aéroport BVA (Scopes 1 & 2)",
   "total_mvts": "Nombre de mouvements d'aéronefs",
 
-  // 2) Cumul annuel par scope — EXPORT_cumul_scopes.obs_csv
+  // 2) Cumul annuel par scope — EXPORT_cumul_scopes.csv
   "cumul_vol": "Opérations aéronefs (Scope 3)",
   "cumul_acces_ind": "Accès terrestre individuels passagers (Scope 3)",
   "cumul_acces_coll": "Accès terrestre collectifs passagers (Scope 3)",
@@ -92,7 +92,7 @@ const obs_DISPLAY_LABELS = {
   // 6) Émissions par destination
   "vols": "Nombre de vols (YTD)",
 
-  // 7) Vols départ — EXPORT_departures_YTD.obs_csv
+  // 7) Vols départ — EXPORT_departures_YTD.csv
   "jour_semaine": "Jour",
   "heure_départ": "Heure de départ",
   "numero_vol": "Numéro du vol",
@@ -102,36 +102,36 @@ const obs_DISPLAY_LABELS = {
   "distance_km": "Distance 1/2 croisière (km)",
   "emissions": "Emissions GES (t éq CO2)",
 
-  // 8) Vols arrivées — EXPORT_arrivals_YTD.obs_csv
+  // 8) Vols arrivées — EXPORT_arrivals_YTD.csv
   "heure_arrivée": "Heure d'arrivée", 
   "origine": "Provenance"
 };
 
-/** Retourne le libellé affiché pour une clé obs_csv. */
-function obs_displayName(key) {
+/** Retourne le libellé affiché pour une clé CSV. */
+function displayName(key) {
   if (typeof key !== "string") return key;
   const k = key.replace(/\uFEFF/g, '').trim();
-  return obs_DISPLAY_LABELS[k] || k;
+  return DISPLAY_LABELS[k] || k;
 }
 
-/* ====== obs_parseobs_csv en global (accessible à tout le code) ====== */
-function obs_parseobs_csv(url, callback){
+/* ====== parseCSV en global (accessible à tout le code) ====== */
+function parseCSV(url, callback){
   fetch(url)
     .then(r => r.text())
     .then(data => {
       const rows = data.split('\n').filter(r => r.trim() !== '');
       const sep = rows[0].indexOf(';') !== -1 ? ';' : ',';
-      const obs_headers = rows[0].split(sep);
+      const headers = rows[0].split(sep);
       const result = [];
       for(let i=1; i<rows.length; i++){
         const cols = rows[i].split(sep);
         const obj = {};
-        obs_headers.forEach((h, index) => {
+        headers.forEach((h, index) => {
           obj[h.trim()] = cols[index] ? cols[index].trim() : "";
         });
         result.push(obj);
       }
-      callback(result, obs_headers);
+      callback(result, headers);
     });
 }
 
@@ -380,7 +380,7 @@ Chart.register(regressionLabelPlugin);
   
   /* ======================================================
      === KPIs MAJ ===
-     KPI 1 : bascule sur EXPORT_cumul_scopes.obs_csv (ligne la + récente)
+     KPI 1 : bascule sur EXPORT_cumul_scopes.csv (ligne la + récente)
               - Aéronefs = cumul_vols
               - Scope 1 & 2 = cumul_scope_1_2
               - Autres = cumul_acces_ind + cumul_acces_coll + cumul_employes
@@ -459,12 +459,12 @@ let mvtsDaily = null;
 let mvtsAnnual = null;
 
 // Charger données quotidiennes
-obs_parseobs_csv('./data/EXPORT_daily_scopes.obs_csv', rows => {
+parseCSV('./data/EXPORT_daily_scopes.csv', rows => {
     mvtsDaily = rows;
 });
 
 // Charger données annuelles
-obs_parseobs_csv('./data/EXPORT_yearly_total.obs_csv', rows => {
+parseCSV('./data/EXPORT_yearly_total.csv', rows => {
     mvtsAnnual = rows.filter(r => r.année && r.mvt_total && r.emissions_totales);
 });
 
@@ -651,14 +651,14 @@ setTimeout(() => buildMvtsGesChart(mvtsInitMode), 400);
 
   
   /* ====== 1. Émissions journalières par scope ====== */
-  obs_parseobs_csv('./data/EXPORT_daily_scopes.obs_csv', (data,obs_headers) => {
-    data.sort((a,b) => new Date(a[obs_headers[0]]) - new Date(b[obs_headers[0]]));
+  parseCSV('./data/EXPORT_daily_scopes.csv', (data,headers) => {
+    data.sort((a,b) => new Date(a[headers[0]]) - new Date(b[headers[0]]));
 
     let chartDailyInstance = null;
 
     function buildChartDaily(period) {
-      const dateKey   = obs_headers[0];
-      const scopeKeys = obs_headers.slice(1, 6);
+      const dateKey   = headers[0];
+      const scopeKeys = headers.slice(1, 6);
 
       const perScope = {};
       scopeKeys.forEach(k => perScope[k] = {});
@@ -702,7 +702,7 @@ setTimeout(() => buildMvtsGesChart(mvtsInitMode), 400);
         const bg = isDay ? (c + "33") : (c + "AA");
         return {
           type: isDay ? "line" : "bar",
-          label: obs_displayName(k),
+          label: displayName(k),
           data: labels.map(pk => perScope[k][pk] || 0),
           borderColor: c,
           backgroundColor: bg,
@@ -791,18 +791,18 @@ setTimeout(() => buildMvtsGesChart(mvtsInitMode), 400);
   });
 
   /* ====== 2. Cumul annuel par scope ====== */
-  obs_parseobs_csv('./data/EXPORT_cumul_scopes.obs_csv', (data,obs_headers) => {
+  parseCSV('./data/EXPORT_cumul_scopes.csv', (data,headers) => {
     if(!data || data.length === 0) return;
 
-    obs_headers = obs_headers.map(h => h.replace(/\uFEFF/g,'').trim());
+    headers = headers.map(h => h.replace(/\uFEFF/g,'').trim());
 
     let chartCumulInstance = null;
 
     function buildChartCumul(period) {
-      const dateKey  = obs_headers[0];
-      const totalKey = obs_headers.find(h => h === "cumul_total");
+      const dateKey  = headers[0];
+      const totalKey = headers.find(h => h === "cumul_total");
       const excluded = ["cumul_total", "cumul_mvts"];
-      const scopeCols = obs_headers.filter(h => h !== dateKey && !excluded.includes(h));
+      const scopeCols = headers.filter(h => h !== dateKey && !excluded.includes(h));
 
 
 
@@ -840,7 +840,7 @@ setTimeout(() => buildMvtsGesChart(mvtsInitMode), 400);
       const datasets = orderedCols.map(col => {
         const c = colorMap[col] || "#888888";
         return {
-          label: obs_displayName(col),
+          label: displayName(col),
           data: labels.map(pk => {
             const raw = periodLastRow[pk][col];
             let v = raw ? parseFloat(String(raw).replace(',', '.').trim()) : 0;
@@ -929,7 +929,7 @@ setTimeout(() => buildMvtsGesChart(mvtsInitMode), 400);
   });
 
   /* ====== 3. Émissions par compagnie ====== */
-  obs_parseobs_csv('./data/EXPORT_daily_airlines.obs_csv', (dataRaw) => {
+  parseCSV('./data/EXPORT_daily_airlines.csv', (dataRaw) => {
     const data = dataRaw.map(r => ({
       date: r.date,
       compagnie: String(r.compagnie ?? '').trim(),
@@ -980,8 +980,8 @@ setTimeout(() => buildMvtsGesChart(mvtsInitMode), 400);
         fill: false,    
         borderColor: palette[comp] || "rgb(120,120,120)",
         backgroundColor: (period === "day")
-              ? obs_toRGBA(palette[comp] || "rgb(120,120,120)", 0.25)
-              : obs_toRGBA(palette[comp] || "rgb(120,120,120)", 0.85),
+              ? toRGBA(palette[comp] || "rgb(120,120,120)", 0.25)
+              : toRGBA(palette[comp] || "rgb(120,120,120)", 0.85),
         stack: (period === "day" ? undefined : "stackAir")
       }));
 
@@ -1105,7 +1105,7 @@ setTimeout(() => buildMvtsGesChart(mvtsInitMode), 400);
   });
 
   /* ====== 4. Rotations par compagnie ====== */
-  obs_parseobs_csv('./data/EXPORT_daily_airlines.obs_csv', (data) => {
+  parseCSV('./data/EXPORT_daily_airlines.csv', (data) => {
     let chartRotationsInstance = null;
 
     function buildChartRotations(period, data) {
@@ -1149,8 +1149,8 @@ setTimeout(() => buildMvtsGesChart(mvtsInitMode), 400);
         fill: false,
         borderColor: palette[comp] || "rgb(120,120,120)",
         backgroundColor: (period === "day")
-               ? obs_toRGBA(palette[comp] || "rgb(120,120,120)", 0.25)
-               : obs_toRGBA(palette[comp] || "rgb(120,120,120)", 0.85),
+               ? toRGBA(palette[comp] || "rgb(120,120,120)", 0.25)
+               : toRGBA(palette[comp] || "rgb(120,120,120)", 0.85),
         stack: (period === "day" ? undefined : "stackRot")
       }));
 
@@ -1272,8 +1272,8 @@ setTimeout(() => buildMvtsGesChart(mvtsInitMode), 400);
   });
 
   /* ====== 5. Emissions par destination (Départs + Arrivées) ====== */
-  obs_parseobs_csv('./data/EXPORT_departures_YTD.obs_csv', function (departures) {
-    obs_parseobs_csv('./data/EXPORT_arrivals_YTD.obs_csv', function (arrivals) {
+  parseCSV('./data/EXPORT_departures_YTD.csv', function (departures) {
+    parseCSV('./data/EXPORT_arrivals_YTD.csv', function (arrivals) {
 
       const destinationMap = {};
       let totalEmissions = 0;
@@ -1378,7 +1378,7 @@ setTimeout(() => buildMvtsGesChart(mvtsInitMode), 400);
             datasets: [
               {
                 type: "bar",
-                label: obs_displayName("emissions"),
+                label: displayName("emissions"),
                 data: valuesEmissions,
                 yAxisID: "y",
                 backgroundColor: "rgba(31, 60, 136, 0.25)",
@@ -1469,7 +1469,7 @@ setTimeout(() => buildMvtsGesChart(mvtsInitMode), 400);
     }
 
     const container = document.getElementById(containerId);
-    const obs_headers = Object.keys(data[0]);
+    const headers = Object.keys(data[0]);
     let activeFilters = {};
     let sortDirection = 1;
     let currentPage = 1;
@@ -1494,8 +1494,8 @@ setTimeout(() => buildMvtsGesChart(mvtsInitMode), 400);
       const str = d.toLocaleDateString('fr-FR', { weekday:'long', day:'2-digit', month:'2-digit', year:'numeric' });
       return str.charAt(0).toUpperCase()+str.slice(1);
     }
-    function formatValue(obs_header,value){
-      const lower = obs_header.toLowerCase();
+    function formatValue(header,value){
+      const lower = header.toLowerCase();
       if(lower.includes("date")) return formatDateFR(value);
       if(lower.includes("distance")) return formatDistance(value);
       if(lower.includes("emission")) return formatEmission(value);
@@ -1514,9 +1514,9 @@ setTimeout(() => buildMvtsGesChart(mvtsInitMode), 400);
     html += '<table class="data-table"><thead>';
 
     html += '<tr>';
-    obs_headers.forEach((h,i) => {
-      const label = obs_displayName(h);
-      html += '<th class="'+(i===0?'sticky-col':'')+' filtered-obs_header" data-obs_header="'+h+'">';
+    headers.forEach((h,i) => {
+      const label = displayName(h);
+      html += '<th class="'+(i===0?'sticky-col':'')+' filtered-header" data-header="'+h+'">';
       html += '<div style="display:flex; justify-content:space-between; align-items:center;">';
       html += '<span>'+label+'</span>';
       html += '<span class="col-menu" data-col="'+h+'" style="cursor:pointer;">⋮</span>';
@@ -1525,10 +1525,10 @@ setTimeout(() => buildMvtsGesChart(mvtsInitMode), 400);
     html += '</tr>';
 
     html += '<tr>';
-    obs_headers.forEach((h,i) => {
+    headers.forEach((h,i) => {
       html += '<th class="'+(i===0?'sticky-col':'')+'">';
       html += '<div style="position:relative;">';
-      html += '<input type="text" data-filter="'+h+'" placeholder="Filtrer ‘'+obs_displayName(h)+'’..." style="width:100%">';
+      html += '<input type="text" data-filter="'+h+'" placeholder="Filtrer ‘'+displayName(h)+'’..." style="width:100%">';
       html += '<span class="clear-filter" data-clear="'+h+'" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); cursor:pointer;">✕</span>';
       html += '</div></th>';
     });
@@ -1545,29 +1545,29 @@ setTimeout(() => buildMvtsGesChart(mvtsInitMode), 400);
 
     container.innerHTML = html;
 
-    // Export obs_csv table
+    // Export CSV table
     const exportBtn = document.getElementById(containerId + "-export");
     if (exportBtn) {
       exportBtn.addEventListener("click", function () {
         const rows = [];
-        rows.push(obs_headers.map(h => obs_displayName(h)).join(";"));
+        rows.push(headers.map(h => displayName(h)).join(";"));
         const dataToExport = filteredData.length ? filteredData : data;
         dataToExport.forEach(rowObj => {
-          const row = obs_headers.map(h => {
+          const row = headers.map(h => {
             let val = (rowObj[h] ?? "").toString();
             val = val.replace(/;/g, ",");
             return val;
           });
           rows.push(row.join(";"));
         });
-        const obs_csvContent = "\uFEFF" + rows.join("\n");
-        const blob = new Blob([obs_csvContent], { type: "text/obs_csv;charset=utf-8;" });
+        const csvContent = "\uFEFF" + rows.join("\n");
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
         const fileBase =
           containerId === "tableDepartures" ? "vols_depart" :
           containerId === "tableArrivals"  ? "vols_arrivee" : containerId;
-        a.download = fileBase + "_export.obs_csv";
+        a.download = fileBase + "_export.csv";
         a.click();
       });
     }
@@ -1584,7 +1584,7 @@ setTimeout(() => buildMvtsGesChart(mvtsInitMode), 400);
 
       pageData.forEach(row => {
         const tr = document.createElement("tr");
-        obs_headers.forEach(h => {
+        headers.forEach(h => {
           const td = document.createElement("td");
           if(h.toLowerCase().includes("date") ||
              h.toLowerCase().includes("distance") ||
@@ -1605,7 +1605,7 @@ setTimeout(() => buildMvtsGesChart(mvtsInitMode), 400);
 
     function applyFilters(){
       filteredData = data.filter(row =>
-        obs_headers.every(h => {
+        headers.every(h => {
           if(!activeFilters[h]) return true;
           const value = String(row[h]||"").toLowerCase();
           return value.includes(activeFilters[h].toLowerCase());
@@ -1620,7 +1620,7 @@ setTimeout(() => buildMvtsGesChart(mvtsInitMode), 400);
       let total = 0;
 
       sourceData.forEach(row => {
-        obs_headers.forEach(h => {
+        headers.forEach(h => {
           if(h.toLowerCase().includes("emission")){
             const n = parseFloat(String(row[h]).replace(',','.'));
             if(!isNaN(n)) total += n;
@@ -1629,7 +1629,7 @@ setTimeout(() => buildMvtsGesChart(mvtsInitMode), 400);
       });
 
       totalRow.innerHTML = "";
-      obs_headers.forEach((h,i) => {
+      headers.forEach((h,i) => {
         const td = document.createElement("td");
         if(i===0){
           td.innerHTML = "<strong>TOTAL</strong>";
@@ -1658,9 +1658,9 @@ setTimeout(() => buildMvtsGesChart(mvtsInitMode), 400);
     }
 
     function updateBadges(){
-      container.querySelectorAll(".filtered-obs_header").forEach(th => {
-        const obs_header = th.getAttribute("data-obs_header");
-        if(activeFilters[obs_header]) th.classList.add("filtered"); else th.classList.remove("filtered");
+      container.querySelectorAll(".filtered-header").forEach(th => {
+        const header = th.getAttribute("data-header");
+        if(activeFilters[header]) th.classList.add("filtered"); else th.classList.remove("filtered");
       });
     }
 
@@ -1669,7 +1669,7 @@ setTimeout(() => buildMvtsGesChart(mvtsInitMode), 400);
         e.stopPropagation();
 
         const col = btn.getAttribute("data-col");
-        const index = obs_headers.indexOf(col);
+        const index = headers.indexOf(col);
 
         const old = document.querySelector(".column-menu");
         if(old) old.remove();
@@ -1712,8 +1712,8 @@ setTimeout(() => buildMvtsGesChart(mvtsInitMode), 400);
 
     function sortColumn(index){
       filteredData.sort((a,b) => {
-        const A=a[obs_headers[index]];
-        const B=b[obs_headers[index]];
+        const A=a[headers[index]];
+        const B=b[headers[index]];
         const numA=parseFloat(String(A).replace(',','.'));
         const numB=parseFloat(String(B).replace(',','.'));
         if(!isNaN(numA) && !isNaN(numB)) return (numA-numB)*sortDirection;
@@ -1749,9 +1749,9 @@ setTimeout(() => buildMvtsGesChart(mvtsInitMode), 400);
     document.getElementById(containerId+"-reset").addEventListener("click",function(){
       activeFilters={};
       container.querySelectorAll("[data-filter]").forEach(i => i.value="");
-      const dateIndex = obs_headers.findIndex(h => h.toLowerCase().includes("date"));
+      const dateIndex = headers.findIndex(h => h.toLowerCase().includes("date"));
       if(dateIndex!==-1){
-        data.sort((a,b) => new Date(b[obs_headers[dateIndex]]) - new Date(a[obs_headers[dateIndex]]));
+        data.sort((a,b) => new Date(b[headers[dateIndex]]) - new Date(a[headers[dateIndex]]));
       }
       filteredData=[...data];
       currentPage=1;
@@ -1768,10 +1768,10 @@ setTimeout(() => buildMvtsGesChart(mvtsInitMode), 400);
   `;
   document.head.appendChild(style);
 
-  obs_parseobs_csv('./data/EXPORT_departures_YTD.obs_csv', function(data){
+  parseCSV('./data/EXPORT_departures_YTD.csv', function(data){
     createTable("tableDepartures", data);
   });
-  obs_parseobs_csv('./data/EXPORT_arrivals_YTD.obs_csv', function(data){
+  parseCSV('./data/EXPORT_arrivals_YTD.csv', function(data){
     createTable("tableArrivals", data);
   });
 
@@ -1781,7 +1781,7 @@ setTimeout(() => buildMvtsGesChart(mvtsInitMode), 400);
 //<!-- ========== JS : Mise à jour "dernière mise à jour" + sidebar + alignement containers ========== -->//
 
 // Date de mise à jour
-fetch("data/EXPORT_update_time.obs_csv")
+fetch("data/EXPORT_update_time.csv")
 .then(response => response.text())
 .then(text => {
   const lines = text.trim().split(/\r?\n/);
@@ -1823,11 +1823,11 @@ function matchContainerSizeOnce() {
   // Ajuste la chart-host pour occuper le maximum d'espace vertical restant
   const chartHost = target.querySelector('.chart-host');
   if (chartHost) {
-    const obs_headers = Array.from(target.querySelectorAll('.metric-title,.metric-obs_header'));
-    const obs_headerHeights = obs_headers.reduce((sum, el) => sum + el.getBoundingClientRect().height, 0);
+    const headers = Array.from(target.querySelectorAll('.metric-title,.metric-header'));
+    const headerHeights = headers.reduce((sum, el) => sum + el.getBoundingClientRect().height, 0);
     const paddings = parseFloat(getComputedStyle(target).paddingTop || '0')
                    + parseFloat(getComputedStyle(target).paddingBottom || '0');
-    const available = rect.height - obs_headerHeights - paddings - 40;
+    const available = rect.height - headerHeights - paddings - 40;
     if (available > 220) {
       chartHost.style.height = available + 'px';
     }
@@ -1843,5 +1843,3 @@ function resetZoomChart(canvasId) {
     const chart = Chart.getChart(canvasId);
     if(chart) chart.resetZoom();
 }
-
-
