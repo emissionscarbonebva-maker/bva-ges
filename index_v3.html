@@ -87,45 +87,48 @@
   </div>
 </header>
 
+<!-- Bandeau orientation pour mobile -->
+<div id="orientationHint" class="orientation-hint" aria-live="polite">
+  📈 Pour une meilleure lecture des graphiques, passez votre téléphone en <strong>mode paysage</strong>.
+</div>
+    
  <!-- EXPLICATION / INTERPRETATION -->
 <section>
 
-  <h2>Que mesure cette page ?</h2>
+  <h2>Analyse des émissions de gaz à effet de serre en 2026</h2>
 
   <div class="card card--normal">
 
-    <p>
-      Cette page propose une estimation des émissions de gaz à effet de serre 
-      associées à l’activité de l’aéroport Paris-Beauvais en 2026, à partir 
-      de l’analyse détaillée des vols (type d’appareil, distance, compagnie) 
-      et de facteurs d’émission spécifiques.
-    </p>
+      <p>
+        Ce site présente une analyse indépendante des émissions de gaz à effet de serre (GES)
+        de l’aéroport de Paris-Beauvais (BVA) pour l'année 2026. Les données sont issues de sources publiques
+        et retraitées afin de présenter une vision journalière et cumulée des émissions.
+      </p>
 
-    <p>
-      L’évaluation ne se limite pas aux seuls vols. Elle intègre également 
-      les émissions associées à d'autres activités directement ou indirectement liées au fonctionnement 
-      de la plateforme :
-    </p>
+      <p>
+        L’aéroport de Paris-Beauvais se situe dans l’Oise et constitue
+        le principal aéroport low-cost du nord de l’Île-de-France, et le 9ème aéroport Français en terme de trafic passagers.
+      </p>
 
-    <ul>
-      <li>
-        <strong>Vols :</strong> émissions des aéronefs sur l’ensemble des trajets opérés
-      </li>
-      <li>
-        <strong>Accès passagers :</strong> déplacements terrestres (navettes, voitures, taxis…)
-      </li>
-      <li>
-        <strong>Déplacements des employés :</strong> trajets domicile–travail
-      </li>
-      <li>
-        <strong>Activités aéroportuaires (scope 1 & 2) :</strong> énergie, chauffage, équipements de piste
-      </li>
-    </ul>
+      <p>
+        Sont incluses :
+        <br>• Les émissions directes de l'aéroports : chauffage, consommation d'électricité, consommation de carburant pour les engins de pistes, ... (scope 1 & 2, dit "Location Based")
+        <br>• Les émissions liées aux transports terrestres des employés pour accéder à l'aéroport (Scope 3)
+        <br>• Les émissions liées au transports terrestres collectifs et individuels des passagers pour accéder à l'aéroport (Scope 3)
+        <br>• Les émissions liées aux opérations des aéronefs : APU, roulage, décollage/atterrissage, vol demi-croisère, ainsi que la production et l'approvisionnement en carburant d'aviation et l'amortissement des aéronefs (Scope 3)
+      </p>
 
-    <p>
-      Cette approche permet de restituer une vision plus large et globale de l’impact climatique 
-      de la plateforme, en distinguant la contribution des différentes sources d’émissions.
-    </p>
+      <p>
+        Les émissions de gaz à effet de serre sont exprimées en tonnes équivalent dioxyde de carbone (t éq CO₂).
+      </p>
+           
+      <p>
+      La méthodologie détaillée de calcul des émissions est disponible sur la <a href="https://emissionscarbonebva-maker.github.io/bva-ges/methodologie.html">page dédiée</a>.
+      </p>
+
+      <p>
+        Pour la visualisation des trajectoires de décollages et d'atterrissages des aéronefs au départ et à l'arrivée de l'aéroport de Paris-Beauvais, vous pouvez consulter le site <a href="https://flighttrack60.azurewebsites.net/" target="_blank">Flighttrack60</a>.
+      </p>
 
     <p style="font-size:0.9em; color:#666;">
       Données mises à jour le : <span id="update-date">chargement...</span>
