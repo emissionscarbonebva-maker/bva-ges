@@ -29,8 +29,8 @@ fetch("data/EXPORT_update_time.csv")
  *  ------------------------------------------------------------
  *  Cette partie contient :
  *    ✔ Utilitaires généraux (couleurs, formats)
- *    ✔ parseCSV() – charge les CSV (séparateur auto)
- *    ✔ displayName() – noms lisibles pour les colonnes
+ *    ✔ kpi_parseCSV() – charge les CSV (séparateur auto)
+ *    ✔ kpi_DisplayName() – noms lisibles pour les colonnes
  *    ✔ Helpers numériques robustes
  *    ✔ Lecture du fichier EXPORT_update_time.csv
  *  ------------------------------------------------------------
@@ -42,7 +42,7 @@ fetch("data/EXPORT_update_time.csv")
  * 🔧 1. Conversion RGB → RGBA
  *    Permet d’ajouter de la transparence aux couleurs existantes.
  ***************************************************************/
-function toRGBA(rgb, a = 1) {
+function kpi_toRGBA(rgb, a = 1) {
     if (typeof rgb !== "string") return rgb;
     if (!rgb.startsWith("rgb(")) return rgb;
     return rgb.replace("rgb(", "rgba(").replace(")", `, ${a})`);
@@ -50,13 +50,13 @@ function toRGBA(rgb, a = 1) {
 
 
 /***************************************************************
- * 🔧 2. parseCSV(url, callback)
+ * 🔧 2. kpi_parseCSV(url, callback)
  *    Charge un CSV avec ; ou , et renvoie :
  *      - rows : tableau d’objets
  *      - headers : tableau de noms de colonnes
  *    → Version simplifiée adaptée à la homepage
  ***************************************************************/
-function parseCSV(url, callback) {
+function kpi_parseCSV(url, callback) {
     fetch(url)
         .then(r => r.text())
         .then(text => {
@@ -80,11 +80,11 @@ function parseCSV(url, callback) {
 
 
 /***************************************************************
- * 🔧 3. displayName()
+ * 🔧 3. kpi_DisplayName()
  *    Convertit les noms de colonnes techniques → libellés lisibles
  *    (Version réduite pour KPI de la homepage)
  ***************************************************************/
-const DISPLAY_LABELS = {
+const KPI_KPI_DISPLAY_LABELS = {
     "scope_vols": "Aéronefs (Scope 3)",
     "scope_1_2": "Scopes 1 & 2",
     "scope_acces_ind": "Accès individuels",
@@ -99,10 +99,10 @@ const DISPLAY_LABELS = {
     "cumul_total": "Total"
 };
 
-function displayName(k) {
+function kpi_DisplayName(k) {
     if (!k) return k;
     const clean = k.replace(/\uFEFF/g, "").trim();
-    return DISPLAY_LABELS[clean] || clean;
+    return KPI_KPI_DISPLAY_LABELS[clean] || clean;
 }
 
 
@@ -112,7 +112,7 @@ function displayName(k) {
  *    Transforme "12.345,6" → 12345.6
  *    Transforme "12,345.6" → 12345.6
  ***************************************************************/
-function _toNumberSmart(x) {
+function _kpi_toNumberSmart(x) {
     if (x === null || x === undefined || x === "") return 0;
     let s = String(x).trim();
 
@@ -136,10 +136,10 @@ function _toNumberSmart(x) {
 
 
 /***************************************************************
- * 🔧 5. formatTonsFR
+ * 🔧 5. kpi_formatTonsFR
  *    Transforme un nombre → "12 345"
  ***************************************************************/
-function formatTonsFR(n) {
+function kpi_formatTonsFR(n) {
     return Math.round(n).toLocaleString("fr-FR");
 }
 
@@ -198,7 +198,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    parseCSV("./data/EXPORT_cumul_scopes.csv", (rows, headers) => {
+    kpi_parseCSV("./data/EXPORT_cumul_scopes.csv", (rows, headers) => {
 
         /***********************************************************
          * 1. Identification des colonnes CSV
@@ -223,12 +223,12 @@ document.addEventListener("DOMContentLoaded", () => {
     return (!max || new Date(row[K_DATE]) > new Date(max[K_DATE])) ? row : max;
 }, null);
 
-        const total    = _toNumberSmart(latest[K_TOT]);
-        const aero     = _toNumberSmart(latest[K_VOL]);
-        const s12      = _toNumberSmart(latest[K_S12]);
-        const accesInd = _toNumberSmart(latest[K_ACI]);
-        const accesCol = _toNumberSmart(latest[K_ACC]);
-        const emp      = _toNumberSmart(latest[K_EMP]);
+        const total    = _kpi_toNumberSmart(latest[K_TOT]);
+        const aero     = _kpi_toNumberSmart(latest[K_VOL]);
+        const s12      = _kpi_toNumberSmart(latest[K_S12]);
+        const accesInd = _kpi_toNumberSmart(latest[K_ACI]);
+        const accesCol = _kpi_toNumberSmart(latest[K_ACC]);
+        const emp      = _kpi_toNumberSmart(latest[K_EMP]);
 
         const autres = accesInd + accesCol + emp;
 
@@ -246,7 +246,7 @@ document.addEventListener("DOMContentLoaded", () => {
          * 4. KPI 2 — Gros total cumulé
          ***********************************************************/
         document.getElementById("kpiTotal").textContent =
-            `${formatTonsFR(total)} t éq CO₂`;
+            `${kpi_formatTonsFR(total)} t éq CO₂`;
 
         /***********************************************************
          * 5. KPI 1 — Construction de la barre empilée Chart.js
@@ -265,9 +265,9 @@ document.addEventListener("DOMContentLoaded", () => {
             data: {
                 labels: [""],
                 datasets: [
-                    { label: "Aéronefs :",           data: [aero],     backgroundColor: toRGBA(colors.aero, 0.85),   stack: "S" },
-                    { label: "Scopes 1 & 2 :",       data: [s12],      backgroundColor: toRGBA(colors.s12, 0.85),    stack: "S" },
-                    { label: "Autres émissions :",   data: [autres],   backgroundColor: toRGBA(colors.autres, 0.85), stack: "S" }
+                    { label: "Aéronefs :",           data: [aero],     backgroundColor: kpi_toRGBA(colors.aero, 0.85),   stack: "S" },
+                    { label: "Scopes 1 & 2 :",       data: [s12],      backgroundColor: kpi_toRGBA(colors.s12, 0.85),    stack: "S" },
+                    { label: "Autres émissions :",   data: [autres],   backgroundColor: kpi_toRGBA(colors.autres, 0.85), stack: "S" }
                 ]
             },
             options: {
@@ -289,7 +289,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 label: (ctx) => {
                     const v = ctx.parsed.x;
                     const pct = (v / total) * 100;
-                    return `${ctx.dataset.label} : ${formatTonsFR(v)} t (${pct.toFixed(1)}%)`;
+                    return `${ctx.dataset.label} : ${kpi_formatTonsFR(v)} t (${pct.toFixed(1)}%)`;
                 }
             }
         }
@@ -454,7 +454,7 @@ options: {
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    parseCSV("./data/EXPORT_yearly_total.csv", (rows, headers) => {
+    kpi_parseCSV("./data/EXPORT_yearly_total.csv", (rows, headers) => {
 
         /***********************************************************
          * 1. Identifier les colonnes
@@ -474,8 +474,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const data = rows
             .map(r => ({
                 year: Number(String(r[K_YEAR]).replace(/[^\d]/g, "")),
-                s12 : _toNumberSmart(r[K_S12])  || null,
-                aero: _toNumberSmart(r[K_AERO]) || null
+                s12 : _kpi_toNumberSmart(r[K_S12])  || null,
+                aero: _kpi_toNumberSmart(r[K_AERO]) || null
             }))
             .filter(r => r.year)
             .sort((a,b) => a.year - b.year);
@@ -513,7 +513,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     const val = valsAero[i];
                     if (!val) return;
                     const { x, y } = bar.getProps(["x","y"], true);
-                    ctx.fillText(formatTonsFR(val), x, y - 4);
+                    ctx.fillText(kpi_formatTonsFR(val), x, y - 4);
                 });
 
                 ctx.restore();
@@ -541,7 +541,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     const val = valsS12[i];
                     if (!val) return;
                     const { x, y } = bar.getProps(["x","y"], true);
-                    ctx.fillText(formatTonsFR(val), x, y - 4);
+                    ctx.fillText(kpi_formatTonsFR(val), x, y - 4);
                 });
 
                 ctx.restore();
@@ -589,7 +589,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     {
                         label: "Location based (scope 1 & 2) (t éq CO₂)",
                         data: valsS12,
-                        backgroundColor: toRGBA("#9467bd", 0.70),
+                        backgroundColor: kpi_toRGBA("#9467bd", 0.70),
                         borderColor: "#9467bd",
                         borderWidth: 1,
                         missingLabels: missingS12
@@ -597,7 +597,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     {
                         label: "Aéronefs (t éq CO₂)",
                         data: valsAero,
-                        backgroundColor: toRGBA("#1f78b4", 0.70),
+                        backgroundColor: kpi_toRGBA("#1f78b4", 0.70),
                         borderColor: "#1f78b4",
                         borderWidth: 1,
                         missingLabels: missingAero
