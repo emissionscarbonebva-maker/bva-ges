@@ -84,7 +84,7 @@ function kpi_parseCSV(url, callback) {
  *    Convertit les noms de colonnes techniques → libellés lisibles
  *    (Version réduite pour KPI de la homepage)
  ***************************************************************/
-const KPI_KPI_DISPLAY_LABELS = {
+const KPI_DISPLAY_LABELS = {
     "scope_vols": "Aéronefs (Scope 3)",
     "scope_1_2": "Scopes 1 & 2",
     "scope_acces_ind": "Accès individuels",
@@ -102,7 +102,7 @@ const KPI_KPI_DISPLAY_LABELS = {
 function kpi_DisplayName(k) {
     if (!k) return k;
     const clean = k.replace(/\uFEFF/g, "").trim();
-    return KPI_KPI_DISPLAY_LABELS[clean] || clean;
+    return KPI_DISPLAY_LABELS[clean] || clean;
 }
 
 
