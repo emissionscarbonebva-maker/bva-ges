@@ -1104,7 +1104,7 @@ setTimeout(() => buildMvtsGesChart(mvtsInitMode), 400);
     buildChartAirlines(airlinesPeriod, data);
   });
 
-  /* ====== 4. Rotations par compagnie ====== */
+  /* ====== 4. Mouvements par compagnie ====== */
   parseCSV('./data/EXPORT_daily_airlines.csv', (data) => {
     let chartRotationsInstance = null;
 
@@ -1224,7 +1224,7 @@ setTimeout(() => buildMvtsGesChart(mvtsInitMode), 400);
                   const pct = totalAtIndex > 0 ? (v / totalAtIndex) * 100 : 0;
                   const pctStr = pct.toLocaleString('fr-FR', { maximumFractionDigits: 1 });
 
-                  return `${ctx.dataset.label} : ${Math.round(v).toLocaleString('fr-FR')} rotations ; soit ${pctStr} %`;
+                  return `${ctx.dataset.label} : ${Math.round(v).toLocaleString('fr-FR')} mouvements ; soit ${pctStr} %`;
                 },
                 footer: (items) => {
                   if (!items?.length) return '';
@@ -1245,7 +1245,7 @@ setTimeout(() => buildMvtsGesChart(mvtsInitMode), 400);
                     if (!isNaN(num)) totalAtIndex += num;
                   });
 
-                  return `Total : ${Math.round(totalAtIndex).toLocaleString('fr-FR')} rotations`;
+                  return `Total : ${Math.round(totalAtIndex).toLocaleString('fr-FR')} mouvements`;
                 }
               }
             }
@@ -1260,7 +1260,7 @@ setTimeout(() => buildMvtsGesChart(mvtsInitMode), 400);
             y: {
               beginAtZero: true,
               stacked: (period !== "day"),
-              title: { display: true, text: "Nombre de rotations" }
+              title: { display: true, text: "Nombre de mouvements" }
             }
           }
         }
