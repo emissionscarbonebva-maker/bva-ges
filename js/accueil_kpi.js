@@ -675,3 +675,272 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 });
+
+/* ======================================================
+     KPI PCAET : Trajectoire vs émissions réelles
+     - Source : EXPORT_pcaet.csv
+     - PCAET = cumul (déjà prêt)
+     - BVA = journalier → on calcule le cumul côté JS
+     - Affiche :
+         1. Courbes (réel vs trajectoire)
+         2. KPI texte : écart absolu + %
+====================================================== */
+
+async function loadPCAET() {
+
+    // 🔹 Chargement du CSV (depuis ton repo GitHub)
+    const response = await fetch("/data/EXPORT_pcaet.csv");
+    const text = await response.text();
+
+    // 🔹 Parsing simple
+    const rows = text.trim().split("\n").slice(1);
+
+    let dates = [];
+    let pcaet = [];
+    let bvaCumul = [];
+
+    let cumul = 0; // 🔴 cumul des émissions BVA
+
+    rows.forEach(row => {
+
+        const cols = row.split(",");
+
+        if (cols.length >= 3) {
+
+            const date = cols[0];
+            const valPCAET = _toNumberSmart(cols[1]);
+            const valBVA = _toNumberSmart(cols[2]);
+
+            // ✅ données PCAET (déjà cumulées)
+            dates.push(date);
+            pcaet.push(valPCAET);
+
+            // ✅ cumul des émissions BVA (CRUCIAL)
+            cumul += valBVA;
+            bvaCumul.push(cumul);
+        }
+    });
+
+    // ======================================================
+    // 🔹 KPI FINAL (écart vs trajectoire)
+    // ======================================================
+
+    const lastPCAET = pcaet[pcaet.length - 1];
+    const lastBVA = bvaCumul[bvaCumul.length - 1];
+
+    const diff = lastBVA - lastPCAET;
+    const pct = lastPCAET > 0 ? (diff / lastPCAET) * 100 : 0;
+
+    // 🔹 Format date affichée
+    const lastDate = new Date(dates[dates.length - 1]);
+    const dateFR = lastDate.toLocaleDateString("fr-FR", {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+    });
+
+    // 🔹 Injection du texte KPI
+    const elText = document.getElementById("pcaetText");
+
+    if (elText) {
+        elText.innerHTML =
+            `Au ${dateFR}, les émissions générées par les aéronefs sont supérieures de 
+            <b>${Math.round(diff).toLocaleString("fr-FR")} t éq CO₂</b>,
+            soit <b>${pct.toFixed(0)} %</b> par rapport à la trajectoire fixée par le PCAET de 2016.`;
+    }
+
+    // ======================================================
+    // 🔹 GRAPHIQUE (Chart.js)
+    // ======================================================
+
+    const canvas = document.getElementById("pcaetChart");
+    if (!canvas) return;
+
+    if (window._pcaetChart) window._pcaetChart.destroy();
+
+                 // ======================================================
+                 // 🔴 Plugin flèche + zone rouge (écart PCAET)
+                 // ======================================================
+                 
+                 const pcaetGapPlugin = {
+                     id: 'pcaetGapPlugin',
+                 
+                     afterDatasetsDraw(chart) {
+                 
+                         const { ctx, scales: { x, y } } = chart;
+                 
+                         const datasetBVA = chart.data.datasets[0].data;
+                         const datasetPCAET = chart.data.datasets[1].data;
+                 
+                         const lastIndex = datasetBVA.length - 1;
+                 
+                         const xPos = x.getPixelForValue(lastIndex);
+                         const yBVA = y.getPixelForValue(datasetBVA[lastIndex]);
+                         const yPCAET = y.getPixelForValue(datasetPCAET[lastIndex]);
+                 
+                         const diff = datasetBVA[lastIndex] - datasetPCAET[lastIndex];
+                         const pct = datasetPCAET[lastIndex] > 0 ? (diff / datasetPCAET[lastIndex]) * 100 : 0;
+                 
+                         ctx.save();
+                 
+                         // 🔴 zone rouge entre les deux courbes (sur toute la série)
+                         
+                         ctx.beginPath();
+                         
+                         // ✅ démarrer sur courbe BVA
+                         datasetBVA.forEach((value, i) => {
+                             const xPoint = x.getPixelForValue(i);
+                             const yPoint = y.getPixelForValue(value);
+                         
+                             if (i === 0) ctx.moveTo(xPoint, yPoint);
+                             else ctx.lineTo(xPoint, yPoint);
+                         });
+                         
+                         // ✅ redescendre via PCAET (dans l'autre sens)
+                         for (let i = datasetPCAET.length - 1; i >= 0; i--) {
+                             const xPoint = x.getPixelForValue(i);
+                             const yPoint = y.getPixelForValue(datasetPCAET[i]);
+                         
+                             ctx.lineTo(xPoint, yPoint);
+                         }
+                         
+                         // ✅ fermer la zone
+                         ctx.closePath();
+                         
+                         // ✅ remplissage rouge léger
+                         ctx.fillStyle = "rgba(211, 47, 47, 0.08)";
+                         ctx.fill();
+                 
+                         // 🔴 ligne verticale
+                         ctx.strokeStyle = "#d32f2f";
+                         ctx.lineWidth = 2;
+                 
+                         ctx.beginPath();
+                         ctx.moveTo(xPos, yBVA);
+                         ctx.lineTo(xPos, yPCAET);
+                         ctx.stroke();
+                 
+                         // 🔴 flèche en haut
+                         ctx.beginPath();
+                         ctx.moveTo(xPos - 6, yBVA - 6);
+                         ctx.lineTo(xPos + 6, yBVA - 6);
+                         ctx.lineTo(xPos, yBVA - 14);
+                         ctx.closePath();
+                         ctx.fillStyle = "#d32f2f";
+                         ctx.fill();
+                 
+                         // 🔴 texte "+XX%"
+                         ctx.fillStyle = "#d32f2f";
+                         ctx.font = "bold 14px Arial";
+                         ctx.textAlign = "left";
+                                          
+                         ctx.textAlign = "right";   // ✅ texte aligné à droite
+                         
+                         ctx.fillText(
+                             `+${pct.toFixed(0)}%`,
+                             xPos - 10,              // ✅ décalé à gauche de la ligne
+                             (yBVA + yPCAET) / 2
+                         );
+                 
+                         ctx.restore();
+                     }
+                 };
+                 
+    window._pcaetChart = new Chart(canvas.getContext("2d"), {
+        type: "line",
+        data: {
+            labels: dates,
+
+            datasets: [
+
+                // 🔴 Courbe réelle (BVA cumul)
+                {
+                    label: "Emissions GES aéroports BVA",
+                    data: bvaCumul,
+                    borderColor: "#1f78b4",
+                    backgroundColor: "transparent",
+                    borderWidth: 2,
+                    tension: 0.2
+                },
+
+                // ⚫ Trajectoire PCAET
+                {
+                    label: "Trajectoire PCAET 2026",
+                    data: pcaet,
+                    borderColor: "#333",
+                    borderDash: [6, 4],
+                    backgroundColor: "transparent",
+                    borderWidth: 2,
+                    tension: 0.2,
+                    pointRadius: 0,          // ✅ supprime les points
+                    pointHoverRadius: 3
+
+                }
+            ]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            plugins: {
+               legend: {
+                   position: "bottom"
+               },
+           
+               tooltip: {
+                   callbacks: {
+                       label: function(ctx) {
+                           const v = ctx.parsed.y ?? 0;
+                           return `${ctx.dataset.label} : ${Math.round(v).toLocaleString("fr-FR")} t éq CO₂`;
+                       }
+                   }
+               }
+           },
+
+            scales: {            
+                y: {
+                    ticks: {
+                        callback: function(value) {
+                            return Math.round(value).toLocaleString("fr-FR");
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: "t éq CO₂"
+                    }
+                },
+                x: {
+                    ticks: {
+                        autoSkip: false,
+                        callback: function(value, index, ticks) {
+                
+                            const date = this.getLabelForValue(value);
+                
+                            // On extrait jour (DD)
+                            const day = parseInt(date.slice(8, 10));
+                
+                            // ✅ afficher :
+                            // - tous les 1, 10, 20
+                            // - ET toujours le dernier point
+                
+                            const isSpecialDay = (day === 1 || day === 10 || day === 20);
+                            const isLast = (index === ticks.length - 1);
+                
+                            if (isSpecialDay || isLast) {
+                                return date;
+                            }
+                
+                            return ""; // sinon on n'affiche rien
+                        }
+                    }
+                }
+            }
+        },
+    plugins: [pcaetGapPlugin],
+    });
+
+}
+
+// ✅ Lancement du KPI PCAET
+loadPCAET();
